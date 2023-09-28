@@ -1,1 +1,3 @@
-# neu
+# Neu
+
+Patterns class builder for SuperCollider

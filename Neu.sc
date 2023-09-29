@@ -1,12 +1,6 @@
 Neu {
     classvar instruments;
 
-    /*    *fade { |amp, direction, durs|
-    var start = if (direction > "in",  { 0 }, { amp });
-    var end = if (direction > "in",  { amp }, { 0 });
-    Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
-    }*/
-
     *new { |patterns|
         var ptparList = patterns.collect { |pattern, i|
             var offset = pattern[\off] ?? 0;

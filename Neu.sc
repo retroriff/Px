@@ -6,12 +6,11 @@ Neu {
     *new { |patterns|
         var ptparList = patterns.collect { |pattern, i|
             var pbind = Pbind();
+
             var createFade = { |amp, fade|
                 var dir, durs, start, end;
                 dir = if (fade.isString, { fade }, { fade[0] });
-                durs = if (fade.class == Array
-                    and: fade[1].isNumber
-                    and: fade[1] != 0,
+                durs = if (fade.class == Array and: fade[1] > 0,
                     { fade[1] },
                     { defaultFadeTime }
                 );
@@ -20,13 +19,26 @@ Neu {
                 Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
             };
 
-            pattern[\amp] = pattern[\amp] ?? pattern[\a] ?? 1;
-            pattern[\dur] = pattern[\dur] ?? 1;
-            pattern[\off] = pattern[\off] ?? 0;
-            pattern.removeAt(\a);
-            if (pattern[\fade] != nil) {
-                pattern[\amp] = createFade.value(pattern[\amp], pattern[\fade]);
+            var createDur = { |dur|
+                dur = if (dur.isArray, { Pseq(dur, inf) }, dur ?? 1);
+                if (pattern[\pbj] != nil) {
+                    dur = Pbjorklund2(pattern[\pbj][0], pattern[\pbj][1]) / pattern[\pbj][2];
+                };
+                dur;
             };
+
+            var createAmp = { |amp|
+                pattern.removeAt(\a);
+                if (pattern[\fade] != nil) {
+                    amp = createFade.value(pattern[\amp], pattern[\fade]);
+                };
+                amp;
+            };
+
+            pattern[\amp] = createAmp.value(pattern[\amp] ?? pattern[\a] ?? 1);
+            pattern[\dur] = createDur.value(pattern[\dur]);
+            pattern[\off] = pattern[\off] ?? 0;
+
             pattern.keys.do { |key|
                 if (key != \off) {
                     pbind = Pchain(pbind, Pbind(key, pattern[key]));
@@ -34,6 +46,7 @@ Neu {
             };
             [pattern[\off], pbind];
         }.flatten;
+
         instruments = patterns;
         Pdef(\neu, Ptpar(ptparList)).play;
     }
@@ -41,7 +54,7 @@ Neu {
     *release { |durs|
         var hasFade = false;
         var fadeOutInstruments = instruments.collect { |pattern|
-            durs = if (durs.class == Integer and: durs != 0, { durs }, { defaultFadeTime });
+            durs = if (durs > 0, { durs }, { defaultFadeTime });
             if (pattern[\fade] == nil,
                 {
                     pattern.keys.do { |key|

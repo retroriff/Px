@@ -9,7 +9,12 @@ Neu {
             var createFade = { |amp, fade|
                 var dir, durs, start, end;
                 dir = if (fade.isString, { fade }, { fade[0] });
-                durs = if (fade.isString, { defaultFadeTime }, { fade[1] });
+                durs = if (fade.class == Array
+                    and: fade[1].isNumber
+                    and: fade[1] != 0,
+                    { fade[1] },
+                    { defaultFadeTime }
+                );
                 start = if (dir == "in", { 0 }, { amp });
                 end = if (dir == "in", { amp }, { 0 });
                 Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
@@ -36,12 +41,13 @@ Neu {
     *release { |durs|
         var hasFade = false;
         var fadeOutInstruments = instruments.collect { |pattern|
+            durs = if (durs.class == Integer and: durs != 0, { durs }, { defaultFadeTime });
             if (pattern[\fade] == nil,
                 {
                     pattern.keys.do { |key|
                         var amp = pattern[\amp] ?? pattern[\a] ?? 1;
                         if ([\a, \amp].includes(key)) {
-                            pattern[key] = Pseg(Pseq([amp, Pn(0)]), durs ?? defaultFadeTime, curves: 0);
+                            pattern[key] = Pseg(Pseq([amp, Pn(0)]), durs, curves: 0);
                         };
                     }
                 },

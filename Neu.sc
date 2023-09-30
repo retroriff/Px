@@ -1,30 +1,36 @@
 Neu {
-    classvar instruments;
+    classvar <instruments;
+
+    const defaultFadeTime = 10;
 
     *new { |patterns|
         var ptparList = patterns.collect { |pattern, i|
-            var offset = pattern[\off] ?? 0;
             var pbind = Pbind();
-            var fade = { |amp, dir, durs|
-                var start = if (dir == "in", { 0 }, { amp });
-                var end = if (dir == "in", { amp }, { 0 });
+            var createFade = { |amp, fade|
+                var dir, durs, start, end;
+                dir = if (fade.isString, { fade }, { fade[0] });
+                durs = if (fade.isString, { defaultFadeTime }, { fade[1] });
+                start = if (dir == "in", { 0 }, { amp });
+                end = if (dir == "in", { amp }, { 0 });
                 Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
             };
+
             pattern[\amp] = pattern[\amp] ?? pattern[\a] ?? 1;
             pattern[\dur] = pattern[\dur] ?? 1;
+            pattern[\off] = pattern[\off] ?? 0;
             pattern.removeAt(\a);
             if (pattern[\fade] != nil) {
-                pattern[\amp] = fade.value(pattern[\amp], pattern[\fade], 10);
+                pattern[\amp] = createFade.value(pattern[\amp], pattern[\fade]);
             };
             pattern.keys.do { |key|
                 if (key != \off) {
                     pbind = Pchain(pbind, Pbind(key, pattern[key]));
                 };
             };
-            [offset, pbind];
+            [pattern[\off], pbind];
         }.flatten;
         instruments = patterns;
-        ^Pdef(\neu, Ptpar(ptparList)).play;
+        Pdef(\neu, Ptpar(ptparList)).play;
     }
 
     *release { |durs|
@@ -35,7 +41,7 @@ Neu {
                     pattern.keys.do { |key|
                         var amp = pattern[\amp] ?? pattern[\a] ?? 1;
                         if ([\a, \amp].includes(key)) {
-                            pattern[key] = Pseg(Pseq([amp, Pn(0)]), durs, curves: 0);
+                            pattern[key] = Pseg(Pseq([amp, Pn(0)]), durs ?? defaultFadeTime, curves: 0);
                         };
                     }
                 },
@@ -49,7 +55,11 @@ Neu {
         if (hasFade, {
             "Please remove fade keys".postln;
         }, {
-            ^this.new(fadeOutInstruments);
+            this.new(fadeOutInstruments);
         });
+    }
+
+    help {
+        this.class.asString.help
     }
 }

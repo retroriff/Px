@@ -78,7 +78,12 @@ Neu {
         });
     }
 
-    help {
-        this.class.asString.help
+    *help { |synthDef|
+        if (synthDef == nil,
+            { this.class.asString.help; },
+            {
+              SynthDescLib.global[synthDef].postln;
+            }
+        );
     }
 }

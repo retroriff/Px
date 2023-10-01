@@ -5,10 +5,23 @@ Neu {
 
     *new { |patterns|
         var ptparList = patterns.collect { |pattern, i|
+            var createFade = { |amp, fade|
+                var dir, durs, start, end;
+
+                dir = if (fade.isString, { fade }, { fade[0] });
+                durs = if (fade.class == Array and: fade[1] > 0,
+                    { fade[1] },
+                    { defaultFadeTime }
+                );
+                start = if (dir == "in", { 0 }, { amp });
+                end = if (dir == "in", { amp }, { 0 });
+                Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
+            };
+
             var createAmp = { |amp|
                 pattern.removeAt(\a);
                 if (pattern[\fade] != nil) {
-                    amp = createFade.value(pattern[\amp], pattern[\fade]);
+                    amp = createFade.value(amp, pattern[\fade]);
                 };
                 amp;
             };
@@ -19,18 +32,6 @@ Neu {
                     dur = Pbjorklund2(pattern[\pbj][0], pattern[\pbj][1]) / pattern[\pbj][2];
                 };
                 dur;
-            };
-
-            var createFade = { |amp, fade|
-                var dir, durs, start, end;
-                dir = if (fade.isString, { fade }, { fade[0] });
-                durs = if (fade.class == Array and: fade[1] > 0,
-                    { fade[1] },
-                    { defaultFadeTime }
-                );
-                start = if (dir == "in", { 0 }, { amp });
-                end = if (dir == "in", { amp }, { 0 });
-                Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
             };
 
             var pbind = Pbind();

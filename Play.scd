@@ -5,12 +5,12 @@
 
 (
 Neu ([
-    (i: \kick, a: 0.3, dur: 1/4, pbj: [3, 4, 4], fade: ["out", 3]),
-    (fx: \reverb),
-    (fx: \delay),
+    (i: \kick, a: 0.3, dur: 1/4, pbj: [3, 4, 4]),
+    // (fx: \reverb),
+    // (fx: \delay),
 
-    (i: \reverb, a: 0.3, dur: 1/4, pbj: [3, 4, 4], fade: ["out", 3]),
-    (fx: \reverb),
+    // (i: \reverb, a: 0.3, dur: 1/4, pbj: [3, 4, 4], fade: ["out", 3]),
+    // (fx: \reverb),
 ]);
 )
 
@@ -28,3 +28,4 @@ Neu.fx([
 ProxySpace.browse
 
 Pdef(\kick, Pbind(\instrument, \kick, \amp, 1, \dur, 1)).play.quant_(4).
+

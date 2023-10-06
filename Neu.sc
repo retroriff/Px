@@ -19,9 +19,6 @@ Neu {
                 Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
             };
 
-            var addFx = { |fx, pattern|
-            };
-
             var createAmp = { |amp|
                 pattern.removeAt(\a);
                 if (pattern[\fade].notNil) {
@@ -38,7 +35,9 @@ Neu {
                 dur;
             };
 
-            if (pattern[\fx].notNil and: pattern[\i].isNil and: pattern[\ins].isNil, {
+            var isFx = pattern[\fx].notNil and: pattern[\i].isNil and: pattern[\ins].isNil;
+
+            if (isFx, {
                 var fxName = pattern[\fx];
                 pattern.removeAt(\fx);
                 result[result.size - 1][1] = Pbus(Pfx(result[result.size - 1][1], fxName).pairs_(pattern));

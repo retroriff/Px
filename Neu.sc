@@ -4,6 +4,7 @@ Neu {
     const defaultFadeTime = 10;
 
     *new { |patterns|
+        var result;
         var ptparList = patterns.collect { |pattern, i|
             var createFade = { |amp, fade|
                 var dir, durs, start, end;
@@ -18,9 +19,12 @@ Neu {
                 Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
             };
 
+            var addFx = { |fx, pattern|
+            };
+
             var createAmp = { |amp|
                 pattern.removeAt(\a);
-                if (pattern[\fade] != nil) {
+                if (pattern[\fade].notNil) {
                     amp = createFade.value(amp, pattern[\fade]);
                 };
                 amp;
@@ -28,34 +32,34 @@ Neu {
 
             var createDur = { |dur|
                 dur = if (dur.isArray, { Pseq(dur, inf) }, dur ?? 1);
-                if (pattern[\pbj] != nil) {
+                if (pattern[\pbj].notNil) {
                     dur = Pbjorklund2(pattern[\pbj][0], pattern[\pbj][1]) / pattern[\pbj][2];
                 };
                 dur;
             };
 
-            var pbind = Pbind();
-
-            pattern[\amp] = createAmp.value(pattern[\amp] ?? pattern[\a] ?? 1);
-            pattern[\dur] = createDur.value(pattern[\dur]);
-            pattern[\off] = pattern[\off] ?? 0;
-            pattern.keys.do { |key|
-                if (key != \off) {
-                    pbind = Pchain(pbind, Pbind(key, pattern[key]));
-                };
-            };
-            [pattern[\off], pbind];
-        }.flatten;
+            if (pattern[\fx].notNil and: pattern[\i].isNil and: pattern[\ins].isNil, {
+                var fxName = pattern[\fx];
+                pattern.removeAt(\fx);
+                result[result.size - 1][1] = Pbus(Pfx(result[result.size - 1][1], fxName).pairs_(pattern));
+            }, {
+                var offset = pattern[\off] ?? 0;
+                pattern[\amp] = createAmp.value(pattern[\amp] ?? pattern[\a] ?? 1);
+                pattern[\dur] = createDur.value(pattern[\dur]);
+                pattern.removeAt(\off);
+                result = result.add([offset, Pbind().patternpairs_(pattern.asPairs)]);
+            });
+        };
 
         instruments = patterns;
-        Pdef(\neu, Ptpar(ptparList)).play;
+        Pdef(\neu, Ptpar(result.flatten)).quant_(4).play;
     }
 
     *release { |durs|
         var hasFade = false;
         var fadeOutInstruments = instruments.collect { |pattern|
             durs = if (durs > 0, { durs }, { defaultFadeTime });
-            if (pattern[\fade] == nil,
+            if (pattern[\fade].isNil,
                 {
                     pattern.keys.do { |key|
                         var amp = pattern[\amp] ?? pattern[\a] ?? 1;
@@ -79,10 +83,10 @@ Neu {
     }
 
     *help { |synthDef|
-        if (synthDef == nil,
+        if (synthDef.isNil,
             { this.class.asString.help; },
             {
-              SynthDescLib.global[synthDef].postln;
+                SynthDescLib.global[synthDef].postln;
             }
         );
     }

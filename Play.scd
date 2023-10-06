@@ -28,28 +28,28 @@ Neu.fx([
 
 (
 v = [
-(ins: (\a: 0.5), fx: [(\mix: 1)]),
-(ins: (\a: 1), fx: [(\mix: 0.1)]),
+    (ins: (\a: 0.5), fx: [(\mix: 1)]),
+    (ins: (\a: 1), fx: [(\mix: 0.1)]),
 ];
 
 ~ins = [
-\i, \kick,
-\dur, 1/2,
-\a, Pfunc{ v[0][\ins][\a] },
-\fxOrder, [1],
+    \i, \kick,
+    \dur, 1/2,
+    \a, Pfunc{ v[0][\ins][\a] },
+    \fxOrder, [1],
 ];
 
 (
 ~fx1 = [
-\fx, \reverb,
-\decayTime, 7,
-\mix, Pfunc{ v[0][\fx][0][\mix] },
-\cleanupDelay, Pkey(\decayTime)
+    \fx, \reverb,
+    \decayTime, 7,
+    \mix, Pfunc{ v[0][\fx][0][\mix] },
+    \cleanupDelay, Pkey(\decayTime)
 ]);
 
 ~pbind = [~ins, ~fx1];
 
-PbindFx(\*~pbind).play;
+PbindFx(*~pbind).play;
 )
 
 ProxySpace.browse

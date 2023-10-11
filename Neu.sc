@@ -33,8 +33,8 @@ Neu {
 
             if (isFx)
             {
-                pattern.putAll([\decayTime, 7, \cleanupDelay, Pkey(\decayTime)]);
-                result[result.size - 1][\fx] = result[result.size - 1][\fx].add(pattern.asPairs);
+                var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
+                result[result.size - 1][\fx] = result[result.size - 1][\fx] ++ [pattern.asPairs ++ decayPairs];
             }
             {
                 var offset = pattern[\off] ?? 0;
@@ -48,11 +48,14 @@ Neu {
         result.size.do { |i|
             if (result[i][\fx].isArray)
             {
-                var ins = result[i][\ins] ++ [\fxOrder, (1..result[i][\fx].size)];
-                pbind = pbind ++ [result[i][\off], PbindFx(ins, *result[i][\fx])];
+                result[i][\ins] = result[i][\ins] ++ [\fxOrder, (1..result[i][\fx].size)];
+                pbind = pbind ++ [result[i][\off], PbindFx(result[i][\ins], *result[i][\fx]).trace];
             }
-            { pbind = pbind ++ [result[i][\off], Pbind(*result[i][\ins]).trace]; }
+            {
+                pbind = pbind ++ [result[i][\off], Pbind(*result[i][\ins]).trace];
+            }
         };
+
         instruments = patterns;
         Pdef(\neu, Ptpar(pbind)).quant_(4).play;
     }

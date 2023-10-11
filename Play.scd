@@ -1,22 +1,23 @@
 \p, Pseries(0, 0.1, inf).fold(-1, 1)
 \p, Pwhite(-1, 1., inf)
 \rate, Pwhite(-1, 1., inf)
+
 (
 a = (fx: \reverb);
 a.putAll([\midi, 1, \mix, 1]);
 a;
 )
 
-Document.open("~/Library/Mobile Documents/com~apple~CloudDocs/Music/SuperCollider/Setup/Setup.scd".standardizePath)
 (
 Neu ([
     (i: \kick, dur: 1),
-    (fx: \reverb, mix: 1),
+    (fx: \reverb, mix: 0.4, damp: 0.2),
+    (fx: \wah, mix: 1, resHi: 5500),
+    // (i: \hat, off: 0, \dur: 1/4),
     // (fx: \spat),
     (i: \snare, dur: 2, off: 1),
-    (fx: \reverb, mix: 1),
+    (fx: \reverb, mix: 0.4),
 ]);
-
 )
 (
 [
@@ -71,7 +72,8 @@ r = [
 ~fx1 = [
     \fx: \reverb,
     \decayTime: 7,
-    \cleanupDelay: Pkey(\decayTime)
+    \cleanupDelay: Pkey(\decayTime),
+    \damp2: 0.4
 ];
 
 ~fx2 = [
@@ -85,7 +87,7 @@ r = [
 ~pbind = [~ins1, ~fx.flatten];
 
 PbindFx(~ins1, ~fx1).play;
-PbindFx(~ins2, ~fx1).play;
+// PbindFx(~ins2, ~fx1).play;
 )
 
 ProxySpace.browse

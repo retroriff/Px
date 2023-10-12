@@ -9,8 +9,8 @@ Neu ([
     (i: \SN, dur: 2, off: 1),
     // (fx: \reverb, mix: 0.4),
 
-    // (loop: ["pop4", 0], a: 1, \rate: 1),
-    // (fx: \wah, mix: 1, resHi: 5000),
+    (loop: ["pop4", 0], a: 1, \rate: 1),
+    (fx: \wah, mix: 1, resHi: 5000),
 
     (play: ["fm", 26], a: 1, \rate: 1, \dur: 4),
     // (play: ["fm", 5], a: 1, \rate: 1, \dur: 4, \off: 0.5),

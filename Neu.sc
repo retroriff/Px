@@ -34,10 +34,17 @@ Neu {
             if (isFx)
             {
                 var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
-                result[result.size - 1][\fx] = result[result.size - 1][\fx] ++ [pattern.asPairs ++ decayPairs];
+                if (SynthDescLib.global[pattern[\fx]].notNil)
+                { result[result.size - 1][\fx] = result[result.size - 1][\fx] ++ [pattern.asPairs ++ decayPairs]; }
             }
             {
                 var offset = pattern[\off] ?? 0;
+                if (pattern[\loop].notNil)
+                { pattern.putAll([i: "lplay", buf: pattern[\loop]]).removeAt(\loop);
+                }
+                { if (pattern[\play].notNil)
+                    { pattern.putAll([i: "playbuf", buf: pattern[\play]]).removeAt(\play); }
+                };
                 pattern.removeAt(\off);
                 pattern[\amp] = createAmp.(pattern[\amp] ?? pattern[\a] ?? 1);
                 pattern[\dur] = createDur.(pattern[\dur]);

@@ -13,12 +13,21 @@ Neu ([
     (i: \kick, dur: 1),
     (fx: \reverb, mix: 0.4, damp: 0.2),
     (fx: \wah, mix: 1, resHi: 5500),
-    // (i: \hat, off: 0, \dur: 1/4),
-    // (fx: \spat),
+    (i: \hat, off: 0, \dur: 1/4),
+
     (i: \snare, dur: 2, off: 1),
     (fx: \reverb, mix: 0.4),
+    (loop: "ss2", a: 0.6),
+    (fx: \reverb, mix: 0.5, damp: 0.2),
 ]);
 )
+~s.("pop", 1);
+~s.("cl");
+~s.("cy")
+
+SynthDescLib.global[\reverb].isNil
+
+Neu.clear
 (
 [
     ( 'ins': ( 'pbj': [ 3, 4, 4 ], 'dur': a Pbinop, 'amp': 1, 'i': kick ), 'fx': [ ( 'fx': reverb ), ( 'fx': delay ) ], 'off': 0 ),
@@ -31,6 +40,7 @@ var isTest = isTest == 0 and: isTest == 1;
 Neu.release(2)
 Neu.browse
 Neu.help;
+Neu.help(\kick);
 
 Neu.instruments
 

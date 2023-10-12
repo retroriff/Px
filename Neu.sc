@@ -40,10 +40,15 @@ Neu {
             {
                 var offset = pattern[\off] ?? 0;
                 if (pattern[\loop].notNil)
-                { pattern.putAll([i: "lplay", buf: pattern[\loop]]).removeAt(\loop);
+                {
+                    pattern[\loop] = ~s.(pattern[\loop][0], pattern[\loop][1]);
+                    pattern.putAll([i: "lplay", buf: pattern[\loop]]).removeAt(\loop);
                 }
                 { if (pattern[\play].notNil)
-                    { pattern.putAll([i: "playbuf", buf: pattern[\play]]).removeAt(\play); }
+                    {
+                        pattern[\play] = ~s.(pattern[\play][0], pattern[\play][1]);
+                        pattern.putAll([i: "playbuf", buf: pattern[\play]]).removeAt(\play);
+                    }
                 };
                 pattern.removeAt(\off);
                 pattern[\amp] = createAmp.(pattern[\amp] ?? pattern[\a] ?? 1);

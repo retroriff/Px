@@ -1,6 +1,33 @@
+(
+Neu ([
+    // (i: \kick, dur: 2),
+    // (fx: \reverb, mix: 0.4, damp: 0.2),
+
+    (i: \BD, \dur: 1),
+    // (i: \hat, \dur: 1/4), (fx: \reverb, mix: 0.3),
+
+    (i: \SN, dur: 2, off: 1),
+    // (fx: \reverb, mix: 0.4),
+
+    // (loop: ["pop4", 0], a: 1, \rate: 1),
+    // (fx: \wah, mix: 1, resHi: 5000),
+
+    (play: ["fm", 26], a: 1, \rate: 1, \dur: 4),
+    // (play: ["fm", 5], a: 1, \rate: 1, \dur: 4, \off: 0.5),
+    // (fx: \reverb, mix: 0.2),
+]);
+)
+
+
+
+
+
+
+
 \p, Pseries(0, 0.1, inf).fold(-1, 1)
 \p, Pwhite(-1, 1., inf)
 \rate, Pwhite(-1, 1., inf)
+
 
 (
 a = (fx: \reverb);
@@ -8,22 +35,9 @@ a.putAll([\midi, 1, \mix, 1]);
 a;
 )
 
-(
-Neu ([
-    (i: \kick, dur: 1),
-    (fx: \reverb, mix: 0.4, damp: 0.2),
-    (fx: \wah, mix: 1, resHi: 5500),
-    (i: \hat, off: 0, \dur: 1/4),
-
-    (i: \snare, dur: 2, off: 1),
-    (fx: \reverb, mix: 0.4),
-    (loop: "ss2", a: 0.6),
-    (fx: \reverb, mix: 0.5, damp: 0.2),
-]);
-)
 ~s.("pop", 1);
 ~s.("cl");
-~s.("cy")
+~s.("cy");
 
 SynthDescLib.global[\reverb].isNil
 

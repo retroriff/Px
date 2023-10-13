@@ -39,10 +39,16 @@ Neu {
             }
             {
                 var offset = pattern[\off] ?? 0;
+                pattern[\amp] = createAmp.(pattern[\amp] ?? pattern[\a] ?? 1);
                 if (pattern[\loop].notNil)
                 {
+                    var sampleLength = pattern[\loop][0].split($-);
                     pattern[\loop] = ~s.(pattern[\loop][0], pattern[\loop][1]);
-                    pattern.putAll([i: "lplay", buf: pattern[\loop]]).removeAt(\loop);
+                    if (pattern[\loop].class == Buffer){
+                        pattern.putAll([i: "lplay", buf: pattern[\loop]]).removeAt(\loop);
+                        if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0})
+                        { pattern[\dur] = pattern[\dur] ?? sampleLength.asInteger };
+                    } { pattern[\amp] = 0 };
                 }
                 { if (pattern[\play].notNil)
                     {
@@ -51,7 +57,6 @@ Neu {
                     }
                 };
                 pattern.removeAt(\off);
-                pattern[\amp] = createAmp.(pattern[\amp] ?? pattern[\a] ?? 1);
                 pattern[\dur] = createDur.(pattern[\dur]);
                 result = result.add((off: offset, \ins: pattern.asPairs));
             };
@@ -61,10 +66,10 @@ Neu {
             if (result[i][\fx].isArray)
             {
                 result[i][\ins] = result[i][\ins] ++ [\fxOrder, (1..result[i][\fx].size)];
-                pbind = pbind ++ [result[i][\off], PbindFx(result[i][\ins], *result[i][\fx]).trace];
+                pbind = pbind ++ [result[i][\off], PbindFx(result[i][\ins], *result[i][\fx])];
             }
             {
-                pbind = pbind ++ [result[i][\off], Pbind(*result[i][\ins]).trace];
+                pbind = pbind ++ [result[i][\off], Pbind(*result[i][\ins])];
             }
         };
 

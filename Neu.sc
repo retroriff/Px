@@ -31,6 +31,26 @@ Neu {
 
             var isFx = pattern[\fx].notNil and: pattern[\i].isNil and: pattern[\ins].isNil;
 
+            var createSampleLoop = {
+                var buf, loopSynthDef = "lplay";
+
+                if (pattern[\loop].notNil) {
+                    var sampleLength = pattern[\loop][0].split($-);
+                    buf = ~s.(pattern[\loop][0], pattern[\loop][1]);
+                    if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
+                    { pattern[\dur] = pattern[\dur] ?? sampleLength.asInteger };
+                    pattern.removeAt(\loop);
+                } {
+                    buf = ~s.(pattern[\play][0], pattern[\play][1]);
+                    loopSynthDef = "playbuf";
+                    pattern.removeAt(\play);
+                };
+
+                if (buf.class == Buffer)
+                { pattern.putAll([i: loopSynthDef, buf: buf]) }
+                { pattern[\amp] = 0 };
+            };
+
             if (isFx)
             {
                 var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
@@ -40,22 +60,10 @@ Neu {
             {
                 var offset = pattern[\off] ?? 0;
                 pattern[\amp] = createAmp.(pattern[\amp] ?? pattern[\a] ?? 1);
-                if (pattern[\loop].notNil)
-                {
-                    var sampleLength = pattern[\loop][0].split($-);
-                    pattern[\loop] = ~s.(pattern[\loop][0], pattern[\loop][1]);
-                    if (pattern[\loop].class == Buffer){
-                        pattern.putAll([i: "lplay", buf: pattern[\loop]]).removeAt(\loop);
-                        if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0})
-                        { pattern[\dur] = pattern[\dur] ?? sampleLength.asInteger };
-                    } { pattern[\amp] = 0 };
-                }
-                { if (pattern[\play].notNil)
-                    {
-                        pattern[\play] = ~s.(pattern[\play][0], pattern[\play][1]);
-                        pattern.putAll([i: "playbuf", buf: pattern[\play]]).removeAt(\play);
-                    }
-                };
+
+                if (pattern[\loop].notNil or: (pattern[\play].notNil))
+                { createSampleLoop.() };
+
                 pattern.removeAt(\off);
                 pattern[\dur] = createDur.(pattern[\dur]);
                 result = result.add((off: offset, \ins: pattern.asPairs));

@@ -1,5 +1,5 @@
 Neu {
-    classvar <instruments;
+    classvar <instruments, chorus;
 
     const defaultFadeTime = 10;
 
@@ -89,6 +89,16 @@ Neu {
 
         instruments = patterns;
         Pdef(\neu, Ptpar(pbind)).quant_(4).play;
+    }
+
+    *chorus {
+        if (chorus.isNil)
+        { "Chorus is empty.Run \"save\" method first".postln; }
+        { this.new(chorus) }
+    }
+
+    *save {
+        chorus = instruments;
     }
 
     *release { |durs|

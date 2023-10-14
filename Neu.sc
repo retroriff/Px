@@ -6,15 +6,6 @@ Neu {
     *new { |patterns|
         var pbind, result;
         var ptparList = patterns.collect { |pattern, i|
-            var createFade = { |amp, fade|
-                var dir, durs, start, end;
-                dir = if (fade.isString) { fade } { fade[0] };
-                durs = if (fade.isString) { defaultFadeTime } { fade[1] };
-                start = if (dir == "in") { 0 } { amp };
-                end = if (dir == "in") { amp } { 0 };
-                Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
-            };
-
             var createAmp = { |amp|
                 pattern.removeAt(\a);
                 if (pattern[\fade].notNil)
@@ -29,7 +20,14 @@ Neu {
                 dur;
             };
 
-            var isFx = pattern[\fx].notNil and: pattern[\i].isNil and: pattern[\ins].isNil;
+            var createFade = { |amp, fade|
+                var dir, durs, start, end;
+                dir = if (fade.isString) { fade } { fade[0] };
+                durs = if (fade.isString) { defaultFadeTime } { fade[1] };
+                start = if (dir == "in") { 0 } { amp };
+                end = if (dir == "in") { amp } { 0 };
+                Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
+            };
 
             var createSampleLoop = {
                 var buf, loopSynthDef = "lplay";
@@ -51,13 +49,7 @@ Neu {
                 { pattern[\amp] = 0 };
             };
 
-            if (isFx)
-            {
-                var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
-                if (SynthDescLib.global[pattern[\fx]].notNil)
-                { result[result.size - 1][\fx] = result[result.size - 1][\fx] ++ [pattern.asPairs ++ decayPairs]; }
-            }
-            {
+            var addIns = {
                 var offset = pattern[\off] ?? 0;
                 pattern[\amp] = createAmp.(pattern[\amp] ?? pattern[\a] ?? 1);
 
@@ -66,11 +58,25 @@ Neu {
 
                 pattern.removeAt(\off);
                 pattern[\dur] = createDur.(pattern[\dur]);
-                result = result.add((off: offset, \ins: pattern.asPairs));
+                result = result.add((off: offset, \ins: pattern));
             };
+
+            var addFx = {
+                 var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
+                if (SynthDescLib.global[pattern[\fx]].notNil)
+                { result[result.size - 1][\fx] = result[result.size - 1][\fx] ++ [pattern.asPairs ++ decayPairs]; }
+            };
+
+            var isFx = pattern[\fx].notNil and: pattern[\i].isNil and: pattern[\ins].isNil;
+
+            if (isFx) { addFx.() } { addIns.() };
         };
 
+        var soloList = result.collect { |item, i| if (item['ins']['solo'].notNil) { true } { false } };
+
         result.size.do { |i|
+            if ( soloList.includes(true) and: { soloList[i] == false } ) { result[i][\ins][\amp] = 0 };
+            result[i][\ins] = result[i][\ins].asPairs;
             if (result[i][\fx].isArray)
             {
                 result[i][\ins] = result[i][\ins] ++ [\fxOrder, (1..result[i][\fx].size)];

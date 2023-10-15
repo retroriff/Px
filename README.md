@@ -16,6 +16,9 @@
 - **play**: [folder: string, file: number]
 ## Methods
 
-- **chorus**: Play a chorus.
+- **delay**: Adds a delay effect.
+- **chorus**: Plays a chorus.
 - **release**: nil | number
+- **reverb**: Adds a reverb effect.
 - **save**: Saves a chorus.
+- **wah**: Adds a wah effect.

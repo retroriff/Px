@@ -1,10 +1,11 @@
-Neu {
+Px {
     classvar <instruments, chorus;
 
     const defaultFadeTime = 10;
 
     *new { |patterns|
         var pbind, result;
+
         var ptparList = patterns.collect { |pattern, i|
             var createAmp = { |amp|
                 pattern.removeAt(\a);
@@ -67,9 +68,18 @@ Neu {
                 { result[result.size - 1][\fx] = result[result.size - 1][\fx] ++ [pattern.asPairs ++ decayPairs]; }
             };
 
-            var isFx = pattern[\fx].notNil and: pattern[\i].isNil and: pattern[\ins].isNil;
+            var getFxmethods = {
+                var insertIndex = i;
+                if (pattern['fxMethod'].notNil and: { pattern['fxMethod'].size > 0 })
+                {
+                    pattern['fxMethod'].size.do { |i|
+                        patterns.insert(insertIndex + 1, (fx: pattern['fxMethod'][i]));
+                    };
+                    pattern.removeAt(\fxMethod);
+                };
+            };
 
-            if (isFx) { addFx.() } { addIns.() };
+            if (pattern[\fx].notNil) { addFx.() } { getFxmethods.(); addIns.() };
         };
 
         var soloList = result.collect { |item, i| if (item['ins']['solo'].notNil) { true } { false } };

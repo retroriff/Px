@@ -1,31 +1,53 @@
 (
 Px ([
-    // (i: \kick, dur: 2),
-    // (fx: \reverb, mix: 0.4, damp: 0.2),
-
-    (i: \maracas, \dur: 1/4, a: 0.6, \p: -1).wah,
+    // (i: \maracas, \dur: 1/4, a: 0).beat(940).wah,
+    (i: \SN, dur: 2, off: 1),
     // (fx: \reverb, mix: 0.3),
     // (fx: \wah),
-    (i: \SN, dur: 2, off: 1),
-    (i: \hat, \dur: 1/4 , a: 1.3),
+    (i: \BD, \dur: 1/4 , a: 1.3),
+    (fx: \reverb, mix: 0.3),
 
-    (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.6),
+    // (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.2).beat(50),
+    // (fx: \reverb, mix: 0.5),
+    // (i: \BD, \dur: 1, \a: 0),
+    // (loop: ["pop-2", 0], a: 2, dur: 2).wah,
 
-    (loop: ["pop-2", 0], a: 2, dur: 2).wah,
-    (i: \BD, \dur: 1),
-
-    (play: ["fm", 9], a: 0.5, \rate: 1, \dur: 4),
-    (play: ["fm", 19], a: 0.7, \rate: 1, \dur: 4, \off: 0.5),
-    // (fx: \reverb, mix: 0.2),
+    // (loop: ["fm", 5], a: 0, \rate: 1, \dur: 4),
+    // (play: ["fm", 19], a: 0, \rate: 1, \dur: 4, \off: 0.5),
 ]);
 )
-Neu.save
-Neu.chorus
-Neu.solo(1);
+Px.save
+Px.chorus
+Px.release(10);
+Px.browse
+Px.help;
+Px.help(\kick);
+Px.instruments
 
+(
+var e;
+e = e + 1;
+)
+(
+var r = [
+    ( 'dur': 2, 'amp': 1, 'i': \SN ),
+    ( 'loop': [ "pop-2", 0 ], 'a': 2, 'fxMethod': [ \wah ], 'dur': 2, 'solo': true ),
+    ( 'dur': 1, 'i': \BD ),
+    ( 'rate': 1, 'a': 0, 'dur': 4, 'loop': [ \fm, 5 ] )
+];
+r = r.insert(2, (fx: \wah));
+r;
+)
+
+(\i: \kick).wah
 List[1, 2, 3, 4].collect({ arg item, i; item + 10 });
 (
-(i: \maracas, \dur: 1/4).wah;
+var ins = 2;
+// ins.size;
+(ins + "pattern has seed" + ins).postln;
+)
+(
+(i: \maracas, \dur: 1/4).beat.seed;
 var result = [
     ( 'ins': ( 'dur': 0.25, 'amp': 1, 'i': "maracas" ), 'off': 0 ),
     ( 'ins': ( 'dur': 2, 'amp': 1, 'i': "SN", solo: 1 ), 'off': 1 ),
@@ -59,12 +81,7 @@ solo = [\amp: 1];
 solo.value(\amp).postln;
 [1, 2].reject({ arg item; item == 1 });
 )
-Neu.release(10);
-Neu.browse
-Neu.help;
-Neu.help(\kick);
 
-Neu.instruments
 
 Document.open("~/Library/Mobile Documents/com~apple~CloudDocs/Music/SuperCollider/Setup/Setup.scd".standardizePath)
 ~s.("pop-2", 0).class
@@ -83,7 +100,8 @@ d = ~s.("pop-");
 \rate, Pwhite(-1, 1., inf)
 
 (
-Pbindef(\a, \instrument, \kick, \dur, 1, \amp, 1).play;
+r = Pbindef(\a, \instrument, \BD, \dur, 1, \amp, 1).play;
+r = r * 0.5;
 Pbindef(\a, \amp, 0.5);
 z.set(\amp, 211)
 )
@@ -103,7 +121,7 @@ a;
 
 SynthDescLib.global[\reverb].isNil
 
-Neu.clear
+Px.clear
 (
 [
     ( 'ins': ( 'pbj': [ 3, 4, 4 ], 'dur': a Pbinop, 'amp': 1, 'i': kick ), 'fx': [ ( 'fx': reverb ), ( 'fx': delay ) ], 'off': 0 ),
@@ -114,7 +132,7 @@ var isTest = isTest == 0 and: isTest == 1;
 )
 
 (
-Neu.fx([
+Px.fx([
 (fx: \reverb),
 ])
 );
@@ -129,8 +147,7 @@ r = [
     (off: 0, ins: (\ins: \kick), fx: [(\fx: \reverb), (\fx: \delay)]),
     (off: 0, ins: (\ins: \snare), fx: [(\fx: \reverb)]),
 ];
-)
-(
+
 ~ins1 = [
     \i, \kick,
     \dur, 1/2,
@@ -165,7 +182,7 @@ r = [
 
 ~pbind = [~ins1, ~fx.flatten];
 
-x = PbindFx(~ins1, ~fx1);
+x = PfadeOut.new(PbindFx(~ins1, ~fx1), fadeTime: 10);
 
 Ptpar([
     0, x,

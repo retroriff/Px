@@ -1,17 +1,18 @@
 (
 Px ([
-    (i: \claves, \dur: 1/4).beat(944),
+    // (i: \claves, \dur: 1/4, \amp: 0.7).beat(944),
     (i: \SN, dur: 2, off: 1),
     (fx: \reverb, mix: 0.5),
-    (i: \hat, \dur: 1/4 , a: 1.3).beat(904),
+    (i: \hat, \dur: 1/4 , a: 1.3).beat(904).wah(0.2),
 
     // (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.4).beat(9),
-    (i: \BD, \dur: 1, \a: 1),
-    (loop: ["mt-4", 1], a: 0.7).wah(0.5).out,
+    // (i: \BD, \dur: 1, \a: 1).solo,
+    (loop: ["mt-2", 0], a: 1.5, \dur: 4).solo,
+    (fx: \delay, \mix: 0),
     // (loop: ["mt-4", 2], a: 0.6).wah(0.6),
 
-    (loop: ["fm", 17], a: 0.9, \rate: 1, \dur: 4).wah(0.3).in,
-    // (play: ["fm", 25], a: 0.8, \rate: 1, \dur: 4, \off: 0.5).wah(0.2),
+    (loop: ["fm", 17], a: 0.5, \rate: 1, \dur: 4),
+    (play: ["fm", 27], a: 0.2, \rate: 1, \dur: 4, \off: 0.5).wah(0.5),
 ]);
 )
 Px.save
@@ -22,6 +23,8 @@ Px.browse
 Px.help;
 Px.help(\kick);
 Px.instruments
+Px.trace
+
 
 (
 var e;

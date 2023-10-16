@@ -1,7 +1,7 @@
 Px {
-    classvar chorus, <instruments, fadeIn, fadeOut;
+    classvar chorus, <instruments;
 
-    *new { |patterns|
+    *new { |patterns, trace|
         var insIndex = -1, pbind, result, soloList;
 
         var createRhythm = { |amp, i, pattern|
@@ -121,6 +121,8 @@ Px {
 
             if (fade.notNil) { pattern = createFade.(fade, pattern) };
 
+            if (trace == true) { pattern = pattern.trace };
+
             pbind = pbind ++ [result[i][\off], pattern];
         };
 
@@ -150,6 +152,10 @@ Px {
             pattern;
         };
         this.new(fadeOutInstruments);
+    }
+
+    *trace {
+        this.new(instruments, true);
     }
 
     *help { |synthDef|

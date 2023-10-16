@@ -9,12 +9,12 @@
 | Feature   | Arguments      | Description               |
 |-----------|----------------|---------------------------|
 | **beat**  | seed?: integer | Generates a random rhythm |
-| **delay** | None           | Adds a delay effect.      |
+| **delay** | mix?: 1.0      | Adds a delay effect.      |
 | **in**    | None           | (\fade: "in")             |
 | **out**   | None           | (\fade: "out")            |
-| **reverb**| None           | Adds a reverb effect      |
+| **reverb**| mix?: 1.0      | Adds a reverb effect      |
 | **solo**  | None           | (\solo: true)             |
-| **wah**   | None           | Adds a wah effect.        |
+| **wah**   | mix?: 1.0      | Adds a wah effect.        |
 
 ## Loops
 - **loop**: [folder: string, file: number]
@@ -22,5 +22,6 @@
 
 ## Methods
 - **chorus**: Plays a chorus
-- **release**: nil | number
+- **release**: nil | integer
 - **save**: Saves a chorus
+- **trace**: print out the results of the streams

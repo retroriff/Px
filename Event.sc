@@ -1,9 +1,16 @@
 +Event {
-    delay {
-        this.fx(\delay);
+    beat { |seed|
+        var pairs = [\beat, true];
+        if (seed.notNil and: seed.isInteger)
+        { pairs = pairs ++ [\seed, seed] };
+        ^this.putAll(pairs);
     }
 
-    fx { |fx|
+    delay { |pairs|
+        this.fx(\delay, pairs);
+    }
+
+    fx { |fx, pairs|
         ^this.[\fxMethod] = this.[\fxMethod] ++ [fx];
     }
 
@@ -15,15 +22,19 @@
         ^this.putAll([\fade, "out"]);
     }
 
-    reverb {
-        this.fx(\reverb);
+    reverb { |pairs|
+        this.fx(\reverb, pairs);
+    }
+
+    seed {
+        ^this.putAll([\showSeed, true]);
     }
 
     solo {
         ^this.putAll([\solo, true]);
     }
 
-    wah {
-        this.fx(\wah);
+    wah { |pairs|
+        this.fx(\wah, pairs);
     }
 }

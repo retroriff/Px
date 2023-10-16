@@ -9,13 +9,19 @@ Px {
         var ptparList = patterns.collect { |pattern, i|
             var createAmp = { |amp|
                 pattern.removeAt(\a);
+                if (pattern[\beat].notNil) { amp = createRhythm.(amp) };
+                if (amp.isArray) { amp = Pseq(amp, inf) };
                 if (pattern[\fade].notNil)
                 { amp = createFade.(amp, pattern[\fade]) };
                 amp;
             };
 
-            var createDur = { |dur|
-                dur = if (dur.isArray) { Pseq(dur, inf) } { dur ?? 1 };
+            var createDur = { |dur = 1|
+                if (dur.isArray) {
+                    var containsString = dur.any { |item| item.isString };
+                    dur = if (containsString == true) { 1 } { Pseq(dur, inf) };
+                };
+                if (dur.isString) { dur = 1 };
                 if (pattern[\pbj].notNil)
                 { dur = Pbjorklund2(pattern[\pbj][0], pattern[\pbj][1]) / pattern[\pbj][2] };
                 dur;
@@ -28,6 +34,22 @@ Px {
                 start = if (dir == "in") { 0 } { amp };
                 end = if (dir == "in") { amp } { 0 };
                 Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
+            };
+
+            var createRhythm = { |amp|
+                var seed = pattern[\seed] ?? 1000.rand;
+                var createArray = {
+                    thisThread.randSeed = seed;
+                    Array.fill(16, { [ 0, amp ].wchoose([0.3, 0.7]) });
+                };
+
+                if (pattern[\showSeed] == true) { ("Seed is" + seed).postln };
+                if (instruments.isArray.not)
+                { createArray.(); }
+                { if (instruments[i][\beat].isNil or: { instruments[i][\beat] != pattern[\seed] })
+                    { createArray.(); }
+                    { instruments[i][\amp]; }
+                };
             };
 
             var createSampleLoop = {
@@ -63,7 +85,7 @@ Px {
             };
 
             var addFx = {
-                 var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
+                var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
                 if (SynthDescLib.global[pattern[\fx]].notNil)
                 { result[result.size - 1][\fx] = result[result.size - 1][\fx] ++ [pattern.asPairs ++ decayPairs]; }
             };
@@ -85,7 +107,7 @@ Px {
         var soloList = result.collect { |item, i| if (item['ins']['solo'].notNil) { true } { false } };
 
         result.size.do { |i|
-            if ( soloList.includes(true) and: { soloList[i] == false } ) { result[i][\ins][\amp] = 0 };
+            if ( soloList.includes(true) and: { soloList[i].not } ) { result[i][\ins][\amp] = 0 };
             result[i][\ins] = result[i][\ins].asPairs;
             if (result[i][\fx].isArray)
             {

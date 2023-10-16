@@ -3,18 +3,18 @@ Px ([
     // (i: \kick, dur: 2),
     // (fx: \reverb, mix: 0.4, damp: 0.2),
 
-    // (i: \maracas, \dur: 1/4, a: 1, \p: -1),
+    (i: \maracas, \dur: 1/4, a: 0.6, \p: -1).wah,
     // (fx: \reverb, mix: 0.3),
     // (fx: \wah),
     (i: \SN, dur: 2, off: 1),
-    (i: \hat, \dur: 1/4 , a: 2),
+    (i: \hat, \dur: 1/4 , a: 1.3),
 
-    (i: \RM, \dur: 1/4 , a: 1),
+    (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.6),
 
     (loop: ["pop-2", 0], a: 2, dur: 2).wah,
     (i: \BD, \dur: 1),
 
-    // (play: ["fm", 8], a: 0.5, \rate: 1, \dur: 4),
+    (play: ["fm", 9], a: 0.5, \rate: 1, \dur: 4),
     (play: ["fm", 19], a: 0.7, \rate: 1, \dur: 4, \off: 0.5),
     // (fx: \reverb, mix: 0.2),
 ]);
@@ -36,6 +36,13 @@ var kaka = [0];
 solo = nil;
 solo.indicesOfEqual(true);
 // kaka.size;
+)
+
+
+(
+a = 4;
+a = a.flatten;
+a.isString
 )
 
 (
@@ -76,6 +83,11 @@ d = ~s.("pop-");
 \rate, Pwhite(-1, 1., inf)
 
 (
+Pbindef(\a, \instrument, \kick, \dur, 1, \amp, 1).play;
+Pbindef(\a, \amp, 0.5);
+z.set(\amp, 211)
+)
+(
 a = (fx: \reverb).parentEvents.pus;
 a.keys;
 )
@@ -109,7 +121,7 @@ Neu.fx([
 
 (
 v = [
-    (off: 0, ins: (\a: 0.5), fx: [(\mix: 1)]),
+    (off: 0, ins: (\a: 1), fx: [(\mix: 1)]),
     (off: 0, ins: (\a: 1), fx: [(\mix: 0.1)]),
 ];
 
@@ -117,17 +129,13 @@ r = [
     (off: 0, ins: (\ins: \kick), fx: [(\fx: \reverb), (\fx: \delay)]),
     (off: 0, ins: (\ins: \snare), fx: [(\fx: \reverb)]),
 ];
-
-(1..v.size).postln;
-Document.open("~/Library/Mobile Documents/com~apple~CloudDocs/Music/SuperCollider/Setup/Setup.scd".standardizePath)
+)
+(
 ~ins1 = [
     \i, \kick,
     \dur, 1/2,
     \a, Pfunc{ v[0][\ins][\a] },
-    \pan, Pwhite(-1, 1).trace,(
-~bpm = 120;
-TempoClock.default.tempo = ~bpm / 60;
-)
+    \pan, Pwhite(-1, 1).trace,
     \fxOrder, [1],
 ];
 
@@ -142,20 +150,26 @@ TempoClock.default.tempo = ~bpm / 60;
     \fx: \reverb,
     \decayTime: 7,
     \cleanupDelay: Pkey(\decayTime),
-    \damp2: 0.4
+    \damp2: 0.4,
+    \mix: 0
 ];
 
 ~fx2 = [
     \fx, \reverb,
     \decayTime, 7,
-    \cleanupDelay, Pkey(\decayTime)
+    \cleanupDelay, Pkey(\decayTime),
+    \mix: 0
 ];
 
 ~fx = [~fx1, ~fx2];
 
 ~pbind = [~ins1, ~fx.flatten];
 
-PbindFx(~ins1, ~fx1).play;
+x = PbindFx(~ins1, ~fx1);
+
+Ptpar([
+    0, x,
+]).play
 // PbindFx(~ins2, ~fx1).play;
 )
 

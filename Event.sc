@@ -6,12 +6,12 @@
         ^this.putAll(pairs);
     }
 
-    delay { |pairs|
-        this.fx(\delay, pairs);
+    delay { |mix|
+        this.fx(\delay, mix);
     }
 
-    fx { |fx, pairs|
-        ^this.[\fxMethod] = this.[\fxMethod] ++ [fx];
+    fx { |fx, mix|
+        ^this.[\fxMethod] = this.[\fxMethod] ++ [[fx, mix]];
     }
 
     in {
@@ -22,8 +22,8 @@
         ^this.putAll([\fade, "out"]);
     }
 
-    reverb { |pairs|
-        this.fx(\reverb, pairs);
+    reverb { |mix|
+        this.fx(\reverb, mix);
     }
 
     seed {
@@ -34,7 +34,7 @@
         ^this.putAll([\solo, true]);
     }
 
-    wah { |pairs|
-        this.fx(\wah, pairs);
+    wah { |mix|
+        this.fx(\wah, mix);
     }
 }

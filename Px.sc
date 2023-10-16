@@ -1,22 +1,31 @@
 Px {
     classvar chorus, <instruments, fadeIn, fadeOut;
 
-    const defaultFadeTime = 10;
-
     *new { |patterns|
         var insIndex = -1, pbind, result, soloList;
 
+        var createRhythm = { |amp, i, pattern|
+            var seed = pattern[\seed] ?? 1000.rand;
+            var createArray = {
+                thisThread.randSeed = seed;
+                Array.fill(16, { [ 0, amp ].wchoose([0.3, 0.7]) });
+            };
+            if (pattern[\showSeed] == true) { ("Seed is" + seed).postln };
+            if (instruments.isArray.not)
+            { createArray.(); }
+            { if (instruments[i][\beat].isNil or: { instruments[i][\beat] != pattern[\seed] })
+                { createArray.(); }
+                { instruments[i][\amp]; }
+            };
+        };
+
         var createAmp = { |i, pattern|
             var amp = pattern[\amp] ?? pattern[\a] ?? 1;
-            ("amp" + i).postln;
             pattern.removeAt(\a);
             if (pattern[\beat].notNil) { amp = createRhythm.(amp, i, pattern) };
             if (amp.isArray) { amp = Pseq(amp, inf) };
-            if (pattern[\fade].notNil)
-            { amp = createFade.(amp, pattern[\fade]) };
             amp;
         };
-
 
         var createDur = { |pattern|
             var dur = pattern[\dur] ?? 1;
@@ -61,7 +70,8 @@ Px {
             };
             if (pattern['fxMethod'].notNil and: { pattern['fxMethod'].size > 0 }) {
                 pattern['fxMethod'].size.do { |i|
-                    patterns = patterns.insert(insertIndex + 1, (fx: pattern['fxMethod'][i]));
+                    var mix = pattern['fxMethod'][i][1] ?? 1;
+                    patterns = patterns.insert(insertIndex + 1, (fx: pattern['fxMethod'][i][0], mix: mix));
                 };
             };
             pattern['fx'].isNil;
@@ -74,34 +84,15 @@ Px {
             pattern['fx'].notNil;
         };
 
-        var createFade = { |amp, fade|
-            var dir, durs, start, end;
+        var createFade = { |fade, pbind|
+            var defaultFadeTime = 16, dir, fadeTime;
             dir = if (fade.isString) { fade } { fade[0] };
-            durs = if (fade.isString) { defaultFadeTime } { fade[1] };
-            start = if (dir == "in") { 0 } { amp };
-            end = if (dir == "in") { amp } { 0 };
-            Pseg(Pseq([start, Pn(end)]), durs, curves: 0);
-        };
-
-        var createRhythm = { |amp, i, pattern|
-            var seed = pattern[\seed] ?? 1000.rand;
-            var createArray = {
-                thisThread.randSeed = seed;
-                Array.fill(16, { [ 0, amp ].wchoose([0.3, 0.7]) });
-            };
-
-            if (pattern[\showSeed] == true) { ("Seed is" + seed).postln };
-            if (instruments.isArray.not)
-            { createArray.(); }
-            { if (instruments[i][\beat].isNil or: { instruments[i][\beat] != pattern[\seed] })
-                { createArray.(); }
-                { instruments[i][\amp]; }
-            };
+            fadeTime = if (fade.isString) { defaultFadeTime } { fade[1] };
+            if (dir == "in") { PfadeIn(pbind, fadeTime) } { PfadeOut(pbind, fadeTime) };
         };
 
         var addIns = { |pattern|
             var offset = pattern[\off] ?? 0;
-            pattern.removeAt(\off);
             result = result.add((off: offset, \ins: pattern));
         };
 
@@ -117,17 +108,19 @@ Px {
         soloList = result.collect { |item, i| if (item['ins']['solo'].notNil) { true } { false } };
 
         result.size.do { |i|
-            var pattern;
+            var fade = result[i][\ins][\fade], pattern;
             if ( soloList.includes(true) and: { soloList[i].not } ) { result[i][\ins][\amp] = 0 };
             result[i][\ins] = result[i][\ins].asPairs;
+
             if (result[i][\fx].isArray)
             {
                 result[i][\ins] = result[i][\ins] ++ [\fxOrder, (1..result[i][\fx].size)];
                 pattern = PbindFx(result[i][\ins], *result[i][\fx]);
             }
-            {
-                pattern = Pbind(*result[i][\ins])
-            };
+            { pattern = Pbind(*result[i][\ins]) };
+
+            if (fade.notNil) { pattern = createFade.(fade, pattern) };
+
             pbind = pbind ++ [result[i][\off], pattern];
         };
 
@@ -145,23 +138,18 @@ Px {
         chorus = instruments;
     }
 
-    *release { |durs|
-        var hasFade = false;
+    *release { |fadeTime|
+        var fade;
         var fadeOutInstruments = instruments.collect { |pattern|
-            durs = if (durs > 0) { durs } { defaultFadeTime };
-            if (pattern[\fade].isNil)
-            { pattern.keys.do { |key|
-                var amp = pattern[\amp] ?? pattern[\a] ?? 1;
-                if ([\a, \amp].includes(key))
-                { pattern[key] = Pseg(Pseq([amp, Pn(0)]), durs, curves: 0) }
-            }}
-            { hasFade = true };
+            if (pattern[\fx].isNil)
+            {
+                if (pattern[\fade].notNil and: { pattern[\fade] == "out" })
+                { pattern[\amp] = 0 };
+                pattern.putAll([\fade: ["out", fadeTime]]);
+            };
             pattern;
         };
-
-        if (hasFade)
-        { "Please remove fade keys".postln }
-        { this.new(fadeOutInstruments) };
+        this.new(fadeOutInstruments);
     }
 
     *help { |synthDef|

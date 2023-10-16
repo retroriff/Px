@@ -1,23 +1,22 @@
 (
 Px ([
-    // (i: \maracas, \dur: 1/4, a: 0).beat(940).wah,
+    (i: \claves, \dur: 1/4).beat(944),
     (i: \SN, dur: 2, off: 1),
-    // (fx: \reverb, mix: 0.3),
-    // (fx: \wah),
-    (i: \BD, \dur: 1/4 , a: 1.3),
-    (fx: \reverb, mix: 0.3),
+    (fx: \reverb, mix: 0.5),
+    (i: \hat, \dur: 1/4 , a: 1.3).beat(904),
 
-    // (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.2).beat(50),
-    // (fx: \reverb, mix: 0.5),
-    // (i: \BD, \dur: 1, \a: 0),
-    // (loop: ["pop-2", 0], a: 2, dur: 2).wah,
+    // (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.4).beat(9),
+    (i: \BD, \dur: 1, \a: 1),
+    (loop: ["mt-4", 1], a: 0.7).wah(0.5).out,
+    // (loop: ["mt-4", 2], a: 0.6).wah(0.6),
 
-    // (loop: ["fm", 5], a: 0, \rate: 1, \dur: 4),
-    // (play: ["fm", 19], a: 0, \rate: 1, \dur: 4, \off: 0.5),
+    (loop: ["fm", 17], a: 0.9, \rate: 1, \dur: 4).wah(0.3).in,
+    // (play: ["fm", 25], a: 0.8, \rate: 1, \dur: 4, \off: 0.5).wah(0.2),
 ]);
 )
 Px.save
 Px.chorus
+Px.solo(1);
 Px.release(10);
 Px.browse
 Px.help;
@@ -26,7 +25,8 @@ Px.instruments
 
 (
 var e;
-e = e + 1;
+x = Pbind(\i, \kick, \amp, 1);
+PfadeIn(x, 10, 10).play;
 )
 (
 var r = [

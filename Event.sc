@@ -11,7 +11,7 @@
     }
 
     fx { |fx, mix|
-        ^this.[\fxMethod] = this.[\fxMethod] ++ [[fx, mix]];
+        ^this.[\fxMethod] = this.[\fxMethod] ++ [[fx, mix.clip(0, 1)]];
     }
 
     in {

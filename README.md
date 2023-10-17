@@ -3,11 +3,11 @@
 ## Patterns builder class for SuperCollider
 
 
-| Name    | Value                                          | Description                                                              |
+| Key     | Value                                          | Description                                                              |
 |---------|------------------------------------------------|------------------------------------------------------------------------- |
-| `amp`   | number \| number[]                             | Pattern | Amplification                                                  |
+| `amp`   | number \| number[] \| Pattern                  | Amplification                                                            |
 | `fade`  | "in" \| "out"                                  | ["in" \| "out", seconds: number] \| Pattern \| Generates a random rhythm |
-| `pbj`:  | [hits: number, duration: number, time: number] | Generates an Euclidian ryhthm                                            |
+| `pbj`   | [hits: number, duration: number, time: number] | Generates an Euclidian ryhthm                                            |
 
 
 ## Event methods

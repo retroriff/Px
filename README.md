@@ -4,6 +4,7 @@
 
 - **amp**: number | number[]
 - **fade**: "in" | "out" | ["in" | "out", seconds: number]
+- **pbj**: [hits: number, duration: number, time: number]
 
 ## Event methods
 | Feature   | Arguments      | Description               |
@@ -17,8 +18,8 @@
 | **wah**   | mix?: 1.0      | Adds a wah effect.        |
 
 ## Loops
-- **loop**: [folder: string, file: number]
-- **play**: [folder: string, file: number]
+- **loop**: [folder: string, file: number | \rand]
+- **play**: [folder: string, file: number | \rand]
 
 ## Methods
 - **chorus**: Plays a chorus

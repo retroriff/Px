@@ -41,22 +41,31 @@ Px {
 
         var createSampleLoop = { |pattern|
             var buf, loopSynthDef = "lplay";
+            var loop = pattern[\loop] ?? pattern[\play];
+            var filesCount = ~s.(loop[0]).size;
 
-            if (pattern[\loop].notNil) {
-                var sampleLength = pattern[\loop][0].split($-);
-                buf = ~s.(pattern[\loop][0], pattern[\loop][1]);
-                if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
-                { pattern[\dur] = pattern[\dur] ?? sampleLength.asInteger };
-                pattern.removeAt(\loop);
-            } {
-                buf = ~s.(pattern[\play][0], pattern[\play][1]);
-                loopSynthDef = "playbuf";
-                pattern.removeAt(\play);
+            if (filesCount > 0 and: { loop.isArray }) {
+                if (pattern[\loop].notNil) {
+                    var sampleLength = pattern[\loop][0].split($-);
+                    if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
+                    { pattern[\dur] = pattern[\dur] ?? sampleLength[1].asInteger };
+                    pattern.removeAt(\loop);
+                } {
+                    loopSynthDef = "playbuf";
+                    pattern.removeAt(\play);
+                };
+
+                if (loop[1] == \rand)
+                {
+                    var randomFiles = ~s.(loop[0], Array.rand(8, 0, filesCount - 1));
+                    buf = Pseq(randomFiles, inf);
+                }
+                { buf = ~s.(loop[0], loop[1]); };
+
+                if ([Buffer, Pseq].includes(buf.class))
+                { pattern.putAll([i: loopSynthDef, buf: buf]) }
+                { pattern[\amp] = 0 };
             };
-
-            if (buf.class == Buffer)
-            { pattern.putAll([i: loopSynthDef, buf: buf]) }
-            { pattern[\amp] = 0 };
         };
 
         var insList = patterns.select { |pattern, insertIndex|

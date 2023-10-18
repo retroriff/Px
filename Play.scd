@@ -1,20 +1,26 @@
 (
 Px ([
-    // (i: \claves, \dur: 1/4, \amp: 0.7).beat(944),
-    (i: \SN, dur: 2, off: 1),
-    (fx: \reverb, mix: 0.5),
-    (i: \hat, \dur: 1/4 , a: 1.3).beat(904).wah(0.2),
+    // (i: \claves, \dur: 1/4, \amp: 0.5),
+    // (i: \SN, dur: 2, off: 1),
+    // (fx: \reverb, mix: 0.5),
+    (i: \hat, \dur: 1/4 , a: 1.3).beat(904).wah(0.7),
 
-    // (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.4).beat(9),
-    // (i: \BD, \dur: 1, \a: 1).solo,
-    (loop: ["mt-2", 0], a: 1.5, \dur: 4).solo,
-    (fx: \delay, \mix: 0),
-    // (loop: ["mt-4", 2], a: 0.6).wah(0.6),
+    // (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.2).beat(95).wah(0.6),
+    // (i: \BD, \dur: 1, \a: 0.5),
+    (play: ["abc-4", \rand], \amp: 0.3).beat.wah(0.8),
+    // (play: ["sn", \rand], amp: 0.6).reverb(0.3),
+    // (play: ["ki", \rand], pbj: [3, 5, 4]),
+    (play: ["cy", \rand], pbj: [5, 8, 4], amp: 0.3),
+    // (fx: \delay, \mix: 0),
+    // (loop: ["break-2", 0], a: 0.8).out,
+    (loop: ["break-4", 5], a: 1),
 
-    (loop: ["fm", 17], a: 0.5, \rate: 1, \dur: 4),
-    (play: ["fm", 27], a: 0.2, \rate: 1, \dur: 4, \off: 0.5).wah(0.5),
+    // (play: ["fm", 4], a: 0.3, \dur: 4).wah(0.5),
+    (play: ["fm", \rand], a: 0.2, \off: 0.5).wah(0.5),
+    (play: ["pop", 0], a: 0.4, \off: 0.5, \dur: 16),
 ]);
 )
+
 Px.save
 Px.chorus
 Px.solo(1);
@@ -25,11 +31,38 @@ Px.help(\kick);
 Px.instruments
 Px.trace
 
+(
+var mix = 2;
+mix = mix.clip(0, 1);
+mix;
+)
+(
+var sampleLength = ("mt-4").split($-);
+if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
+{ sampleLength[1].postln; }
+)
+
+~s.("mt").size;
+
+k = Array.rand(4, 0, ~s.["sn"] - 1);
+
+d["sn", [0]]
+~s.("mt-2", [0, 1]).size
+
+~s.("mt-2", 0)
+d["ki"][~bufKi]
+
+~bufKi = Array.rand(1, 0, ~s.("sn").size);
+~ka = ~s.("ki", ~bufKi)
+~ka
+
+Pseq(~ka, inf)
 
 (
 var e;
 x = Pbind(\i, \kick, \amp, 1);
 PfadeIn(x, 10, 10).play;
+x.asString.postln
 )
 (
 var r = [

@@ -1,4 +1,12 @@
 +Event {
+    a { |args|
+        this.amp(args);
+    }
+
+    amp { |args|
+        ^this.putAll([\amp, args]);
+    }
+
     beat { |seed|
         var pairs = [\beat, true];
         if (seed.notNil and: seed.isInteger)
@@ -8,6 +16,10 @@
 
     delay { |mix|
         this.fx(\delay, mix);
+    }
+
+    dur { |args|
+        ^this.putAll([\dur, args]);
     }
 
     fx { |fx, mix|
@@ -20,6 +32,10 @@
 
     out  {
         ^this.putAll([\fade, "out"]);
+    }
+
+    rand { |folder|
+        ^this.putAll([\buf, [folder, \rand]]);
     }
 
     reverb { |mix|

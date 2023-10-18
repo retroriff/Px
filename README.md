@@ -13,8 +13,10 @@
 ## Event methods
 | Name    | Arguments      | Description               |
 |---------|----------------|---------------------------|
+| `amp`   | number \| number[] \| Pattern | Amplification |
 | `beat`  | seed?: integer | Generates a random rhythm |
-| `delay` | mix?: 1.0      | Adds a delay effect.      |
+| `delay` | mix?: 1.0                     | Adds a delay effect.      |
+| `dur`   | number \| number[] \| Pattern | Duration  |
 | `in`    | None           | (\fade: "in")             |
 | `out`   | None           | (\fade: "out")            |
 | `reverb`| mix?: 1.0      | Adds a reverb effect      |

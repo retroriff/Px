@@ -14,7 +14,11 @@
         ^this.putAll(pairs);
     }
 
-    delay { |mix|
+    beatSeed {
+        ^this.putAll([\beatSeed, true]);
+    }
+
+    delay { |mix = 1|
         this.fx(\delay, mix);
     }
 
@@ -22,35 +26,40 @@
         ^this.putAll([\dur, args]);
     }
 
+    fade { |direction, time|
+        var fade = if (time.isNil) { direction } { [direction, time.clip(0.1, time)] };
+        ^this.putAll([\fade, fade]);
+    }
+
     fx { |fx, mix|
         ^this.[\fxMethod] = this.[\fxMethod] ++ [[fx, mix.clip(0, 1)]];
     }
 
-    in {
-        ^this.putAll([\fade, "in"]);
+    in { |time|
+        this.fade("in", time);
     }
 
-    out  {
-        ^this.putAll([\fade, "out"]);
+    out { |time|
+        this.fade("out", time);
     }
 
     rand { |folder|
         ^this.putAll([\buf, [folder, \rand]]);
     }
 
-    reverb { |mix|
+    reverb { |mix = 1|
         this.fx(\reverb, mix);
     }
 
-    seed {
-        ^this.putAll([\showSeed, true]);
+    seed { |seed|
+        ^this.putAll([\seed, seed]);
     }
 
     solo {
         ^this.putAll([\solo, true]);
     }
 
-    wah { |mix|
+    wah { |mix = 1|
         this.fx(\wah, mix);
     }
 }

@@ -4,13 +4,17 @@ Px {
     *new { |patterns, trace|
         var insIndex = -1, pbind, result, soloList;
 
+        var getSeed = { |pattern|
+            pattern[\seed] ?? 1000.rand;
+        };
+
         var createRhythm = { |amp, i, pattern|
-            var seed = pattern[\seed] ?? 1000.rand;
+            var seed = getSeed.(pattern);
             var createArray = {
                 thisThread.randSeed = seed;
                 Array.fill(16, { [ 0, amp ].wchoose([0.3, 0.7]) });
             };
-            if (pattern[\showSeed] == true) { ("Seed is" + seed).postln };
+            if (pattern[\beatSeed] == true) { ("Beat seed is" + seed).postln };
             if (instruments.isArray.not)
             { createArray.(); }
             { if (instruments[i][\beat].isNil or: { instruments[i][\beat] != pattern[\seed] })
@@ -43,8 +47,18 @@ Px {
             var buf, loopSynthDef = "lplay";
             var loop = pattern[\loop] ?? pattern[\play];
             var filesCount = ~s.(loop[0]).size;
-
+            filesCount.postln;
             if (filesCount > 0 and: { loop.isArray }) {
+                var getRandBufs = {
+                    thisThread.randSeed = getSeed.(pattern);
+                    buf = Pseq(~s.(loop[0], Array.rand(8, 0, filesCount - 1)), inf);
+                };
+
+                var getTrimmedBufs = {
+                    var randomFiles = ~s.(loop[0], Array.rand(8, 0, filesCount - 1));
+                    buf = Pseq(randomFiles, inf);
+                };
+
                 if (pattern[\loop].notNil) {
                     var sampleLength = pattern[\loop][0].split($-);
                     if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
@@ -55,17 +69,16 @@ Px {
                     pattern.removeAt(\play);
                 };
 
-                if (loop[1] == \rand)
-                {
-                    var randomFiles = ~s.(loop[0], Array.rand(8, 0, filesCount - 1));
-                    buf = Pseq(randomFiles, inf);
-                }
-                { buf = ~s.(loop[0], loop[1]); };
+                buf = switch (loop[1])
+                { \rand } { getRandBufs.() }
+                { \trim } { getTrimmedBufs.() }
+                { ~s.(loop[0], loop[1]); };
 
                 if ([Buffer, Pseq].includes(buf.class))
                 { pattern.putAll([i: loopSynthDef, buf: buf]) }
                 { pattern[\amp] = 0 };
-            };
+            }
+            { pattern[\amp] = 0 };
         };
 
         var insList = patterns.select { |pattern, insertIndex|

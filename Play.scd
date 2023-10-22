@@ -1,26 +1,51 @@
 (
 Px ([
+    (i: \BD, \dur: 1).solo,
+    (fx: \delay, mix: 0.2),
+    (play: ["michael", 0], \dur: 4), (fx: \delay),
+    // (i: \SN, dur: 2, off: 1), (fx: \delay).wah(0.2),
+    // (i: \CL, \dur: 1/4),
+    (i: \CH, \dur: 2),
+
+    (i: \MC, \dur: 1/4).beat,
+    // (loop: ["mt-2", \rand]).wah(0.2),
+
+    (i: \CH, \dur: 1/4 ).beat(904).wah(0.5),
+    (loop: ["break-4", 1]),
+    (play: ["breath", 0], \dur: 2),
+]);
+)
+
+
+
+
+(
+Px ([
     // (i: \claves, \dur: 1/4, \amp: 0.5),
     // (i: \SN, dur: 2, off: 1),
     // (fx: \reverb, mix: 0.5),
-    (i: \hat, \dur: 1/4 , a: 1.3).beat(904).wah(0.7),
+    (i: \CH, \dur: 1/4 , a: 1.3).beat(904).wah(0.7),
 
     // (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.2).beat(95).wah(0.6),
-    // (i: \BD, \dur: 1, \a: 0.5),
-    (play: ["abc-4", \rand], \amp: 0.3).beat.wah(0.8),
-    // (play: ["sn", \rand], amp: 0.6).reverb(0.3),
+    (i: \BD, \dur: 1, \a: 0.5),
+    // (play: ["abc-4", \rand]).beat.wah(0.8),
+    (play: ["sn", \rand], dur: 2, off: 1).reverb(0.3),
     // (play: ["ki", \rand], pbj: [3, 5, 4]),
     (play: ["cy", \rand], pbj: [5, 8, 4], amp: 0.3),
     // (fx: \delay, \mix: 0),
     // (loop: ["break-2", 0], a: 0.8).out,
     (loop: ["break-4", 5], a: 1),
 
-    // (play: ["fm", 4], a: 0.3, \dur: 4).wah(0.5),
-    (play: ["fm", \rand], a: 0.2, \off: 0.5).wah(0.5),
+    // (play: ["fm", 4], a: 0.3, \dur: 4).wah(0.5),"/Users/xavi/Library/Application Support/SuperCollider/Help/Overviews/Methods.html"
+    (play: ["fm", \rand], a: 0.2, \off: 0.5).wah(0.5).seed(30),
     (play: ["pop", 0], a: 0.4, \off: 0.5, \dur: 16),
 ]);
 )
 
+Platform.userConfigDir.catArgs("/")
+Document.open(Platform.userConfigDir.catArgs("/startup.scd"));
+
+Platform.userConfigDir
 Px.save
 Px.chorus
 Px.solo(1);
@@ -46,7 +71,7 @@ if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].a
 
 k = Array.rand(4, 0, ~s.["sn"] - 1);
 
-d["sn", [0]]
+d["sn", [0]][0].numChannels
 ~s.("mt-2", [0, 1]).size
 
 ~s.("mt-2", 0)

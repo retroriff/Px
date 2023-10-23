@@ -14,10 +14,6 @@
         ^this.putAll(pairs);
     }
 
-    beatSeed {
-        ^this.putAll([\beatSeed, true]);
-    }
-
     delay { |mix = 1|
         this.fx(\delay, mix);
     }

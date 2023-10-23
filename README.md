@@ -10,19 +10,18 @@
 
 ## Event methods
 
-| Name       | Arguments                     | Description               |
-| ---------- | ----------------------------- | ------------------------- |
-| `amp`      | number \| number[] \| Pattern | Amplification             |
-| `beat`     | seed?: integer                | Generates a random rhythm |
-| `beatShow` | None                          | Shows seed used on beat   |
-| `delay`    | mix?: 1.0                     | Adds a delay effect       |
-| `dur`      | number \| number[] \| Pattern | Duration                  |
-| `in`       | Seconds?: integer             | (\fade: "in")             |
-| `out`      | None                          | (\fade: "out")            |
-| `reverb`   | mix?: 1.0                     | Adds a reverb effect      |
-| `seed`     | seed: integer                 | Generate a specific seed  |
-| `solo`     | None                          | (\solo: true)             |
-| `wah`      | mix?: 1.0                     | Adds a wah effect         |
+| Name     | Arguments                     | Description               |
+| -------- | ----------------------------- | ------------------------- |
+| `amp`    | number \| number[] \| Pattern | Amplification             |
+| `beat`   | seed?: integer                | Generates a random rhythm |
+| `delay`  | mix?: 1.0                     | Adds a delay effect       |
+| `dur`    | number \| number[] \| Pattern | Duration                  |
+| `in`     | Seconds?: integer             | (\fade: "in")             |
+| `out`    | None                          | (\fade: "out")            |
+| `reverb` | mix?: 1.0                     | Adds a reverb effect      |
+| `seed`   | seed: integer                 | Generate a specific seed  |
+| `solo`   | None                          | (\solo: true)             |
+| `wah`    | mix?: 1.0                     | Adds a wah effect         |
 
 ## Loops
 

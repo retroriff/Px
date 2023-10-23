@@ -2,7 +2,7 @@ Px {
     classvar chorus, <instruments;
 
     *new { |patterns, trace|
-        var insIndex = -1, pbind, result, soloList;
+        var insIndex = -1, pbind;
 
         var getSeed = { |pattern|
             pattern[\seed] ?? 1000.rand;
@@ -16,7 +16,6 @@ Px {
             };
             // Copy patterns to avoid error about diferent array size
             instruments = patterns;
-            if (pattern[\beatSeed] == true) { ("Beat seed is" + seed).postln };
             if (instruments.isArray.not)
             { createArray.(); }
             { if (instruments[i][\beat].isNil or: { instruments[i][\beat] != pattern[\seed] })
@@ -83,84 +82,69 @@ Px {
             { pattern[\amp] = 0 };
         };
 
-        var insList = patterns.select { |pattern, index|
-            if (pattern[\fx].isNil) {
-                pattern[\amp] = createAmp.(index, pattern);
-
-                if (pattern[\loop].notNil or: (pattern[\play].notNil))
-                { createSampleLoop.(pattern) };
-
-                pattern[\dur] = createDur.(pattern);
-            };
-            if (pattern['fxMethod'].notNil and: { pattern['fxMethod'].size > 0 }) {
-                pattern['fxMethod'].size.do { |i|
-                    var mix = pattern['fxMethod'][i][1] ?? 1;
-                    patterns = patterns.insert(
-                        patterns.size,
-                        (fx: pattern['fxMethod'][i][0], mix: mix, insIndex: index)
-                    );
-                };
-            };
-            pattern['fx'].isNil;
-        };
-
-        var fxList = patterns.select { |pattern|
-            if (pattern[\fx].isNil)
-            { insIndex = insIndex + 1 }
-            { if (pattern['insIndex'].isNil)
-                { pattern.putAll([\insIndex, insIndex]) }
-            };
-            pattern['fx'].notNil;
-        };
-
         var createFade = { |fade, pbind|
-            var defaultFadeTime = 16, dir, fadeTime;
-            dir = if (fade.isString) { fade } { fade[0] };
-            fadeTime = if (fade.isString) { defaultFadeTime } { fade[1] };
-            if (dir == "in") { PfadeIn(pbind, fadeTime) } { PfadeOut(pbind, fadeTime) };
+            var defaultFadeTime = 16;
+            var dir = if (fade.isString) { fade } { fade[0] };
+            var fadeTime = if (fade.isString) { defaultFadeTime } { fade[1] };
+            if (dir == "in")
+            { PfadeIn(pbind, fadeTime) }
+            { PfadeOut(pbind, fadeTime) }
         };
 
-        var addIns = { |pattern|
-            var offset = pattern[\off] ?? 0;
-            result = result.add((off: offset, \ins: pattern));
-        };
-
-        var addFx = { |pattern|
-            var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
-            var index = pattern[\insIndex];
-            if (SynthDescLib.global[pattern[\fx]].notNil)
-            { result[index][\fx] = result[index][\fx] ++ [pattern.asPairs ++ decayPairs] }
+        var getSoloPatterns = {
+            var soloList = patterns.select { |pattern| pattern['solo'].notNil };
+            if (soloList.isEmpty.not)
+            { soloList }
+            { patterns }
         };
 
         instruments = patterns;
-        insList.do { |pattern, i| addIns.(pattern) };
-        fxList.do { |pattern, i| addFx.(pattern) };
-        soloList = result.collect { |item, i| if (item['ins']['solo'].notNil) { true } { false } };
+        patterns = getSoloPatterns.();
 
-        result.size.do { |i|
-            var fade = result[i][\ins][\fade], mute, pattern;
+        patterns.do { |pattern, i|
+            var fade = pattern[\fade];
+            var fx = pattern[\fxMethod];
+            var offset = pattern[\off] ?? 0;
+            var mute;
+            var pbindResult;
 
-            if ( soloList.includes(true) and: { soloList[i].not } ) { mute = true };
+            pattern[\amp] = createAmp.(i, pattern);
 
-            if (mute != true) {
-                result[i][\ins] = result[i][\ins].asPairs;
+            if (pattern[\loop].notNil or: pattern[\play].notNil)
+            { createSampleLoop.(pattern) };
 
-                if (result[i][\fx].isArray)
-                {
-                    result[i][\ins] = result[i][\ins] ++ [\fxOrder, (1..result[i][\fx].size)];
-                    pattern = PbindFx(result[i][\ins], *result[i][\fx]);
+            pattern[\dur] = createDur.(pattern);
+
+            if (pattern[\fxMethod].notNil and: { pattern[\fxMethod].size > 0 }) {
+                var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
+                if (SynthDescLib.global[pattern[\fx]].notNil) {
+                    pattern[\fx] = pattern[\fx] ++ decayPairs;
                 }
-                { pattern = Pbind(*result[i][\ins]) };
+            };
 
-                if (fade.notNil) { pattern = createFade.(fade, pattern) };
+            pattern = pattern.asPairs;
 
-                if (trace == true) { pattern = pattern.trace };
+            if (fx.isArray and: { fx.size > 0 }) {
+                var patternFx;
+                fx.do { |fxItem|
+                    patternFx = patternFx.add([\fx: fxItem[0], \mix: fxItem[1] ?? 1]);
+                };
+                pattern = pattern ++ [\fxOrder, (1..fx.size)];
+                pbindResult = PbindFx(pattern, *patternFx);
+            } {
+                pbindResult = Pbind(*pattern);
+            };
 
-                pbind = pbind ++ [result[i][\off], pattern];
-            }
+            if (fade.notNil)
+            { pbindResult = createFade.(fade, pbindResult) };
+
+            pbind = pbind ++ [offset, pbindResult];
+
+            if (trace == true)
+            { pbind = pbind.trace };
         };
 
-        Pdef(\neu, Ptpar(pbind)).quant_(4).play;
+        Pdef(\px, Ptpar(pbind)).quant_(4).play;
     }
 
     *chorus {

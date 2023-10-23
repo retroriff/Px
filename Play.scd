@@ -1,33 +1,52 @@
 (
 Px ([
-    (i: \BD, \dur: 1).solo,
-    (fx: \delay, mix: 0.2),
-    (play: ["michael", 0], \dur: 4), (fx: \delay),
+    (i: \BD, \dur: 1),
+    // (play: ["michael", 0], \dur: 4),
     // (i: \SN, dur: 2, off: 1), (fx: \delay).wah(0.2),
     // (i: \CL, \dur: 1/4),
-    (i: \CH, \dur: 2),
+    // (i: \CH, \dur: 2),
 
     (i: \MC, \dur: 1/4).beat,
     // (loop: ["mt-2", \rand]).wah(0.2),
 
-    (i: \CH, \dur: 1/4 ).beat(904).wah(0.5),
-    (loop: ["break-4", 1]),
+    (i: \CH, \dur: 1/4 ).beat(904).wah(1),
+    (loop: ["break-4", 1]).out,
     (play: ["breath", 0], \dur: 2),
 ]);
 )
 
 
+(
+Px ([
+    (i: \CL, \dur: 1/4).beat,
+    (i: \SN, dur: 2, off: 1),
+    (i: \CH, \dur: 1/4).beat(904).wah(0.7),
+
+    // (i: \RM, \dur: [1/4, 1/4, 1/2]).beat(95),
+    (i: \BD, \dur: 1, \a: 0.5),
+    // (play: ["abc-4", \rand]),
+    (loop: ["abc-2", 1], amp: 0.5),
+    // (play: ["sn", \rand]).reverb(0.3),
+    // (play: ["ki", \rand], pbj: [3, 5, 4]),
+    (play: ["cy", \rand], pbj: [5, 8, 4]),
+    // (loop: ["break-2", 0]),
+    (loop: ["break-4", 2]),
+
+    // (play: ["fm", 4], \dur: 1, \amp: 0.5),
+    (play: ["fm", \rand], \off: 0.5, \amp: 0.4).seed(30),
+    // (play: ["pop", 0], \off: 0.5, \dur: 16).wah(0.2),
+]);
+)
 
 
 (
 Px ([
     // (i: \claves, \dur: 1/4, \amp: 0.5),
     // (i: \SN, dur: 2, off: 1),
-    // (fx: \reverb, mix: 0.5),
     (i: \CH, \dur: 1/4 , a: 1.3).beat(904).wah(0.7),
 
     // (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.2).beat(95).wah(0.6),
-    (i: \BD, \dur: 1, \a: 0.5),
+    // (i: \BD, \dur: 1, \a: 0.5),
     // (play: ["abc-4", \rand]).beat.wah(0.8),
     (play: ["sn", \rand], dur: 2, off: 1).reverb(0.3),
     // (play: ["ki", \rand], pbj: [3, 5, 4]),

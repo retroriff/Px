@@ -157,15 +157,12 @@ Px {
         chorus = instruments;
     }
 
-    *release { |fadeTime|
-        var fade;
+    *release { |fadeTime, fade|
         var fadeOutInstruments = instruments.collect { |pattern|
-            if (pattern[\fx].isNil)
-            {
-                if (pattern[\fade].notNil and: { pattern[\fade] == "out" })
-                { pattern[\amp] = 0 };
-                pattern.putAll([\fade: ["out", fadeTime]]);
-            };
+            if (pattern[\fade].notNil and: { pattern[\fade] == "out" })
+            { pattern[\amp] = 0 };
+            fade = if (fadeTime.isNil) { "out" } { ["out", fadeTime] };
+            pattern.putAll([\fade: fade]);
             pattern;
         };
         this.new(fadeOutInstruments);

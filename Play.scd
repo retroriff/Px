@@ -10,7 +10,7 @@ Px ([
     // (loop: ["mt-2", \rand]).wah(0.2),
 
     (i: \CH, \dur: 1/4 ).beat(904).wah(1),
-    (loop: ["break-4", 1]).out,
+    (loop: ["break-4", 1]),
     (play: ["breath", 0], \dur: 2),
 ]);
 )
@@ -38,6 +38,10 @@ Px ([
 ]);
 )
 
+(
+a = true;
+a.if { "Is 1".postln } { "Is 2".postln }
+)
 
 (
 Px ([
@@ -45,7 +49,7 @@ Px ([
     // (i: \SN, dur: 2, off: 1),
     (i: \CH, \dur: 1/4 , a: 1.3).beat(904).wah(0.7),
 
-    // (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.2).beat(95).wah(0.6),
+    (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.2).beat(95).wah(0.6),
     // (i: \BD, \dur: 1, \a: 0.5),
     // (play: ["abc-4", \rand]).beat.wah(0.8),
     (play: ["sn", \rand], dur: 2, off: 1).reverb(0.3),
@@ -68,12 +72,12 @@ Platform.userConfigDir
 Px.save
 Px.chorus
 Px.solo(1);
-Px.release(10);
+Px.release;
 Px.browse
 Px.help;
 Px.help(\kick);
 Px.instruments
-Px.trace
+Px.trace:
 
 (
 var mix = 2;

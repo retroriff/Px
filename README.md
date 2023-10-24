@@ -2,11 +2,10 @@
 
 ## Patterns builder class for SuperCollider
 
-| Key    | Value                                          | Description                                                              |
-| ------ | ---------------------------------------------- | ------------------------------------------------------------------------ |
-| `amp`  | number \| number[] \| Pattern                  | Amplification                                                            |
-| `fade` | "in" \| "out"                                  | ["in" \| "out", seconds: number] \| Pattern \| Generates a random rhythm |
-| `pbj`  | [hits: number, duration: number, time: number] | Generates an Euclidian ryhthm                                            |
+| Key   | Value                                          | Description                              |
+| ----- | ---------------------------------------------- | ---------------------------------------- |
+| `amp` | number \| number[] \| Pattern                  | Amplification. An array generates a Pseq |
+| `pbj` | [hits: number, duration: number, time: number] | Generates an Euclidian ryhthm            |
 
 ## Event methods
 
@@ -17,7 +16,7 @@
 | `delay`  | mix?: 1.0                     | Adds a delay effect       |
 | `dur`    | number \| number[] \| Pattern | Duration                  |
 | `in`     | Seconds?: integer             | (\fade: "in")             |
-| `out`    | None                          | (\fade: "out")            |
+| `out`    | Seconds?: integer             | (\fade: "out")            |
 | `reverb` | mix?: 1.0                     | Adds a reverb effect      |
 | `seed`   | seed: integer                 | Generate a specific seed  |
 | `solo`   | None                          | (\solo: true)             |

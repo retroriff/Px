@@ -2,7 +2,7 @@ Px {
     classvar chorus, <instruments;
 
     *new { |patterns, trace|
-        var insIndex = -1, pbind;
+        var ptparList;
 
         var getSeed = { |pattern|
             pattern[\seed] ?? 1000.rand;
@@ -36,7 +36,7 @@ Px {
             var dur = pattern[\dur] ?? 1;
             if (dur.isArray) {
                 var containsString = dur.any { |item| item.isString };
-                dur = if (containsString == true) { 1 } { Pseq(dur, inf) };
+                dur = containsString.if { 1 } { Pseq(dur, inf) };
             };
             if (dur.isString) { dur = 1 };
             if (pattern[\pbj].notNil)
@@ -106,7 +106,7 @@ Px {
             var fx = pattern[\fxMethod];
             var offset = pattern[\off] ?? 0;
             var mute;
-            var pbindResult;
+            var pbind;
 
             pattern[\amp] = createAmp.(i, pattern);
 
@@ -130,21 +130,21 @@ Px {
                     patternFx = patternFx.add([\fx: fxItem[0], \mix: fxItem[1] ?? 1]);
                 };
                 pattern = pattern ++ [\fxOrder, (1..fx.size)];
-                pbindResult = PbindFx(pattern, *patternFx);
+                pbind = PbindFx(pattern, *patternFx);
             } {
-                pbindResult = Pbind(*pattern);
+                pbind = Pbind(*pattern);
             };
 
             if (fade.notNil)
-            { pbindResult = createFade.(fade, pbindResult) };
-
-            pbind = pbind ++ [offset, pbindResult];
+            { pbind = createFade.(fade, pbind) };
 
             if (trace == true)
             { pbind = pbind.trace };
+
+            ptparList = ptparList ++ [offset, pbind];
         };
 
-        Pdef(\px, Ptpar(pbind)).quant_(4).play;
+        Pdef(\px, Ptpar(ptparList)).quant_(4).play;
     }
 
     *chorus {
@@ -158,14 +158,14 @@ Px {
     }
 
     *release { |fadeTime, fade|
-        var fadeOutInstruments = instruments.collect { |pattern|
-            if (pattern[\fade].notNil and: { pattern[\fade] == "out" })
+        var fadeValue = if (fadeTime.isNil) { "out" } { ["out", fadeTime] };
+        var fadeOutPatterns = instruments.collect { |pattern|
+            if (pattern[\fade] == "out")
             { pattern[\amp] = 0 };
-            fade = if (fadeTime.isNil) { "out" } { ["out", fadeTime] };
-            pattern.putAll([\fade: fade]);
+            pattern.putAll([\fade: fadeValue]);
             pattern;
         };
-        this.new(fadeOutInstruments);
+        this.new(fadeOutPatterns);
     }
 
     *trace {

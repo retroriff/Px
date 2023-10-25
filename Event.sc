@@ -51,7 +51,7 @@
 
 	fx { |fx, mix|
 		mix = mix ?? 1;
-		^this.[\fxMethod] = this.[\fxMethod] ++ [[fx, mix.clip(0, 1)]];
+		^this.[\fxEvents] = this.[\fxEvents] ++ [[fx, mix.clip(0, 1)]];
 	}
 
 	reverb { |mix|

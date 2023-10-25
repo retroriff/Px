@@ -103,7 +103,7 @@ Px {
 
         patterns.do { |pattern, i|
             var fade = pattern[\fade];
-            var fx = pattern[\fxMethod];
+            var fx = pattern[\fxEvents];
             var offset = pattern[\off] ?? 0;
             var mute;
             var pbind;
@@ -115,7 +115,7 @@ Px {
 
             pattern[\dur] = createDur.(pattern);
 
-            if (pattern[\fxMethod].notNil and: { pattern[\fxMethod].size > 0 }) {
+            if (pattern[\fxEvents].notNil and: { pattern[\fxEvents].size > 0 }) {
                 var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
                 if (SynthDescLib.global[pattern[\fx]].notNil) {
                     pattern[\fx] = pattern[\fx] ++ decayPairs;

@@ -1,61 +1,64 @@
 +Event {
-    a { |args|
-        this.amp(args);
-    }
+	// Controls
+	a { |args|
+		this.amp(args);
+	}
 
-    amp { |args|
-        ^this.putAll([\amp, args]);
-    }
+	amp { |args|
+		^this.putAll([\amp, args]);
+	}
 
-    beat { |seed|
-        var pairs = [\beat, true];
-        if (seed.notNil and: seed.isInteger)
-        { pairs = pairs ++ [\seed, seed] };
-        ^this.putAll(pairs);
-    }
+	beat { |seed|
+		var pairs = [\beat, true];
+		if (seed.notNil and: seed.isInteger)
+		{ pairs = pairs ++ [\seed, seed] };
+		^this.putAll(pairs);
+	}
 
-    delay { |mix = 1|
-        this.fx(\delay, mix);
-    }
+	dur { |args|
+		^this.putAll([\dur, args]);
+	}
 
-    dur { |args|
-        ^this.putAll([\dur, args]);
-    }
+	fade { |direction, time|
+		var fade = if (time.isNil) { direction } { [direction, time.clip(0.1, time)] };
+		^this.putAll([\fade, fade]);
+	}
 
-    fade { |direction, time|
-        var fade = if (time.isNil) { direction } { [direction, time.clip(0.1, time)] };
-        ^this.putAll([\fade, fade]);
-    }
+	in { |time|
+		this.fade("in", time);
+	}
 
-    fx { |fx, mix|
-        ^this.[\fxMethod] = this.[\fxMethod] ++ [[fx, mix.clip(0, 1)]];
-    }
+	out { |time|
+		this.fade("out", time);
+	}
 
-    in { |time|
-        this.fade("in", time);
-    }
+	rand { |folder|
+		^this.putAll([\buf, [folder, \rand]]);
+	}
 
-    out { |time|
-        this.fade("out", time);
-    }
+	seed { |seed|
+		^this.putAll([\seed, seed]);
+	}
 
-    rand { |folder|
-        ^this.putAll([\buf, [folder, \rand]]);
-    }
+	solo {
+		^this.putAll([\solo, true]);
+	}
 
-    reverb { |mix = 1|
-        this.fx(\reverb, mix);
-    }
+	// FX
+	delay { |mix|
+		this.fx(\delay, mix);
+	}
 
-    seed { |seed|
-        ^this.putAll([\seed, seed]);
-    }
+	fx { |fx, mix|
+		mix = mix ?? 1;
+		^this.[\fxMethod] = this.[\fxMethod] ++ [[fx, mix.clip(0, 1)]];
+	}
 
-    solo {
-        ^this.putAll([\solo, true]);
-    }
+	reverb { |mix|
+		this.fx(\reverb, mix);
+	}
 
-    wah { |mix = 1|
-        this.fx(\wah, mix);
-    }
+	wah { |mix|
+		this.fx(\wah, mix);
+	}
 }

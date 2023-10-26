@@ -1,11 +1,11 @@
-# Px
+# Px: A patterns builder class for SuperCollider
 
-## Patterns builder class for SuperCollider
+## Pattern controls
 
-| Key   | Value                                          | Description                              |
-| ----- | ---------------------------------------------- | ---------------------------------------- |
-| `amp` | number \| number[] \| Pattern                  | Amplification. An array generates a Pseq |
-| `euc` | [hits: number, duration: number, time: number] | Generates an Euclidian ryhthm            |
+| Key      | Value                                          | Description                              |
+| -------- | ---------------------------------------------- | ---------------------------------------- |
+| `amp`    | number \| number[] \| Pattern                  | Amplification. An array generates a Pseq |
+| `euclid` | [hits: number, duration: number, time: number] | Generates an Euclidian ryhthm            |
 
 ## Event methods
 
@@ -29,7 +29,7 @@
 - `loop`: [folder: string, file: number | \rand]
 - `play`: [folder: string, file: number | \rand]
 
-## Methods
+## Class methods
 
 - `chorus`: Plays a chorus
 - `release`: nil | integer

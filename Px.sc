@@ -41,8 +41,8 @@ Px {
                 dur = containsString.if { 1 } { Pseq(dur, inf) };
             };
             if (dur.isString) { dur = 1 };
-            if (pattern[\euc].notNil)
-            { dur = Pbjorklund2(pattern[\euc][0], pattern[\euc][1]) / pattern[\euc][2] };
+            if (pattern[\euclid].notNil)
+            { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) / pattern[\euclid][2] };
             dur;
         };
 

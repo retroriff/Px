@@ -36,6 +36,7 @@ Px {
 
         var createDur = { |pattern|
             var dur = pattern[\dur] ?? 1;
+            if (dur == 0) { dur = 1 };
             if (dur.isArray) {
                 var containsString = dur.any { |item| item.isString };
                 dur = containsString.if { 1 } { Pseq(dur, inf) };

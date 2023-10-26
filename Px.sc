@@ -27,8 +27,10 @@ Px {
         var createAmp = { |i, pattern|
             var amp = pattern[\amp] ?? pattern[\a] ?? 1;
             pattern.removeAt(\a);
-            if (pattern[\beat].notNil) { amp = createRhythm.(amp, i, pattern) };
-            if (amp.isArray) { amp = Pseq(amp, inf) };
+            if (pattern[\beat].notNil)
+            { amp = createRhythm.(amp, i, pattern) };
+            if (amp.isArray)
+            { amp = Pseq(amp, inf) };
             amp;
         };
 
@@ -39,8 +41,8 @@ Px {
                 dur = containsString.if { 1 } { Pseq(dur, inf) };
             };
             if (dur.isString) { dur = 1 };
-            if (pattern[\pbj].notNil)
-            { dur = Pbjorklund2(pattern[\pbj][0], pattern[\pbj][1]) / pattern[\pbj][2] };
+            if (pattern[\euc].notNil)
+            { dur = Pbjorklund2(pattern[\euc][0], pattern[\euc][1]) / pattern[\euc][2] };
             dur;
         };
 
@@ -91,6 +93,15 @@ Px {
             { PfadeOut(pbind, fadeTime) }
         };
 
+        var createPan = { |pattern|
+            case
+            { pattern[\pan].asSymbol == \rand }
+            { Pwhite(-1.0, 1.0, inf) }
+            { pattern[\pan].asSymbol == \rotate }
+            { Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf), startPos: 5) }
+            { pattern[\pan] };
+        };
+
         var getSoloPatterns = {
             var soloList = patterns.select { |pattern| pattern['solo'].notNil };
             if (soloList.isEmpty.not)
@@ -98,50 +109,45 @@ Px {
             { patterns }
         };
 
+        var getFx = { |pattern|
+            if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
+                pattern[\fx].do { |fx, i|
+                    if (SynthDescLib.global[fx[1]].notNil) {
+                        fx = fx ++ [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
+                        pattern[\fx][i] = fx;
+                        pattern = pattern ++ [\fxOrder, (1..pattern[\fx].size)];
+                    }
+                }
+            };
+            pattern;
+        };
+
         instruments = patterns;
         patterns = getSoloPatterns.();
 
         patterns.do { |pattern, i|
-            var fade = pattern[\fade];
-            var fx = pattern[\fxEvents];
-            var offset = pattern[\off] ?? 0;
-            var mute;
             var pbind;
 
             pattern[\amp] = createAmp.(i, pattern);
-
             if (pattern[\loop].notNil or: pattern[\play].notNil)
             { createSampleLoop.(pattern) };
-
             pattern[\dur] = createDur.(pattern);
+            pattern[\pan] = createPan.(pattern);
+            pattern = getFx.(pattern);
 
-            if (pattern[\fxEvents].notNil and: { pattern[\fxEvents].size > 0 }) {
-                var decayPairs = [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
-                if (SynthDescLib.global[pattern[\fx]].notNil) {
-                    pattern[\fx] = pattern[\fx] ++ decayPairs;
-                }
-            };
-
-            pattern = pattern.asPairs;
-
-            if (fx.isArray and: { fx.size > 0 }) {
-                var patternFx;
-                fx.do { |fxItem|
-                    patternFx = patternFx.add([\fx: fxItem[0], \mix: fxItem[1] ?? 1]);
-                };
-                pattern = pattern ++ [\fxOrder, (1..fx.size)];
-                pbind = PbindFx(pattern, *patternFx);
+            if (pattern[\fxOrder].notNil) {
+                pbind = PbindFx(pattern.asPairs, *pattern[\fx]);
             } {
-                pbind = Pbind(*pattern);
+                pbind = Pbind(*pattern.asPairs);
             };
 
-            if (fade.notNil)
-            { pbind = createFade.(fade, pbind) };
+            if (pattern[\fade].notNil)
+            { pbind = createFade.(pattern[\fade], pbind) };
 
             if (trace == true)
             { pbind = pbind.trace };
 
-            ptparList = ptparList ++ [offset, pbind];
+            ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
         };
 
         Pdef(\px, Ptpar(ptparList)).quant_(4).play;

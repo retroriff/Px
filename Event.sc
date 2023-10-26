@@ -36,6 +36,10 @@
 		^this.putAll([\buf, [folder, \rand]]);
 	}
 
+	rotate {
+        ^this.putAll([\pan, \rotate]);
+	}
+
 	seed { |seed|
 		^this.putAll([\seed, seed]);
 	}
@@ -45,20 +49,20 @@
 	}
 
 	// FX
-	delay { |mix|
-		this.fx(\delay, mix);
+	delay { |mix, args|
+		this.fx(\delay, mix, args);
 	}
 
-	fx { |fx, mix|
+	fx { |fx, mix, args|
 		mix = mix ?? 1;
-		^this.[\fxEvents] = this.[\fxEvents] ++ [[fx, mix.clip(0, 1)]];
+		^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, mix.clip(0, 1)] ++ args];
 	}
 
-	reverb { |mix|
-		this.fx(\reverb, mix);
+	reverb { |mix, args|
+		this.fx(\reverb, mix, args);
 	}
 
-	wah { |mix|
-		this.fx(\wah, mix);
+	wah { |mix, args|
+		this.fx(\wah, mix, args);
 	}
 }

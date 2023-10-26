@@ -1,21 +1,44 @@
 (
 Px ([
     (i: \BD, \dur: 1),
-    // (play: ["michael", 0], \dur: 4),
-    // (i: \SN, dur: 2, off: 1), (fx: \delay).wah(0.2),
-    // (i: \CL, \dur: 1/4),
-    // (i: \CH, \dur: 2),
+    // (play: ["michael", 0], \dur: 4).delay(0.1).reverb(0.2),
+    (i: \SN, dur: 2, off: 1).delay(mix: 0.5, args: [\decay: 8]),
+    (i: \SN, dur: 2, amp: 0.6).delay,
+    // (i: \SN, \dur: 2, off: 1),
+    (i: \MA, \dur: 1/4).beat,
+    (i: \CH, \dur: 1/4),
 
-    (i: \MC, \dur: 1/4).beat,
-    // (loop: ["mt-2", \rand]).wah(0.2),
+    // (i: \OH, \dur: 1/4),
+    // (loop: ["mt-2", 2]),
 
-    (i: \CH, \dur: 1/4 ).beat(904).wah(1),
-    (loop: ["break-4", 1]),
-    (play: ["breath", 0], \dur: 2),
+    // (i: \CH, \dur: 1/4 ).beat(904).wah(1),
+    (play:["games", 1], dur: 8x),
+    (play:["games", 1], dur: 8, off: 2),
+
+    (play:["breath", 0], dur: 4),
+    (play:["breath", 1], dur: 4, off: 2),
+    // (play: ["deaf", \rand], \dur: 1/4, rate: 0.5),
 ]);
 )
 
+Pdef(\kick, Pbind(\instrument, \kick, \amp, 1, \dur, 1, \pan, Pslide((0..20).normalize(-1, 1), inf).trace)).play.quant_(4);
+Pdef(\kick, Pbind(\instrument, \kick, \amp, 1, \dur, 1, \pan, Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf)).trace)).play.quant_(4);
 
+0..1
+Pslide([1, 10], 1, 5)
+(
+PbindFx([\i, \BD, \amp, 1, \dur, 1, \fxOrder: [1]],
+    [\fx, \reverb, \mix, 1, \decayTime, 7, \cleanupDelay, Pkey(\decayTime)]).play;
+)
+
+
+(
+b = (i: \kick);
+b.values;
+"".asSymbol
+// a = [\fx: \reverb];
+// a[\fx];
+)
 (
 Px ([
     (i: \CL, \dur: 1/4).beat,
@@ -27,8 +50,8 @@ Px ([
     // (play: ["abc-4", \rand]),
     (loop: ["abc-2", 1], amp: 0.5),
     // (play: ["sn", \rand]).reverb(0.3),
-    // (play: ["ki", \rand], pbj: [3, 5, 4]),
-    (play: ["cy", \rand], pbj: [5, 8, 4]),
+    // (play: ["ki", \rand], euc: [3, 5, 4]),
+    (play: ["cy", \rand], euc: [5, 8, 4]),
     // (loop: ["break-2", 0]),
     (loop: ["break-4", 2]),
 
@@ -53,8 +76,8 @@ Px ([
     // (i: \BD, \dur: 1, \a: 0.5),
     // (play: ["abc-4", \rand]).beat.wah(0.8),
     (play: ["sn", \rand], dur: 2, off: 1).reverb(0.3),
-    // (play: ["ki", \rand], pbj: [3, 5, 4]),
-    (play: ["cy", \rand], pbj: [5, 8, 4], amp: 0.3),
+    // (play: ["ki", \rand], euc: [3, 5, 4]),
+    (play: ["cy", \rand], euc: [5, 8, 4], amp: 0.3),
     // (fx: \delay, \mix: 0),
     // (loop: ["break-2", 0], a: 0.8).out,
     (loop: ["break-4", 5], a: 1),
@@ -72,12 +95,12 @@ Platform.userConfigDir
 Px.save
 Px.chorus
 Px.solo(1);
-Px.release;
+Px.release(20);
 Px.browse
 Px.help;
 Px.help(\kick);
 Px.instruments
-Px.trace:
+Px.trace;
 
 (
 var mix = 2;
@@ -208,8 +231,8 @@ SynthDescLib.global[\reverb].isNil
 Px.clear
 (
 [
-    ( 'ins': ( 'pbj': [ 3, 4, 4 ], 'dur': a Pbinop, 'amp': 1, 'i': kick ), 'fx': [ ( 'fx': reverb ), ( 'fx': delay ) ], 'off': 0 ),
-    ( 'ins': ( 'amp': a Pseg, 'i': snare, 'dur': a Pbinop, 'pbj': [ 3, 4, 4 ],  'fade': [ out, 3 ] ), 'off': 0 ) ]
+    ( 'ins': ( 'euc': [ 3, 4, 4 ], 'dur': a Pbinop, 'amp': 1, 'i': kick ), 'fx': [ ( 'fx': reverb ), ( 'fx': delay ) ], 'off': 0 ),
+    ( 'ins': ( 'amp': a Pseg, 'i': snare, 'dur': a Pbinop, 'euc': [ 3, 4, 4 ],  'fade': [ out, 3 ] ), 'off': 0 ) ]
 )
 (
 var isTest = isTest == 0 and: isTest == 1;
@@ -269,7 +292,9 @@ r = [
 x = PfadeOut.new(PbindFx(~ins1, ~fx1), fadeTime: 10);
 
 Ptpar([
-    0, x,
+    0, Pbind(\instrument, \kick, \amp, 1, \dur, 4),
+    0, Pbind(\instrument, \OH, \amp, 1, \dur, 1/4),
+    0, Pbind(\ins, \kick, amp: 0, \dur, Pseq([4], )
 ]).play
 // PbindFx(~ins2, ~fx1).play;
 )

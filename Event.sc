@@ -48,6 +48,10 @@
 		^this.putAll([\solo, true]);
 	}
 
+    weight { |weight|
+        ^this.putAll([\weight, weight.clip(0, 1)]);
+	}
+
 	// FX
 	delay { |mix, args|
 		this.fx(\delay, mix, args);

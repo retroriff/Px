@@ -14,9 +14,11 @@ Px {
 
         var createRhythm = { |amp, pattern|
             var seed = pattern[\seed];
+            var weight = pattern[\weight] ?? 0.7;
+            pattern.postln;
             if (pattern[\seed].isNil) { seed = getSeed.(pattern) };
             thisThread.randSeed = seed;
-            Array.fill(16, { [ 0, amp ].wchoose([0.3, 0.7]) });
+            Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
         };
 
         var createAmp = { |pattern|
@@ -202,10 +204,10 @@ Px {
     }
 
     *shuffle {
-        seedList.keysValuesChange { |id|
+        seedList.order.do { |id|
             var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
-            "id: ".catArgs(id, ", seed: ", newSeed).postln;
-            newSeed;
+            id.post; " ->".scatArgs(newSeed).postln;
+            seedList[id] = newSeed;
         };
         this.new(instruments);
     }

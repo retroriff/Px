@@ -22,11 +22,13 @@
 | `rotate` | None                                    | Creates a back-and-forth pan rotation between left and right channels |
 | `seed`   | seed: integer                           | Generate a specific seed                                              |
 | `solo`   | None                                    | (\solo: true)                                                         |
+| `weight` | number                                  | Generates a list of probabilities or weights: 0 to 1.                 |
 | `wah`    | mix?: 1.0, args?: pairs[]               | Adds a wah effect                                                     |
 
-## Loops
+#weightoops
 
-- `loop`: [folder: string, file: number | \rand]
+-numbermber | \rand]
+
 - `play`: [folder: string, file: number | \rand]
 
 ## Class methods
@@ -34,4 +36,5 @@
 - `chorus`: Plays a chorus
 - `release`: nil | integer
 - `save`: Saves a chorus
+- `shuffle`: Generates new random seeds
 - `trace`: print out the results of the streams

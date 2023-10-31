@@ -1,34 +1,29 @@
 Px {
-    classvar chorus, <instruments;
+    classvar chorus, <instruments, seedList;
 
     *new { |patterns, trace|
         var ptparList;
 
         var getSeed = { |pattern|
-            pattern[\seed] ?? 1000.rand;
+            var id = pattern[\id].asSymbol;
+            if (seedList.isNil)
+            { seedList = Dictionary[id -> 1000.rand] }
+            { seedList.add(id -> if (seedList[id].isNil) { 1000.rand } { seedList[id] }) };
+            seedList[id];
         };
 
-        var createRhythm = { |amp, i, pattern|
-            var seed = getSeed.(pattern);
-            var createArray = {
-                thisThread.randSeed = seed;
-                Array.fill(16, { [ 0, amp ].wchoose([0.3, 0.7]) });
-            };
-            // Copy patterns to avoid error about diferent array size
-            instruments = patterns;
-            if (instruments.isArray.not)
-            { createArray.(); }
-            { if (instruments[i][\beat].isNil or: { instruments[i][\beat] != pattern[\seed] })
-                { createArray.(); }
-                { instruments[i][\amp]; }
-            };
+        var createRhythm = { |amp, pattern|
+            var seed = pattern[\seed];
+            if (pattern[\seed].isNil) { seed = getSeed.(pattern) };
+            thisThread.randSeed = seed;
+            Array.fill(16, { [ 0, amp ].wchoose([0.3, 0.7]) });
         };
 
-        var createAmp = { |i, pattern|
+        var createAmp = { |pattern|
             var amp = pattern[\amp] ?? pattern[\a] ?? 1;
             pattern.removeAt(\a);
             if (pattern[\beat].notNil)
-            { amp = createRhythm.(amp, i, pattern) };
+            { amp = createRhythm.(amp, pattern) };
             if (amp.isArray)
             { amp = Pseq(amp, inf) };
             amp;
@@ -47,44 +42,6 @@ Px {
             dur;
         };
 
-        var createSampleLoop = { |pattern|
-            var buf, loopSynthDef = "lplay";
-            var loop = pattern[\loop] ?? pattern[\play];
-            var filesCount = ~buf.(loop[0]).size;
-
-            if (filesCount > 0 and: { loop.isArray }) {
-                var getRandBufs = {
-                    thisThread.randSeed = getSeed.(pattern);
-                    buf = Pseq(~buf.(loop[0], Array.rand(8, 0, filesCount - 1)), inf);
-                };
-
-                var getTrimmedBufs = {
-                    var randomFiles = ~buf.(loop[0], Array.rand(8, 0, filesCount - 1));
-                    buf = Pseq(randomFiles, inf);
-                };
-
-                if (pattern[\loop].notNil) {
-                    var sampleLength = pattern[\loop][0].split($-);
-                    if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
-                    { pattern[\dur] = pattern[\dur] ?? sampleLength[1].asInteger };
-                    pattern.removeAt(\loop);
-                } {
-                    loopSynthDef = "playbuf";
-                    pattern.removeAt(\play);
-                };
-
-                buf = switch (loop[1])
-                { \rand } { getRandBufs.() }
-                { \trim } { getTrimmedBufs.() }
-                { ~buf.(loop[0], loop[1]); };
-
-                if ([Buffer, Pseq].includes(buf.class))
-                { pattern.putAll([i: loopSynthDef, buf: buf]) }
-                { pattern[\amp] = 0 };
-            }
-            { pattern[\amp] = 0 };
-        };
-
         var createFade = { |fade, pbind|
             var defaultFadeTime = 16;
             var dir = if (fade.isString) { fade } { fade[0] };
@@ -92,6 +49,88 @@ Px {
             if (dir == "in")
             { PfadeIn(pbind, fadeTime) }
             { PfadeOut(pbind, fadeTime) }
+        };
+
+        var createFx = { |pattern|
+            if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
+                pattern[\fx].do { |fx, i|
+                    if (SynthDescLib.global[fx[1]].notNil) {
+                        fx = fx ++ [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
+                        pattern[\fx][i] = fx;
+                        pattern = pattern ++ [\fxOrder, (1..pattern[\fx].size)];
+                    }
+                }
+            };
+            pattern;
+        };
+
+        var createIds = {
+            var indexDict = Dictionary.new;
+            patterns = patterns.collect { |item|
+                var itemStr = item.i.asString;
+                indexDict[itemStr] = indexDict[itemStr].isNil.if
+                { 0 }
+                { indexDict[itemStr] + 1 };
+                item = item ++ (id: itemStr ++ "_" ++ indexDict[itemStr]);
+            };
+            patterns;
+        };
+
+        var createIns = {
+            patterns = patterns.collect { |pattern|
+                pattern[\play].notNil.if {
+                    pattern = pattern ++ (i: \playbuf, buf: pattern[\play]);
+                    pattern.removeAt(\play);
+                };
+
+                pattern[\loop].notNil.if {
+                    pattern = pattern ++ (i: \lplay, buf: pattern[\loop]);
+                    pattern.removeAt(\loop);
+                };
+
+                pattern;
+            };
+        };
+
+
+        var createLoops = {
+            patterns = patterns.collect { |pattern|
+                if (pattern[\buf].notNil) {
+                    var filesCount = ~buf.(pattern[\buf][0]).size;
+
+                    if (filesCount > 0 and: { pattern[\buf].isArray }) {
+                        var buf;
+
+                        var getRandBufs = {
+                            thisThread.randSeed = getSeed.(pattern);
+                            buf = Pseq(~buf.(pattern[\buf][0], Array.rand(8, 0, filesCount - 1)), inf);
+                        };
+
+                        var getTrimmedBufs = {
+                            var randomFiles = ~buf.(pattern[\buf][0], Array.rand(8, 0, filesCount - 1));
+                            buf = Pseq(randomFiles, inf);
+                        };
+
+                        if (pattern[\i] == \lplay) {
+                            var sampleLength = pattern[\buf][0].split($-);
+                            if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
+                            { pattern[\dur] = pattern[\dur] ?? sampleLength[1].asInteger };
+                        };
+
+                        buf = switch (pattern[\buf][1])
+                        { \rand } { getRandBufs.() }
+                        { \trim } { getTrimmedBufs.() }
+                        { ~buf.(pattern[\buf][0], pattern[\buf][1]); };
+
+                        if ([Buffer, Pseq].includes(buf.class))
+                        { pattern[\buf] = buf }
+                        { pattern[\amp] = 0 };
+                    }
+                    { pattern[\amp] = 0 };
+                };
+
+                pattern;
+            };
         };
 
         var createPan = { |pattern|
@@ -110,37 +149,24 @@ Px {
             { patterns }
         };
 
-        var getFx = { |pattern|
-            if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
-                pattern[\fx].do { |fx, i|
-                    if (SynthDescLib.global[fx[1]].notNil) {
-                        fx = fx ++ [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
-                        pattern[\fx][i] = fx;
-                        pattern = pattern ++ [\fxOrder, (1..pattern[\fx].size)];
-                    }
-                }
-            };
-            pattern;
-        };
-
         instruments = patterns;
         patterns = getSoloPatterns.();
+        patterns = createIns.();
+        patterns = createIds.();
+        patterns = createLoops.();
 
         patterns.do { |pattern, i|
             var pbind;
 
-            pattern[\amp] = createAmp.(i, pattern);
-            if (pattern[\loop].notNil or: pattern[\play].notNil)
-            { createSampleLoop.(pattern) };
+            pattern[\amp] = createAmp.(pattern);
             pattern[\dur] = createDur.(pattern);
             pattern[\pan] = createPan.(pattern);
-            pattern = getFx.(pattern);
 
-            if (pattern[\fxOrder].notNil) {
-                pbind = PbindFx(pattern.asPairs, *pattern[\fx]);
-            } {
-                pbind = Pbind(*pattern.asPairs);
-            };
+            pattern = createFx.(pattern);
+
+            if (pattern[\fxOrder].notNil)
+            { pbind = PbindFx(pattern.asPairs, *pattern[\fx]) }
+            { pbind = Pbind(*pattern.asPairs) };
 
             if (pattern[\fade].notNil)
             { pbind = createFade.(pattern[\fade], pbind) };
@@ -173,6 +199,15 @@ Px {
             pattern;
         };
         this.new(fadeOutPatterns);
+    }
+
+    *shuffle {
+        seedList.keysValuesChange { |id|
+            var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
+            "id: ".catArgs(id, ", seed: ", newSeed).postln;
+            newSeed;
+        };
+        this.new(instruments);
     }
 
     *trace {

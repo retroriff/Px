@@ -1,5 +1,13 @@
 # Px: A patterns builder class for SuperCollider
 
+# Class args
+
+| Arg        | Value            | Description                                          |
+| ---------- | ---------------- | ---------------------------------------------------- |
+| `patterns` | Event[]          | An array containing all the patterns in Event format |
+| `name`     | string \| symbol | A user defined name for the generated Pdef           |
+| `trace`    | boolean          | Print out the results of the streams                 |
+
 ## Pattern controls
 
 | Key      | Value                                          | Description                              |
@@ -22,7 +30,7 @@
 | `rotate` | None                                    | Creates a back-and-forth pan rotation between left and right channels |
 | `seed`   | seed: integer                           | Generate a specific seed                                              |
 | `solo`   | None                                    | (\solo: true)                                                         |
-| `weight` | number                                  | Generates a list of probabilities or weights: 0 to 1.                 |
+| `weight` | number                                  | Generates a list of probabilities or weights. Value range from 0 to 1 |
 | `wah`    | mix?: 1.0, args?: pairs[]               | Adds a wah effect                                                     |
 
 #weightoops

@@ -1,7 +1,7 @@
 Px {
     classvar chorus, <instruments, seedList;
 
-    *new { |patterns, trace|
+    *new { |patterns, name = \px, trace|
         var ptparList;
 
         var getSeed = { |pattern|
@@ -179,7 +179,7 @@ Px {
             ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
         };
 
-        Pdef(\px, Ptpar(ptparList)).quant_(4).play;
+        Pdef(name.asSymbol, Ptpar(ptparList)).quant_(4).play;
     }
 
     *chorus {
@@ -213,7 +213,7 @@ Px {
     }
 
     *trace {
-        this.new(instruments, true);
+        this.new(instruments, trace: true);
     }
 
     *help { |synthDef|

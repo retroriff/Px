@@ -1,7 +1,7 @@
 Px {
-    classvar chorus, <instruments, seedList;
+    classvar chorus, <lastPatterns, seedList;
 
-    *new { |patterns, name = \px, trace|
+    *new { |patterns, name, trace|
         var ptparList;
 
         var getSeed = { |pattern|
@@ -15,7 +15,6 @@ Px {
         var createRhythm = { |amp, pattern|
             var seed = pattern[\seed];
             var weight = pattern[\weight] ?? 0.7;
-            pattern.postln;
             if (pattern[\seed].isNil) { seed = getSeed.(pattern) };
             thisThread.randSeed = seed;
             Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
@@ -151,7 +150,11 @@ Px {
             { patterns }
         };
 
-        instruments = patterns;
+        name = name ?? \px;
+        lastPatterns = if (lastPatterns.isNil)
+        { Dictionary[name -> patterns] }
+        { lastPatterns[name] = patterns };
+
         patterns = getSoloPatterns.();
         patterns = createIns.();
         patterns = createIds.();
@@ -182,38 +185,50 @@ Px {
         Pdef(name.asSymbol, Ptpar(ptparList)).quant_(4).play;
     }
 
-    *chorus {
+    *chorus { |name|
         if (chorus.isNil)
         { "Chorus is empty.Run \"save\" method first".postln; }
-        { this.new(chorus) }
+        { this.new(chorus, name) }
     }
 
-    *save {
-        chorus = instruments;
+    *gui {
+        PdefAllGui.new;
     }
 
-    *release { |fadeTime, fade|
+    *save { |name = \px|
+        chorus = lastPatterns[name];
+    }
+
+    *send { |patterns, name, trace|
+        name = name ?? \px;
+        trace = trace ?? false;
+        if (Pdef(name).isPlaying)
+        { this.new(patterns, name, trace) }
+        { "Pdef(\\".catArgs(name, ") is not playing").postln; }
+    }
+
+    *release { |fadeTime, name = \px|
         var fadeValue = if (fadeTime.isNil) { "out" } { ["out", fadeTime] };
-        var fadeOutPatterns = instruments.collect { |pattern|
+        var fadeOutPatterns = lastPatterns[name].collect { |pattern|
             if (pattern[\fade] == "out")
             { pattern[\amp] = 0 };
             pattern.putAll([\fade: fadeValue]);
             pattern;
         };
-        this.new(fadeOutPatterns);
+        this.send(fadeOutPatterns, name);
     }
 
-    *shuffle {
+    *shuffle { |name = \px|
         seedList.order.do { |id|
             var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
             id.post; " ->".scatArgs(newSeed).postln;
             seedList[id] = newSeed;
         };
-        this.new(instruments);
+        this.send(lastPatterns[name], name);
     }
 
-    *trace {
-        this.new(instruments, trace: true);
+    *trace { |name = \px|
+        this.send(lastPatterns[name], name, trace: true);
     }
 
     *help { |synthDef|

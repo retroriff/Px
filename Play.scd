@@ -1,25 +1,30 @@
 (
 Px ([
-    (i: \BD, \dur: 1),
+    (i: \BD, \dur: 1).reverb(0.2).delay(0.2),
     // (play: ["michael", 0], \dur: 4).delay(0.1).reverb(0.2),
-    (i: \SN, dur: 2, off: 1).delay(mix: 0.5, args: [\decay: 8]),
-    (i: \SN, dur: 2, amp: 0.6).delay,
+    (i: \SN, dur: 2, off: 1).delay(mix: 0.5, args: [\decay: 8]).wah(0.2),
+    (i: \SN, dur: 2, amp: 0.6).delay.wah(0.2),
     // (i: \SN, \dur: 2, off: 1),
     (i: \MA, \dur: 1/4).beat,
     (i: \CH, \dur: 1/4),
 
-    // (i: \OH, \dur: 1/4),
-    // (loop: ["mt-2", 2]),
+    // (i: \OH, \dur: 1/4).reverb(0.2).rotate,
+    // (loop: ["mt-2", \rand]),
 
     // (i: \CH, \dur: 1/4 ).beat(904).wah(1),
-    (play:["games", 1], dur: 8x),
-    (play:["games", 1], dur: 8, off: 2),
+    // (play:["games", 1], dur: 8),
+    // (play:["games", 1], dur: 8, off: 2),
 
     (play:["breath", 0], dur: 4),
     (play:["breath", 1], dur: 4, off: 2),
     // (play: ["deaf", \rand], \dur: 1/4, rate: 0.5),
+
+    // (play: ["fm", 2], dur: 4, off: 0.5, a: 0).reverb(0.2),
+    (play: ["fm", \rand], dur: 1/4, off: 2).beat.weight(0.2).delay(0.1),
 ]);
 )
+
+Px.shuffle
 
 Pdef(\kick, Pbind(\instrument, \kick, \amp, 1, \dur, 1, \pan, Pslide((0..20).normalize(-1, 1), inf).trace)).play.quant_(4);
 Pdef(\kick, Pbind(\instrument, \kick, \amp, 1, \dur, 1, \pan, Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf)).trace)).play.quant_(4);
@@ -82,7 +87,7 @@ Px ([
     // (loop: ["break-2", 0], a: 0.8).out,
     (loop: ["break-4", 5], a: 1),
 
-    // (play: ["fm", 4], a: 0.3, \dur: 4).wah(0.5),"/Users/xavi/Library/Application Support/SuperCollider/Help/Overviews/Methods.html"
+    // (play: ["fm", 4], a: 0.3, \dur: 4).wah(0.5)
     (play: ["fm", \rand], a: 0.2, \off: 0.5).wah(0.5).seed(30),
     (play: ["pop", 0], a: 0.4, \off: 0.5, \dur: 16),
 ]);

@@ -1,21 +1,20 @@
 Px {
-    classvar chorus, <lastPatterns, seedList;
+    classvar chorus, <lastPatterns, seeds;
 
     *new { |patterns, name, trace|
         var ptparList;
 
         var getSeed = { |pattern|
             var id = pattern[\id].asSymbol;
-            if (seedList.isNil)
-            { seedList = Dictionary[id -> 1000.rand] }
-            { seedList.add(id -> if (seedList[id].isNil) { 1000.rand } { seedList[id] }) };
-            seedList[id];
+            if (seeds.isNil)
+            { seeds = Dictionary[id -> 1000.rand] }
+            { seeds.add(id -> if (seeds[id].isNil) { 1000.rand } { seeds[id] }) };
+            seeds[id];
         };
 
         var createRhythm = { |amp, pattern|
-            var seed = pattern[\seed];
+            var seed = if (pattern[\seed].isNil) { getSeed.(pattern) } { pattern[\seed] };
             var weight = pattern[\weight] ?? 0.7;
-            if (pattern[\seed].isNil) { seed = getSeed.(pattern) };
             thisThread.randSeed = seed;
             Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
         };
@@ -161,15 +160,16 @@ Px {
         patterns = createLoops.();
 
         patterns.do { |pattern, i|
-            var pbind;
+            var hasFx, pbind;
 
             pattern[\amp] = createAmp.(pattern);
             pattern[\dur] = createDur.(pattern);
             pattern[\pan] = createPan.(pattern);
 
             pattern = createFx.(pattern);
+            if (pattern[\fxOrder].notNil) { hasFx = true };
 
-            if (pattern[\fxOrder].notNil)
+            if (hasFx == true)
             { pbind = PbindFx(pattern.asPairs, *pattern[\fx]) }
             { pbind = Pbind(*pattern.asPairs) };
 
@@ -219,10 +219,10 @@ Px {
     }
 
     *shuffle { |name = \px|
-        seedList.order.do { |id|
+        seeds.order.do { |id|
             var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
             id.post; " ->".scatArgs(newSeed).postln;
-            seedList[id] = newSeed;
+            seeds[id] = newSeed;
         };
         this.send(lastPatterns[name], name);
     }

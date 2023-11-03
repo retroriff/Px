@@ -1,0 +1,72 @@
+class:: Px
+summary:: A patterns builder class for SuperCollider
+categories:: Streams-Patterns-Events>Patterns>Parallel
+related:: Classes/Event, Classes/Pbind, Classes/PbindFx, Classes/Ptpar
+
+description::
+The `Px` class is a patterns builder that shorten and simplify
+the patterns syntax and incorporates some additional features
+for live coding.
+
+ClassMethods::
+
+method:: new
+Creates a new instance of the Px class.
+argument:: patterns
+An array of patterns to build and control.
+argument:: name
+A string representing the name of the Pdef instance.
+argument:: trace
+A boolean value indicating whether to enable tracing for the patterns.
+
+method:: gui
+Opens a GUI interface for controlling and visualizing the patterns.
+
+method:: release
+Releases the patterns with a fade-out effect.
+argument:: fadeTime
+The duration of the fade-out effect in seconds.
+argument:: name
+The name of the `Px` instance to release.
+
+method:: save
+Saves the current patterns as the last used patterns for a given name.
+argument:: name
+The name under which to save the patterns.
+
+method:: chorus
+Loads and plays the last saved patterns for a given name.
+argument:: name
+The name of the patterns to load and play.
+
+method:: shuffle
+Shuffles the seed values for randomization in the patterns.
+argument:: name
+The name of the patterns to shuffle.
+
+method:: help
+Displays help information for the Px class or a specific SynthDef.
+argument:: synthDef
+The name of a SynthDef to display help information for.
+
+method:: lastPatterns
+Returns the last used patterns for a given name.
+
+method:: trace
+Traces and displays the pattern evaluation process.
+argument:: name
+The name of the patterns to trace.
+
+
+examples:
+
+code::
+(
+Px ([
+    (i: \BD, \dur: 1).delay(0.2),
+    (i: \SN, dur: 2, off: 1).reverb(0.2),
+    (i: \CH, dur: 1/4, off: 0.5).rotate,
+]);
+)
+::
+

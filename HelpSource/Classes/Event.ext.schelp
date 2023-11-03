@@ -1,0 +1,91 @@
+INSTANCEMETHODS::
+
+method:: a
+Sets the amplitude of the event.
+argument:: args
+A float representing the amplitude.
+
+method:: amp
+Sets the amplitude of the event.
+argument:: args
+A float representing the amplitude.
+
+method:: beat
+Sets the beat and seed for the event.
+argument:: seed
+An optional integer representing the beat seed.
+
+method:: dur
+Sets the duration of the event.
+argument:: args
+A float or array representing the duration.
+
+method:: fade
+Sets the fade direction and time for the event.
+argument:: direction
+A string ("in" or "out") representing the fade direction.
+argument:: time
+An optional float representing the fade time.
+
+method:: in
+Sets an "in" fade for the event.
+argument:: time
+A float representing the fade time.
+
+method:: out
+Sets an "out" fade for the event.
+argument:: time
+A float representing the fade time.
+
+method:: rand
+Sets the event to randomly select audio files from a folder.
+argument:: folder
+A string representing the folder from which to select audio files.
+
+method:: rotate
+Sets the event to rotate the pan.
+
+method:: seed
+Sets the seed for the event.
+argument:: seed
+An integer representing the seed value.
+
+method:: solo
+Indicates that the event should be played solo.
+
+method:: weight
+Sets the weight for the event.
+argument:: weight
+A float between 0 and 1 representing the weight.
+
+FX METHODS:
+
+method:: delay
+Adds a delay effect to the event.
+argument:: mix
+A float representing the mix level of the delay effect.
+argument:: args
+Additional arguments for the delay effect.
+
+method:: fx
+Adds a custom effect to the event.
+argument:: fx
+A string representing the custom effect.
+argument:: mix
+A float representing the mix level of the custom effect.
+argument:: args
+Additional arguments for the custom effect.
+
+method:: reverb
+Adds a reverb effect to the event.
+argument:: mix
+A float representing the mix level of the reverb effect.
+argument:: args
+Additional arguments for the reverb effect.
+
+method:: wah
+Adds a wah effect to the event.
+argument:: mix
+A float representing the mix level of the wah effect.
+argument:: args
+Additional arguments for the wah effect.

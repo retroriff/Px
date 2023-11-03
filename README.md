@@ -42,6 +42,7 @@
 ## Class methods
 
 - `chorus`: Plays a chorus
+- `gui`: A gui showing all Pdefs
 - `release`: nil | integer
 - `save`: Saves a chorus
 - `shuffle`: Generates new random seeds

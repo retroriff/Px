@@ -15,8 +15,19 @@ Px {
         var createRhythm = { |amp, pattern|
             var seed = if (pattern[\seed].isNil) { getSeed.(pattern) } { pattern[\seed] };
             var weight = pattern[\weight] ?? 0.7;
+            var rhythmWeight = (weight * 10).floor / 10;
+            var pseqWeight = weight - rhythmWeight * 10;
+            var rhythmSeq = { |weight|
+                Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
+            };
             thisThread.randSeed = seed;
-            Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
+            if (pseqWeight > 0) {
+                var seq1 = Pseq(rhythmSeq.(rhythmWeight), 1);
+                var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
+                [Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
+            } {
+               rhythmSeq.(weight);
+            };
         };
 
         var createAmp = { |pattern|

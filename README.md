@@ -17,21 +17,21 @@
 
 ## Event methods
 
-| Name     | Arguments                               | Description                                                           |
-| -------- | --------------------------------------- | --------------------------------------------------------------------- |
-| `amp`    | number \| number[] \| Pattern           | Amplification                                                         |
-| `beat`   | seed?: integer                          | Generates a random rhythm                                             |
-| `delay`  | mix?: 1.0, args?: pairs[]               | Adds a delay effect                                                   |
-| `dur`    | number \| number[] \| Pattern           | Duration                                                              |
-| `in`     | Seconds?: integer                       | (\fade: "in")                                                         |
-| `out`    | Seconds?: integer                       | (\fade: "out")                                                        |
-| `pan`    | number \| "rand" \| "rotate" \| Pattern | Pan                                                                   |
-| `reverb` | mix?: 1.0, args?: pairs[]               | Adds a reverb effect                                                  |
-| `rotate` | None                                    | Creates a back-and-forth pan rotation between left and right channels |
-| `seed`   | seed: integer                           | Generate a specific seed                                              |
-| `solo`   | None                                    | (\solo: true)                                                         |
-| `weight` | number                                  | Generates a list of probabilities or weights. Value range from 0 to 1 |
-| `wah`    | mix?: 1.0, args?: pairs[]               | Adds a wah effect                                                     |
+| Name     | Arguments                               | Description                                                                                                                                                                                  |
+| -------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `amp`    | number \| number[] \| Pattern           | Amplification                                                                                                                                                                                |
+| `beat`   | seed?: integer                          | Generates a random rhythm                                                                                                                                                                    |
+| `delay`  | mix?: 1.0, args?: pairs[]               | Adds a delay effect                                                                                                                                                                          |
+| `dur`    | number \| number[] \| Pattern           | Duration                                                                                                                                                                                     |
+| `in`     | Seconds?: integer                       | (\fade: "in")                                                                                                                                                                                |
+| `out`    | Seconds?: integer                       | (\fade: "out")                                                                                                                                                                               |
+| `pan`    | number \| "rand" \| "rotate" \| Pattern | Pan                                                                                                                                                                                          |
+| `reverb` | mix?: 1.0, args?: pairs[]               | Adds a reverb effect                                                                                                                                                                         |
+| `rotate` | None                                    | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
+| `seed`   | seed: integer                           | Generate a specific seed                                                                                                                                                                     |
+| `solo`   | None                                    | (\solo: true)                                                                                                                                                                                |
+| `weight` | number                                  | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
+| `wah`    | mix?: 1.0, args?: pairs[]               | Adds a wah effect                                                                                                                                                                            |
 
 #weightoops
 

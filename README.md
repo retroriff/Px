@@ -33,12 +33,6 @@
 | `weight` | number                                  | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 | `wah`    | mix?: 1.0, args?: pairs[]               | Adds a wah effect                                                                                                                                                                            |
 
-#weightoops
-
--numbermber | \rand]
-
-- `play`: [folder: string, file: number | \rand]
-
 ## Class methods
 
 - `chorus`: Plays a chorus
@@ -47,3 +41,8 @@
 - `save`: Saves a chorus
 - `shuffle`: Generates new random seeds
 - `trace`: print out the results of the streams
+
+## Buf loopers
+
+- `loop`: [folder: string, file: number | \jump | \rand]
+- `play`: [folder: string, file: number | \rand]

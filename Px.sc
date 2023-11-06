@@ -6,14 +6,16 @@ Px {
 
         var getSeed = { |pattern|
             var id = pattern[\id].asSymbol;
-            if (seeds.isNil)
-            { seeds = Dictionary[id -> 1000.rand] }
-            { seeds.add(id -> if (seeds[id].isNil) { 1000.rand } { seeds[id] }) };
-            seeds[id];
+            if (pattern[\seed].isNil) {
+                if (seeds.isNil)
+                { seeds = Dictionary[id -> 1000.rand] }
+                { seeds.add(id -> if (seeds[id].isNil) { 1000.rand } { seeds[id] }) };
+                seeds[id];
+            } { pattern[\seed] };
         };
 
         var createRhythm = { |amp, pattern|
-            var seed = if (pattern[\seed].isNil) { getSeed.(pattern) } { pattern[\seed] };
+            var seed = getSeed.(pattern);
             var weight = pattern[\weight] ?? 0.7;
             var rhythmWeight = (weight * 10).floor / 10;
             var pseqWeight = weight - rhythmWeight * 10;
@@ -26,7 +28,7 @@ Px {
                 var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
                 [Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
             } {
-               rhythmSeq.(weight);
+                rhythmSeq.(weight);
             };
         };
 
@@ -66,7 +68,8 @@ Px {
             if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
                 pattern[\fx].do { |fx, i|
                     if (SynthDescLib.global[fx[1]].notNil) {
-                        fx = fx ++ [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, Pkey(\decayTime)];
+                        if (fx == \reverb)
+                        { fx = fx ++ [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, 1] };
                         pattern[\fx][i] = fx;
                         pattern = pattern ++ [\fxOrder, (1..pattern[\fx].size)];
                     }
@@ -117,9 +120,23 @@ Px {
                             buf = Pseq(~buf.(pattern[\buf][0], Array.rand(8, 0, filesCount - 1)), inf);
                         };
 
-                        var getTrimmedBufs = {
-                            var randomFiles = ~buf.(pattern[\buf][0], Array.rand(8, 0, filesCount - 1));
-                            buf = Pseq(randomFiles, inf);
+                        var getJumpBufs = {
+                            var minLength = 1, mixLength = pattern[\dur], steps = 16;
+                            var mixBuf = {
+                                var initialBuf = (~buf.(pattern[\buf][0]).size).rand;
+                                var buf = Array.fill(minLength, initialBuf);
+                                var rest = (steps - minLength) / minLength;
+                                thisThread.randSeed = getSeed.(pattern);
+                                rest.do({
+                                    var newBuf = (~buf.(pattern[\buf][0]).size).rand;
+                                    buf = buf ++ Array.fill(minLength, newBuf);
+                                });
+                                buf;
+                            };
+                            pattern[\dur] = mixLength / steps;
+                            pattern[\beats] = mixLength;
+                            pattern[\start] = Pseq((0..steps - 1) / steps, inf);
+                            Pseq(~buf.(pattern[\buf][0], mixBuf.value), inf);
                         };
 
                         if (pattern[\i] == \lplay) {
@@ -130,7 +147,7 @@ Px {
 
                         buf = switch (pattern[\buf][1])
                         { \rand } { getRandBufs.() }
-                        { \trim } { getTrimmedBufs.() }
+                        { \jump } { getJumpBufs.() }
                         { ~buf.(pattern[\buf][0], pattern[\buf][1]); };
 
                         if ([Buffer, Pseq].includes(buf.class))

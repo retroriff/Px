@@ -48,6 +48,13 @@
 		^this.putAll([\solo, true]);
 	}
 
+    trim { |startPosition|
+        startPosition = if (startPosition.isNil)
+        { \random }
+        { startPosition.clip(0, 0.75).round(0.25) };
+        ^this.putAll([\trim, startPosition]);
+    }
+
     weight { |weight|
         ^this.putAll([\weight, weight.clip(0, 1)]);
 	}

@@ -1,7 +1,7 @@
 Px {
     classvar chorus, <lastPatterns, seeds;
 
-    *new { |patterns, name, trace|
+    *new { | patterns, name, trace |
         var ptparList;
 
         var getSeed = { |pattern|
@@ -80,12 +80,12 @@ Px {
 
         var createIds = {
             var indexDict = Dictionary.new;
-            patterns = patterns.collect { |item|
-                var itemStr = item.i.asString;
-                indexDict[itemStr] = indexDict[itemStr].isNil.if
+            patterns = patterns.collect { |pattern|
+                var patternStr = pattern.i.asString;
+                indexDict[patternStr] = indexDict[patternStr].isNil.if
                 { 0 }
-                { indexDict[itemStr] + 1 };
-                item = item ++ (id: itemStr ++ "_" ++ indexDict[itemStr]);
+                { indexDict[patternStr] + 1 };
+                pattern = pattern ++ (id: pattern[\id] ?? (patternStr ++ "_" ++ indexDict[patternStr]));
             };
             patterns;
         };
@@ -106,7 +106,6 @@ Px {
             };
         };
 
-
         var createLoops = {
             patterns = patterns.collect { |pattern|
                 if (pattern[\buf].notNil) {
@@ -114,11 +113,6 @@ Px {
 
                     if (filesCount > 0 and: { pattern[\buf].isArray }) {
                         var buf;
-
-                        var getRandBufs = {
-                            thisThread.randSeed = getSeed.(pattern);
-                            buf = Pseq(~buf.(pattern[\buf][0], Array.rand(8, 0, filesCount - 1)), inf);
-                        };
 
                         var getJumpBufs = {
                             var minLength = 1, mixLength = pattern[\dur], steps = 16;
@@ -139,6 +133,11 @@ Px {
                             Pseq(~buf.(pattern[\buf][0], mixBuf.value), inf);
                         };
 
+                        var getRandBufs = {
+                            thisThread.randSeed = getSeed.(pattern);
+                            Pseq(~buf.(pattern[\buf][0], Array.rand(8, 0, filesCount - 1)), inf);
+                        };
+
                         if (pattern[\i] == \lplay) {
                             var sampleLength = pattern[\buf][0].split($-);
                             if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
@@ -146,9 +145,17 @@ Px {
                         };
 
                         buf = switch (pattern[\buf][1])
-                        { \rand } { getRandBufs.() }
-                        { \jump } { getJumpBufs.() }
+                        { \rand } { getRandBufs.value }
+                        { \jump } { getJumpBufs.value }
                         { ~buf.(pattern[\buf][0], pattern[\buf][1]); };
+
+                        if (pattern[\trim].notNil) {
+                            if (pattern[\trim] == \random)
+                            { pattern[\trim] = (Pseed(Pdup(4, Pseq((0..10), inf)), Prand((0..3), 4) / 4)) };
+                            pattern[\beats] = pattern[\dur];
+                            pattern[\dur] = pattern[\dur] / 4;
+                            pattern[\start] = pattern[\trim];
+                        };
 
                         if ([Buffer, Pseq].includes(buf.class))
                         { pattern[\buf] = buf }
@@ -182,10 +189,10 @@ Px {
         { Dictionary[name -> patterns] }
         { lastPatterns[name] = patterns };
 
-        patterns = getSoloPatterns.();
-        patterns = createIns.();
-        patterns = createIds.();
-        patterns = createLoops.();
+        patterns = getSoloPatterns.value;
+        patterns = createIns.value;
+        patterns = createIds.value;
+        patterns = createLoops.value;
 
         patterns.do { |pattern, i|
             var hasFx, pbind;
@@ -209,11 +216,10 @@ Px {
 
             ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
         };
-
         Pdef(name.asSymbol, Ptpar(ptparList)).quant_(4).play;
     }
 
-    *chorus { |name|
+    *chorus { | name |
         if (chorus.isNil)
         { "Chorus is empty.Run \"save\" method first".postln; }
         { this.new(chorus, name) }
@@ -223,11 +229,17 @@ Px {
         PdefAllGui.new;
     }
 
-    *save { |name = \px|
+    *help { | synthDef |
+        if (synthDef.isNil)
+        { this.class.asString.help }
+        { SynthDescLib.global[synthDef].postln };
+    }
+
+    *save { | name = \px |
         chorus = lastPatterns[name];
     }
 
-    *send { |patterns, name, trace|
+    *send { | patterns, name, trace |
         name = name ?? \px;
         trace = trace ?? false;
         if (Pdef(name).isPlaying)
@@ -235,7 +247,7 @@ Px {
         { "Pdef(\\".catArgs(name, ") is not playing").postln; }
     }
 
-    *release { |fadeTime, name = \px|
+    *release { | fadeTime, name = \px |
         var fadeValue = if (fadeTime.isNil) { "out" } { ["out", fadeTime] };
         var fadeOutPatterns = lastPatterns[name].collect { |pattern|
             if (pattern[\fade] == "out")
@@ -246,7 +258,7 @@ Px {
         this.send(fadeOutPatterns, name);
     }
 
-    *shuffle { |name = \px|
+    *shuffle { | name = \px |
         seeds.order.do { |id|
             var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
             id.post; " ->".scatArgs(newSeed).postln;
@@ -255,13 +267,11 @@ Px {
         this.send(lastPatterns[name], name);
     }
 
-    *trace { |name = \px|
-        this.send(lastPatterns[name], name, trace: true);
+    *stop {  | name = \px |
+        Pdef(name.asSymbol).stop;
     }
 
-    *help { |synthDef|
-        if (synthDef.isNil)
-        { this.class.asString.help }
-        { SynthDescLib.global[synthDef].postln };
+    *trace { | name = \px |
+        this.send(lastPatterns[name], name, trace: true);
     }
 }

@@ -1,30 +1,121 @@
 (
 Px ([
-    (i: \BD, \dur: 1).reverb(0.2).delay(0.2),
-    // (play: ["michael", 0], \dur: 4).delay(0.1).reverb(0.2),
-    (i: \SN, dur: 2, off: 1).delay(mix: 0.5, args: [\decay: 8]).wah(0.2),
-    (i: \SN, dur: 2, amp: 0.6).delay.wah(0.2),
+    // (i: \BD, \dur: 1, amp: 1.2).reverb(1).delay(0.2),
+    // (i: \BD, \dur: 1/2).delay(0.1).beat.weight(0.05).solo,
+    // (i: \CP, \dur: 2, off: 1).beat(25).weight(0.34).delay(0),
+    (play: ["michael", 0], \dur: 1/4).beat().weight(0.02).reverb(\rand),
+    // (i: \SN, dur: 2, off: 1).delay(mix: 0.5, args: [\decay: 8]).reverb(0.3),
+    // (i: \SN, dur: 2).delay,
     // (i: \SN, \dur: 2, off: 1),
-    (i: \MA, \dur: 1/4).beat,
-    (i: \CH, \dur: 1/4),
+    (i: \CP, \dur: 1/4, \amp: 1.2, \id: \53).beat.weight(0.02).delay(0.16).reverb([\rand, 0.1, 0.5]).solo,
+    // (i: \CH, \dur: 1/4).beat.weight(0.02).solo,
 
-    // (i: \OH, \dur: 1/4).reverb(0.2).rotate,
-    // (loop: ["mt-2", \rand]),
+    (i: \OH, \dur: 8).rotate.reverb,
+    // (loop: ["pop-2", 1], amp: 1).wah(0.3).reverb.out,
+    // (loop: ["mt-4", \jump], amp: 1).solo.seed(24),
+    // (loop: ["fusion-4", 0]).rate([\wrand, 1, -1, 0.05]).delay(0.1).reverb(0.2).delay(Pwhite(0.0, 0)).solo,
+    // (loop: ["fusion-4", 0]).delay([\rand, 0, 0.2]).reverb([\rand, 0.1, 0.3]),
 
-    // (i: \CH, \dur: 1/4 ).beat(904).wah(1),
+    // (loop: ["mt-4", 0, \scratch], amp: 1).delay(0.1).wah(0.2),
+    // (play: ["abc-4", \rand]).beat.weight(0.03).reverb(0.5),
+
+    (loop: ["fm", \rand], dur: 16, amp: 0.3).reverb(\rand).solo,
+    (loop: ["fm", \rand], dur: 16, amp: 0.4, off: 2).reverb(\rand).solo,
+    (loop: ["fm", \rand], dur: 16, amp: 0.7, off: 4).reverb(\rand).solo.rate(\rand),
+    (loop: ["fm", \rand], dur: 16, amp: 0.4, off: 8).reverb(\rand).solo,
+
+
+    (i: \CY, \dur: 1/2, \pan: \rand, \amp: 0.2).beat(904).reverb(\rand),
     // (play:["games", 1], dur: 8),
     // (play:["games", 1], dur: 8, off: 2),
 
-    (play:["breath", 0], dur: 4),
-    (play:["breath", 1], dur: 4, off: 2),
-    // (play: ["deaf", \rand], \dur: 1/4, rate: 0.5),
+    // (play: ["fm", \rand], dur: 1/4, off: 2, pan: \rand, amp: 0.5).beat.weight(0.12).reverb(Pwhite(0.0, 1)).delay(0.3),
+    (play: ["gl1", \rand], dur: 1/4, off: 0.5, pan: \rand, amp: 1).beat.weight(0.36).delay(\rand).reverb(Pwhite(0.0,1)),
+    (play:["breath", 0], dur: 8).solo,
+    (play:["breath", 1], dur: 8, off: 2).solo,
 
-    // (play: ["fm", 2], dur: 4, off: 0.5, a: 0).reverb(0.2),
-    (play: ["fm", \rand], dur: 1/4, off: 2).beat.weight(0.2).delay(0.1),
+    // (play: ["fm", \rand], dur: 1, amp: 0.5, rate: 1).delay(0.6),
+    (play: ["fm", 17], dur: 8, off: 0.5, rate: Pwhite(-1, 1)).delay(0.3).reverb(0.4).solo,
 ]);
 )
 
+Px.trace
+
+Pmidi.init;
+
+(
+Pmidi([
+    // (\id: \synth, \chan: 2, \dur: 8, degree: 0, octave: 2),
+    (\id: \synth, \chan: 4,  degree: 0, octave: 2, amp: 1, off: 1, \hasGate: 0).solo,
+    (\id: \synth, \chan: 3, \dur: 4, degree: 0, octave: 5, amp: 1),
+    // (\id: \synth, \chan: 4, \dur: 1/4, degree: 0, octave: 4, \legato: 1/3, \amp: 1).beat.weight(0.12),
+]);
+)
+
+
+
+Pmidi([
+    (
+        \id: \synth,
+        \chan: 2,
+        \degree: Prand(Scale.dorian.degrees, inf),
+        \dur: Pseq([1, 1/2, 2] * 4, inf),
+        \legato: Pkey(\dur) * 2,
+    )
+], \pmidi2);
+
+Pmidi([
+    (
+        \id: \synth,
+        \chan: 3,
+        \degree: Prand(Scale.dorian.degrees, inf),
+        \dur: Pseq([1, 1/2, 2] * 4, inf),
+        \legato: Pkey(\dur) * 2,
+    )
+], \pmidi3);
+)
+
+Pmidi.stop(\pmidi);
+
+(
+MIDIClient.init;
+m = MIDIOut.new(0);
+Ptpar([
+    0, Pbind(\midicmd, \noteOn, \dur, 1, \amp, 1, \midiout, m, \sustain, 1/4, \ins, "flute", \chan, 1, \midinote, 69, \type, \midi),
+    // 0, Pbind(\midicmd, \noteOn, \dur, 1, \amp, 1, \midinote, 69, \ins, \midi, \sustain, 0.25, \chan, 0, \id, \flute, \type, \midi)
+]).play;
+)
+
+Px.stop;
+Pmidi.stop;
+Pmidi.release(20);
+
+Pmidi.lastPatterns
+
+
 Px.shuffle
+
+(
+var weight = 0.92;
+var weight1;
+var weight2;
+
+weight1 = (weight * 10).floor / 10;
+weight2 = weight - weight1 * 10;
+
+weight1.postln; // Output: 0.4
+weight2.postln; // Output: 0.01
+)
+Pdef(\test).gui
+
+Pdef(\test, PbindFx(
+    [\i, \BD, \amp, 1, \dur, 1, \fxOrder, [1]],
+    [\fx, \reverb, \decayTime, 7, \cleanupDelay, 1]
+)).play.quant_(4);
+)
+Pdef(\test, Pbind(\i, \BD, \amp, Pseq([Pwrand([Pseq([0, 0, 0, 0.5, 0.6], 1), Pseq([0.1, 0.1], 1)], [0.3, 0.7])], inf).trace, \dur, 1)).play.quant_(4);
+
+[3, 7].normalizeSum
 
 Pdef(\kick, Pbind(\instrument, \kick, \amp, 1, \dur, 1, \pan, Pslide((0..20).normalize(-1, 1), inf).trace)).play.quant_(4);
 Pdef(\kick, Pbind(\instrument, \kick, \amp, 1, \dur, 1, \pan, Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf)).trace)).play.quant_(4);
@@ -99,12 +190,11 @@ Document.open(Platform.userConfigDir.catArgs("/startup.scd"));
 Platform.userConfigDir
 Px.save
 Px.chorus
-Px.solo(1);
 Px.release(20);
 Px.browse
 Px.help;
 Px.help(\kick);
-Px.instruments
+Px.chorus
 Px.trace;
 
 (

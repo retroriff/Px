@@ -1,5 +1,5 @@
 Px {
-    classvar chorus, <lastPatterns, seeds;
+    classvar chorus, defaultName = \px, <lastPatterns, seeds;
 
     *new { | patterns, name, trace |
         var ptparList;
@@ -147,10 +147,16 @@ Px {
                         buf = switch (pattern[\buf][1])
                         { \rand } { getRandBufs.value }
                         { \jump } { getJumpBufs.value }
-                        { ~buf.(pattern[\buf][0], pattern[\buf][1]); };
+                        { ~buf.(pattern[\buf][0], pattern[\buf][1]) };
+
+                        if (pattern[\buf][1].isNil)
+                        {
+                            thisThread.randSeed = getSeed.(pattern);
+                            buf = ~buf.(pattern[\buf][0], (~buf.(pattern[\buf][0]).size).rand);
+                        };
 
                         if (pattern[\trim].notNil) {
-                            if (pattern[\trim] == \random)
+                            if (pattern[\trim] == \seq)
                             { pattern[\trim] = (Pseed(Pdup(4, Pseq((0..10), inf)), Prand((0..3), 4) / 4)) };
                             pattern[\beats] = pattern[\dur];
                             pattern[\dur] = pattern[\dur] / 4;
@@ -169,11 +175,9 @@ Px {
         };
 
         var createPan = { |pattern|
-            case
-            { pattern[\pan].asSymbol == \rand }
-            { Pwhite(-1.0, 1.0, inf) }
-            { pattern[\pan].asSymbol == \rotate }
-            { Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf), startPos: 5) }
+            switch (pattern[\pan].asSymbol)
+            { \rand } { Pwhite(-1.0, 1.0, inf) }
+            { \rotate } { Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf), startPos: 5) }
             { pattern[\pan] };
         };
 
@@ -184,7 +188,7 @@ Px {
             { patterns }
         };
 
-        name = name ?? \px;
+        name = name ?? defaultName;
         lastPatterns = if (lastPatterns.isNil)
         { Dictionary[name -> patterns] }
         { lastPatterns[name] = patterns };
@@ -221,35 +225,19 @@ Px {
 
     *chorus { | name |
         if (chorus.isNil)
-        { "Chorus is empty.Run \"save\" method first".postln; }
+        { "Chorus is empty. Please run \"save\"".postln; }
         { this.new(chorus, name) }
     }
 
-    *gui {
+    gui {
         PdefAllGui.new;
     }
 
-    *help { | synthDef |
-        if (synthDef.isNil)
-        { this.class.asString.help }
-        { SynthDescLib.global[synthDef].postln };
-    }
-
-    *save { | name = \px |
-        chorus = lastPatterns[name];
-    }
-
-    *send { | patterns, name, trace |
-        name = name ?? \px;
-        trace = trace ?? false;
-        if (Pdef(name).isPlaying)
-        { this.new(patterns, name, trace) }
-        { "Pdef(\\".catArgs(name, ") is not playing").postln; }
-    }
-
-    *release { | fadeTime, name = \px |
+    *release { | fadeTime, name |
         var fadeValue = if (fadeTime.isNil) { "out" } { ["out", fadeTime] };
-        var fadeOutPatterns = lastPatterns[name].collect { |pattern|
+        var fadeOutPatterns;
+        name = name ?? defaultName;
+        fadeOutPatterns = lastPatterns[name].collect { |pattern|
             if (pattern[\fade] == "out")
             { pattern[\amp] = 0 };
             pattern.putAll([\fade: fadeValue]);
@@ -258,17 +246,36 @@ Px {
         this.send(fadeOutPatterns, name);
     }
 
-    *shuffle { | name = \px |
+    *save { | name |
+        chorus = lastPatterns[name ?? defaultName];
+    }
+
+    *send { | patterns, name, trace |
+        name = name ?? defaultName;
+        trace = trace ?? false;
+        if (Pdef(name).isPlaying)
+        { this.new(patterns, name, trace) }
+        { "Pdef(\\".catArgs(name, ") is not playing").postln; }
+    }
+
+    *shuffle { | name |
         seeds.order.do { |id|
             var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
             id.post; " ->".scatArgs(newSeed).postln;
             seeds[id] = newSeed;
         };
+        name = name ?? defaultName;
         this.send(lastPatterns[name], name);
     }
 
-    *stop {  | name = \px |
+    *stop {  | name |
+        name = name ?? defaultName;
         Pdef(name.asSymbol).stop;
+    }
+
+    *synthDef { | synthDef |
+        if (synthDef.notNil)
+        { SynthDescLib.global[synthDef].postln };
     }
 
     *trace { | name = \px |

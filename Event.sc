@@ -1,79 +1,110 @@
 +Event {
-	// Controls
-	a { |args|
-		this.amp(args);
-	}
+    prCreatePattern { |value|
+        if (value == \rand)
+        { ^Pwhite(0.0, 1) };
 
-	amp { |args|
-		^this.putAll([\amp, args]);
-	}
+        if (value.isArray) {
+            if (value[0] == \wrand) {
+                var item1 = value[1].clip(-1, 1);
+                var item2 = value[2].clip(-1, 1);
+                var weight = value[3].clip(0, 1);
+                ^Pwrand([item1, item2], [1 - weight, weight], inf);
+            };
+            if (value[0] == \rand) {
+                ^Pwhite(value[1], value[2])
+            };
+        };
 
-	beat { |seed|
-		var pairs = [\beat, true];
-		if (seed.notNil and: seed.isInteger)
-		{ pairs = pairs ++ [\seed, seed] };
-		^this.putAll(pairs);
-	}
+        if (value.isNumber)
+        { ^value.clip(0, 1) };
 
-	dur { |args|
-		^this.putAll([\dur, args]);
-	}
+        ^value ?? 1;
+    }
 
-	fade { |direction, time|
-		var fade = if (time.isNil) { direction } { [direction, time.clip(0.1, time)] };
-		^this.putAll([\fade, fade]);
-	}
+    // Controls
+    a { |args|
+        this.amp(args);
+    }
 
-	in { |time|
-		this.fade("in", time);
-	}
+    amp { |args|
+        ^this.putAll([\amp, args]);
+    }
 
-	out { |time|
-		this.fade("out", time);
-	}
+    beat { |seed|
+        var pairs = [\beat, true];
 
-	rand { |folder|
-		^this.putAll([\buf, [folder, \rand]]);
-	}
+        if (seed.notNil and: seed.isInteger)
+        { pairs = pairs ++ [\seed, seed] };
 
-	rotate {
+        ^this.putAll(pairs);
+    }
+
+    dur { |args|
+        ^this.putAll([\dur, args]);
+    }
+
+    fade { |direction, time|
+        var fade = if (time.isNil)
+        { direction }
+        { [direction, time.clip(0.1, time)] };
+
+        ^this.putAll([\fade, fade]);
+    }
+
+    in { |time|
+        this.fade("in", time);
+    }
+
+    out { |time|
+        this.fade("out", time);
+    }
+
+    rand { |folder|
+        ^this.putAll([\buf, [folder, \rand]]);
+    }
+
+    rate { |args|
+        ^this.putAll([\rate, this.prCreatePattern(args)]);
+    }
+
+    rotate {
         ^this.putAll([\pan, \rotate]);
-	}
+    }
 
-	seed { |seed|
-		^this.putAll([\seed, seed]);
-	}
+    seed { |seed|
+        ^this.putAll([\seed, seed]);
+    }
 
-	solo {
-		^this.putAll([\solo, true]);
-	}
+    solo {
+        ^this.putAll([\solo, true]);
+    }
 
     trim { |startPosition|
         startPosition = if (startPosition.isNil)
-        { \random }
-        { startPosition.clip(0, 0.75).round(0.25) };
+        { \seq }
+        { startPosition.clip(0, 0.75) };
+
         ^this.putAll([\trim, startPosition]);
     }
 
     weight { |weight|
         ^this.putAll([\weight, weight.clip(0, 1)]);
-	}
+    }
 
-	// FX
-	delay { |mix, args|
-		this.fx(\delay, mix, args);
-	}
+    // FX
+    prFx { |fx, mix, args|
+        ^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, this.prCreatePattern(mix)] ++ args];
+    }
 
-	fx { |fx, mix, args|
-		mix = mix ?? 1;
-		^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, mix.clip(0, 1)] ++ args];
-	}
+    delay { |mix, args|
+        this.prFx(\delay, mix, args);
+    }
 
-	reverb { |mix, args|
-		this.fx(\reverb, mix, args);
-	}
+    reverb { |mix, args|
+        this.prFx(\reverb, mix, args);
+    }
 
-	wah { |mix, args|
-		this.fx(\wah, mix, args);
-	}
+    wah { |mix, args|
+        this.prFx(\wah, mix, args);
+    }
 }

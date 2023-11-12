@@ -16,7 +16,7 @@
         };
 
         if (value.isNumber)
-        { ^value.clip(0, 1) };
+        { ^value.clip(-1, 1) };
 
         ^value ?? 1;
     }

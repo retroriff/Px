@@ -1,5 +1,5 @@
 +Event {
-    prCreatePattern { |value|
+    prCreatePatternKey { |value|
         if (value == \rand)
         { ^Pwhite(0.0, 1) };
 
@@ -64,7 +64,7 @@
     }
 
     rate { |args|
-        ^this.putAll([\rate, this.prCreatePattern(args)]);
+        ^this.putAll([\rate, this.prCreatePatternKey(args)]);
     }
 
     rotate {
@@ -93,7 +93,7 @@
 
     // FX
     prFx { |fx, mix, args|
-        ^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, this.prCreatePattern(mix)] ++ args];
+        ^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)] ++ args];
     }
 
     delay { |mix, args|

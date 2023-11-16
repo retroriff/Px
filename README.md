@@ -6,8 +6,8 @@
 
 | Arg        | Value            | Description                                          |
 | ---------- | ---------------- | ---------------------------------------------------- |
-| `patterns` | Event[]          | An array containing all the patterns in Event format |
 | `name`     | string \| symbol | A user defined name for the generated Pdef           |
+| `patterns` | Event[]          | An array containing all the patterns in Event format |
 | `trace`    | boolean          | Print out the results of the streams                 |
 
 ### Pattern controls
@@ -15,6 +15,7 @@
 | Key      | Value                                          | Description                              |
 | -------- | ---------------------------------------------- | ---------------------------------------- |
 | `amp`    | number \| number[] \| Pattern                  | Amplification. An array generates a Pseq |
+| `dur`    | number \| number[] \| Pattern                  | Duration. An array generates a Pseq      |
 | `euclid` | [hits: number, duration: number, time: number] | Generates an Euclidian ryhthm            |
 
 ### Event methods
@@ -34,8 +35,8 @@
 | `seed`   | seed: integer                                                        | Generate a specific seed                                                                                                                                                                     |
 | `solo`   | None                                                                 | (\solo: true)                                                                                                                                                                                |
 | `trim`   | startPosition: 1.0                                                   | Plays a trimmed loop from a fixed position or random when startPosition is nil                                                                                                               |
-| `weight` | number                                                               | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 | `wah`    | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect                                                                                                                                                                            |
+| `weight` | number                                                               | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
 ### Class methods
 
@@ -53,3 +54,13 @@
 - `play`: [folder: string, file: number | \rand]
 
 ## Pmidi
+
+### Event methods
+
+| Name      | Arguments                                                                                                                   | Description                                                           |
+| --------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `apr`     | None                                                                                                                        | Creates a very basic arpegio                                          |
+| `control` | number, number \| Pattern \| \rand \| \wrand \| [symbol: \rand \| \wrand, value1: number, value2?: number, weight?: number] | Sends a controller message                                            |
+| `degree`  | number \| Pattern \| [symbol: \rand \| \wrand, value1: number, value2?: number, weight?: number]                            | The position of the notes within a scale                              |
+| `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
+| `holdOff` | None                                                                                                                        | Sends a note off message to stop a holded pattern                     |

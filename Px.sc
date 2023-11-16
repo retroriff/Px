@@ -1,21 +1,53 @@
 Px {
-    classvar chorus, defaultName = \px, <lastPatterns, seeds;
+    classvar chorus, defaultName = \px, <lastPatterns, <seeds;
 
     *new { | patterns, name, trace |
         var ptparList;
 
-        var getSeed = { |pattern|
-            var id = pattern[\id].asSymbol;
-            if (pattern[\seed].isNil) {
-                if (seeds.isNil)
-                { seeds = Dictionary[id -> 1000.rand] }
-                { seeds.add(id -> if (seeds[id].isNil) { 1000.rand } { seeds[id] }) };
-                seeds[id];
-            } { pattern[\seed] };
+        var copyPatternsToLastPatterns = {
+            if (lastPatterns.isNil)
+            { lastPatterns = Dictionary[name -> patterns] }
+            { lastPatterns[name] = patterns }
         };
 
-        var createRhythm = { |amp, pattern|
-            var seed = getSeed.(pattern);
+        var getSoloPatterns = {
+            var soloList = patterns.select { |pattern| pattern['solo'].notNil };
+            if (soloList.isEmpty.not)
+            { soloList }
+            { patterns }
+        };
+
+        var createBufIns = {
+            patterns.collect { |pattern|
+                pattern[\play].notNil.if {
+                    pattern = pattern ++ (i: \playbuf, buf: pattern[\play]);
+                    pattern.removeAt(\play);
+                };
+
+                pattern[\loop].notNil.if {
+                    pattern = pattern ++ (i: \lplay, buf: pattern[\loop]);
+                    pattern.removeAt(\loop);
+                };
+
+                pattern;
+            };
+        };
+
+        var createIds = {
+            var indexDict = Dictionary.new;
+            patterns.collect { |pattern|
+                var patternStr = pattern.i.asString;
+                indexDict[patternStr] = indexDict[patternStr].isNil.if
+                { 0 }
+                { indexDict[patternStr] + 1 };
+                pattern = pattern ++ (id: pattern[\id] ?? (patternStr ++ "_" ++ indexDict[patternStr]));
+            };
+
+            patterns;
+        };
+
+        var createPatternBeat = { |amp, pattern|
+            var seed = this.prGetPatternSeed(pattern);
             var weight = pattern[\weight] ?? 0.7;
             var rhythmWeight = (weight * 10).floor / 10;
             var pseqWeight = weight - rhythmWeight * 10;
@@ -32,17 +64,17 @@ Px {
             };
         };
 
-        var createAmp = { |pattern|
+        var createPatternAmp = { |pattern|
             var amp = pattern[\amp] ?? pattern[\a] ?? 1;
             pattern.removeAt(\a);
             if (pattern[\beat].notNil)
-            { amp = createRhythm.(amp, pattern) };
+            { amp = createPatternBeat.(amp, pattern) };
             if (amp.isArray)
             { amp = Pseq(amp, inf) };
             amp;
         };
 
-        var createDur = { |pattern|
+        var createPatternDur = { |pattern|
             var dur = pattern[\dur] ?? 1;
             if (dur == 0) { dur = 1 };
             if (dur.isArray) {
@@ -55,7 +87,7 @@ Px {
             dur;
         };
 
-        var createFade = { |fade, pbind|
+        var createPatternFade = { |fade, pbind|
             var defaultFadeTime = 16;
             var dir = if (fade.isString) { fade } { fade[0] };
             var fadeTime = if (fade.isString) { defaultFadeTime } { fade[1] };
@@ -64,7 +96,7 @@ Px {
             { PfadeOut(pbind, fadeTime) }
         };
 
-        var createFx = { |pattern|
+        var createPatternFx = { |pattern|
             if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
                 pattern[\fx].do { |fx, i|
                     if (SynthDescLib.global[fx[1]].notNil) {
@@ -78,36 +110,8 @@ Px {
             pattern;
         };
 
-        var createIds = {
-            var indexDict = Dictionary.new;
-            patterns = patterns.collect { |pattern|
-                var patternStr = pattern.i.asString;
-                indexDict[patternStr] = indexDict[patternStr].isNil.if
-                { 0 }
-                { indexDict[patternStr] + 1 };
-                pattern = pattern ++ (id: pattern[\id] ?? (patternStr ++ "_" ++ indexDict[patternStr]));
-            };
-            patterns;
-        };
-
-        var createIns = {
-            patterns = patterns.collect { |pattern|
-                pattern[\play].notNil.if {
-                    pattern = pattern ++ (i: \playbuf, buf: pattern[\play]);
-                    pattern.removeAt(\play);
-                };
-
-                pattern[\loop].notNil.if {
-                    pattern = pattern ++ (i: \lplay, buf: pattern[\loop]);
-                    pattern.removeAt(\loop);
-                };
-
-                pattern;
-            };
-        };
-
         var createLoops = {
-            patterns = patterns.collect { |pattern|
+            patterns.do { |pattern|
                 if (pattern[\buf].notNil) {
                     var filesCount = ~buf.(pattern[\buf][0]).size;
 
@@ -120,7 +124,7 @@ Px {
                                 var initialBuf = (~buf.(pattern[\buf][0]).size).rand;
                                 var buf = Array.fill(minLength, initialBuf);
                                 var rest = (steps - minLength) / minLength;
-                                thisThread.randSeed = getSeed.(pattern);
+                                thisThread.randSeed = this.prGetPatternSeed(pattern);
                                 rest.do({
                                     var newBuf = (~buf.(pattern[\buf][0]).size).rand;
                                     buf = buf ++ Array.fill(minLength, newBuf);
@@ -134,7 +138,7 @@ Px {
                         };
 
                         var getRandBufs = {
-                            thisThread.randSeed = getSeed.(pattern);
+                            thisThread.randSeed = this.prGetPatternSeed(pattern);
                             Pseq(~buf.(pattern[\buf][0], Array.rand(8, 0, filesCount - 1)), inf);
                         };
 
@@ -151,7 +155,7 @@ Px {
 
                         if (pattern[\buf][1].isNil)
                         {
-                            thisThread.randSeed = getSeed.(pattern);
+                            thisThread.randSeed = this.prGetPatternSeed(pattern);
                             buf = ~buf.(pattern[\buf][0], (~buf.(pattern[\buf][0]).size).rand);
                         };
 
@@ -169,43 +173,31 @@ Px {
                     }
                     { pattern[\amp] = 0 };
                 };
-
-                pattern;
             };
         };
 
-        var createPan = { |pattern|
+        var createPatternPan = { |pattern|
             switch (pattern[\pan].asSymbol)
             { \rand } { Pwhite(-1.0, 1.0, inf) }
             { \rotate } { Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf), startPos: 5) }
             { pattern[\pan] };
         };
 
-        var getSoloPatterns = {
-            var soloList = patterns.select { |pattern| pattern['solo'].notNil };
-            if (soloList.isEmpty.not)
-            { soloList }
-            { patterns }
-        };
-
         name = name ?? defaultName;
-        lastPatterns = if (lastPatterns.isNil)
-        { Dictionary[name -> patterns] }
-        { lastPatterns[name] = patterns };
-
+        copyPatternsToLastPatterns.value;
         patterns = getSoloPatterns.value;
-        patterns = createIns.value;
+        patterns = createBufIns.value;
         patterns = createIds.value;
         patterns = createLoops.value;
 
         patterns.do { |pattern, i|
             var hasFx, pbind;
 
-            pattern[\amp] = createAmp.(pattern);
-            pattern[\dur] = createDur.(pattern);
-            pattern[\pan] = createPan.(pattern);
+            pattern[\amp] = createPatternAmp.(pattern);
+            pattern[\dur] = createPatternDur.(pattern);
+            pattern[\pan] = createPatternPan.(pattern);
 
-            pattern = createFx.(pattern);
+            pattern = createPatternFx.(pattern);
             if (pattern[\fxOrder].notNil) { hasFx = true };
 
             if (hasFx == true)
@@ -213,7 +205,7 @@ Px {
             { pbind = Pbind(*pattern.asPairs) };
 
             if (pattern[\fade].notNil)
-            { pbind = createFade.(pattern[\fade], pbind) };
+            { pbind = createPatternFade.(pattern[\fade], pbind) };
 
             if (trace == true)
             { pbind = pbind.trace };
@@ -278,7 +270,19 @@ Px {
         { SynthDescLib.global[synthDef].postln };
     }
 
-    *trace { | name = \px |
-        this.send(lastPatterns[name], name, trace: true);
+    *trace { | name |
+        this.send(lastPatterns[name], name ?? defaultName, trace: true);
+    }
+
+    *prGetPatternSeed { |pattern|
+        var id = pattern[\id].asSymbol;
+        if (pattern[\seed].isNil) {
+            if (seeds.isNil)
+            { seeds = Dictionary[id -> 1000.rand] }
+            { seeds.add(id -> if (seeds[id].isNil) { 1000.rand } { seeds[id] }) };
+            ^seeds[id];
+        } {
+            ^pattern[\seed]
+        };
     }
 }

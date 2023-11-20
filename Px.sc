@@ -71,7 +71,8 @@ Px {
             { amp = createPatternBeat.(amp, pattern) };
             if (amp.isArray)
             { amp = Pseq(amp, inf) };
-            amp;
+            pattern[\amp] = amp;
+            pattern;
         };
 
         var createPatternDur = { |pattern|
@@ -84,7 +85,8 @@ Px {
             if (dur.isString) { dur = 1 };
             if (pattern[\euclid].notNil)
             { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) / pattern[\euclid][2] };
-            dur;
+            pattern[\dur] = dur;
+            pattern;
         };
 
         var createPatternFade = { |fade, pbind|
@@ -94,20 +96,6 @@ Px {
             if (dir == "in")
             { PfadeIn(pbind, fadeTime) }
             { PfadeOut(pbind, fadeTime) }
-        };
-
-        var createPatternFx = { |pattern|
-            if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
-                pattern[\fx].do { |fx, i|
-                    if (SynthDescLib.global[fx[1]].notNil) {
-                        if (fx == \reverb)
-                        { fx = fx ++ [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, 1] };
-                        pattern[\fx][i] = fx;
-                        pattern = pattern ++ [\fxOrder, (1..pattern[\fx].size)];
-                    }
-                }
-            };
-            pattern;
         };
 
         var createLoops = {
@@ -177,10 +165,11 @@ Px {
         };
 
         var createPatternPan = { |pattern|
-            switch (pattern[\pan].asSymbol)
+            pattern[\pan] = switch (pattern[\pan].asSymbol)
             { \rand } { Pwhite(-1.0, 1.0, inf) }
             { \rotate } { Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf), startPos: 5) }
             { pattern[\pan] };
+            pattern;
         };
 
         name = name ?? defaultName;
@@ -191,17 +180,15 @@ Px {
         patterns = createLoops.value;
 
         patterns.do { |pattern, i|
-            var hasFx, pbind;
+            var pbind;
 
-            pattern[\amp] = createPatternAmp.(pattern);
-            pattern[\dur] = createPatternDur.(pattern);
-            pattern[\pan] = createPatternPan.(pattern);
+            pattern = createPatternAmp.(pattern);
+            pattern = createPatternDur.(pattern);
+            pattern = createPatternPan.(pattern);
+            pattern = this.prCreatePatternFx(pattern);
 
-            pattern = createPatternFx.(pattern);
-            if (pattern[\fxOrder].notNil) { hasFx = true };
-
-            if (hasFx == true)
-            { pbind = PbindFx(pattern.asPairs, *pattern[\fx]) }
+            if (this.prHasFX(pattern) == true)
+            { pbind = this.prCreatePbindFx(pattern) }
             { pbind = Pbind(*pattern.asPairs) };
 
             if (pattern[\fade].notNil)
@@ -212,6 +199,7 @@ Px {
 
             ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
         };
+
         Pdef(name.asSymbol, Ptpar(ptparList)).quant_(4).play;
     }
 

@@ -1,27 +1,4 @@
 +Event {
-    prCreatePatternKey { |value|
-        if (value == \rand)
-        { ^Pwhite(0.0, 1) };
-
-        if (value.isArray) {
-            if (value[0] == \wrand) {
-                var item1 = value[1].clip(-1, 1);
-                var item2 = value[2].clip(-1, 1);
-                var weight = value[3].clip(0, 1);
-                ^Pwrand([item1, item2], [1 - weight, weight], inf);
-            };
-            if (value[0] == \rand) {
-                ^Pwhite(value[1], value[2])
-            };
-        };
-
-        if (value.isNumber)
-        { ^value.clip(-1, 1) };
-
-        ^value ?? 1;
-    }
-
-    // Controls
     a { |args|
         this.amp(args);
     }
@@ -59,14 +36,6 @@
         this.fade("out", time);
     }
 
-    rand { |folder|
-        ^this.putAll([\buf, [folder, \rand]]);
-    }
-
-    rate { |args|
-        ^this.putAll([\rate, this.prCreatePatternKey(args)]);
-    }
-
     rotate {
         ^this.putAll([\pan, \rotate]);
     }
@@ -79,32 +48,29 @@
         ^this.putAll([\solo, true]);
     }
 
-    trim { |startPosition|
-        startPosition = if (startPosition.isNil)
-        { \seq }
-        { startPosition.clip(0, 0.75) };
-
-        ^this.putAll([\trim, startPosition]);
-    }
-
     weight { |weight|
         ^this.putAll([\weight, weight.clip(0, 1)]);
     }
 
-    // FX
-    prFx { |fx, mix, args|
-        ^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)] ++ args];
-    }
+    prCreatePatternKey { |value|
+        if (value == \rand)
+        { ^Pwhite(0.0, 1) };
 
-    delay { |mix, args|
-        this.prFx(\delay, mix, args);
-    }
+        if (value.isArray) {
+            if (value[0] == \wrand) {
+                var item1 = value[1].clip(-1, 1);
+                var item2 = value[2].clip(-1, 1);
+                var weight = value[3].clip(0, 1);
+                ^Pwrand([item1, item2], [1 - weight, weight], inf);
+            };
+            if (value[0] == \rand) {
+                ^Pwhite(value[1], value[2])
+            };
+        };
 
-    reverb { |mix, args|
-        this.prFx(\reverb, mix, args);
-    }
+        if (value.isNumber)
+        { ^value.clip(-1, 1) };
 
-    wah { |mix, args|
-        this.prFx(\wah, mix, args);
+        ^value ?? 1;
     }
 }

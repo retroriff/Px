@@ -4,7 +4,6 @@ Pmidi : Px {
     *new { | patterns, name |
         var degreesWithVariations = { |pattern, degreesList, numOctaves = 1|
             if (pattern[\arp].notNil) {
-                degreesList.postln;
                 degreesList = degreesList.collect { |degree|
                     degree + (0..numOctaves).flat.collect { |oct| oct * 7 };
                 };
@@ -15,17 +14,17 @@ Pmidi : Px {
         };
 
         var createRandomDegrees = { |pattern, size, degrees|
+            var randomDegrees = Array.newClear(size);
             thisThread.randSeed = super.prGetPatternSeed(pattern);
-            Array.rand(size, 0, degrees[degrees.size - 1]);
+            randomDegrees = size.collect { degrees.choose };
         };
 
         var composeMelody = { |pattern|
             if (pattern[\degree].isArray and: { pattern[\degree][0] == \rand }) {
                 var scaleDegrees = Scale.at(pattern[\degree][1].asSymbol).degrees;
                 var degreesList = createRandomDegrees.(pattern, pattern[\degree][2], scaleDegrees);
-                pattern[\degree] = Pseq(degreesWithVariations.(pattern, degreesList), inf).trace;
+                pattern[\degree] = Pseq(degreesWithVariations.(pattern, degreesList), inf);
             };
-
             pattern[\degree];
         };
 

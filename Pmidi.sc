@@ -1,7 +1,7 @@
 Pmidi : Px {
     classvar <midiClient, defaultName = \pmidi;
 
-    *new { | patterns, name |
+    *new { | patterns, name, quant, trace|
         var degreesWithVariations = { |pattern, degreesList, numOctaves = 1|
             if (pattern[\arp].notNil) {
                 degreesList = degreesList.collect { |degree|
@@ -39,7 +39,7 @@ Pmidi : Px {
                     \ins: \midi,
                 ]);
             };
-            ^super.new(patterns, name ?? defaultName);
+            ^super.new(patterns, name ?? defaultName, quant, trace);
         };
 
         if (MIDIClient.initialized == true)

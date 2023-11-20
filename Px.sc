@@ -1,7 +1,7 @@
 Px {
     classvar chorus, defaultName = \px, <lastPatterns, <seeds;
 
-    *new { | patterns, name, trace |
+    *new { | patterns, name, quant = 4, trace |
         var ptparList;
 
         var copyPatternsToLastPatterns = {
@@ -117,7 +117,7 @@ Px {
             ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
         };
 
-        Pdef(name.asSymbol, Ptpar(ptparList)).quant_(4).play;
+        Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant).play;
     }
 
     *chorus { | name |
@@ -147,11 +147,11 @@ Px {
         chorus = lastPatterns[name ?? defaultName];
     }
 
-    *send { | patterns, name, trace |
+    *send { | patterns, name, quant, trace |
         name = name ?? defaultName;
         trace = trace ?? false;
         if (Pdef(name).isPlaying)
-        { this.new(patterns, name, trace) }
+        { this.new(patterns, name, quant, trace) }
         { "Pdef(\\".catArgs(name, ") is not playing").postln; }
     }
 

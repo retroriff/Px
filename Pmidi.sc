@@ -2,15 +2,14 @@ Pmidi : Px {
     classvar <midiClient, defaultName = \pmidi;
 
     *new { | patterns, name, quant, trace|
-        var degreesWithVariations = { |pattern, degreesList, numOctaves = 1|
+        var degreesWithVariations = { |pattern, degrees, numOctaves = 1|
             if (pattern[\arp].notNil) {
-                degreesList = degreesList.collect { |degree|
+                degrees = degrees.collect { |degree|
                     degree + (0..numOctaves).flat.collect { |oct| oct * 7 };
                 };
-                degreesList = degreesList.as(Array).flat;
+                degrees = degrees.as(Array).flat;
             };
-
-            degreesList;
+            degrees;
         };
 
         var createRandomDegrees = { |pattern, size, degrees|
@@ -19,32 +18,51 @@ Pmidi : Px {
             randomDegrees = size.collect { degrees.choose };
         };
 
-        var composeMelody = { |pattern|
-            if (pattern[\degree].isArray and: { pattern[\degree][0] == \rand }) {
-                var scaleDegrees = Scale.at(pattern[\degree][1].asSymbol).degrees;
-                var degreesList = createRandomDegrees.(pattern, pattern[\degree][2], scaleDegrees);
-                pattern[\degree] = Pseq(degreesWithVariations.(pattern, degreesList), inf);
+        var isMidiControl = { |pattern|
+            if (pattern[\hasGate] == false or: { pattern[\midicmd] == \noteOff })
+            { true }
+        };
+
+        var getLength = { |pattern|
+            if (isMidiControl.(pattern) == true)
+            { 1 }
+            { inf }
+        };
+
+        var createDegrees = { |pattern|
+            if (pattern[\degree].isArray) {
+                var degrees = pattern[\degree][0];
+                var length = getLength.(pattern);
+                if (degrees == \rand) {
+                    var scaleDegrees = Scale.at(pattern[\degree][1].asSymbol).degrees;
+                    degrees = createRandomDegrees.(pattern, pattern[\degree][2], scaleDegrees);
+                };
+                pattern[\degree] = Pseq(degreesWithVariations.(pattern, degrees), length);
             };
+
             pattern[\degree];
         };
 
         var createPatterns = {
             patterns.collect { |pattern|
-                pattern.putAll([
-                    \type: \midi,
-                    \midicmd: pattern[\midicmd] ?? \noteOn,
-                    \midiout: midiClient,
-                    \chan, pattern[\chan] ?? 0,
-                    \degree: composeMelody.(pattern) ?? 0,
-                    \ins: \midi,
-                ]);
+                pattern.putAll([\degree: createDegrees.(pattern) ?? 0 ]);
+                if (pattern[\chan].notNil) {
+                    pattern.putAll([
+                        \type: \midi,
+                        \midicmd: pattern[\midicmd] ?? \noteOn,
+                        \midiout: midiClient,
+                        \chan, pattern[\chan] ?? 0,
+                        \degree: createDegrees.(pattern) ?? 0,
+                        \ins: \midi
+                    ]);
+                }
             };
             ^super.new(patterns, name ?? defaultName, quant, trace);
         };
 
         if (MIDIClient.initialized == true)
         { createPatterns.value }
-        { "MIDIClient not initialized. Use Pmidi.init".postln; }
+        { super.prPrint("MIDIClient not initialized. Use Pmidi.init") }
     }
 
     *init { | latency |
@@ -53,12 +71,20 @@ Pmidi : Px {
         midiClient.latency = latency ?? 0.2;
     }
 
+    *release { | fadeTime, name |
+        ^super.release(fadeTime, name ?? defaultName);
+    }
+
     *shuffle { | name |
         ^super.shuffle(name ?? defaultName);
     }
 
     *stop { | name |
         ^super.stop(name ?? defaultName);
+    }
+
+    *trace { | name |
+        ^super.trace(name ?? defaultName);
     }
 }
 
@@ -114,15 +140,15 @@ Pmidi : Px {
     }
 
     degree { |value, scale, size|
-        var degreeValue;
+        var pattern;
 
         if (value.isInteger)
-        { degreeValue = value };
+        { value = [value] };
 
-        if (value.isArray)
-        { degreeValue = Pseq(value, inf) };
+        if (value.isKindOf(Pattern))
+        { pattern = value };
 
-        ^this ++ (\degree: degreeValue ?? [value, scale, size]);
+        ^this ++ (\degree: pattern ?? [value, scale, size]);
     }
 
     hold {
@@ -130,7 +156,7 @@ Pmidi : Px {
     }
 
     holdOff {
-        ^this ++ (\midicmd: \noteOff) ++ this.prSendSingleMessage;
+        ^this ++ (\midicmd: \allNotesOff) ++ this.prSendSingleMessage;
     }
 
     prSendSingleMessage {

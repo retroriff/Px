@@ -55,6 +55,14 @@
 
 ## Pmidi
 
+Custom pattern player designed to handle degrees, and can send MIDI messages based on incoming pattern data. It helps manage MIDI-related functionalities within SuperCollider, providing a way to control MIDI events and output.
+
+When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\midi` event type. All the necessary default commands are added automatically, like `\midicmd`, `\allNotesOff`, `\control`, or `\noteOn`.
+
+### Class methods
+
+- `init`: Initializes the MIDIClient. Latency can be passed as argument.
+
 ### Event methods
 
 | Name      | Arguments                                                                                                                   | Description                                                           |
@@ -63,4 +71,4 @@
 | `control` | number, number \| Pattern \| \rand \| \wrand \| [symbol: \rand \| \wrand, value1: number, value2?: number, weight?: number] | Sends a controller message                                            |
 | `degree`  | number \| Pattern \| [symbol: \rand \| \wrand, value1: number, value2?: number, weight?: number]                            | The position of the notes within a scale                              |
 | `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
-| `holdOff` | None                                                                                                                        | Sends a note off message to stop a holded pattern                     |
+| `holdOff` | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |

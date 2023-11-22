@@ -19,15 +19,13 @@ Px {
 
         var createIds = {
             var indexDict = Dictionary.new;
-            patterns.collect { |pattern|
+            patterns = patterns.collect { |pattern|
                 var patternStr = pattern.i.asString;
                 indexDict[patternStr] = indexDict[patternStr].isNil.if
                 { 0 }
                 { indexDict[patternStr] + 1 };
                 pattern = pattern ++ (id: pattern[\id] ?? (patternStr ++ "_" ++ indexDict[patternStr]));
             };
-
-            patterns;
         };
 
         var createPatternBeat = { |amp, pattern|
@@ -122,7 +120,7 @@ Px {
 
     *chorus { | name |
         if (chorus.isNil)
-        { "Chorus is empty. Please run \"save\"".postln; }
+        { this.prPrint("Chorus is empty. Please run \"save\"") }
         { this.new(chorus, name) }
     }
 
@@ -152,17 +150,22 @@ Px {
         trace = trace ?? false;
         if (Pdef(name).isPlaying)
         { this.new(patterns, name, quant, trace) }
-        { "Pdef(\\".catArgs(name, ") is not playing").postln; }
+        { this.prPrint("Pdef(\\".catArgs(name, ") is not playing")) }
     }
 
     *shuffle { | name |
+        this.prCreateNewSeeds;
+        name = name ?? defaultName;
+        name.postln;
+        this.send(lastPatterns[name], name);
+    }
+
+    *prCreateNewSeeds {
         seeds.order.do { |id|
             var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
-            id.post; " ->".scatArgs(newSeed).postln;
+            this.prPrint("Shuffle:".scatArgs(id, " ->", newSeed));
             seeds[id] = newSeed;
         };
-        name = name ?? defaultName;
-        this.send(lastPatterns[name], name);
     }
 
     *stop {  | name |
@@ -172,7 +175,7 @@ Px {
 
     *synthDef { | synthDef |
         if (synthDef.notNil)
-        { SynthDescLib.global[synthDef].postln };
+        { this.prPrint(SynthDescLib.global[synthDef]) };
     }
 
     *trace { | name |
@@ -189,5 +192,9 @@ Px {
         } {
             ^pattern[\seed]
         };
+    }
+
+    *prPrint { | value |
+        value.postln;
     }
 }

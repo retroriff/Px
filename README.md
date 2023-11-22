@@ -1,4 +1,4 @@
-# Px: A patterns builder class for SuperCollider
+# Px: A patterns player class for SuperCollider
 
 ## Px
 

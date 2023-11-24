@@ -36,6 +36,10 @@
         this.fade("out", time);
     }
 
+    px { |name, quant, trace|
+        Px([this], name, quant, trace);
+    }
+
     rotate {
         ^this.putAll([\pan, \rotate]);
     }

@@ -124,7 +124,7 @@ Px {
         { this.new(chorus, name) }
     }
 
-    gui {
+    *gui {
         PdefAllGui.new;
     }
 
@@ -179,7 +179,8 @@ Px {
     }
 
     *trace { | name |
-        this.send(lastPatterns[name], name ?? defaultName, trace: true);
+        name = name ?? defaultName;
+        this.send(lastPatterns[name], name, trace: true);
     }
 
     *prGetPatternSeed { |pattern|

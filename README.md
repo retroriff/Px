@@ -34,7 +34,7 @@
 | `rotate` | None                                                                 | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
 | `seed`   | seed: integer                                                        | Generate a specific seed                                                                                                                                                                     |
 | `solo`   | None                                                                 | (\solo: true)                                                                                                                                                                                |
-| `trim`   | startPosition: 1.0                                                   | Plays a trimmed loop from a fixed position or random when startPosition is nil                                                                                                               |
+| `trim`   | startPosition?: 1.0                                                  | Plays a trimmed loop from a fixed position or random when startPosition is nil                                                                                                               |
 | `wah`    | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect                                                                                                                                                                            |
 | `weight` | number                                                               | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
@@ -53,22 +53,29 @@
 - `loop`: [folder: string, file: number | \jump | \rand]
 - `play`: [folder: string, file: number | \rand]
 
-## Pmidi
+## Pnotes
 
-Custom pattern player designed to handle degrees, and can send MIDI messages based on incoming pattern data. It helps manage MIDI-related functionalities within SuperCollider, providing a way to control MIDI events and output.
-
-When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\midi` event type. All the necessary default commands are added automatically, like `\midicmd`, `\allNotesOff`, `\control`, or `\noteOn`.
-
-### Class methods
-
-- `init`: Initializes the MIDIClient. Latency can be passed as argument.
+Custom pattern player designed to handle degrees, and can send MIDI messages based on incoming pattern data. It also helps to manage MIDI-related functionalities within SuperCollider, providing a way to control MIDI events and output.
 
 ### Event methods
 
+| Name     | Arguments                                                           | Description                  |
+| -------- | ------------------------------------------------------------------- | ---------------------------- |
+| `arp`    | None                                                                | Creates a very basic arpegio |
+| `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                 |
+
+### MIDI
+
+When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\midi` event type. All the necessary default commands are added automatically, like `\midicmd`, `\allNotesOff`, `\control`, or `\noteOn`.
+
+#### MIDI methods
+
+- `Pmidi.init`: Initializes the MIDIClient. Latency can be passed as argument.
+
+#### MIDI event methods
+
 | Name      | Arguments                                                                                                                   | Description                                                           |
 | --------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `apr`     | None                                                                                                                        | Creates a very basic arpegio                                          |
 | `control` | number, number \| Pattern \| \rand \| \wrand \| [symbol: \rand \| \wrand, value1: number, value2?: number, weight?: number] | Sends a controller message                                            |
-| `degree`  | number \| Pattern \| [symbol: \rand \| \wrand, value1: number, value2?: number, weight?: number]                            | The position of the notes within a scale                              |
 | `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
 | `holdOff` | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |

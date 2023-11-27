@@ -1,5 +1,5 @@
-Pnotes : Px {
-    classvar defaultName = \pnotes, <midiClient;
+Play : Px {
+    classvar defaultName = \play, <midiClient;
 
     *new { | patterns, name, quant, trace|
         var degreesWithVariations = { |pattern, degrees, numOctaves = 1|
@@ -12,7 +12,7 @@ Pnotes : Px {
             degrees;
         };
 
-        var createRandomDegrees = { |pattern, size|
+        var createRandomDegrees = { |pattern, size = 1|
             var scale = pattern[\degree][1] ?? \minor;
             var scaleDegrees = Scale.at(scale.asSymbol).degrees;
             var randomDegrees = Array.newClear(size);
@@ -25,7 +25,7 @@ Pnotes : Px {
                 var degrees = pattern[\degree][0];
                 var length = pattern[\midiControl] ?? inf;
                 if (degrees == \rand) {
-                    degrees = createRandomDegrees.(pattern, size: pattern[\degree][2] ?? 1);
+                    degrees = createRandomDegrees.(pattern, size: pattern[\degree][2]);
                 };
                 pattern[\degree] = Pseq(degreesWithVariations.(pattern, degrees), length);
             };
@@ -38,8 +38,6 @@ Pnotes : Px {
         };
 
         patterns = this.prCreateMidiPatterns(patterns);
-
-        patterns.postln;
 
         ^super.new(patterns, name ?? defaultName, quant, trace);
     }

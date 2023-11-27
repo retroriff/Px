@@ -28,6 +28,10 @@
         ^this.putAll([\fade, fade]);
     }
 
+    fill {
+        ^this.putAll([\fill, true]);
+    }
+
     in { |time|
         this.fade("in", time);
     }

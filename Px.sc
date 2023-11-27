@@ -46,11 +46,34 @@ Px {
             };
         };
 
-        var createPatternAmp = { |pattern|
+        var createPatternFillFromBeat = { |amp, i, pattern|
+            var steps = 16;
+            var getInvertBeat = { |beatAmp|
+                var invertBeat = beatAmp.iter.loop.nextN(steps).linlin(0, 1, 1, Rest());
+                var weight = pattern[\weight] ?? 1;
+                invertBeat.collect { |step|
+                    if (step == 1)
+                    { step = [0, 1].wchoose([1 - weight, weight]) };
+                    step;
+                };
+            };
+            var getTotalBeat = { |invertBeat|
+                var beat = pattern[\totalBeat] ?? Array.fill(steps, 0);
+                (beat + invertBeat).collect { |step| step.clip(0, 1) };
+            };
+            var invertBeat = getInvertBeat.(patterns[i - 1][\amp]);
+            var totalBeat = getTotalBeat.(invertBeat);
+            pattern[i] = pattern[i] ++ (\totalBeat: totalBeat);
+            totalBeat;
+        };
+
+        var createPatternAmp = { |pattern, i|
             var amp = pattern[\amp] ?? pattern[\a] ?? 1;
             pattern.removeAt(\a);
             if (pattern[\beat].notNil)
-            { amp = createPatternBeat.(amp, pattern) };
+            { amp = createPatternBeat.(amp, pattern); amp.postln; };
+            if (pattern[\fill].notNil)
+            { amp = createPatternFillFromBeat.(amp, i, pattern) };
             if (amp.isArray)
             { amp = Pseq(amp, inf) };
             pattern[\amp] = amp;
@@ -97,7 +120,7 @@ Px {
 
         patterns.do { |pattern, i|
             var pbind;
-            pattern = createPatternAmp.(pattern);
+            pattern = createPatternAmp.(pattern, i);
             pattern = createPatternDur.(pattern);
             pattern = createPatternPan.(pattern);
             pattern = this.prCreatePatternFx(pattern);
@@ -156,7 +179,6 @@ Px {
     *shuffle { | name |
         this.prCreateNewSeeds;
         name = name ?? defaultName;
-        name.postln;
         this.send(lastPatterns[name], name);
     }
 
@@ -174,7 +196,8 @@ Px {
     }
 
     *synthDef { | synthDef |
-        if (synthDef.notNil)
+        if (synthDef.isNil)
+        { SynthDescLib.global.browse }
         { this.prPrint(SynthDescLib.global[synthDef]) };
     }
 

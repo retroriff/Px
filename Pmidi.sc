@@ -1,10 +1,10 @@
 Pmidi {
     *init { | latency |
-        Pnotes.initMidi(latency);
+        Play.initMidi(latency);
     }
 }
 
-+Pnotes {
++Play {
     *prCreateMidiPatterns { | patterns|
         var isMidiControl = { |pattern|
             if (pattern[\hasGate] == false or: { pattern[\midicmd] == \noteOff })

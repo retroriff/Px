@@ -26,6 +26,7 @@
 | `beat`   | seed?: integer                                                       | Generates a random rhythm                                                                                                                                                                    |
 | `delay`  | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a delay effect                                                                                                                                                                          |
 | `dur`    | number \| number[] \| Pattern                                        | Duration                                                                                                                                                                                     |
+| `fill`   | None                                                                 | Fills the rests gap of its previous pattern beat                                                                                                                                             |
 | `in`     | Seconds?: integer                                                    | (\fade: "in")                                                                                                                                                                                |
 | `out`    | Seconds?: integer                                                    | (\fade: "out")                                                                                                                                                                               |
 | `pan`    | number \| \rand \| \rotate \| Pattern                                | Pan                                                                                                                                                                                          |
@@ -46,6 +47,7 @@
 - `save`: Saves a chorus
 - `shuffle`: Generates new random seeds
 - `stop`: Stops the Pdef
+- `synthDef`: Browse global synthDefs. If a synthDef name is provided, it returns its arguments
 - `trace`: print out the results of the streams
 
 ### Buf loopers
@@ -53,7 +55,7 @@
 - `loop`: [folder: string, file: number | \jump | \rand]
 - `play`: [folder: string, file: number | \rand]
 
-## Pnotes
+## Play
 
 Custom pattern player designed to handle degrees, and can send MIDI messages based on incoming pattern data. It also helps to manage MIDI-related functionalities within SuperCollider, providing a way to control MIDI events and output.
 

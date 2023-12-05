@@ -26,7 +26,7 @@
 | `beat`   | seed?: integer                                                       | Generates a random rhythm                                                                                                                                                                    |
 | `delay`  | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a delay effect                                                                                                                                                                          |
 | `dur`    | number \| number[] \| Pattern                                        | Duration                                                                                                                                                                                     |
-| `fill`   | None                                                                 | Fills the rests gap of its previous pattern beat                                                                                                                                             |
+| `fill`   | None                                                                 | Fills the rests gap of its previous pattern. Due to its dependency with the previous item, using solo can generate an error. We can mute patterns using `a: 0` instead                       |
 | `in`     | Seconds?: integer                                                    | (\fade: "in")                                                                                                                                                                                |
 | `out`    | Seconds?: integer                                                    | (\fade: "out")                                                                                                                                                                               |
 | `pan`    | number \| \rand \| \rotate \| Pattern                                | Pan                                                                                                                                                                                          |
@@ -42,13 +42,16 @@
 ### Class methods
 
 - `chorus`: Plays a chorus
+- `delay`: Adds delay FX to all patterns
 - `gui`: A gui showing all Pdefs
 - `release`: nil | integer
+- `reverb`: Adds reverb FX to all patterns
 - `save`: Saves a chorus
 - `shuffle`: Generates new random seeds
 - `stop`: Stops the Pdef
 - `synthDef`: Browse global synthDefs. If a synthDef name is provided, it returns its arguments
 - `trace`: print out the results of the streams
+- `wah`: Adds delay FX to all patterns
 
 ### Buf loopers
 

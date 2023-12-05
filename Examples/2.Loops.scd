@@ -71,5 +71,12 @@ Px ([
 ]).trace;
 )
 
+// Play also accepts degree
+(
+Px([
+    (play: ["fm"]).degree(\rand, \minor, 3),
+]);
+)
+
 // That's all for now
 Px.stop;

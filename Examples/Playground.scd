@@ -1,7 +1,7 @@
 (
 Px ([
-    // (i: \BD, \dur: 1, amp: 1.2).reverb(1).delay(0.2),
-    (i: \BD, \dur: 1/2, id: \BD, amp: 0.8).beat.weight(0.23).reverb(0.6),
+    // (i: \BD, \dur: 1, amp: 1),
+    (i: \BD, \dur: 1/2, id: \BD, amp: 1).beat.weight(0.23).reverb(0.6),
     // (i: \CP, \dur: 2, off: 1).beat(25).weight(0.34).delay(0),
     // (play: ["michael", 0], \dur: 1/4).beat().weight(0.02).reverb(\rand),
     // (i: \SN, dur: 2, off: 1).delay(mix: 0.5, args: [\decay: 8]).reverb(0.3),
@@ -30,7 +30,7 @@ Px ([
     // (play:["games", 1], dur: 8, off: 2),
 
     // (play: ["fm", \rand], dur: 1/4, off: 2, pan: \rand, amp: 0.5).beat.weight(0.12).reverb(Pwhite(0.0, 1)).delay(0.3),
-    (play: ["gl1", 1], dur: 1/4, off: 0.5, pan: \rand, amp: 0.7).beat.weight(0.36).delay(\rand).reverb(\rand),
+    (play: ["gl1", 2], dur: 1/4, off: 0.5, pan: \rand, amp: 0.7).beat.weight(0.36).delay(\rand).reverb(\rand),
     (play:["breath", 0], \dur: 8).delay(\rand).weight(0.4).reverb(\rand),
     // (play:["breath", 1], dur: 8, off: 2),
 
@@ -38,6 +38,23 @@ Px ([
     // (play: ["fm", 17], dur: 16, off: 0.5, rate: 1, amp: 0.7).delay(0.5).reverb(0.6),
 ]);
 )
+
+Pmidi.init(0.195, deviceName: "TR-08");
+
+(
+TR08([
+    (i: \bd, dur: 1).beat.weight(0.4),
+    (chan: 0, dur: 1/4, midinote: 38, i: \sn).fill.weight(0.42),
+    (chan: 0, dur: 1/4, midinote: 42, i: \ch).beat.weight(0.82),
+    (chan: 0, dur: 1/4, midinote: 70, i: \ma).fill.weight(0.82),
+]);
+)
+
+MIDIClient.destinations
+MIDIClient.destinations[port].uid
+Pmidi.init
+
+MIDIOut.newByName("TR-08", "TR-08");
 
 Px.lastPatterns
 Px.release
@@ -48,20 +65,88 @@ Px.shuffle
 Px.synthDef(\BD)
 
 SynthDescLib.all.postln
+MIDIClient.sources
+MIDIClient.destinations
+MIDIClient.myoutports
 
 a = Scale.at(\minor).degrees
 Scale.minor.degrees.postln;
-Pmidi.init;
-'''''''''''''''''''''''''''''''''''¡
+
+
+
+(
+var eve = (i: \bd);
+var tr08 = Dictionary[
+    \bd -> 36,
+    \rm -> 37,
+    \sn -> 38,
+    \cp -> 39,
+    \lt -> 43,
+    \ch -> 42,
+    \oh -> 46,
+    \mt -> 47,
+    \cy -> 49,
+    \ht -> 50,
+    \cb -> 56,
+    \ht -> 62,
+    \mt -> 63,
+    \lt -> 64,
+    \ma -> 70,
+    \cl -> 75,
+];
+tr08[eve[\i]];
+)
+(
+var length = inf;
+MIDIClient.init;
+v = MIDIOut.newByName("TR-08", "TR-08");
+// v.noteOn(0, note: 36);
+
+Pdef(\test, Pbind(
+    \type, \midi,
+    \midicmd, \noteOn,
+    \midiout, v,
+    \chan, 0,
+    \midinote, Pseq([36], inf),
+    \dur, 1
+)).play;
+)
+
+
+(
+Px([
+    (play: ["fm"]).degree([0, -1]),
+]);
+)
+
 (
 Play([
     // (i: \everythingrhodes, octave: 4, dur: 1, \legato: 1, amp: 0.4).degree(\rand, \dorian, 2).weight(0.34).arp,
-    (id: \bass, i: \everythingrhodes, \dur: 8, octave: 2, a: 0.2).degree(\rand, \minor, 4).beat.delay(0.2).reverb(\rand),
-    (\chan: 0).control(0, 0.7),
+    (id: \bass, chan: 0, \dur: 1/4, octave: 4, a: 0.2).degree(\rand, \phrygian, 4).beat.seed(96),
+    (\chan: 2).control(0, 0.7),
 
-    (id: \drone, \chan: 1, octave: 8).degree(\rand, \minor, 1).holdOff,
-    (\chan: 1).control(0, 0.2),
-]).shuffle;
+    // (id: \drone, \chan: 1, octave: 8).degree(\rand, \minor, 1).holdOff,
+    // (\chan: 1).control(0, 0.2),
+]);
+)
+
+(
+// Define the MIDI output port for the TR-08
+// Replace the 'portName' with your specific MIDI port name
+// Check available MIDI outputs using MIDIOut: MIDIOut.list
+
+// Find and select your MIDI output
+MIDIClient.init;
+MIDIClient.myoutports
+MIDIClient.externalDestinations
+a = MIDIOut.newByName("TR-08", "TR-08");
+
+// Send a MIDI note to the TR-08
+
+a.noteOn(0, 60, 100);  // Channel 1, note 60 (C4), velocity 100
+// You can use different notes, channels, and velocities as needed
+)
+
 )
 
 Play.lastPatterns
@@ -74,20 +159,6 @@ Play.stop
 
 Pwhite().isKindOf(Pattern)
 )
-(
-var length = inf;
-MIDIClient.init;
-m = MIDIOut.new(0);
-Pdef(\test2, Pbind(
-    \type, \midi,
-    \midicmd, \noteOn,
-    \midiout, m,
-    \chan, 0,
-    \degree, Pseq([0, 1, 2], length),
-    \dur, 1
-)).play;
-)
-
 
 (
 Pdef(\test, Pbind(\type, \midi, \midicmd, \control, \midiout, m, \chan, 1, \ctlNum, 25, \control, 1)).play
@@ -145,9 +216,10 @@ weight2.postln; // Output: 0.01
 )
 Pdef(\test).gui
 
+(
 Pdef(\test, PbindFx(
-    [\i, \BD, \amp, 1, \dur, 1, \fxOrder, [1]],
-    [\fx, \reverb, \decayTime, 7, \cleanupDelay, 1]
+    [\degree, Pwhite(0, 7, inf), \dur, 0.25, \legato, 1, \fxOrder, [1]],
+    [\fx, \hpf]
 )).play.quant_(4);
 )
 Pdef(\test, Pbind(\i, \BD, \amp, Pseq([Pwrand([Pseq([0, 0, 0, 0.5, 0.6], 1), Pseq([0.1, 0.1], 1)], [0.3, 0.7])], inf).trace, \dur, 1)).play.quant_(4);

@@ -1,6 +1,6 @@
 Pmidi {
-    *init { | latency |
-        Play.initMidi(latency);
+    *init { | latency, deviceName, portName |
+        Play.initMidi(latency, deviceName, portName);
     }
 }
 
@@ -12,17 +12,16 @@ Pmidi {
         };
 
         var addMidiTypes = { |pattern|
-            if (MIDIClient.initialized == true)
-            {
-                pattern.putAll([
-                    \type: \midi,
-                    \midicmd: pattern[\midicmd] ?? \noteOn,
-                    \midiout: midiClient,
-                    \chan, pattern[\chan] ?? 0,
-                    \ins: \midi
-                ]);
-            }
-            { ^super.prPrint("MIDIClient not initialized. Use Pmidi.init") }
+            if (MIDIClient.initialized == false)
+            { this.initMidi };
+
+            pattern.putAll([
+                \type: \midi,
+                \midicmd: pattern[\midicmd] ?? \noteOn,
+                \midiout: midiClient,
+                \chan, pattern[\chan] ?? 0,
+                \ins: \midi
+            ]);
         };
 
         patterns.collect { |pattern|
@@ -38,9 +37,17 @@ Pmidi {
         ^patterns;
     }
 
-    *initMidi { | latency |
-        MIDIClient.init;
-        midiClient = MIDIOut.new(0);
+    *initMidi { | latency, deviceName, portName |
+        MIDIClient.init(verbose: false);
+        if (deviceName.notNil) {
+            if (portName.isNil)
+            { portName = deviceName };
+            midiClient = MIDIOut.newByName(deviceName, deviceName);
+            super.prPrint("MIDIOut:".scatArgs(deviceName, deviceName));
+        } {
+            midiClient = MIDIOut.new(0);
+            super.prPrint("MIDIOut:".scatArgs("port 0"));
+        };
         midiClient.latency = latency ?? 0.2;
     }
 }

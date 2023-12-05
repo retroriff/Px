@@ -2,6 +2,14 @@ Play : Px {
     classvar defaultName = \play, <midiClient;
 
     *new { | patterns, name, quant, trace|
+        patterns.collect { |pattern|
+            pattern.putAll([\degree: this.prGenerateDegrees(pattern) ?? 0 ]);
+        };
+        patterns = this.prCreateMidiPatterns(patterns);
+        ^super.new(patterns, name ?? defaultName, quant, trace);
+    }
+
+    *prGenerateDegrees { |pattern|
         var degreesWithVariations = { |pattern, degrees, numOctaves = 1|
             if (pattern[\arp].notNil) {
                 degrees = degrees.collect { |degree|
@@ -20,26 +28,17 @@ Play : Px {
             randomDegrees = size.collect { scaleDegrees.choose };
         };
 
-        var createDegrees = { |pattern|
-            if (pattern[\degree].isArray) {
-                var degrees = pattern[\degree][0];
-                var length = pattern[\midiControl] ?? inf;
-                if (degrees == \rand) {
-                    degrees = createRandomDegrees.(pattern, size: pattern[\degree][2]);
-                };
-                pattern[\degree] = Pseq(degreesWithVariations.(pattern, degrees), length);
+
+        if (pattern[\degree].isArray) {
+            var degrees = pattern[\degree][0];
+            var length = pattern[\midiControl] ?? inf;
+            if (degrees == \rand) {
+                degrees = createRandomDegrees.(pattern, size: pattern[\degree][2]);
             };
-
-            pattern[\degree];
+            pattern[\degree] = Pseq(degreesWithVariations.(pattern, degrees), length);
         };
 
-        patterns.collect { |pattern|
-            pattern.putAll([\degree: createDegrees.(pattern) ?? 0 ]);
-        };
-
-        patterns = this.prCreateMidiPatterns(patterns);
-
-        ^super.new(patterns, name ?? defaultName, quant, trace);
+        ^pattern[\degree];
     }
 
     *release { | fadeTime, name |

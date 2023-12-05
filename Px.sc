@@ -28,6 +28,15 @@ Px {
             };
         };
 
+        var createPatternBeatRest = { |dur, rest|
+            if (rest.notNil) {
+                if (dur.isKindOf(Pattern))
+                { dur.repeats = 1 };
+                dur = Pseq([dur, rest], inf);
+            };
+            dur;
+        };
+
         var createPatternBeat = { |amp, pattern|
             var seed = this.prGetPatternSeed(pattern);
             var weight = pattern[\weight] ?? 0.7;
@@ -48,12 +57,14 @@ Px {
 
         var createPatternFillFromBeat = { |amp, i, pattern|
             var steps = 16;
-            var getInvertBeat = { |beatAmp|
-                var invertBeat = beatAmp.iter.loop.nextN(steps).linlin(0, 1, 1, Rest());
+            var getInvertBeat = { |beatAmp, invertAmp = 1|
+                var invertBeat = beatAmp.iter.loop.nextN(steps).linlin(0, amp, amp, Rest());
                 var weight = pattern[\weight] ?? 1;
+                thisThread.randSeed = this.prGetPatternSeed(pattern);
                 invertBeat.collect { |step|
-                    if (step == 1)
-                    { step = [0, 1].wchoose([1 - weight, weight]) };
+                    if (step == 1) {
+                        step = [0, 1].wchoose([1 - weight, weight]);
+                    };
                     step;
                 };
             };
@@ -61,7 +72,7 @@ Px {
                 var beat = pattern[\totalBeat] ?? Array.fill(steps, 0);
                 (beat + invertBeat).collect { |step| step.clip(0, 1) };
             };
-            var invertBeat = getInvertBeat.(patterns[i - 1][\amp]);
+            var invertBeat = getInvertBeat.(patterns[i - 1][\amp], pattern[\amp]);
             var totalBeat = getTotalBeat.(invertBeat);
             pattern[i] = pattern[i] ++ (\totalBeat: totalBeat);
             totalBeat;
@@ -71,7 +82,7 @@ Px {
             var amp = pattern[\amp] ?? pattern[\a] ?? 1;
             pattern.removeAt(\a);
             if (pattern[\beat].notNil)
-            { amp = createPatternBeat.(amp, pattern); amp.postln; };
+            { amp = createPatternBeat.(amp, pattern); "beat".postln; };
             if (pattern[\fill].notNil)
             { amp = createPatternFillFromBeat.(amp, i, pattern) };
             if (amp.isArray)
@@ -182,14 +193,6 @@ Px {
         this.send(lastPatterns[name], name);
     }
 
-    *prCreateNewSeeds {
-        seeds.order.do { |id|
-            var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
-            this.prPrint("Shuffle:".scatArgs(id, " ->", newSeed));
-            seeds[id] = newSeed;
-        };
-    }
-
     *stop {  | name |
         name = name ?? defaultName;
         Pdef(name.asSymbol).stop;
@@ -206,12 +209,31 @@ Px {
         this.send(lastPatterns[name], name, trace: true);
     }
 
+    *prCreateNewSeeds {
+        seeds.order.do { |id|
+            var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
+            this.prPrint("Shuffle:".scatArgs(id, " ->", newSeed));
+            seeds[id] = newSeed;
+        };
+    }
+
+    *prGenerateRandNumber { |id|
+        var seed = 1000.rand;
+        this.prPrint("Seed:".scatArgs(id, " ->", seed));
+        ^seed;
+    }
+
     *prGetPatternSeed { |pattern|
         var id = pattern[\id].asSymbol;
         if (pattern[\seed].isNil) {
-            if (seeds.isNil)
-            { seeds = Dictionary[id -> 1000.rand] }
-            { seeds.add(id -> if (seeds[id].isNil) { 1000.rand } { seeds[id] }) };
+            if (seeds.isNil) {
+                seeds = Dictionary[id -> this.prGenerateRandNumber(id) ]
+            } {
+                var seed = if (seeds[id].isNil)
+                { this.prGenerateRandNumber(id) }
+                { seeds[id] };
+                seeds.add(id -> seed);
+            };
             ^seeds[id];
         } {
             ^pattern[\seed]

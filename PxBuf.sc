@@ -44,9 +44,14 @@
                         Pseq(~buf.(pattern[\buf][0], mixBuf.value), inf);
                     };
 
-                    var getRandBufs = {
+                    var getRandSeqBufs = {
                         thisThread.randSeed = this.prGetPatternSeed(pattern);
                         Pseq(~buf.(pattern[\buf][0], Array.rand(8, 0, filesCount - 1)), inf);
+                    };
+
+                    var getRandBuf = {
+                        thisThread.randSeed = this.prGetPatternSeed(pattern);
+                        ~buf.(pattern[\buf][0], (~buf.(pattern[\buf][0]).size).rand);
                     };
 
                     if (pattern[\i] == \lplay) {
@@ -55,16 +60,16 @@
                         { pattern[\dur] = pattern[\dur] ?? sampleLength[1].asInteger };
                     };
 
-                    buf = switch (pattern[\buf][1])
-                    { \rand } { getRandBufs.value }
-                    { \jump } { getJumpBufs.value }
-                    { ~buf.(pattern[\buf][0], pattern[\buf][1]) };
-
-                    if (pattern[\buf][1].isNil)
-                    {
-                        thisThread.randSeed = this.prGetPatternSeed(pattern);
-                        buf = ~buf.(pattern[\buf][0], (~buf.(pattern[\buf][0]).size).rand);
+                    if (pattern[\degree].notNil) {
+                        var degree = Play.prGenerateDegrees(pattern);
+                        pattern[\rate] = degree.midiratio;
                     };
+
+                    buf = switch (pattern[\buf][1])
+                    { \rand } { getRandSeqBufs.value }
+                    { \jump } { getJumpBufs.value }
+                    { nil } { getRandBuf.value }
+                    { ~buf.(pattern[\buf][0], pattern[\buf][1]) };
 
                     if (pattern[\trim].notNil) {
                         if (pattern[\trim] == \seq)

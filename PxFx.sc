@@ -1,4 +1,24 @@
 +Px {
+    *delay { |mix, args, name|
+        this.prFx(\delay, mix, args, name);
+    }
+
+    *reverb { |mix, args, name|
+        this.prFx(\reverb, mix, args, name);
+    }
+
+    *wah { |mix, args, name|
+        this.prFx(\wah, mix, args, name);
+    }
+
+    *prFx { |fx, mix, args, name|
+        name = name ?? defaultName;
+        lastPatterns[name].do { |pattern|
+            pattern.prFx(fx, mix, args);
+        };
+        this.send(lastPatterns[name], name);
+    }
+
     *prCreatePatternFx { |pattern|
         if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
             pattern[\fx].do { |fx, i|

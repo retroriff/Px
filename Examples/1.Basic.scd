@@ -73,17 +73,20 @@ Px.shuffle;
 // You can even fill the gaps of a pattern beat
 (
 Px([
-    (i: \BD, id: \bd, dur: 1/2).beat.weight(0.5),
-    (i: \SN, dur: 1/2).fill(\bd),
+    (i: \BD, dur: 1/2).beat.weight(0.5),
+    (i: \SN, dur: 1/2).fill,
 ]);
 )
 
 // And set up a fill weight
 (
 Px([
-    (i: \BD, id: \bd, dur: 1/2).beat.weight(0.5),
-    (i: \SN, dur: 1/2).fill(\bd).weight(0.3),
-]);
+    (i: \LC, dur: 1/4).beat.weight(0.42),
+    (i: \LC, dur: 1/4, freq: 200).fill.weight(0.52),
+    (i: \LC, dur: 1/4, freq: 160).fill.weight(0.63),
+    (i: \LC, dur: 1/4, freq: 180).fill.weight(0.62),
+    (i: \HT, dur: 1/4).fill.weight(0.8).reverb(0.1),
+]).reverb(0.1).delay(0.1);
 )
 
 // But we can keep our favorite beats providing a seed number

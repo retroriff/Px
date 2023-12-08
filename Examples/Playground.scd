@@ -38,18 +38,53 @@ Px ([
     // (play: ["fm", 17], dur: 16, off: 0.5, rate: 1, amp: 0.7).delay(0.5).reverb(0.6),
 ]);
 )
+MIDIClient.init
+(
+var midiclient = Dictionary[
+    "default" -> MIDIOut.new(0),
+    "TR-08" -> MIDIOut.newByName("TR-08", "TR-08")
+];
+midiclient["default "];
+)
 
-Pmidi.init(0.195, deviceName: "TR-08");
+Pmidi.init(0.195);
+
+TR08.init(0.195);
+
 
 (
 TR08([
-    (i: \bd, dur: 1).beat.weight(0.4),
-    (chan: 0, dur: 1/4, midinote: 38, i: \sn).fill.weight(0.42),
-    (chan: 0, dur: 1/4, midinote: 42, i: \ch).beat.weight(0.82),
-    (chan: 0, dur: 1/4, midinote: 70, i: \ma).fill.weight(0.82),
-]);
+    (i: \bd, dur: 1, amp:0).beat.weight(0.4),
+    (i: \sn, dur: 1/4).fill.weight(0.18),
+    (i: \ch, dur: 1/4).beat.weight(0.62),
+    (i: \ma, dur: 1/4).fill.weight(0.87),
+    (i: \cp, dur: 1/4).fill.weight(0.28),
+], "drumkit2");
 )
 
+(
+TR08([
+    (i: \lt, dur: 1/4, amp:0).beat.weight(0.3),
+    (i: \mt, dur: 1/4).fill.weight(0.3),
+    (i: \ht, dur: 1/4).beat.weight(0.6),
+    (i: \mc, dur: 1/4).fill.weight(0.6),
+    (i: \hc, dur: 1/4).fill.weight(0.8),
+], "drumkit").release;
+)
+
+(
+Play([
+    // (i: \everythingrhodes, octave: 4, dur: 1, \legato: 1, amp: 0.4).degree(\rand, \dorian, 2).weight(0.34).arp,
+    (id: \bass, chan: 0, \dur: 1, octave: 4, a: 0.2).degree(\rand, \phrygian, 4).beat.seed(96),
+    (\chan: 0).control(0, 0.7),
+
+    (id: \drone, \chan: 1, octave: 8).degree(\rand, \minor, 1),
+    (\chan: 1).control(0, 0.35),
+]).shuffle;
+)
+
+
+MIDIClient.init
 MIDIClient.destinations
 MIDIClient.destinations[port].uid
 Pmidi.init
@@ -73,29 +108,6 @@ a = Scale.at(\minor).degrees
 Scale.minor.degrees.postln;
 
 
-
-(
-var eve = (i: \bd);
-var tr08 = Dictionary[
-    \bd -> 36,
-    \rm -> 37,
-    \sn -> 38,
-    \cp -> 39,
-    \lt -> 43,
-    \ch -> 42,
-    \oh -> 46,
-    \mt -> 47,
-    \cy -> 49,
-    \ht -> 50,
-    \cb -> 56,
-    \ht -> 62,
-    \mt -> 63,
-    \lt -> 64,
-    \ma -> 70,
-    \cl -> 75,
-];
-tr08[eve[\i]];
-)
 (
 var length = inf;
 MIDIClient.init;
@@ -109,26 +121,23 @@ Pdef(\test, Pbind(
     \chan, 0,
     \midinote, Pseq([36], inf),
     \dur, 1
-)).play;
+)).stop;
 )
 
+Px([(i: \BD, dur: 8)])
 
 (
 Px([
-    (play: ["fm"]).degree([0, -1]),
+    (i: \CY, dur: 1/4).beat(rest: 8),
+    // (play: ["fm"], dur: 1/4).beat(rest: 4),
+    // (i: \SN, dur: 2, off: 1),
+    // (play: ["fm"], dur: Pseq([Pn(1/4, 16), Rest(4)], inf)),
 ]);
 )
 
-(
-Play([
-    // (i: \everythingrhodes, octave: 4, dur: 1, \legato: 1, amp: 0.4).degree(\rand, \dorian, 2).weight(0.34).arp,
-    (id: \bass, chan: 0, \dur: 1/4, octave: 4, a: 0.2).degree(\rand, \phrygian, 4).beat.seed(96),
-    (\chan: 2).control(0, 0.7),
+Pseq([Pseq([1], 4), Rest(4)], inf)
+A better way to do it?
 
-    // (id: \drone, \chan: 1, octave: 8).degree(\rand, \minor, 1).holdOff,
-    // (\chan: 1).control(0, 0.2),
-]);
-)
 
 (
 // Define the MIDI output port for the TR-08
@@ -502,30 +511,4 @@ Ptpar([
     0, Pbind(\instrument, \OH, \amp, 1, \dur, 1/4),
     0, Pbind(\ins, \kick, amp: 0, \dur, Pseq([4], )
 ]).play
-// PbindFx(~ins2, ~fx1).play;
 )
-
-ProxySpace.browse
-
-Pdef(\kick, Pbind(\instrument, \kick, \amp, 1, \dur, 1)).play.quant\_(4).
-
-Synth(\reverb).
-
-(
-var synthDesc = SynthDescLib.global[\reverb];
-synthDesc;
-// var argNames = synthDesc.collect(_.name);
-// var argDefaults = synthDesc.args.collect(_.default);
-)
-
-ServerOptions.devices
-s.options.outDevice = "BlackHole 16ch"
-s.options.inDevice  = "MacBook Pro Microphone"
-s.options.outDevice = "BlackHole 16ch"
-s.options.outDevice = "External Headphones"
-s.options.outDevice = "MacBook Pro Speakers"
-s.options.outDevice = "Scarlett 4i4 USB"
-s.options.outDevice = "Xavi's AirPods"
-
-Server.killAll
-("~/Library/Mobile Documents/com~apple~CloudDocs/Music/SuperCollider/Setup/Setup.scd".standardizePath).load;

@@ -7,13 +7,13 @@
         ^this.putAll([\amp, args]);
     }
 
-    beat { |seed|
+    beat { |seed, rest|
         var pairs = [\beat, true];
 
         if (seed.notNil and: seed.isInteger)
         { pairs = pairs ++ [\seed, seed] };
 
-        ^this.putAll(pairs);
+        ^this.putAll(this.prAddRest(pairs, rest));
     }
 
     dur { |args|
@@ -28,8 +28,8 @@
         ^this.putAll([\fade, fade]);
     }
 
-    fill {
-        ^this.putAll([\fill, true]);
+    fill { |rest|
+        ^this.putAll(this.prAddRest([\fill, true], rest));
     }
 
     in { |time|
@@ -58,6 +58,12 @@
 
     weight { |weight|
         ^this.putAll([\weight, weight.clip(0, 1)]);
+    }
+
+    prAddRest { |pairs, rest|
+        if (rest.notNil)
+        { pairs = pairs ++ [\rest, rest] };
+        ^pairs;
     }
 
     prCreatePatternKey { |value|

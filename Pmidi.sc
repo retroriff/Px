@@ -5,7 +5,7 @@ Pmidi {
 }
 
 +Play {
-    *prCreateMidiPatterns { | patterns|
+    *prCreateMidiPatterns { | patterns, midiout|
         var isMidiControl = { |pattern|
             if (pattern[\hasGate] == false or: { pattern[\midicmd] == \noteOff })
             { true }
@@ -15,10 +15,12 @@ Pmidi {
             if (MIDIClient.initialized == false)
             { this.initMidi };
 
+            midiout = midiout ?? "default";
+
             pattern.putAll([
                 \type: \midi,
                 \midicmd: pattern[\midicmd] ?? \noteOn,
-                \midiout: midiClient,
+                \midiout: midiClient[midiout],
                 \chan, pattern[\chan] ?? 0,
                 \ins: \midi
             ]);
@@ -38,16 +40,28 @@ Pmidi {
     }
 
     *initMidi { | latency, deviceName, portName |
+        var midiOut;
+
         MIDIClient.init(verbose: false);
+
         if (deviceName.notNil) {
             if (portName.isNil)
             { portName = deviceName };
-            midiClient = MIDIOut.newByName(deviceName, deviceName);
+            midiOut = MIDIOut.newByName(deviceName, portName);
             super.prPrint("MIDIOut:".scatArgs(deviceName, deviceName));
         } {
-            midiClient = MIDIOut.new(0);
+            midiOut = MIDIOut.new(0);
             super.prPrint("MIDIOut:".scatArgs("port 0"));
         };
-        midiClient.latency = latency ?? 0.2;
+
+        deviceName = deviceName ?? "default";
+
+        if (midiClient.isNil) {
+            midiClient = Dictionary[deviceName -> midiOut ]
+        } {
+            midiClient.add(deviceName -> midiOut);
+        };
+
+        midiClient[deviceName].latency = latency ?? 0.2;
     }
 }

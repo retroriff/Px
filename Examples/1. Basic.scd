@@ -54,7 +54,19 @@ Px([
 ]);
 )
 
-// And add random variations with another weight defined as a centil
+// Add some rest time
+
+(
+Px([
+    (i: \BD).reverb(0.2).wah(0.1),
+    (i: \SN, dur: 2, off: 1).delay(0.3),
+    (i: \CH, dur: 1/4).beat.weight(0.1),
+    (i: \MA, dur: 1/4).beat.weight(0.2),
+    (i: \CP, dur: 1/4).beat(rest: 4).weight(0.2),
+]);
+)
+
+// And add random variations with another weight defined as a hundredth
 
 (
 Px([
@@ -69,7 +81,7 @@ Px([
 
 Px.shuffle;
 
-
+0, 1, 1, 0
 // You can even fill the gaps of a pattern beat
 (
 Px([
@@ -81,11 +93,11 @@ Px([
 // And set up a fill weight
 (
 Px([
-    (i: \LC, dur: 1/4).beat.weight(0.42),
-    (i: \LC, dur: 1/4, freq: 200).fill.weight(0.52),
+    (i: \LC, dur: 1/4, amp: 0.4).beat.weight(0.42),
+    (i: \LC, dur: 1/4, freq: 200, amp: 0.5).fill.weight(0.52),
     (i: \LC, dur: 1/4, freq: 160).fill.weight(0.63),
     (i: \LC, dur: 1/4, freq: 180).fill.weight(0.62),
-    (i: \HT, dur: 1/4).fill.weight(0.8).reverb(0.1),
+    (i: \HT, dur: 1/4).fill.weight(0.8),
 ]).reverb(0.1).delay(0.1);
 )
 

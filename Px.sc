@@ -28,11 +28,10 @@ Px {
             };
         };
 
-        var createPatternBeatRest = { |dur, rest|
-            if (rest.notNil) {
-                if (dur.isKindOf(Pattern))
-                { dur.repeats = 1 };
-                dur = Pseq([dur, rest], inf);
+        var createPatternBeatRest = { |pattern|
+            var dur = pattern[\dur];
+            if (pattern[\rest].notNil) {
+                dur = Pseq([Pn(dur, 15), pattern[\rest] + dur], inf);
             };
             dur;
         };
@@ -62,8 +61,8 @@ Px {
                 var weight = pattern[\weight] ?? 1;
                 thisThread.randSeed = this.prGetPatternSeed(pattern);
                 invertBeat.collect { |step|
-                    if (step == 1) {
-                        step = [0, 1].wchoose([1 - weight, weight]);
+                    if (step == amp) {
+                        step = [0, amp].wchoose([1 - weight, weight]);
                     };
                     step;
                 };
@@ -81,8 +80,10 @@ Px {
         var createPatternAmp = { |pattern, i|
             var amp = pattern[\amp] ?? pattern[\a] ?? 1;
             pattern.removeAt(\a);
-            if (pattern[\beat].notNil)
-            { amp = createPatternBeat.(amp, pattern); "beat".postln; };
+            if (pattern[\beat].notNil) {
+                amp = createPatternBeat.(amp, pattern);
+                pattern[\dur] = createPatternBeatRest.(pattern);
+            };
             if (pattern[\fill].notNil)
             { amp = createPatternFillFromBeat.(amp, i, pattern) };
             if (amp.isArray)

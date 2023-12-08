@@ -1,11 +1,11 @@
 Play : Px {
     classvar defaultName = \play, <midiClient;
 
-    *new { | patterns, name, quant, trace|
+    *new { | patterns, name, quant, trace, midiout|
         patterns.collect { |pattern|
             pattern.putAll([\degree: this.prGenerateDegrees(pattern) ?? 0 ]);
         };
-        patterns = this.prCreateMidiPatterns(patterns);
+        patterns = this.prCreateMidiPatterns(patterns, midiout);
         ^super.new(patterns, name ?? defaultName, quant, trace);
     }
 

@@ -2,21 +2,20 @@
 
 (
 Pmidi.init(deviceName: "TR-08");
-Play([(chan: 0, \midinote: 36)]);
+Play([(chan: 0, \midinote: 36)], midiout: "TR-08");
 )
 
-// Which is the same as
+// Which is the same as (default latency is 0.195)
 
 (
-TR08.init;
 TR08([(i: \bd)]);
 )
 
 
-// Let's sync the device with SC setting up a precise latency:
+// Let's sync the device with SC setting up a different latency:
 
 (
-TR08.init(0.195);
+TR08.init(0.2);
 TR08([(i: \bd)]);
 Px([(i: \bd)]);
 )

@@ -2,22 +2,22 @@
 
 (
 Px([
-    (i: \BD),
-    (i: \SN, dur: 2, off: 1),
+    (i: \bd),
+    (i: \sn, dur: 2, off: 1),
 ]);
 )
 
 // Whis is the same as:
 
-(i: \BD).px;
-(i: \SN, dur: 2, off: 1).px(\sn);
+(i: \db).px;
+(i: \sn, dur: 2, off: 1).px(\sn);
 
 // We can make it more wet:
 
 (
 Px([
-    (i: \BD).reverb(0.2).wah(0.1),
-    (i: \SN, dur: 2, off: 1).delay(0.2),
+    (i: \bn).reverb(0.2).wah(0.1),
+    (i: \sn, dur: 2, off: 1).delay(0.2),
 ]);
 )
 
@@ -25,10 +25,10 @@ Px([
 
 (
 Px([
-    (i: \BD).reverb(0.2).wah(0.1),
-    (i: \SN, dur: 2, off: 1).delay(0.2),
-    (i: \CH, dur: 1/4).beat,
-    (i: \MA, dur: 1/4, euclid: [3, 5, 4]),
+    (i: \bd).reverb(0.2).wah(0.1),
+    (i: \sn, dur: 2, off: 1).delay(0.2),
+    (i: \ch, dur: 1/4).beat,
+    (i: \ma, dur: 1/4, euclid: [3, 5, 4]),
 ]);
 )
 
@@ -36,10 +36,10 @@ Px([
 
 (
 Px([
-    (i: \BD).reverb(0.2).wah(0.1),
-    (i: \SN, dur: 2, off: 1).delay(0.3).solo,
-    (i: \CH, dur: 1/4).beat.solo,
-    (i: \MA, dur: 1/4).beat,
+    (i: \bd).reverb(0.2).wah(0.1),
+    (i: \sn, dur: 2, off: 1).delay(0.3).solo,
+    (i: \ch, dur: 1/4).beat.solo,
+    (i: \ma, dur: 1/4).beat,
 ]);
 )
 
@@ -47,10 +47,10 @@ Px([
 
 (
 Px([
-    (i: \BD).reverb(0.2).wah(0.1),
-    (i: \SN, dur: 2, off: 1).delay(0.3),
-    (i: \CH, dur: 1/4).beat.weight(0.1).solo,
-    (i: \MA, dur: 1/4).beat.weight(0.2).solo,
+    (i: \bd).reverb(0.2).wah(0.1),
+    (i: \sn, dur: 2, off: 1).delay(0.3),
+    (i: \ch, dur: 1/4).beat.weight(0.1).solo,
+    (i: \ma, dur: 1/4).beat.weight(0.2).solo,
 ]);
 )
 
@@ -58,11 +58,11 @@ Px([
 
 (
 Px([
-    (i: \BD).reverb(0.2).wah(0.1),
-    (i: \SN, dur: 2, off: 1).delay(0.3),
-    (i: \CH, dur: 1/4).beat.weight(0.1),
-    (i: \MA, dur: 1/4).beat.weight(0.2),
-    (i: \CP, dur: 1/4).beat(rest: 4).weight(0.2),
+    (i: \bd).reverb(0.2).wah(0.1),
+    (i: \sn, dur: 2, off: 1).delay(0.3),
+    (i: \ch, dur: 1/4).beat.weight(0.1),
+    (i: \ma, dur: 1/4).beat.weight(0.2),
+    (i: \cp, dur: 1/4).beat(rest: 4).weight(0.2),
 ]);
 )
 
@@ -70,10 +70,10 @@ Px([
 
 (
 Px([
-    (i: \BD).reverb(0.2).wah(0.1),
-    (i: \SN, dur: 2, off: 1).delay(0.3),
-    (i: \CH, dur: 1/4).beat.weight(0.12).solo,
-    (i: \MA, dur: 1/4).beat.weight(0.26).solo,
+    (i: \bd).reverb(0.2).wah(0.1),
+    (i: \sn, dur: 2, off: 1).delay(0.3),
+    (i: \ch, dur: 1/4).beat.weight(0.12).solo,
+    (i: \ma, dur: 1/4).beat.weight(0.26).solo,
 ]);
 )
 
@@ -85,19 +85,19 @@ Px.shuffle;
 // You can even fill the gaps of a pattern beat
 (
 Px([
-    (i: \BD, dur: 1/2).beat.weight(0.5),
-    (i: \SN, dur: 1/2).fill,
+    (i: \bd, dur: 1/2).beat.weight(0.5),
+    (i: \sn, dur: 1/2).fill,
 ]);
 )
 
 // And set up a fill weight
 (
 Px([
-    (i: \LC, dur: 1/4, amp: 0.4).beat.weight(0.42),
-    (i: \LC, dur: 1/4, freq: 200, amp: 0.5).fill.weight(0.52),
-    (i: \LC, dur: 1/4, freq: 160).fill.weight(0.63),
-    (i: \LC, dur: 1/4, freq: 180).fill.weight(0.62),
-    (i: \HT, dur: 1/4).fill.weight(0.8),
+    (i: \lc, dur: 1/4, amp: 0.4).beat.weight(0.42),
+    (i: \lc, dur: 1/4, freq: 200, amp: 0.5).fill.weight(0.52),
+    (i: \lc, dur: 1/4, freq: 160).fill.weight(0.63),
+    (i: \lc, dur: 1/4, freq: 180).fill.weight(0.62),
+    (i: \ht, dur: 1/4).fill.weight(0.8),
 ]).reverb(0.1).delay(0.1);
 )
 
@@ -105,10 +105,10 @@ Px([
 
 (
 Px([
-    (i: \BD).reverb(0.2).wah(0.1),
-    (i: \SN, dur: 2, off: 1).delay(0.3),
-    (i: \CH, dur: 1/4).beat.weight(0.12).seed(250),
-    (i: \MA, dur: 1/4).beat.weight(0.26),
+    (i: \bd).reverb(0.2).wah(0.1),
+    (i: \sn, dur: 2, off: 1).delay(0.3),
+    (i: \ch, dur: 1/4).beat.weight(0.12).seed(250),
+    (i: \ma, dur: 1/4).beat.weight(0.26),
 ]).shuffle;
 )
 
@@ -121,10 +121,10 @@ Px.trace;
 
 (
 Px([
-    (i: \BD).reverb(0.2).wah(0.1).out,
-    (i: \SN, dur: 2, off: 1).delay(0.3),
-    (i: \CH, dur: 1/4, pan: \rand).beat.weight(0.12).seed(250).in(20),
-    (i: \MA, dur: 1/4).beat.weight(0.26),
+    (i: \bd).reverb(0.2).wah(0.1).out,
+    (i: \sn, dur: 2, off: 1).delay(0.3),
+    (i: \ch, dur: 1/4, pan: \rand).beat.weight(0.12).seed(250).in(20),
+    (i: \ma, dur: 1/4).beat.weight(0.26),
 ]);
 )
 
@@ -132,10 +132,10 @@ Px([
 
 (
 Px([
-    (i: \BD).reverb(0.2).wah(0.1),
-    (i: \SN, dur: 2, off: 1).delay(0.3),
-    (i: \CH, dur: 1/4, pan: \rand).beat.weight(0.12).seed(250),
-    (i: \MA, dur: 1/4).beat.weight(0.26).rotate,
+    (i: \bd).reverb(0.2).wah(0.1),
+    (i: \sn, dur: 2, off: 1).delay(0.3),
+    (i: \ch, dur: 1/4, pan: \rand).beat.weight(0.12).seed(250),
+    (i: \ma, dur: 1/4).beat.weight(0.26).rotate,
 ]).shuffle;
 )
 

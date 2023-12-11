@@ -1,16 +1,16 @@
 (
 Px ([
-    // (i: \BD, \dur: 1, amp: 1),
-    (i: \BD, \dur: 1/2, id: \BD, amp: 1).beat.weight(0.23).reverb(0.6),
-    // (i: \CP, \dur: 2, off: 1).beat(25).weight(0.34).delay(0),
+    // (i: \bd, \dur: 1, amp: 1),
+    (i: \bd, \dur: 1/2, id: \bd, amp: 1).beat.weight(0.23).reverb(0.6),
+    // (i: \cp, \dur: 2, off: 1).beat(25).weight(0.34).delay(0),
     // (play: ["michael", 0], \dur: 1/4).beat().weight(0.02).reverb(\rand),
-    // (i: \SN, dur: 2, off: 1).delay(mix: 0.5, args: [\decay: 8]).reverb(0.3),
-    // (i: \SN, dur: 2).delay,
-    // (i: \SN, \dur: 2, off: 1)
+    // (i: \sn, dur: 2, off: 1).delay(mix: 0.5, args: [\decay: 8]).reverb(0.3),
+    // (i: \sn, dur: 2).delay,
+    // (i: \sn, \dur: 2, off: 1)
     // (play: ["gl1", \rand], \dur: 1/4, \amp: 1).beat.weight(0.66).delay(\rand).reverb(\rand),
-    // (i: \CH, \dur: 1/4).beat.weight(0.02).solo,
+    // (i: \ch, \dur: 1/4).beat.weight(0.02).solo,
 
-    // (i: \CB, \dur: 1/4).delay.reverb.wah.beat.weight(0.26),
+    // (i: \cb, \dur: 1/4).delay.reverb.wah.beat.weight(0.26),
     // (loop: ["pop-2", 1], amp: 1).wah(0.3).reverb.out,
     // (loop: ["mt-4", \jump], amp: 1).solo.seed(24),
     // (loop: ["fusion-4", 0]).rate([\wrand, 1, -1, 0.02]).reverb(0.2).delay(Pwhite(0.1, 0)).trim(Pwhite(0.0, 0.75)),
@@ -25,7 +25,7 @@ Px ([
     // (loop: ["fm", \rand], dur: 16, amp: 0.4, off: 8).reverb(\rand),
 
 
-    // (i: \CY, \dur: 1/2, \pan: \rand, \amp: 0.2).beat(904).reverb(\rand),
+    // (i: \cy, \dur: 1/2, \pan: \rand, \amp: 0.2).beat(904).reverb(\rand),
     // (play:["games", 1], dur: 8),
     // (play:["games", 1], dur: 8, off: 2),
 
@@ -39,25 +39,12 @@ Px ([
 ]);
 )
 MIDIClient.init
-(
-var midiclient = Dictionary[
-    "default" -> MIDIOut.new(0),
-    "TR-08" -> MIDIOut.newByName("TR-08", "TR-08")
-];
-midiclient["default "];
-)
 
-Pmidi.init(0.195);
-
-TR08.init(0.195);
-TR08.release;
-MIDIClient
-
-TR08.preset;
+TR08.preset(\electro, 4);
 
 (
 TR08([
-    (i: \bd, dur: 1, amp:0).beat.weight(0.4),
+    (i: \bd, dur: 1, amp: 1).beat.weight(0.4),
     (i: \sn, dur: 1/4).fill.weight(0.18),
     (i: \ch, dur: 1/4).beat.weight(0.62),
     (i: \ma, dur: 1/4).fill.weight(0.87),
@@ -100,7 +87,7 @@ Px.save
 Px.stop
 Px.seeds
 Px.shuffle
-Px.synthDef(\BD)
+Px.synthDef(\bd)
 
 SynthDescLib.all.postln
 MIDIClient.sources
@@ -131,9 +118,9 @@ Px([(i: \LT, dur: 8)])
 
 (
 Px([
-    (i: \BD, dur: 1/4).beat(rest: 8),
+    (i: \bd, dur: 1/4).beat(rest: 8),
     // (play: ["fm"], dur: 1/4).beat(rest: 4),
-    // (i: \SN, dur: 2, off: 1),
+    // (i: \sn, dur: 2, off: 1),
     // (play: ["fm"], dur: Pseq([Pn(1/4, 16), Rest(4)], inf)),
 ]);
 )
@@ -234,7 +221,7 @@ Pdef(\test, PbindFx(
     [\fx, \hpf]
 )).play.quant_(4);
 )
-Pdef(\test, Pbind(\i, \BD, \amp, Pseq([Pwrand([Pseq([0, 0, 0, 0.5, 0.6], 1), Pseq([0.1, 0.1], 1)], [0.3, 0.7])], inf).trace, \dur, 1)).play.quant_(4);
+Pdef(\test, Pbind(\i, \bd, \amp, Pseq([Pwrand([Pseq([0, 0, 0, 0.5, 0.6], 1), Pseq([0.1, 0.1], 1)], [0.3, 0.7])], inf).trace, \dur, 1)).play.quant_(4);
 
 [3, 7].normalizeSum
 
@@ -244,7 +231,7 @@ Pdef(\kick, Pbind(\instrument, \kick, \amp, 1, \dur, 1, \pan, Pwalk((0..10).norm
 0..1
 Pslide([1, 10], 1, 5)
 (
-PbindFx([\i, \BD, \amp, 1, \dur, 1, \fxOrder: [1]],
+PbindFx([\i, \bd, \amp, 1, \dur, 1, \fxOrder: [1]],
     [\fx, \reverb, \mix, 1, \decayTime, 7, \cleanupDelay, Pkey(\decayTime)]).play;
 )
 
@@ -258,12 +245,12 @@ b.values;
 )
 (
 Px ([
-    (i: \CL, \dur: 1/4).beat,
-    (i: \SN, dur: 2, off: 1),
-    (i: \CH, \dur: 1/4).beat(904).wah(0.7),
+    (i: \cl, \dur: 1/4).beat,
+    (i: \sn, dur: 2, off: 1),
+    (i: \ch, \dur: 1/4).beat(904).wah(0.7),
 
     // (i: \RM, \dur: [1/4, 1/4, 1/2]).beat(95),
-    (i: \BD, \dur: 1, \a: 0.5),
+    (i: \bd, \dur: 1, \a: 0.5),
     // (play: ["abc-4", \rand]),
     (loop: ["abc-2", 1], amp: 0.5),
     // (play: ["sn", \rand]).reverb(0.3),
@@ -287,10 +274,10 @@ a.if { "Is 1".postln } { "Is 2".postln }
 Px ([
     // (i: \claves, \dur: 1/4, \amp: 0.5),
     // (i: \SN, dur: 2, off: 1),
-    (i: \CH, \dur: 1/4 , a: 1.3).beat(904).wah(0.7),
+    (i: \ch, \dur: 1/4 , a: 1.3).beat(904).wah(0.7),
 
-    (i: \RM, \dur: [1/4, 1/4, 1/2], a: 0.2).beat(95).wah(0.6),
-    // (i: \BD, \dur: 1, \a: 0.5),
+    (i: \rm, \dur: [1/4, 1/4, 1/2], a: 0.2).beat(95).wah(0.6),
+    // (i: \bd, \dur: 1, \a: 0.5),
     // (play: ["abc-4", \rand]).beat.wah(0.8),
     (play: ["sn", \rand], dur: 2, off: 1).reverb(0.3),
     // (play: ["ki", \rand], euc: [3, 5, 4]),
@@ -355,7 +342,7 @@ x.asString.postln
 var r = [
     ( 'dur': 2, 'amp': 1, 'i': \SN ),
     ( 'loop': [ "pop-2", 0 ], 'a': 2, 'fxMethod': [ \wah ], 'dur': 2, 'solo': true ),
-    ( 'dur': 1, 'i': \BD ),
+    ( 'dur': 1, 'i': \bd ),
     ( 'rate': 1, 'a': 0, 'dur': 4, 'loop': [ \fm, 5 ] )
 ];
 r = r.insert(2, (fx: \wah));
@@ -423,7 +410,7 @@ d = ~s.("pop-");
 \rate, Pwhite(-1, 1., inf)
 
 (
-r = Pbindef(\a, \instrument, \BD, \dur, 1, \amp, 1).play;
+r = Pbindef(\a, \instrument, \bd, \dur, 1, \amp, 1).play;
 r = r * 0.5;
 Pbindef(\a, \amp, 0.5);
 z.set(\amp, 211)

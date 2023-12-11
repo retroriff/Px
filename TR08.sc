@@ -2,7 +2,7 @@ TR08 : Play {
     *new { | patterns, name, quant, trace|
         var drumKit = Dictionary[
             \bd -> 36,
-            \rm -> 37,
+            \rs -> 37,
             \sn -> 38,
             \cp -> 39,
             \lt -> 43,
@@ -19,39 +19,49 @@ TR08 : Play {
             \cl -> 75,
         ];
 
-        if (MIDIClient.initialized == false or: { midiClient.notNil and: midiClient["TR-08"].isNil } )
+        var isTR08Detected = {
+            MIDIClient.destinations.detect({ |endpoint| endpoint.name == "TR-08" }) !== nil
+        };
+
+        var midiPairs = {
+            if (isTR08Detected.value == true)
+            { [\chan: 0] }
+            { Array.new }
+        };
+
+        if (MIDIClient.initialized == false or: { midiClient.notNil and: { midiClient["TR-08"].isNil } } )
         { this.init(0.195) };
 
         patterns.collect { |pattern|
-            pattern.putAll([\chan: 0, \midinote: drumKit[pattern[\i]]]);
+            pattern.putAll([\midinote: drumKit[pattern[\i]]] ++ midiPairs.value);
         };
-        ^super.new(patterns, name ?? defaultName, quant, trace, midiout: "TR-08");
+
+        ^super.new(patterns, name ?? \tr08, quant, trace, midiout: "TR-08");
     }
 
     *init { |latency|
         Play.initMidi(latency, deviceName: "TR-08");
     }
 
-    *preset {
+    *preset { |name, number|
         var presets = Dictionary[
-            \electro -> [
-                [
-                    (\bd: [1, 2, 0, 0, 5, 0, 0, 1, 0, 0, 0, 0, 5, 0, 7, 0]),
-                    (\sn: [0, 0, 0, 0, 5, 0, 0, 0]),
-                    (\ma: [1, 0, 0, 4, 0, 0, 7, 0, 0, 0, 3, 0, 0, 6, 0, 0]),
-                    (\oh: [0, 0, 3, 0, 0, 6, 0, 0, 1, 0, 0, 4, 0, 0, 7, 0]),
-                    (\ch: [1, 2, 3, 4, 5, 0, 7, 0, 1, 2, 0, 4, 5, 0, 7, 8]),
-                ],
-                [
-                    (\bd: [1, 2, 0, 0, 5, 0, 0, 1, 0, 0, 0, 0, 5, 0, 7, 0]),
-                    (\sd: [0, 0, 0, 0, 5, 0, 0, 0]),
-                    (\rs: [1, 2, 3, 0, 5, 0, 7, 8, 0, 2, 3, 0, 0, 6, 7, 8]),
-                    (\ma: [1, 0, 0, 4, 0, 0, 7, 0, 0, 0, 3, 0, 0, 6, 0, 0]),
-                    (\cy: [0, 0, 3, 0, 0, 6, 0, 0, 0, 2, 0, 4, 0, 0, 7, 0]),
-                    (\oh: [0, 0, 3, 0, 0, 6, 0, 0, 1, 0, 0, 4, 0, 0, 7, 0]),
-                    (\ch: [1, 2, 3, 4, 5, 0, 7, 0, 1, 2, 0, 4, 5, 0, 7, 8]),
-                ],
-            ]
+            \electro -> "Presets/electro.scd".resolveRelative.load;
         ];
+
+        var createPatternFromPreset = { |preset|
+            var patterns = Array.new;
+            if (preset.notNil) {
+               preset[\preset].do { |pattern|
+                    var amp = Pseq(pattern[\list].clip(0, 1), inf);
+                    patterns = patterns.add((i: pattern[\i], amp: amp, dur: 1/4));
+               };
+            };
+            if (preset[\name].notNil)
+            { super.prPrint("Preset:".scatArgs(preset[\name])) };
+            patterns;
+        };
+
+        var preset = presets[name ?? \electro][number ?? 0];
+        TR08(createPatternFromPreset.(preset));
     }
 }

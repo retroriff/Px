@@ -30,3 +30,7 @@ TR08([
     (i: \ma, dur: 1/4).fill.weight(0.82),
 ]);
 )
+
+// Or play a preset
+
+TR08.preset(\electro, 2);

@@ -50,7 +50,10 @@ midiclient["default "];
 Pmidi.init(0.195);
 
 TR08.init(0.195);
+TR08.release;
+MIDIClient
 
+TR08.preset;
 
 (
 TR08([
@@ -75,12 +78,12 @@ TR08([
 (
 Play([
     // (i: \everythingrhodes, octave: 4, dur: 1, \legato: 1, amp: 0.4).degree(\rand, \dorian, 2).weight(0.34).arp,
-    (id: \bass, chan: 0, \dur: 1, octave: 4, a: 0.2).degree(\rand, \phrygian, 4).beat.seed(96),
-    (\chan: 0).control(0, 0.7),
+    (id: \bass, chan: 0, \dur: 1/4, octave: 4, a: 0.2).degree(\rand, \phrygian, 4).beat.weight(0.8).seed(22),
+    (\chan: 0).control(0, 0.8),
 
     (id: \drone, \chan: 1, octave: 8).degree(\rand, \minor, 1),
     (\chan: 1).control(0, 0.35),
-]).shuffle;
+]);
 )
 
 
@@ -104,7 +107,7 @@ MIDIClient.sources
 MIDIClient.destinations
 MIDIClient.myoutports
 
-a = Scale.at(\minor).degrees
+a = Scale.at(\minor).degreesDocument.open("~/Library/Mobile Documents/com~apple~CloudDocs/Music/SuperCollider/Setup/Setup.scd".standardizePath)
 Scale.minor.degrees.postln;
 
 
@@ -124,11 +127,11 @@ Pdef(\test, Pbind(
 )).stop;
 )
 
-Px([(i: \BD, dur: 8)])
+Px([(i: \LT, dur: 8)])
 
 (
 Px([
-    (i: \CY, dur: 1/4).beat(rest: 8),
+    (i: \BD, dur: 1/4).beat(rest: 8),
     // (play: ["fm"], dur: 1/4).beat(rest: 4),
     // (i: \SN, dur: 2, off: 1),
     // (play: ["fm"], dur: Pseq([Pn(1/4, 16), Rest(4)], inf)),

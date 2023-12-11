@@ -68,7 +68,7 @@ Px ([
 Px ([
     (loop: ["gl1", 0]).rate([\rand, 1, -1]),
     (loop: ["gl1", 1]).rate([\wrand, 1, -1, 0.52]),
-]).trace;
+]);
 )
 
 // Play also accepts degree

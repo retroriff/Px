@@ -1,7 +1,7 @@
 Px {
     classvar chorus, defaultName = \px, <lastPatterns, <seeds;
 
-    *new { | patterns, name, quant = 4, trace |
+    *new { | patterns, name, quant, trace |
         var ptparList;
 
         var copyPatternsToLastPatterns = {
@@ -150,7 +150,7 @@ Px {
             ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
         };
 
-        Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant).play;
+        Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant ?? 4).play;
     }
 
     *chorus { | name |

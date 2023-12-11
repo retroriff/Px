@@ -7,7 +7,7 @@ Px([
 ]);
 )
 
-// Whis is the same as:
+// Which is the same as:
 
 (i: \db).px;
 (i: \sn, dur: 2, off: 1).px(\sn);

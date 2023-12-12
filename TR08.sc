@@ -44,24 +44,27 @@ TR08 : Play {
     }
 
     *preset { |name, number|
-        var presets = Dictionary[
-            \electro -> "Presets/electro.scd".resolveRelative.load;
-        ];
+        var preset, presetsDict = Dictionary();
 
         var createPatternFromPreset = { |preset|
             var patterns = Array.new;
             if (preset.notNil) {
-               preset[\preset].do { |pattern|
+                preset[\preset].do { |pattern|
                     var amp = Pseq(pattern[\list].clip(0, 1), inf);
                     patterns = patterns.add((i: pattern[\i], amp: amp, dur: 1/4));
-               };
+                };
             };
             if (preset[\name].notNil)
             { super.prPrint("Preset:".scatArgs(preset[\name])) };
             patterns;
         };
 
-        var preset = presets[name ?? \electro][number ?? 0];
+        PathName("Presets/".resolveRelative).filesDo{ |file|
+            var fileName = file.fileNameWithoutExtension;
+            presetsDict.put(fileName.asSymbol, file.fullPath.load )
+        };
+
+        preset = presetsDict[name ?? \electro][number ?? 0];
         TR08(createPatternFromPreset.(preset));
     }
 }

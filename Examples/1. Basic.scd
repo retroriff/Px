@@ -9,14 +9,14 @@ Px([
 
 // Which is the same as:
 
-(i: \db).px;
+(i: \bd).px;
 (i: \sn, dur: 2, off: 1).px(\sn);
 
 // We can make it more wet:
 
 (
 Px([
-    (i: \bn).reverb(0.2).wah(0.1),
+    (i: \bd).reverb(0.2).wah(0.1),
     (i: \sn, dur: 2, off: 1).delay(0.2),
 ]);
 )

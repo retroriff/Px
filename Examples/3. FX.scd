@@ -1,5 +1,4 @@
 // We can separately filter our patterns using these FX filters:
-
 (
 Px([
     (i: \bd).reverb(0.4).delay(0.2),
@@ -17,8 +16,7 @@ Px([
 ]).reverb(0.5).delay(0.2);
 )
 
-// They also accept \rand:
-
+// Add a random filter value:
 (
 Px([
     (i: \bd),
@@ -27,8 +25,7 @@ Px([
 ]).reverb(\rand);
 )
 
-// And \wrand:
-
+// Or define the probability of each item with weight:
 (
 Px([
     (i: \bd),
@@ -37,3 +34,5 @@ Px([
 ]).reverb([\wrand, 0.2, 0.8, 0.4]);
 )
 
+// Stop it:
+Px.stop;

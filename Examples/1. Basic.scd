@@ -81,7 +81,6 @@ Px([
 
 Px.shuffle;
 
-0, 1, 1, 0
 // You can even fill the gaps of a pattern beat
 (
 Px([
@@ -101,7 +100,7 @@ Px([
 ]).reverb(0.1).delay(0.1);
 )
 
-// But we can keep our favorite beats providing a seed number
+// We can keep our favorite beats providing a seed number
 
 (
 Px([
@@ -139,6 +138,10 @@ Px([
 ]).shuffle;
 )
 
-// And finalize the session with a fade out
+// And finalize the session with a default fade out
 
 Px.release;
+
+// Or define the release time:
+
+Px.release(20);

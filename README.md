@@ -20,24 +20,31 @@
 
 ### Event methods
 
-| Name     | Arguments                                                            | Description                                                                                                                                                                                  |
-| -------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `amp`    | number \| number[] \| Pattern                                        | Amplification                                                                                                                                                                                |
-| `beat`   | seed?: integer, rest?: number                                        | Generates a random rhythm                                                                                                                                                                    |
-| `delay`  | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a delay effect                                                                                                                                                                          |
-| `dur`    | number \| number[] \| Pattern                                        | Duration                                                                                                                                                                                     |
-| `fill`   | None                                                                 | Fills the rests gap of its previous pattern. Due to its dependency with the previous item, using solo can generate an error. We can mute patterns using `a: 0` instead                       |
-| `in`     | Seconds?: integer                                                    | (\fade: "in")                                                                                                                                                                                |
-| `out`    | Seconds?: integer                                                    | (\fade: "out")                                                                                                                                                                               |
-| `pan`    | number \| \rand \| \rotate \| Pattern                                | Pan                                                                                                                                                                                          |
-| `rate`   | number \| \rand \| [\wrand, item1, item2, weight]                    | Rate value                                                                                                                                                                                   |
-| `reverb` | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a reverb effect                                                                                                                                                                         |
-| `rotate` | None                                                                 | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
-| `seed`   | seed: integer                                                        | Generate a specific seed                                                                                                                                                                     |
-| `solo`   | None                                                                 | (\solo: true)                                                                                                                                                                                |
-| `trim`   | startPosition?: 1.0                                                  | Plays a trimmed loop from a fixed position or random when startPosition is nil                                                                                                               |
-| `wah`    | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect                                                                                                                                                                            |
-| `weight` | number                                                               | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
+| Name     | Arguments                                         | Description                                                                                                                                                                                  |
+| -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `amp`    | number \| number[] \| Pattern                     | Amplification                                                                                                                                                                                |
+| `beat`   | seed?: integer, rest?: number                     | Generates a random rhythm                                                                                                                                                                    |
+| `dur`    | number \| number[] \| Pattern                     | Duration                                                                                                                                                                                     |
+| `fill`   | None                                              | Fills the rests gap of its previous pattern. Due to its dependency with the previous item, using solo can generate an error. We can mute patterns using `a: 0` instead                       |
+| `in`     | Seconds?: integer                                 | (\fade: "in")                                                                                                                                                                                |
+| `out`    | Seconds?: integer                                 | (\fade: "out")                                                                                                                                                                               |
+| `pan`    | number \| \rand \| \rotate \| Pattern             | Pan                                                                                                                                                                                          |
+| `rate`   | number \| \rand \| [\wrand, item1, item2, weight] | Rate value                                                                                                                                                                                   |
+| `rotate` | None                                              | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
+| `seed`   | seed: integer                                     | Generate a specific seed                                                                                                                                                                     |
+| `solo`   | None                                              | (\solo: true)                                                                                                                                                                                |
+| `trim`   | startPosition?: 1.0                               | Plays a trimmed loop from a fixed position or random when startPosition is nil                                                                                                               |
+| `weight` | number                                            | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
+
+### Event FX methods
+
+| Name     | Arguments                                                            | Description              |
+| -------- | -------------------------------------------------------------------- | ------------------------ |
+| `delay`  | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a delay effect      |
+| `hpf`    | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a high pass filter  |
+| `lpf`    | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a lower pass filter |
+| `reverb` | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a reverb effect     |
+| `wah`    | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect        |
 
 ### Class methods
 

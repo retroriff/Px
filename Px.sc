@@ -1,5 +1,5 @@
 Px {
-    classvar chorus, defaultName = \px, <lastPatterns, <seeds;
+    classvar chorus, <lastPatterns, <seeds;
 
     *new { | patterns, name, quant, trace |
         var ptparList;
@@ -123,7 +123,7 @@ Px {
             pattern;
         };
 
-        name = name ?? defaultName;
+        name = this.prGetName(name);
         copyPatternsToLastPatterns.value;
         patterns = getSoloPatterns.value;
         patterns = this.prCreateBufIns(patterns);
@@ -166,7 +166,7 @@ Px {
     *release { | fadeTime, name |
         var fadeValue = if (fadeTime.isNil) { "out" } { ["out", fadeTime] };
         var fadeOutPatterns;
-        name = name ?? defaultName;
+        name = this.prGetName(name);
         fadeOutPatterns = lastPatterns[name].collect { |pattern|
             if (pattern[\fade] == "out")
             { pattern[\amp] = 0 };
@@ -177,11 +177,12 @@ Px {
     }
 
     *save { | name |
-        chorus = lastPatterns[name ?? defaultName];
+        name = this.prGetName(name);
+        chorus = lastPatterns[name];
     }
 
     *send { | patterns, name, quant, trace |
-        name = name ?? defaultName;
+        name = this.prGetName(name);
         trace = trace ?? false;
         if (Pdef(name).isPlaying)
         { this.new(patterns, name, quant, trace) }
@@ -190,12 +191,12 @@ Px {
 
     *shuffle { | name |
         this.prCreateNewSeeds;
-        name = name ?? defaultName;
+        name = this.prGetName(name);
         this.send(lastPatterns[name], name);
     }
 
     *stop {  | name |
-        name = name ?? defaultName;
+        name = this.prGetName(name);
         Pdef(name.asSymbol).stop;
     }
 
@@ -206,7 +207,7 @@ Px {
     }
 
     *trace { | name |
-        name = name ?? defaultName;
+        name = this.prGetName(name);
         this.send(lastPatterns[name], name, trace: true);
     }
 
@@ -222,6 +223,11 @@ Px {
         var seed = 1000.rand;
         this.prPrint("Seed:".scatArgs(id, " ->", seed));
         ^seed;
+    }
+
+    *prGetName { | name |
+        name = name ?? this.name.asString.toLower.asSymbol;
+        ^name;
     }
 
     *prGetPatternSeed { |pattern|

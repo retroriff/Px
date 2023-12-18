@@ -3,6 +3,13 @@
         this.prFx(\delay, mix, args, name);
     }
 
+    *hpf { |mix, args, name|
+        this.prFx(\hpf, mix, args, name);
+    }
+
+    *lpf { |mix, args, name|
+        this.prFx(\lpf, mix, args, name);
+    }
     *reverb { |mix, args, name|
         this.prFx(\reverb, mix, args, name);
     }
@@ -12,7 +19,7 @@
     }
 
     *prFx { |fx, mix, args, name|
-        name = name ?? defaultName;
+        name = this.prGetName(name);
         lastPatterns[name].do { |pattern|
             pattern.prFx(fx, mix, args);
         };
@@ -45,11 +52,23 @@
 
 +Event {
     prFx { |fx, mix, args|
+        if ([\hpf, \lpf].includes(fx) and: { mix == \rand }) {
+            mix = 1;
+            args = [\freq, this.prCreatePatternKey(\rand)] ++ args;
+        };
         ^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)] ++ args];
     }
 
     delay { |mix, args|
         this.prFx(\delay, mix, args);
+    }
+
+    hpf { |mix, args|
+        this.prFx(\hpf, mix, args);
+    }
+
+    lpf { |mix, args|
+        this.prFx(\lpf, mix, args);
     }
 
     reverb { |mix, args|

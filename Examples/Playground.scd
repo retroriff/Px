@@ -40,7 +40,7 @@ Px ([
 )
 MIDIClient.init
 
-TR08.preset(\electro, 4);
+TR08.preset(\industrial, 0);
 
 (
 TR08([
@@ -66,7 +66,7 @@ TR08([
 Play([
     // (i: \everythingrhodes, octave: 4, dur: 1, \legato: 1, amp: 0.4).degree(\rand, \dorian, 2).weight(0.34).arp,
     (id: \bass, chan: 0, \dur: 1/4, octave: 4, a: 0.2).degree(\rand, \phrygian, 4).beat.weight(0.8).seed(22),
-    (\chan: 0).control(0, 0.8),
+    (\chan: 0).control(0, 0),
 
     (id: \drone, \chan: 1, octave: 8).degree(\rand, \minor, 1),
     (\chan: 1).control(0, 0.35),
@@ -159,11 +159,13 @@ Play.stop
 Pwhite().isKindOf(Pattern)
 )
 
+m = MIDIOut.new(0);
 (
-Pdef(\test, Pbind(\type, \midi, \midicmd, \control, \midiout, m, \chan, 1, \ctlNum, 25, \control, 1)).play
+Pdef(\play, Pbind(\type, \midi, \midicmd, \control, \midiout, m, \chan, 0, \degree, 0, \octave, 4)).play;
+Pdef(\control, Pbind(\type, \midi, \midicmd, \control, \midiout, m, \chan, 0, \control, 0, \ctlNum, 0)).play
 )
 
-Pbindef(\test, \control, 1).play
+Pbindef(\test, \chan, 0, \control, 0).play
 
 
 
@@ -349,66 +351,6 @@ r = r.insert(2, (fx: \wah));
 r;
 )
 
-(\i: \kick).wah
-List[1, 2, 3, 4].collect({ arg item, i; item + 10 });
-(
-var ins = 2;
-// ins.size;
-(ins + "pattern has seed" + ins).postln;
-)
-(
-(i: \maracas, \dur: 1/4).beat.seed;
-var result = [
-    ( 'ins': ( 'dur': 0.25, 'amp': 1, 'i': "maracas" ), 'off': 0 ),
-    ( 'ins': ( 'dur': 2, 'amp': 1, 'i': "SN", solo: 1 ), 'off': 1 ),
-    ( 'ins': ( 'dur': 1, 'amp': 1, 'i': "BD" ), 'off': 0 )
-];
-var solo = result.collect { |item, i| if (item['ins']['solo'].notNil) { true } { false }; };
-var kaka = [0];
-solo = nil;
-solo.indicesOfEqual(true);
-// kaka.size;
-)
-
-
-(
-a = 4;
-a = a.flatten;
-a.isString
-)
-
-(
-a = (a: 1).in;
-)
-(
-var solo = [];
-// solo = solo ++ [1];
-var pais = (\solo: 1);
-solo = pais.asPairs;
-// solo[\dur];
-solo.class;
-solo = [\amp: 1];
-solo.value(\amp).postln;
-[1, 2].reject({ arg item; item == 1 });
-)
-
-
-Document.open("~/Library/Mobile Documents/com~apple~CloudDocs/Music/SuperCollider/Setup/Setup.scd".standardizePath)
-~s.("pop-2", 0).class
-
-(
-a = "pop-a".split($-);
-if (a.isArray and: { a.size > 1 } and: { a[1].asInteger > 0 }) { a[1].postln } { "kaka".postln };
-b = 2;
-c = if (b == 1) { "Is 1".postln } { "No".postln; };
-e = "pop-2";
-d = ~s.("pop-");
-)
-
-\p, Pseries(0, 0.1, inf).fold(-1, 1)
-\p, Pwhite(-1, 1., inf)
-\rate, Pwhite(-1, 1., inf)
-
 (
 r = Pbindef(\a, \instrument, \bd, \dur, 1, \amp, 1).play;
 r = r * 0.5;
@@ -425,10 +367,6 @@ a = [(fx: \reverb).eveen];
 a;
 )
 
-~s.("pop", 1);
-~s.("cl");
-~s.("cy");
-
 SynthDescLib.global[\reverb].isNil
 
 Px.clear
@@ -437,15 +375,8 @@ Px.clear
     ( 'ins': ( 'euc': [ 3, 4, 4 ], 'dur': a Pbinop, 'amp': 1, 'i': kick ), 'fx': [ ( 'fx': reverb ), ( 'fx': delay ) ], 'off': 0 ),
     ( 'ins': ( 'amp': a Pseg, 'i': snare, 'dur': a Pbinop, 'euc': [ 3, 4, 4 ],  'fade': [ out, 3 ] ), 'off': 0 ) ]
 )
-(
-var isTest = isTest == 0 and: isTest == 1;
-)
 
-(
-Px.fx([
-    (fx: \reverb),
-])
-);
+
 
 (
 v = [

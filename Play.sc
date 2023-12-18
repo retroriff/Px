@@ -1,12 +1,13 @@
 Play : Px {
-    classvar defaultName = \play, <midiClient;
+    classvar <midiClient;
 
     *new { | patterns, name, quant, trace, midiout|
         patterns.collect { |pattern|
             pattern.putAll([\degree: this.prGenerateDegrees(pattern) ?? 0 ]);
         };
         patterns = this.prCreateMidiPatterns(patterns, midiout);
-        ^super.new(patterns, name ?? defaultName, quant, trace);
+        name = super.prGetName(name);
+        ^super.new(patterns, name, quant, trace);
     }
 
     *prGenerateDegrees { |pattern|
@@ -39,22 +40,6 @@ Play : Px {
         };
 
         ^pattern[\degree];
-    }
-
-    *release { | fadeTime, name |
-        ^super.release(fadeTime, name ?? defaultName);
-    }
-
-    *shuffle { | name |
-        ^super.shuffle(name ?? defaultName);
-    }
-
-    *stop { | name |
-        ^super.stop(name ?? defaultName);
-    }
-
-    *trace { | name |
-        ^super.trace(name ?? defaultName);
     }
 }
 

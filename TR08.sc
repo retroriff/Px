@@ -60,8 +60,10 @@ TR08 : Play {
         };
 
         PathName("Presets/".resolveRelative).filesDo{ |file|
-            var fileName = file.fileNameWithoutExtension;
-            presetsDict.put(fileName.asSymbol, file.fullPath.load )
+            if (file.extension == "scd") {
+                var fileName = file.fileNameWithoutExtension;
+                presetsDict.put(fileName.asSymbol, file.fullPath.load )
+            }
         };
 
         preset = presetsDict[name ?? \electro][number ?? 0];

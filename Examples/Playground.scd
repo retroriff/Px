@@ -41,6 +41,24 @@ Px ([
 MIDIClient.init
 
 TR08.preset(\industrial, 0);
+(
+~bpm = 80;
+TempoClock.default.tempo = ~bpm / 60;
+)
+
+TempoClock.default.tempo
+
+60*1.3333
+(
+Px([
+    (i: \bd, dur: [1, 0, 1, 0, 0, 0,0, 0, 0, 0, 1, 0, 1]),
+    // (i: \sn, dur: 1/4).fill,
+]).tempo(110)
+)
+
+[1 0 1 0 0 1 0 1].
+
+Px([(i: \bd)], "yes").reverb
 
 (
 TR08([

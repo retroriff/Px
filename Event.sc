@@ -7,8 +7,8 @@
         ^this.putAll([\amp, args]);
     }
 
-    beat { |seed, rest|
-        var pairs = [\beat, true];
+    beat { |seed, rest, set|
+        var pairs = [\beat, true, \beatSet, set];
 
         if (seed.notNil and: seed.isInteger)
         { pairs = pairs ++ [\seed, seed] };

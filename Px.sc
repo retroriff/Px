@@ -37,21 +37,34 @@ Px {
         };
 
         var createPatternBeat = { |amp, pattern|
-            var seed = this.prGetPatternSeed(pattern);
-            var weight = pattern[\weight] ?? 0.7;
-            var rhythmWeight = (weight * 10).floor / 10;
-            var pseqWeight = weight - rhythmWeight * 10;
-            var rhythmSeq = { |weight|
-                Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
-            };
-            thisThread.randSeed = seed;
-            if (pseqWeight > 0) {
-                var seq1 = Pseq(rhythmSeq.(rhythmWeight), 1);
-                var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
-                [Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
+            if (pattern[\beatSet].isNil) {
+                var seed = this.prGetPatternSeed(pattern);
+                var weight = pattern[\weight] ?? 0.7;
+                var rhythmWeight = (weight * 10).floor / 10;
+                var pseqWeight = weight - rhythmWeight * 10;
+                var rhythmSeq = { |weight|
+                    Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
+                };
+                thisThread.randSeed = seed;
+                if (pseqWeight > 0) {
+                    var seq1 = Pseq(rhythmSeq.(rhythmWeight), 1);
+                    var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
+                    [Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
+                } {
+                    rhythmSeq.(weight);
+                };
             } {
-                rhythmSeq.(weight);
+                createPatternBeatSet.(amp, pattern);
             };
+        };
+
+        var createPatternBeatSet = { |amp, pattern|
+            var list = pattern[\beatSet].collect { |step|
+                if (step >= 1)
+                { step = amp };
+                step;
+            };
+            Pseq(list, inf);
         };
 
         var createPatternFillFromBeat = { |amp, i, pattern|
@@ -95,14 +108,17 @@ Px {
 
         var createPatternDur = { |pattern|
             var dur = pattern[\dur] ?? 1;
-            if (dur == 0) { dur = 1 };
+            if (dur == 0)
+            { dur = 1 };
             if (dur.isArray) {
                 var containsString = dur.any { |item| item.isString };
-                dur = containsString.if { 1 } { Pseq(dur, inf) };
+                dur = containsString.if { 1 } { dur.postln; Pseq(dur, inf) };
             };
-            if (dur.isString) { dur = 1 };
+            if (dur.isString)
+            { dur = 1 };
             if (pattern[\euclid].notNil)
             { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) / pattern[\euclid][2] };
+            dur.postln;
             pattern[\dur] = dur;
             pattern;
         };
@@ -205,6 +221,10 @@ Px {
         if (synthDef.isNil)
         { SynthDescLib.global.browse }
         { this.prPrint(SynthDescLib.global[synthDef]) };
+    }
+
+    *tempo { | tempo |
+        TempoClock.default.tempo = tempo / 60;
     }
 
     *trace { | name |

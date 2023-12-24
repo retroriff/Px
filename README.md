@@ -23,7 +23,7 @@
 | Name     | Arguments                                         | Description                                                                                                                                                                                  |
 | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `amp`    | number \| number[] \| Pattern                     | Amplification                                                                                                                                                                                |
-| `beat`   | seed?: integer, rest?: number                     | Generates a random rhythm                                                                                                                                                                    |
+| `beat`   | seed?: integer, rest?: number, set?: number[]     | Generates a random rhythm, or own rhythym defined by set                                                                                                                                     |
 | `dur`    | number \| number[] \| Pattern                     | Duration                                                                                                                                                                                     |
 | `fill`   | None                                              | Fills the rests gap of its previous pattern. Due to its dependency with the previous item, using solo can generate an error. We can mute patterns using `a: 0` instead                       |
 | `in`     | Seconds?: integer                                 | (\fade: "in")                                                                                                                                                                                |
@@ -57,7 +57,8 @@
 - `shuffle`: Generates new random seeds
 - `stop`: Stops the Pdef
 - `synthDef`: Browse global synthDefs. If a synthDef name is provided, it returns its arguments
-- `trace`: print out the results of the streams
+- `tempo`: Set a new tempo
+- `trace`: Print out the results of the streams
 - `wah`: Adds delay FX to all patterns
 
 ### Buf loopers

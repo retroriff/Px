@@ -100,6 +100,15 @@ Px([
 ]).reverb(0.1).delay(0.1);
 )
 
+// Fill also accepts a rest argument
+(
+Px([
+    (i: \bd, \dur: 1/4).beat.seed(857),
+    (i: \lt, \dur: 1/4).fill.weight(0.4),
+    (i: \sn, \dur: 1/4).fill(8).weight(0.2).seed(405)
+]).reverb(0.4)
+)
+
 // We can keep our favorite beats providing a seed number
 
 (

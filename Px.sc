@@ -223,7 +223,7 @@ Px {
     }
 
     *tempo { |tempo|
-        TempoClock.default.tempo = tempo / 60;
+        TempoClock.default.tempo = tempo.clip(10, 300) / 60;
     }
 
     *trace { |name|

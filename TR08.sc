@@ -59,13 +59,24 @@ TR08 : Play {
             patterns;
         };
 
+        // TODO: Decide if we want presets to be JSON or events
+        var presetFormat = "json";
+
         PathName("Presets/".resolveRelative).filesDo{ |file|
-            if (file.extension == "json") {
-                var fileName = file.fileNameWithoutExtension;
-                var filePath = File.readAllString(file.fullPath);
-                var patterns = JSONlib.convertToSC(filePath);
-                presetsDict.put(fileName.asSymbol, patterns[\presets]);
+            var fileName = file.fileNameWithoutExtension;
+
+            if (file.extension == presetFormat) {
+                case
+                { presetFormat == "scd" }
+                { presetsDict.put(fileName.asSymbol, file.fullPath.load ) }
+                { presetFormat == "json" }
+                {
+                    var filePath = File.readAllString(file.fullPath);
+                    var patterns = PresetsFromJSON(filePath.parseJSON);
+                    presetsDict.put(fileName.asSymbol, patterns);
+                }
             }
+
         };
 
         preset = presetsDict[name ?? \electro][number ?? 0];

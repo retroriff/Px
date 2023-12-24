@@ -33,7 +33,7 @@
 | `rotate` | None                                              | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
 | `seed`   | seed: integer                                     | Generate a specific seed                                                                                                                                                                     |
 | `solo`   | None                                              | (\solo: true)                                                                                                                                                                                |
-| `trim`   | startPosition?: 1.0                               | Plays a trimmed loop from a fixed position or random when startPosition is nil                                                                                                               |
+| `trim`   | startPosition?: 1.0 \| number[]                   | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
 | `weight` | number                                            | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
 ### Event FX methods

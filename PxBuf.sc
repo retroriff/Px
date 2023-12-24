@@ -101,9 +101,14 @@
     }
 
     trim { |startPosition|
-        startPosition = if (startPosition.isNil)
-        { \seq }
-        { startPosition.clip(0, 0.75) };
+        case
+        { startPosition.isNil }
+        { startPosition = \seq }
+
+        { startPosition.isArray }
+        { startPosition = Pseq(startPosition, inf) }
+
+        { startPosition = startPosition.clip(0, 0.75) };
 
         ^this.putAll([\trim, startPosition]);
     }

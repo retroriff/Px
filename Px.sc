@@ -112,13 +112,12 @@ Px {
             { dur = 1 };
             if (dur.isArray) {
                 var containsString = dur.any { |item| item.isString };
-                dur = containsString.if { 1 } { dur.postln; Pseq(dur, inf) };
+                dur = containsString.if { 1 } { Pseq(dur, inf) };
             };
             if (dur.isString)
             { dur = 1 };
             if (pattern[\euclid].notNil)
             { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) / pattern[\euclid][2] };
-            dur.postln;
             pattern[\dur] = dur;
             pattern;
         };
@@ -212,22 +211,22 @@ Px {
         this.send(lastPatterns[name], name);
     }
 
-    *stop {  | name |
+    *stop { |name|
         name = this.prGetName(name);
         Pdef(name.asSymbol).stop;
     }
 
-    *synthDef { | synthDef |
+    *synthDef { |synthDef|
         if (synthDef.isNil)
         { SynthDescLib.global.browse }
         { this.prPrint(SynthDescLib.global[synthDef]) };
     }
 
-    *tempo { | tempo |
+    *tempo { |tempo|
         TempoClock.default.tempo = tempo / 60;
     }
 
-    *trace { | name |
+    *trace { |name|
         name = this.prGetName(name);
         this.send(lastPatterns[name], name, trace: true);
     }

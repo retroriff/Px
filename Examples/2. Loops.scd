@@ -56,7 +56,14 @@ Px ([
 ]);
 )
 
-// And define it with patterns
+// A sequence
+(
+Px ([
+    (loop: ["mt-4", 0]).trim([0, 0.25, 0.75]),
+]);
+)
+
+// Or defined by patterns
 (
 Px ([
     (loop: ["mt-4", 0]).trim(Pwhite(0.0, 0.75)),
@@ -68,6 +75,13 @@ Px ([
 Px ([
     (loop: ["gl1", 0]).rate([\rand, 1, -1]),
     (loop: ["gl1", 1]).rate([\wrand, 1, -1, 0.52]),
+]);
+)
+
+// The loop duration can be stretched:
+(
+Px([
+    (loop: ["mt-2", 0], dur: 4),
 ]);
 )
 

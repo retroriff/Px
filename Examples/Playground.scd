@@ -13,8 +13,8 @@ Px ([
     // (i: \cb, \dur: 1/4).delay.reverb.wah.beat.weight(0.26),
     // (loop: ["pop-2", 1], amp: 1).wah(0.3).reverb.out,
     // (loop: ["mt-4", \jump], amp: 1).solo.seed(24),
-    // (loop: ["fusion-4", 0]).rate([\wrand, 1, -1, 0.02]).reverb(0.2).delay(Pwhite(0.1, 0)).trim(Pwhite(0.0, 0.75)),
-    // (loop: ["fusion-4", 0], amp: 0.6).delay([\rand, 0, 0.2]).reverb([\rand, 0.1, 0.3]).trim(0.16),
+    // (loop: ["fusion-4", 0]).rate([\wrand, 1, -1, 0.02]).reverb(0.2).delay(Pwhite(0.1, 0)).start(Pwhite(0.0, 0.75)),
+    // (loop: ["fusion-4", 0], amp: 0.6).delay([\rand, 0, 0.2]).reverb([\rand, 0.1, 0.3]).start(0.16),
 
     // (loop: ["mt-4", 0, \scratch], amp: 1).delay(0.1).wah(0.2),
     // (play: ["abc-4", \rand]).beat.weight(0.03).reverb(0.5),
@@ -48,11 +48,33 @@ TempoClock.default.tempo = ~bpm / 60;
 
 TempoClock.default.tempo
 
-60*1.3333
+
+Play([(chan: 0, octave: 2, degree: 6).holdOff])
+
 (
 Px([
-    (i: \bd, dur: [1, 0, 1, 0, 0, 0,0, 0, 0, 0, 1, 0, 1]),
-    // (i: \sn, dur: 1/4).fill,
+    (play: ["games", 0], dur: 4).start([0, 0.5, 0.75]),
+    // (play: ["kplus", 1], dur: 1),
+    // (play: ["kplus", 2], dur: 2),
+    // (play: ["kplus", 6], dur: 5/3),
+    // (play: ["kplus", 4], dur: 2/3),
+])
+)
+(
+Px([
+    (i: \bd, dur: 1/4).beat(set: [1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0]).reverb(0.5),
+    (play: ["fm", 8], dur: 1/4).fill.weight(0.1).seed(25).reverb(0.6),
+], "drum")
+)
+
+Px.release
+
+Px.stop("drum")
+(
+Px([
+    (i: \bd, dur: 1/4).beat(set: [1, 0, 1, 0, 0, 1, 0, 1]),
+    (i: \sn, dur: 1/4).fill.weight(0.2),
+    (i: \lc, dur: 1/4).fill.weight(0.3),
 ]).tempo(110)
 )
 

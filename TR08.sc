@@ -59,24 +59,22 @@ TR08 : Play {
             patterns;
         };
 
-        // TODO: Decide if we want presets to be JSON or events
-        var presetFormat = "json";
+        // TODO: Decide if we want presets to be YAML, JSON or events
+        var presetFormat = "yaml";
 
-        PathName("Presets/".resolveRelative).filesDo{ |file|
+        PathName(("Presets/" ++ presetFormat ++ "/").resolveRelative).filesDo{ |file|
             var fileName = file.fileNameWithoutExtension;
+            var filePath = File.readAllString(file.fullPath);
 
-            if (file.extension == presetFormat) {
-                case
-                { presetFormat == "scd" }
-                { presetsDict.put(fileName.asSymbol, file.fullPath.load ) }
-                { presetFormat == "json" }
-                {
-                    var filePath = File.readAllString(file.fullPath);
-                    var patterns = PresetsFromJSON(filePath.parseJSON);
-                    presetsDict.put(fileName.asSymbol, patterns);
-                }
-            }
+            case
+            { presetFormat == "json" }
+            { presetsDict.put(fileName.asSymbol, PresetsFromJSON(filePath.parseJSON)) }
 
+            { presetFormat == "scd" }
+            { presetsDict.put(fileName.asSymbol, filePath.load ) }
+
+            { presetFormat == "yaml" }
+            { presetsDict.put(fileName.asSymbol, PresetsFromYAML(filePath.parseYAML)) }
         };
 
         preset = presetsDict[name ?? \electro][number ?? 0];

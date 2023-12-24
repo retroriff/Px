@@ -1,5 +1,5 @@
 Px {
-    classvar chorus, <lastPatterns, <seeds;
+    classvar chorus, <lastPatterns, <currentName, <seeds;
 
     *new { | patterns, name, quant, trace |
         var ptparList;
@@ -82,10 +82,11 @@ Px {
             pattern.removeAt(\a);
             if (pattern[\beat].notNil) {
                 amp = createPatternBeat.(amp, pattern);
-                pattern[\dur] = createPatternBeatRest.(pattern);
             };
-            if (pattern[\fill].notNil)
-            { amp = createPatternFillFromBeat.(amp, i, pattern) };
+            if (pattern[\fill].notNil) {
+                amp = createPatternFillFromBeat.(amp, i, pattern);
+            };
+            pattern[\dur] = createPatternBeatRest.(pattern);
             if (amp.isArray)
             { amp = Pseq(amp, inf) };
             pattern[\amp] = amp;
@@ -184,7 +185,7 @@ Px {
     *send { | patterns, name, quant, trace |
         name = this.prGetName(name);
         trace = trace ?? false;
-        if (Pdef(name).isPlaying)
+        if (Pdef(name.asSymbol).isPlaying)
         { this.new(patterns, name, quant, trace) }
         { this.prPrint("Pdef(\\".catArgs(name, ") is not playing")) }
     }
@@ -227,6 +228,7 @@ Px {
 
     *prGetName { | name |
         name = name ?? this.name.asString.toLower.asSymbol;
+        currentName = name;
         ^name;
     }
 

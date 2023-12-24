@@ -1,25 +1,25 @@
 +Px {
-    *delay { |mix, args, name|
-        this.prFx(\delay, mix, args, name);
+    *delay { |mix, args|
+        this.prFx(\delay, mix, args);
     }
 
-    *hpf { |mix, args, name|
-        this.prFx(\hpf, mix, args, name);
+    *hpf { |mix, args|
+        this.prFx(\hpf, mix, args);
     }
 
-    *lpf { |mix, args, name|
-        this.prFx(\lpf, mix, args, name);
+    *lpf { |mix, args|
+        this.prFx(\lpf, mix, args);
     }
-    *reverb { |mix, args, name|
-        this.prFx(\reverb, mix, args, name);
-    }
-
-    *wah { |mix, args, name|
-        this.prFx(\wah, mix, args, name);
+    *reverb { |mix, args|
+        this.prFx(\reverb, mix, args);
     }
 
-    *prFx { |fx, mix, args, name|
-        name = this.prGetName(name);
+    *wah { |mix, args|
+        this.prFx(\wah, mix, args);
+    }
+
+    *prFx { |fx, mix, args|
+        var name = this.prGetName(currentName);
         lastPatterns[name].do { |pattern|
             pattern.prFx(fx, mix, args);
         };

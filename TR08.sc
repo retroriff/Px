@@ -60,9 +60,11 @@ TR08 : Play {
         };
 
         PathName("Presets/".resolveRelative).filesDo{ |file|
-            if (file.extension == "scd") {
+            if (file.extension == "json") {
                 var fileName = file.fileNameWithoutExtension;
-                presetsDict.put(fileName.asSymbol, file.fullPath.load )
+                var filePath = File.readAllString(file.fullPath);
+                var patterns = JSONlib.convertToSC(filePath);
+                presetsDict.put(fileName.asSymbol, patterns[\presets]);
             }
         };
 

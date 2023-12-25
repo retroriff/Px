@@ -143,6 +143,9 @@ Px([
 ]).shuffle;
 )
 
+// Change the tempo
+Px.tempo(100);
+
 // And finalize the session with a default fade out:
 Px.release;
 

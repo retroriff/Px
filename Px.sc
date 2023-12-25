@@ -224,6 +224,7 @@ Px {
 
     *tempo { |tempo|
         TempoClock.default.tempo = tempo.clip(10, 300) / 60;
+        this.prLoadSynthDefs;
     }
 
     *trace { |name|

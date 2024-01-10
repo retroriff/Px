@@ -32,6 +32,11 @@
         ^this.putAll(this.prAddRest([\fill, true], rest));
     }
 
+    human { |delay|
+        delay = delay ?? 0.5;
+        ^this.putAll([\human, delay.clip(0, 1)]);
+    }
+
     in { |time|
         this.fade("in", time);
     }

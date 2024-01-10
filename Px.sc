@@ -106,6 +106,14 @@ Px {
             pattern;
         };
 
+        var humanize = { |pattern|
+            if (pattern[\human].notNil) {
+                var delay = pattern[\human] * 0.04;
+                pattern[\lag] = Pwhite(delay.neg, delay);
+            };
+            pattern;
+        };
+
         var createPatternDur = { |pattern|
             var dur = pattern[\dur] ?? 1;
             if (dur == 0)
@@ -119,7 +127,7 @@ Px {
             if (pattern[\euclid].notNil)
             { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) / pattern[\euclid][2] };
             pattern[\dur] = dur;
-            pattern;
+            humanize.(pattern);
         };
 
         var createPatternFade = { |fade, pbind|
@@ -146,7 +154,7 @@ Px {
         patterns = createIds.value;
         patterns = this.prCreateLoops(patterns);
 
-        patterns.do { |pattern, i|
+        patterns do: { |pattern, i|
             var pbind;
             pattern = createPatternAmp.(pattern, i);
             pattern = createPatternDur.(pattern);
@@ -233,7 +241,7 @@ Px {
     }
 
     *prCreateNewSeeds {
-        seeds.order.do { |id|
+        seeds.order do: { |id|
             var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
             this.prPrint("Shuffle:".scatArgs(id, " ->", newSeed));
             seeds[id] = newSeed;

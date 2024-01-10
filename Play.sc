@@ -22,13 +22,12 @@ Play : Px {
         };
 
         var createRandomDegrees = { |pattern, size = 1|
-            var scale = pattern[\degree][1] ?? \minor;
+            var scale = pattern[\degree][1] ?? \phrygian;
             var scaleDegrees = Scale.at(scale.asSymbol).degrees;
             var randomDegrees = Array.newClear(size);
             thisThread.randSeed = super.prGetPatternSeed(pattern);
             randomDegrees = size.collect { scaleDegrees.choose };
         };
-
 
         if (pattern[\degree].isArray) {
             var degrees = pattern[\degree][0];
@@ -58,5 +57,12 @@ Play : Px {
         { pattern = value };
 
         ^this ++ (\degree: pattern ?? [value, scale, size]);
+    }
+
+    octave { |value|
+        if (value.isArray) {
+            value = Pseq(value, inf);
+        }
+        ^this ++ (\octave: value);
     }
 }

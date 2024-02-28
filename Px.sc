@@ -116,16 +116,21 @@ Px {
 
         var createPatternDur = { |pattern|
             var dur = pattern[\dur] ?? 1;
+
             if (dur == 0)
             { dur = 1 };
+
             if (dur.isArray) {
                 var containsString = dur.any { |item| item.isString };
                 dur = containsString.if { 1 } { Pseq(dur, inf) };
             };
+
             if (dur.isString)
             { dur = 1 };
+
             if (pattern[\euclid].notNil)
-            { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) / pattern[\euclid][2] };
+            { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) * dur };
+
             pattern[\dur] = dur;
             humanize.(pattern);
         };

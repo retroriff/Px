@@ -24,7 +24,7 @@ Px([
     (i: \bd).reverb(0.2).wah(0.1),
     (i: \sn, dur: 2, off: 1).delay(0.2),
     (i: \ch, dur: 1/4).beat,
-    (i: \ma, dur: 1/4, euclid: [3, 5, 4]),
+    (i: \ma, dur: 1/4).euclid(3, 5),
 ]);
 )
 

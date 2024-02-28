@@ -20,6 +20,10 @@
         ^this.putAll([\dur, args]);
     }
 
+    euclid { |hits, total|
+        ^this.putAll([\euclid, [hits, total]]);
+    }
+
     fade { |direction, time|
         var fade = if (time.isNil)
         { direction }

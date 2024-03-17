@@ -1,8 +1,14 @@
 Px {
-    classvar chorus, <lastPatterns, <currentName, <seeds;
+    classvar chorus;
+    classvar <currentName;
+    classvar <lastPatterns;
+    classvar <nodeProxy;
+    classvar <nodeProxyFxOrder;
+    classvar <nodeProxySynthDefControls;
+    classvar <seeds;
 
     *new { | patterns, name, quant, trace |
-        var ptparList;
+        var pDef, ptparList;
 
         var copyPatternsToLastPatterns = {
             if (lastPatterns.isNil)
@@ -179,10 +185,16 @@ Px {
             ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
         };
 
-        Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant ?? 4).play;
+        pDef = Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant ?? 4);
+
+        if (nodeProxy[name].isPlaying.not) {
+            nodeProxy.add(name -> NodeProxy.new.play.quant_(1));
+            nodeProxy[name][0] = pDef;
+        };
     }
 
     *chorus { | name |
+        name = name ?? currentName;
         if (chorus.isNil)
         { this.prPrint("Chorus is empty. Please run \"save\"") }
         { this.new(chorus, name) }
@@ -195,7 +207,7 @@ Px {
     *release { | fadeTime, name |
         var fadeValue = if (fadeTime.isNil) { "out" } { ["out", fadeTime] };
         var fadeOutPatterns;
-        name = this.prGetName(name);
+        name = name ?? currentName;
         fadeOutPatterns = lastPatterns[name].collect { |pattern|
             if (pattern[\fade] == "out")
             { pattern[\amp] = 0 };
@@ -206,14 +218,13 @@ Px {
     }
 
     *save { | name |
-        name = this.prGetName(name);
-        chorus = lastPatterns[name];
+        chorus = lastPatterns[name ?? currentName];
     }
 
     *send { | patterns, name, quant, trace |
         name = this.prGetName(name);
         trace = trace ?? false;
-        if (Pdef(name.asSymbol).isPlaying)
+        if (nodeProxy[name].isPlaying)
         { this.new(patterns, name, quant, trace) }
         { this.prPrint("Pdef(\\".catArgs(name, ") is not playing")) }
     }
@@ -225,8 +236,9 @@ Px {
     }
 
     *stop { |name|
-        name = this.prGetName(name);
-        Pdef(name.asSymbol).stop;
+        name = name ?? currentName;
+        nodeProxy[currentName].stop;
+        nodeProxy.removeAt(currentName);
     }
 
     *synthDef { |synthDef|

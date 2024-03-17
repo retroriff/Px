@@ -27,26 +27,26 @@
 | `dur`    | number \| number[] \| Pattern                     | Duration                                                                                                                                                                                     |
 | `euclid` | hits: number, total: number                       | Generates an Euclidian rhythm                                                                                                                                                                |
 | `fill`   | none                                              | Fills the rests gap of its previous pattern. Due to its dependency with the previous item, using solo can generate an error. We can mute patterns using `a: 0` instead                       |
-| `human`  | delay: number                                     | Humanize the playback of an instrument                                                                                                                                                       |
+| `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
 | `in`     | seconds?: integer                                 | (\fade: "in")                                                                                                                                                                                |
 | `out`    | seconds?: integer                                 | (\fade: "out")                                                                                                                                                                               |
-| `pan`    | number \| \rand \| \rotate \| Pattern             | Pan                                                                                                                                                                                          |
+| `pan`    | range -1..1 \| \rand \| \rotate \| Pattern        | Pan                                                                                                                                                                                          |
 | `rate`   | number \| \rand \| [\wrand, item1, item2, weight] | Rate value                                                                                                                                                                                   |
 | `rotate` | none                                              | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
 | `seed`   | seed: integer                                     | Generate a specific seed                                                                                                                                                                     |
 | `solo`   | none                                              | (\solo: true)                                                                                                                                                                                |
-| `trim`   | startPosition?: 1.0 \| number[]                   | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
-| `weight` | number                                            | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
+| `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
+| `weight` | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
 ### Event FX methods
 
-| Name     | Arguments                                                            | Description              |
-| -------- | -------------------------------------------------------------------- | ------------------------ |
-| `delay`  | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a delay effect      |
-| `hpf`    | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a high pass filter  |
-| `lpf`    | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a lower pass filter |
-| `reverb` | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a reverb effect     |
-| `wah`    | mix?: 1.0 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect        |
+| Name     | Arguments                                                                   | Description              |
+| -------- | --------------------------------------------------------------------------- | ------------------------ |
+| `delay`  | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a delay effect      |
+| `hpf`    | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a high pass filter  |
+| `lpf`    | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a lower pass filter |
+| `reverb` | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a reverb effect     |
+| `wah`    | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect        |
 
 ### Class methods
 

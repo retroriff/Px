@@ -1,3 +1,19 @@
+X : Event {
+    *i { |name|
+        ^super.new.ins(name);
+    }
+}
+
++Number {
+    px { |pattern|
+        Px ([pattern], this);
+    }
+
+    *i { |name|
+        ^Event.new.i(name);
+    }
+}
+
 +Event {
     a { |args|
         this.amp(args);
@@ -21,6 +37,10 @@
     }
 
     euclid { |hits, total|
+        if (hits.isArray) {
+            total = hits[1];
+            hits = hits[0];
+        };
         ^this.putAll([\euclid, [hits, total]]);
     }
 
@@ -37,8 +57,12 @@
     }
 
     human { |delay|
-        delay = delay ?? 0.5;
+        delay = delay ?? 0.1;
         ^this.putAll([\human, delay.clip(0, 1)]);
+    }
+
+    ins { |name|
+        ^this.putAll([\i, name]);
     }
 
     in { |time|
@@ -47,6 +71,10 @@
 
     out { |time|
         this.fade("out", time);
+    }
+
+    pan { |pan|
+        this.fade("pan", pan);
     }
 
     px { |name, quant, trace|

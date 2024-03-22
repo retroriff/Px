@@ -73,8 +73,8 @@ X : Event {
         this.fade("out", time);
     }
 
-    pan { |pan|
-        this.fade("pan", pan);
+    pan { |value|
+        ^this.putAll([\pan, value]);
     }
 
     px { |name, quant, trace|
@@ -82,7 +82,7 @@ X : Event {
     }
 
     rotate {
-        ^this.putAll([\pan, \rotate]);
+        ^this.pan(\rotate);
     }
 
     seed { |seed|

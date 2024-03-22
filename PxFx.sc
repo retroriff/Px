@@ -1,24 +1,6 @@
 +Px {
-    *initClass {
-        var flanger = \filterIn -> { |in|
-            AnalogPhaser.ar(
-                in,
-                SinOsc.ar(0.22),
-                skew: SinOsc.kr(0.059),
-                feedback: SinOsc.kr(0.005, 1pi).range(0.0,0.85),
-                modulation: SinOsc.kr(0.0192, 2pi).unipolar,
-                stages: 50
-            );
-        };
-        var freeVerb = \filterIn -> { |in|
-            FreeVerb.ar(in, mix: 1, room: 1);
-        };
-        nodeProxy = Dictionary.new;
-        nodeProxyFxOrder = Dictionary.new;
-        nodeProxySynthDefControls = Dictionary[
-            \flanger -> flanger,
-            \freeverb -> freeVerb
-        ];
+    *blp { |mix = 1|
+        Nfx(currentName).blp(mix);
     }
 
     *delay { |mix, args|
@@ -33,16 +15,12 @@
         this.prFx(\lpf, mix, args);
     }
 
-    *flanger { |mix = 1|
-        this.prProxyFx(\flanger, mix);
+    *reverb { |mix = 1, room = 0.7, damp = 0.7|
+        Nfx(currentName).reverb(mix, room, damp);
     }
 
-    *freeverb { |mix = 1|
-        this.prProxyFx(\freeverb, mix);
-    }
-
-    *reverb { |mix, args|
-        this.prFx(\reverb, mix, args);
+    *vst { |mix = 1, plugin|
+        Nfx(currentName).vst(mix, plugin);
     }
 
     *wah { |mix, args|
@@ -53,31 +31,6 @@
         lastPatterns[currentName].do { |pattern|
             pattern.prFx(fx, mix, args);
         };
-
-        this.send(lastPatterns[currentName], currentName);
-    }
-
-    *prProxyFx { |fx, mix, args|
-        var index;
-
-        if (mix.isNil) {
-            nodeProxy[currentName][index] = nil;
-            nodeProxyFxOrder[currentName].remove(fx);
-        } {
-            if (nodeProxyFxOrder[currentName].isArray.not)
-            { nodeProxyFxOrder.add(currentName -> Array.new) };
-
-            nodeProxyFxOrder[currentName] = nodeProxyFxOrder[currentName].add(fx);
-            index = nodeProxyFxOrder[currentName].indexOf(fx) + 1;
-
-            if (nodeProxy[currentName][index] != nodeProxySynthDefControls[fx]) {
-                nodeProxy[currentName][index] = nodeProxySynthDefControls[fx];
-            };
-
-            nodeProxy[currentName].set((\wet ++ index).asSymbol, mix ?? 0.7);
-        };
-
-        currentName.postln;
 
         this.send(lastPatterns[currentName], currentName);
     }

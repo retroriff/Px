@@ -3,9 +3,11 @@ Px {
     classvar <currentName;
     classvar <lastPatterns;
     classvar <nodeProxy;
-    classvar <nodeProxyFxOrder;
-    classvar <nodeProxySynthDefControls;
     classvar <seeds;
+
+    *initClass {
+        nodeProxy = Dictionary.new;
+    }
 
     *new { | patterns, name, quant, trace |
         var pDef, ptparList;
@@ -188,8 +190,7 @@ Px {
         pDef = Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant ?? 4);
 
         if (nodeProxy[name].isPlaying.not) {
-            nodeProxy.add(name -> NodeProxy.new.play.quant_(1));
-            nodeProxy[name][0] = pDef;
+            nodeProxy.add(name -> Ndef(name, pDef).play);
         };
     }
 
@@ -298,3 +299,4 @@ Px {
         value.postln;
     }
 }
+

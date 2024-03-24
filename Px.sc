@@ -201,6 +201,10 @@ Px {
         { this.new(chorus, name) }
     }
 
+    *vol { |value|
+        nodeProxy[currentName].vol_(value);
+    }
+
     *gui {
         PdefAllGui.new;
     }

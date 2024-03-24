@@ -2,6 +2,12 @@
 
 ## Px
 
+It generates a patterns nodeproxy. Check the [examples](/Examples/):
+
+```
+Px(i: \bd);
+```
+
 ### Class args
 
 | Arg        | Value            | Description                                          |
@@ -61,6 +67,7 @@
 - `synthDef`: Browse global synthDefs. If a synthDef name is provided, it returns its arguments
 - `tempo`: Set a new tempo
 - `trace`: Print out the results of the streams
+- `vol`: Controls the nodeproxy volume
 - `wah`: Adds delay FX to all patterns
 
 ### Buf loopers
@@ -94,3 +101,13 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 | `control` | number, number \| Pattern \| \rand \| \wrand \| [symbol: \rand \| \wrand, value1: number, value2?: number, weight?: number] | Sends a controller message                                            |
 | `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
 | `holdOff` | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
+
+## TR08
+
+## Nfx
+
+### Class methods
+
+- `activeEffects`: Check active proxy filter roles
+- `reverb`: Add reverb
+- `vst`: Loads a VST filter plugin

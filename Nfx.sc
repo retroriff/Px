@@ -47,7 +47,7 @@ Nfx {
     }
 
     *prAddEffect { |fx, mix, args|
-        var index, proxy;
+        var index, proxy, wetIndex;
         var hasFx = activeEffects.includes(fx);
 
         if (hasFx == false) {
@@ -55,6 +55,7 @@ Nfx {
         };
 
         index = activeEffects.indexOf(fx) + 1;
+        wetIndex = (\wet ++ index).asSymbol;
 
         if (Ndef(proxyName).isPlaying)
         { proxy = Ndef(proxyName) }
@@ -69,18 +70,36 @@ Nfx {
                 args[0],
                 editor: true
             );
-            "Open the VST plugin editor:".postcln;
+            "VST plugin editor:".postln;
             "~vst.editor;".postln;
+            "~vst.set(1, 1);".postln;
         };
 
-        if (mix.isNil) {
-            "mix is nil".postln;
-            if (~vst.notNil)
-            { ~vst.close; "close".postln };
-            activeEffects.removeAt(index);
-            activeEffects.postln;
+        if (mix.isNil or: (mix == Nil)) {
+            activeEffects.removeAt(activeEffects.indexOf(fx));
+            this.prFadeOutFx(index, proxy, wetIndex);
         } {
-            proxy.set((\wet ++ index).asSymbol, mix)
+            proxy.set(wetIndex, mix)
         };
+    }
+
+    *prFadeOutFx { |index, proxy, wetIndex|
+        var wet = proxy.get(wetIndex, { |f| f });
+        var fadeOut = wet / 25;
+
+        fork {
+            while { wet > 0.0 } {
+                wet = wet - fadeOut;
+
+                if (wet > 0)
+                { proxy.set(wetIndex, wet) }
+                {
+                    proxy[index] = nil;
+                    if (~vst.notNil)
+                    { ~vst.close };
+                };
+                0.25.wait;
+            }
+        }
     }
 }

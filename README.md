@@ -8,6 +8,11 @@ It generates a patterns nodeproxy. Check the [examples](/Examples/):
 Px(i: \bd);
 ```
 
+**Dependencies**:
+
+- JTLib (VSTPlugin, VSTPluginNodeProxyController)
+- MiSCellaneous (PbindFx)
+
 ### Class args
 
 | Arg        | Value            | Description                                          |

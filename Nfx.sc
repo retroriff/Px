@@ -1,7 +1,12 @@
+/*
+TODO: Multi instance support (should work with Px + TR08)
+*/
+
 Nfx {
     classvar <>effects;
     classvar <>activeEffects;
     classvar proxyName;
+    classvar <vstController;
 
     *initClass {
         activeEffects = Array.new;
@@ -57,22 +62,27 @@ Nfx {
         index = activeEffects.indexOf(fx) + 1;
         wetIndex = (\wet ++ index).asSymbol;
 
-        if (Ndef(proxyName).isPlaying)
+        if (this.prIsNdef)
         { proxy = Ndef(proxyName) }
-        { proxy = currentEnvironment.at(proxyName) };
+        { proxy = currentEnvironment[proxyName] };
 
         if (hasFx == false or: (proxy[index].isNil)) {
             proxy[index] = effects.at(fx).value(*args);
         };
 
         if (fx == \vst and: (hasFx == false)) {
-            ~vst = VSTPluginNodeProxyController(proxy, 1).open(
+            vstController = VSTPluginNodeProxyController(proxy, 1).open(
                 args[0],
                 editor: true
             );
-            "VST plugin editor:".postln;
-            "~vst.editor;".postln;
-            "~vst.set(1, 1);".postln;
+
+            // Avoids globals variables on ProxySpace
+            if (this.prIsNdef)
+            { ~vst = vstController };
+
+            "Px and Ndef: ~vst.editor; ~vst.set(1, 1);".postln;
+            "ProxySpace: Ndef.vstController.editor; Ndef.vstController.set(1, 1);".postln;
+            "ProxySpace instances of NodeProxy: ~m[0] = ...".postln;
         };
 
         if (mix.isNil or: (mix == Nil)) {
@@ -81,6 +91,10 @@ Nfx {
         } {
             proxy.set(wetIndex, mix)
         };
+    }
+
+    *prIsNdef {
+       ^Ndef(proxyName).isPlaying;
     }
 
     *prFadeOutFx { |index, proxy, wetIndex|
@@ -95,8 +109,8 @@ Nfx {
                 { proxy.set(wetIndex, wet) }
                 {
                     proxy[index] = nil;
-                    if (~vst.notNil)
-                    { ~vst.close };
+                    if (vstController.notNil)
+                    { vstController.close };
                 };
                 0.25.wait;
             }

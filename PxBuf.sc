@@ -1,4 +1,17 @@
 +Px {
+    *loadSamples { |samplesPath|
+        var dir = Dictionary.new;
+        dir.add(\foldernames -> PathName(samplesPath).entries);
+        for (0, dir[\foldernames].size - 1, { |i|
+            if (dir[\foldernames][i].folderName != "sets") {
+                dir.add(dir[\foldernames][i].folderName -> dir[\foldernames][i].entries.collect({
+                    arg sf;
+                    Buffer.read(Server.default, sf.fullPath);
+                }))
+            }
+        });
+    }
+
     *prCreateBufIns { |patterns|
         patterns = patterns.collect { |pattern|
             pattern[\play].notNil.if {

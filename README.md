@@ -1,41 +1,44 @@
 # Px: A patterns player class for SuperCollider
 
-## Px
-
-It generates a patterns nodeproxy. Check the [examples](/Examples/):
+A set of classes that generates patterns on a nodeproxy. This is a very basic example usage:
 
 ```
 Px(i: \bd);
 ```
 
+More code examples can be found [here](/Examples/).
+
 **Dependencies**:
 
-- JTLib (VSTPlugin, VSTPluginNodeProxyController)
-- MiSCellaneous (PbindFx)
+- [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) (PbindFx)
+- [VSTPlugin](https://github.com/Spacechild1/vstplugin)
+
+**Classes**
+
+1. [Px](#px)
+2. [Nfx](#nfx)
+3. [Play](#play)
+4. [TR08](#tr08)
+
+## Px
+
+The superclass that generates the patterns from an array of events with a simplified syntax for a fast edition.
 
 ### Class args
 
 | Arg        | Value            | Description                                          |
 | ---------- | ---------------- | ---------------------------------------------------- |
-| `name`     | string \| symbol | A user defined name for the generated Pdef           |
 | `patterns` | Event[]          | An array containing all the patterns in Event format |
+| `name`     | string \| symbol | A user defined name for the generated Pdef           |
 | `trace`    | boolean          | Print out the results of the streams                 |
-
-### Pattern controls
-
-| Key      | Value                         | Description                              |
-| -------- | ----------------------------- | ---------------------------------------- |
-| `amp`    | number \| number[] \| Pattern | Amplification. An array generates a Pseq |
-| `dur`    | number \| number[] \| Pattern | Duration. An array generates a Pseq      |
-| `euclid` | [hits: number, total: number] | Generates an Euclidian ryhthm            |
 
 ### Event methods
 
 | Name     | Arguments                                         | Description                                                                                                                                                                                  |
 | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `amp`    | number \| number[] \| Pattern                     | Amplification                                                                                                                                                                                |
+| `amp`    | number \| number[] \| Pattern                     | Amplification. An array generates a Pseq                                                                                                                                                     |
 | `beat`   | seed?: integer, rest?: number, set?: number[]     | Generates a random rhythm, or own rhythym defined by set                                                                                                                                     |
-| `dur`    | number \| number[] \| Pattern                     | Duration                                                                                                                                                                                     |
+| `dur`    | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
 | `euclid` | hits: number, total: number                       | Generates an Euclidian rhythm                                                                                                                                                                |
 | `fill`   | none                                              | Fills the rests gap of its previous pattern. Due to its dependency with the previous item, using solo can generate an error. We can mute patterns using `a: 0` instead                       |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
@@ -49,7 +52,7 @@ Px(i: \bd);
 | `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
 | `weight` | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
-### Event FX methods
+### FX event methods
 
 | Name     | Arguments                                                                   | Description              |
 | -------- | --------------------------------------------------------------------------- | ------------------------ |
@@ -59,13 +62,17 @@ Px(i: \bd);
 | `reverb` | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a reverb effect     |
 | `wah`    | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect        |
 
+### Buf loopers
+
+| Name   | Arguments                                        | Description                |
+| ------ | ------------------------------------------------ | -------------------------- |
+| `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer |
+| `play` | [folder: string, file: number \| \rand]          | Plays a buffer             |
+
 ### Class methods
 
-- `chorus`: Plays a chorus
-- `delay`: Adds delay FX to all patterns
 - `gui`: A gui showing all Pdefs
 - `release`: nil | integer
-- `reverb`: Adds reverb FX to all patterns
 - `save`: Saves a chorus
 - `shuffle`: Generates new random seeds
 - `stop`: Stops the Pdef
@@ -73,12 +80,16 @@ Px(i: \bd);
 - `tempo`: Set a new tempo
 - `trace`: Print out the results of the streams
 - `vol`: Controls the nodeproxy volume
-- `wah`: Adds delay FX to all patterns
 
-### Buf loopers
+### FX class methods
 
-- `loop`: [folder: string, file: number | \jump | \rand]
-- `play`: [folder: string, file: number | \rand]
+| Name     | Arguments                                         | Description                           |
+| -------- | ------------------------------------------------- | ------------------------------------- |
+| `blp`    | mix?: number \| Nil                               | Adds a BLP filter to the proxy        |
+| `delay`  | mix?: number \| Nil                               | Adds a delay filter to the proxy      |
+| `hpf`    | mix?: number \| Nil, wave?: boolean               | Adds a HPF filter to the proxy        |
+| `reverb` | mix?: number \| Nil, room?: number, damp?: number | Adds a reverb filter to the proxy     |
+| `vst`    | mix?: number \| Nil, plugin?: string              | Adds a VST plugin filter to the proxy |
 
 ## Play
 

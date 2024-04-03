@@ -24,7 +24,7 @@ More code examples can be found [here](/Examples/).
 
 The superclass that generates the patterns from an array of events with a simplified syntax for a fast edition.
 
-### Class args
+### Px class args
 
 | Arg        | Value            | Description                                          |
 | ---------- | ---------------- | ---------------------------------------------------- |
@@ -32,7 +32,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `name`     | string \| symbol | A user defined name for the generated Pdef           |
 | `trace`    | boolean          | Print out the results of the streams                 |
 
-### Event methods
+### Px event methods
 
 | Name     | Arguments                                         | Description                                                                                                                                                                                  |
 | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -52,7 +52,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
 | `weight` | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
-### FX event methods
+### Px FX event methods
 
 | Name     | Arguments                                                                   | Description              |
 | -------- | --------------------------------------------------------------------------- | ------------------------ |
@@ -62,26 +62,26 @@ The superclass that generates the patterns from an array of events with a simpli
 | `reverb` | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a reverb effect     |
 | `wah`    | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect        |
 
-### Buf loopers
+### Event buf loopers
 
 | Name   | Arguments                                        | Description                |
 | ------ | ------------------------------------------------ | -------------------------- |
 | `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer |
 | `play` | [folder: string, file: number \| \rand]          | Plays a buffer             |
 
-### Class methods
+### Px class methods
 
-- `gui`: A gui showing all Pdefs
-- `release`: nil | integer
+- `gui`: Displays a graphical user interface showing all Pdefs
+- `release` (nil | integer) Sets the release time. Accepts either nil or an integer value.
 - `save`: Saves a chorus
 - `shuffle`: Generates new random seeds
 - `stop`: Stops the Pdef
-- `synthDef`: Browse global synthDefs. If a synthDef name is provided, it returns its arguments
-- `tempo`: Set a new tempo
-- `trace`: Print out the results of the streams
-- `vol`: Controls the nodeproxy volume
+- `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments
+- `tempo`: Sets a new tempo
+- `trace`: Prints out the results of the streams for debugging purposes.
+- `vol`: Controls the volume of the nodeproxy
 
-### FX class methods
+### Px FX class methods
 
 | Name     | Arguments                                         | Description                           |
 | -------- | ------------------------------------------------- | ------------------------------------- |
@@ -90,6 +90,16 @@ The superclass that generates the patterns from an array of events with a simpli
 | `hpf`    | mix?: number \| Nil, wave?: boolean               | Adds a HPF filter to the proxy        |
 | `reverb` | mix?: number \| Nil, room?: number, damp?: number | Adds a reverb filter to the proxy     |
 | `vst`    | mix?: number \| Nil, plugin?: string              | Adds a VST plugin filter to the proxy |
+
+## Nfx
+
+### Nfx class methods
+
+It has the same [class methods as Px](#px-class-methods), with the addition of:
+
+- `activeEffects`: Checks the active proxy filters
+
+We can open the VST plugin editor with `Nfx.vstController.editor`
 
 ## Play
 
@@ -119,11 +129,3 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 | `holdOff` | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
 
 ## TR08
-
-## Nfx
-
-### Class methods
-
-- `activeEffects`: Check active proxy filter roles
-- `reverb`: Add reverb
-- `vst`: Loads a VST filter plugin

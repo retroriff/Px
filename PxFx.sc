@@ -1,5 +1,5 @@
 +Px {
-    *blp { |mix = 1|
+    *blp { |mix = 0.4|
         Nfx(currentName).blp(mix);
     }
 
@@ -7,15 +7,15 @@
         this.prFx(\delay, mix, args);
     }
 
-    *hpf { |mix, args|
-        this.prFx(\hpf, mix, args);
+    *hpf { |mix = 1, wave|
+        Nfx(currentName).hpf(mix, wave);
     }
 
     *lpf { |mix, args|
         this.prFx(\lpf, mix, args);
     }
 
-    *reverb { |mix = 1, room = 0.7, damp = 0.7|
+    *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
         Nfx(currentName).reverb(mix, room, damp);
     }
 
@@ -38,8 +38,8 @@
     *prCreatePatternFx { |pattern|
         if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
             pattern[\fx].do { |fx, i|
-                if (SynthDescLib.global[fx[i]].notNil) {
-                    if (fx[i] == \reverb)
+                if (SynthDescLib.global[fx[1]].notNil) {
+                    if (fx[1] == \reverb)
                     { fx = fx ++ [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, 1] };
                     pattern[\fx][i] = fx;
                     pattern = pattern ++ [\fxOrder, (1..pattern[\fx].size)];

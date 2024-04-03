@@ -1,15 +1,37 @@
 +Px {
     *loadSamples { |samplesPath|
-        var dir = Dictionary.new;
-        dir.add(\foldernames -> PathName(samplesPath).entries);
-        for (0, dir[\foldernames].size - 1, { |i|
-            if (dir[\foldernames][i].folderName != "sets") {
-                dir.add(dir[\foldernames][i].folderName -> dir[\foldernames][i].entries.collect({
-                    arg sf;
-                    Buffer.read(Server.default, sf.fullPath);
-                }))
+        samplesDict = Dictionary.new;
+        samplesDict.add(\foldernames -> PathName(samplesPath).entries);
+        for (0, samplesDict[\foldernames].size - 1, { |i|
+            if (samplesDict[\foldernames][i].folderName != "sets") {
+                samplesDict.add(
+                    samplesDict[\foldernames][i].folderName ->
+                    samplesDict[\foldernames][i].entries.collect(
+                        { |sf|
+                            Buffer.read(Server.default, sf.fullPath);
+                        }
+                    )
+                )
             }
         });
+    }
+
+    *buf { |folder, file|
+        if (samplesDict[folder].size == 0) {
+            this.prPrint("Folder doesn't exist or empty");
+            ^samplesDict[folder].size;
+        };
+
+        if (file.isNil) {
+            ^samplesDict[folder]
+        };
+
+        if (file.isArray.not and: { file >= samplesDict[folder].size }) {
+            file = samplesDict[folder].size - 1;
+            this.prPrint("Folder" + folder + "maximum number is" + (samplesDict[folder].size - 1));
+        };
+
+        ^samplesDict[folder][file];
     }
 
     *prCreateBufIns { |patterns|
@@ -33,7 +55,7 @@
     *prCreateLoops { |patterns|
         patterns.do { |pattern|
             if (pattern[\buf].notNil) {
-                var filesCount = ~buf.(pattern[\buf][0]).size;
+                var filesCount = this.buf(pattern[\buf][0]).size;
 
                 if (filesCount > 0 and: { pattern[\buf].isArray }) {
                     var buf;
@@ -41,12 +63,12 @@
                     var getJumpBufs = {
                         var minLength = 1, mixLength = pattern[\dur], steps = 16;
                         var mixBuf = {
-                            var initialBuf = (~buf.(pattern[\buf][0]).size).rand;
+                            var initialBuf = (this.buf(pattern[\buf][0]).size).rand;
                             var buf = Array.fill(minLength, initialBuf);
                             var rest = (steps - minLength) / minLength;
                             thisThread.randSeed = this.prGetPatternSeed(pattern);
                             rest.do({
-                                var newBuf = (~buf.(pattern[\buf][0]).size).rand;
+                                var newBuf = (this.buf(pattern[\buf][0]).size).rand;
                                 buf = buf ++ Array.fill(minLength, newBuf);
                             });
                             buf;
@@ -54,17 +76,17 @@
                         pattern[\dur] = mixLength / steps;
                         pattern[\beats] = mixLength;
                         pattern[\start] = Pseq((0..steps - 1) / steps, inf);
-                        Pseq(~buf.(pattern[\buf][0], mixBuf.value), inf);
+                        Pseq(this.buf(pattern[\buf][0], mixBuf.value), inf);
                     };
 
                     var getRandSeqBufs = {
                         thisThread.randSeed = this.prGetPatternSeed(pattern);
-                        Pseq(~buf.(pattern[\buf][0], Array.rand(8, 0, filesCount - 1)), inf);
+                        Pseq(this.buf(pattern[\buf][0], Array.rand(8, 0, filesCount - 1)), inf);
                     };
 
                     var getRandBuf = {
                         thisThread.randSeed = this.prGetPatternSeed(pattern);
-                        ~buf.(pattern[\buf][0], (~buf.(pattern[\buf][0]).size).rand);
+                        this.buf(pattern[\buf][0], (this.buf(pattern[\buf][0]).size).rand);
                     };
 
                     if (pattern[\i] == \lplay) {
@@ -82,7 +104,7 @@
                     { \rand } { getRandSeqBufs.value }
                     { \jump } { getJumpBufs.value }
                     { nil } { getRandBuf.value }
-                    { ~buf.(pattern[\buf][0], pattern[\buf][1]) };
+                    { this.buf(pattern[\buf][0], pattern[\buf][1]) };
 
                     if (pattern[\trim].notNil) {
                         if (pattern[\trim] == \seq)

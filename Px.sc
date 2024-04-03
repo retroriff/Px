@@ -3,6 +3,7 @@ Px {
     classvar <currentName;
     classvar <lastPatterns;
     classvar <nodeProxy;
+    classvar <samplesDict;
     classvar <seeds;
 
     *initClass {

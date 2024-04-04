@@ -2,21 +2,21 @@ TR08 : Play {
     *new { | patterns, name, quant, trace|
         var drumKit = Dictionary[
             \bd -> 36,
-            \rs -> 37,
             \sn -> 38,
-            \cp -> 39,
+            \lc -> 64,
             \lt -> 43,
-            \ch -> 42,
-            \oh -> 46,
+            \mc -> 63,
             \mt -> 47,
-            \cy -> 49,
+            \hc -> 62,
             \ht -> 50,
-            \cb -> 56,
-            \ht -> 62,
-            \mt -> 63,
-            \lt -> 64,
-            \ma -> 70,
             \cl -> 75,
+            \rs -> 37,
+            \ma -> 70,
+            \cp -> 39,
+            \cb -> 56,
+            \cy -> 49,
+            \oh -> 46,
+            \ch -> 42,
         ];
 
         var isTR08Detected = {

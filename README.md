@@ -129,3 +129,31 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 | `holdOff` | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
 
 ## TR08
+
+It can send MIDI messages to a Roland TR08. if the device is not available, plays TR-808 SynthDefs instead:
+
+| Symbol | Instrument          | MIDI Control |
+| ------ | ------------------- | ------------ |
+| `\bd`  | **B**ass**D**rum    | 36           |
+| `\sn`  | **S**nare**D**rum   | 38           |
+| `\lc`  | **L**ow**C**onga    | 64           |
+| `\lt`  | **L**ow**T**om      | 43           |
+| `\mc`  | **M**id**C**onga    | 63           |
+| `\mt`  | **M**id**T**om      | 47           |
+| `\hc`  | **H**iC\*\*onga     | 62           |
+| `\ht`  | **H**i**T**om       | 50           |
+| `\cl`  | **CL**aves          | 75           |
+| `\rs`  | **R**im**S**hot     | 37           |
+| `\ma`  | **MA**racas         | 70           |
+| `\cp`  | Hand**C**la**P**    | 39           |
+| `\cb`  | **C**ow**B**ell     | 56           |
+| `\cy`  | **C**ymbal          | 49           |
+| `\oh`  | **O**pen**H**ihat   | 46           |
+| `\ch`  | **C**losed**H**ihat | 42           |
+
+### TR08 class methods
+
+| Name     | Arguments                      | Description                          |
+| -------- | ------------------------------ | ------------------------------------ |
+| `init`   | time?: number                  | Controls the latency. Default is 0.2 |
+| `preset` | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |

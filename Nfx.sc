@@ -1,12 +1,14 @@
 /*
-TODO: Multi instance support (should work with Px + TR08)
-TODO: HPF when I swtich to wave false it should change (preguntar Roger)
+TODO: Write about VST functionality on Examples
+TODO: Fix when Ndef is reevaluated, proxy FXs stop
+TODO: Fix error when it is started with ".hpf(1, \wave)"
 */
 
 Nfx {
     classvar <effects;
     classvar <activeArgs;
     classvar <activeEffects;
+    classvar presetsPath;
     classvar proxy;
     classvar proxyName;
     classvar <vstController;
@@ -26,11 +28,9 @@ Nfx {
             }
         });
 
-        effects.add(\hpf -> { |wave|
+        effects.add(\hpf -> { |freq = 1200|
             \filterIn -> { |in|
-                if (wave == true)
-                { RHPF.ar(in, SinOsc.kr(1/8).range(0, 1200), rq: 0.1) }
-                { RHPF.ar(in, 1200, rq: 0.1) }
+                RHPF.ar(in, \hpf1.kr(freq).poll, rq: 0.1);
             }
         });
 
@@ -39,8 +39,8 @@ Nfx {
                 FreeVerb.ar(
                     in,
                     mix: 1,
-                    room: Ndef(\reverb1, room),
-                    damp: Ndef(\reverb2, damp)
+                    room: \reverb1.kr(room),
+                    damp: \reverb2.kr(damp)
                 );
             }
         });
@@ -56,8 +56,10 @@ Nfx {
         proxyName = name ?? \px;
     }
 
-    *hpf { |mix = 1, wave|
-        this.prAddEffect(\hpf, mix, [wave]);
+    *hpf { |mix = 1, freq = 1200|
+        if (freq == \wave)
+        { freq = Ndef(\hpf1, { SinOsc.kr(1/8).range(400, 1200) } ) };
+        this.prAddEffect(\hpf, mix, [freq]);
     }
 
     *blp { |mix = 0.4|
@@ -68,8 +70,29 @@ Nfx {
         this.prAddEffect(\reverb, mix, [room, damp]);
     }
 
+    *setPresetsPath { |path|
+        presetsPath = path;
+    }
+
     *vst { |mix = 1, plugin|
         this.prAddEffect(\vst, mix, [plugin]);
+    }
+
+    *vstReadProgram { |preset|
+        var plugin = activeArgs[\vst][0];
+        var path = presetsPath ++ this.prGetVstPluginName ++ "/" ++ preset ++ ".fxp";
+
+        vstController.readProgram(path);
+    }
+
+    *vstWriteProgram { |preset|
+        var path = presetsPath ++ this.prGetVstPluginName ++ "-" ++ preset ++ ".fxp";
+
+        vstController.writeProgram(path);
+    }
+
+    *prGetVstPluginName {
+        ^activeArgs[\vst][0];
     }
 
     *prAddEffect { |fx, mix, args|
@@ -77,16 +100,7 @@ Nfx {
         var hasFx = activeEffects.includes(fx);
 
         if (hasFx == false) {
-            activeEffects = activeEffects.add(fx);
-        };
-
-        index = activeEffects.indexOf(fx) + 1;
-
-        this.prCreateProxy;
-
-        if (hasFx == false or: (proxy[index].isNil)) {
-            proxy[index] = effects.at(fx).value(*args);
-            activeArgs = activeArgs.add(fx -> args);
+            this.prActivateEffect(args, fx);
         };
 
         if (args != activeArgs[fx]) {
@@ -97,34 +111,36 @@ Nfx {
             this.prActivateVst(args);
         };
 
-        this.prSetMixerValue(fx, index, mix);
+        this.prSetMixerValue(fx, mix);
+    }
+
+    *prActivateEffect { |args, fx|
+        var index;
+
+        proxy = Ndef(proxyName);
+        activeEffects = activeEffects.add(fx);
+        index = this.prGetIndex(fx);
+
+        if (proxy[index].isNil) {
+            proxy[index] = effects.at(fx).(*args);
+            activeArgs = activeArgs.add(fx -> args);
+        };
     }
 
     *prActivateVst { |args|
+        var plugin = args[0];
+
         vstController = VSTPluginNodeProxyController(proxy, 1).open(
-            args[0],
+            plugin,
             editor: true
         );
 
-        // Avoids globals variables on ProxySpace
-        if (this.prIsNdef)
-        { ~vst = vstController };
-
-        "Px and Ndef: ~vst.editor; ~vst.set(1, 1);".postln;
-        "ProxySpace: Ndef.vstController.editor; Ndef.vstController.set(1, 1);".postln;
-        "ProxySpace instances of NodeProxy: ~m[0] = ...".postln;
+        "Open VST Editor: Ndef.vstController.editor;".postln;
+        "Set VST parameter: Ndef.vstController.set(1, 1);".postln;
     }
 
-
-    *prCreateProxy {
-        if (this.prIsNdef)
-        { proxy = Ndef(proxyName) }
-        { proxy = currentEnvironment[proxyName] };
-    }
-
-
-    *prIsNdef {
-        ^Ndef(proxyName).isPlaying;
+    *prGetIndex { |fx|
+        ^activeEffects.indexOf(fx) + 1;
     }
 
     *prFadeOutFx { |index, wetIndex|
@@ -149,12 +165,13 @@ Nfx {
 
     *prUpdateEffect { |args, fx|
         args do: { |value, i|
-            Ndef((fx ++ (i + 1)).asSymbol, value);
+            proxy.set((fx ++ (i + 1)).asSymbol, value);
             activeArgs = activeArgs.add(fx -> args);
         }
     }
 
-    *prSetMixerValue { |fx, index, mix|
+    *prSetMixerValue { |fx, mix|
+        var index = this.prGetIndex(fx);
         var wetIndex = (\wet ++ index).asSymbol;
 
         if (mix.isNil or: (mix == Nil)) {

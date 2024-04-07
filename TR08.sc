@@ -59,6 +59,7 @@ TR08 : Play {
             patterns;
         };
 
+        // TODO: Read files only once, when presetsDict is empty. Move presetsDict to initClass
         // TODO: Decide if we want presets to be YAML, JSON or events
         var presetFormat = "yaml";
 
@@ -76,6 +77,14 @@ TR08 : Play {
             { presetFormat == "yaml" }
             { presetsDict.put(fileName.asSymbol, PresetsFromYAML(filePath.parseYAML)) }
         };
+
+
+        // TODO: Check maximum amount of presets
+        /*if (number > presetsDict.size) {
+            presetsDict.postln;
+            super.prPrint("This set has".scatArgs(presetsDict.size, "presets"));
+            number = presetsDict.size;
+        };*/
 
         preset = presetsDict[name ?? \electro][number ?? 0];
         TR08(createPatternFromPreset.(preset));

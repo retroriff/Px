@@ -7,8 +7,8 @@
         this.prFx(\delay, mix, args);
     }
 
-    *hpf { |mix = 1, wave|
-        Nfx(currentName).hpf(mix, wave);
+    *hpf { |mix = 1, freq = 1200|
+        Nfx(currentName).hpf(mix, freq);
     }
 
     *lpf { |mix, args|

@@ -210,24 +210,22 @@ Px {
         PdefAllGui.new;
     }
 
-    *release { | fadeTime, name |
-        var fadeValue = if (fadeTime.isNil) { "out" } { ["out", fadeTime] };
-        var fadeOutPatterns;
+    *release { |fadeTime = 10, name|
         name = name ?? currentName;
-        fadeOutPatterns = lastPatterns[name].collect { |pattern|
-            if (pattern[\fade] == "out")
-            { pattern[\amp] = 0 };
-            pattern.putAll([\fade: fadeValue]);
-            pattern;
+        if (name == \all) {
+            Ndef(\x).proxyspace.clear(fadeTime);
+            nodeProxy.clear;
+        } {
+            nodeProxy[name ?? currentName].clear(fadeTime);
+            nodeProxy.removeAt(name);
         };
-        this.send(fadeOutPatterns, name);
     }
 
-    *save { | name |
+    *save { |name|
         chorus = lastPatterns[name ?? currentName];
     }
 
-    *send { | patterns, name, quant, trace |
+    *send { |patterns, name, quant, trace|
         name = this.prGetName(name);
         trace = trace ?? false;
         if (nodeProxy[name].isPlaying)
@@ -235,7 +233,7 @@ Px {
         { this.prPrint("Pdef(\\".catArgs(name, ") is not playing")) }
     }
 
-    *shuffle { | name |
+    *shuffle { |name|
         this.prCreateNewSeeds;
         name = this.prGetName(name);
         this.send(lastPatterns[name], name);

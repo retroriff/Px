@@ -56,6 +56,14 @@ Nfx {
         proxyName = name ?? \px;
     }
 
+    *clear {
+        activeArgs = activeArgs.clear;
+        activeEffects = activeEffects.clear;
+        activeEffects do: { |fx, i|
+            proxy[i + 1] = nil;
+        }
+    }
+
     *hpf { |mix = 1, freq = 1200|
         if (freq == \wave)
         { freq = Ndef(\hpf1, { SinOsc.kr(1/8).range(400, 1200) } ) };
@@ -175,8 +183,9 @@ Nfx {
         var wetIndex = (\wet ++ index).asSymbol;
 
         if (mix.isNil or: (mix == Nil)) {
-            activeEffects.removeAt(activeEffects.indexOf(fx));
             this.prFadeOutFx(index, wetIndex);
+            activeArgs.removeAt(fx);
+            activeEffects.removeAt(activeEffects.indexOf(fx));
         } {
             proxy.set(wetIndex, mix)
         };

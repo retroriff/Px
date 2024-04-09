@@ -72,7 +72,7 @@ The superclass that generates the patterns from an array of events with a simpli
 ### Px class methods
 
 - `gui`: Displays a graphical user interface showing all Pdefs
-- `release` (nil | integer) Sets the release time. Accepts either nil or an integer value.
+- `release` (time: nil | number, name: string | \all) Sets the release time. Accepts either nil or an integer value. To clear all instances use \all.
 - `save`: Saves a chorus
 - `shuffle`: Generates new random seeds
 - `stop`: Stops the Pdef
@@ -93,13 +93,24 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ## Nfx
 
+If we want to load or save VST presets, the class must initialized with the presets folder path:
+
+```
+Nfx.setPresetsPath(<path>);
+```
+
 ### Nfx class methods
 
 It has the same [class methods as Px](#px-class-methods), with the addition of:
 
 - `activeEffects`: Checks the active proxy filters
+- `clear`: Clears all effects
+- `vstReadProgram` (preset: string): Loads a VST preset from the default presets folder
+- `vstWriteProgram` (preset: string): Write a VST preset to the default presets folder
 
 We can open the VST plugin editor with `Nfx.vstController.editor`
+
+We also can set params automations: `Nfx.vstController.set(1, 1)`
 
 ## Play
 

@@ -2,14 +2,16 @@
 TODO: Write about VST functionality on Examples
 TODO: Fix when Ndef is reevaluated, proxy FXs stop
 TODO: Fix error when it is started with ".hpf(1, \wave)"
+TODO: Fix Px.release disables FX before releasing
+TODO: Clear doesn't work properly
 */
 
 Nfx {
     classvar <effects;
     classvar <activeArgs;
     classvar <activeEffects;
-    classvar presetsPath;
-    classvar proxy;
+    classvar <presetsPath;
+    classvar <proxy;
     classvar proxyName;
     classvar <vstController;
 
@@ -57,11 +59,16 @@ Nfx {
     }
 
     *clear {
+        activeArgs.postln;
+        activeEffects.postln;
         activeArgs = activeArgs.clear;
-        activeEffects = activeEffects.clear;
+        activeArgs.postln;
         activeEffects do: { |fx, i|
             proxy[i + 1] = nil;
-        }
+            proxy[i + 1].postln;
+        };
+        activeEffects = Array.new;
+        activeEffects.postln;
     }
 
     *hpf { |mix = 1, freq = 1200|
@@ -91,11 +98,11 @@ Nfx {
         var path = presetsPath ++ this.prGetVstPluginName ++ "/" ++ preset ++ ".fxp";
 
         vstController.readProgram(path);
+        "Loaded".scatArgs(("\\" ++ preset), "preset").postln;
     }
 
     *vstWriteProgram { |preset|
         var path = presetsPath ++ this.prGetVstPluginName ++ "-" ++ preset ++ ".fxp";
-
         vstController.writeProgram(path);
     }
 
@@ -107,7 +114,7 @@ Nfx {
         var index, wetIndex;
         var hasFx = activeEffects.includes(fx);
 
-        if (hasFx == false) {
+        if (hasFx == false and: (mix != Nil)) {
             this.prActivateEffect(args, fx);
         };
 
@@ -116,7 +123,7 @@ Nfx {
         };
 
         if (fx == \vst and: (hasFx == false)) {
-            this.prActivateVst(args);
+            this.prActivateVst(args, fx);
         };
 
         this.prSetMixerValue(fx, mix);
@@ -132,10 +139,11 @@ Nfx {
         if (proxy[index].isNil) {
             proxy[index] = effects.at(fx).(*args);
             activeArgs = activeArgs.add(fx -> args);
+            "Enabled".scatArgs(("\\" ++ fx), "FX").postln;
         };
     }
 
-    *prActivateVst { |args|
+    *prActivateVst { |args, fx|
         var plugin = args[0];
 
         vstController = VSTPluginNodeProxyController(proxy, 1).open(
@@ -145,15 +153,22 @@ Nfx {
 
         "Open VST Editor: Ndef.vstController.editor;".postln;
         "Set VST parameter: Ndef.vstController.set(1, 1);".postln;
+        "Enabled".scatArgs(("\\" ++ fx), "FX").postln;
     }
 
     *prGetIndex { |fx|
-        ^activeEffects.indexOf(fx) + 1;
+        var index = activeEffects.indexOf(fx);
+        if (index.notNil)
+        { index = index + 1 };
+        ^index;
     }
 
-    *prFadeOutFx { |index, wetIndex|
+    *prFadeOutFx { |index, fx, wetIndex|
         var wet = proxy.get(wetIndex, { |f| f });
         var fadeOut = wet / 25;
+
+        "yeah".postln;
+        wet.postln;
 
         fork {
             while { wet > 0.0 } {
@@ -165,6 +180,7 @@ Nfx {
                     proxy[index] = nil;
                     if (vstController.notNil)
                     { vstController.close };
+                    "Disabled".scatArgs(("\\" ++ fx), "FX").postln;
                 };
                 0.25.wait;
             }
@@ -182,8 +198,11 @@ Nfx {
         var index = this.prGetIndex(fx);
         var wetIndex = (\wet ++ index).asSymbol;
 
+        if (index.isNil)
+        { ^"FX not found".postln };
+
         if (mix.isNil or: (mix == Nil)) {
-            this.prFadeOutFx(index, wetIndex);
+            this.prFadeOutFx(index, fx, wetIndex);
             activeArgs.removeAt(fx);
             activeEffects.removeAt(activeEffects.indexOf(fx));
         } {

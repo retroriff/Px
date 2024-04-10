@@ -3,7 +3,6 @@ TODO: Write about VST functionality on Examples
 TODO: Fix when Ndef is reevaluated, proxy FXs stop
 TODO: Fix error when it is started with ".hpf(1, \wave)"
 TODO: Fix Px.release disables FX before releasing
-TODO: Clear doesn't work properly
 */
 
 Nfx {
@@ -59,16 +58,12 @@ Nfx {
     }
 
     *clear {
-        activeArgs.postln;
-        activeEffects.postln;
         activeArgs = activeArgs.clear;
-        activeArgs.postln;
         activeEffects do: { |fx, i|
             proxy[i + 1] = nil;
-            proxy[i + 1].postln;
         };
         activeEffects = Array.new;
-        activeEffects.postln;
+        "All effects have been disabled".postln;
     }
 
     *hpf { |mix = 1, freq = 1200|
@@ -94,9 +89,14 @@ Nfx {
     }
 
     *vstReadProgram { |preset|
-        var plugin = activeArgs[\vst][0];
-        var path = presetsPath ++ this.prGetVstPluginName ++ "/" ++ preset ++ ".fxp";
+        var index = this.prGetIndex(\vst);
+        var path;
 
+        if (index.isNil) {
+            ^"VST is not enabled".postln;
+        };
+
+        path = presetsPath ++ this.prGetVstPluginName ++ "/" ++ preset ++ ".fxp";
         vstController.readProgram(path);
         "Loaded".scatArgs(("\\" ++ preset), "preset").postln;
     }
@@ -111,7 +111,6 @@ Nfx {
     }
 
     *prAddEffect { |fx, mix, args|
-        var index, wetIndex;
         var hasFx = activeEffects.includes(fx);
 
         if (hasFx == false and: (mix != Nil)) {
@@ -145,15 +144,16 @@ Nfx {
 
     *prActivateVst { |args, fx|
         var plugin = args[0];
+        var index = this.prGetIndex(fx);
 
-        vstController = VSTPluginNodeProxyController(proxy, 1).open(
+        vstController = VSTPluginNodeProxyController(proxy, index).open(
             plugin,
             editor: true
         );
 
         "Open VST Editor: Ndef.vstController.editor;".postln;
         "Set VST parameter: Ndef.vstController.set(1, 1);".postln;
-        "Enabled".scatArgs(("\\" ++ fx), "FX").postln;
+        "Enabled".scatArgs("\\vst", plugin).postln;
     }
 
     *prGetIndex { |fx|
@@ -166,9 +166,6 @@ Nfx {
     *prFadeOutFx { |index, fx, wetIndex|
         var wet = proxy.get(wetIndex, { |f| f });
         var fadeOut = wet / 25;
-
-        "yeah".postln;
-        wet.postln;
 
         fork {
             while { wet > 0.0 } {

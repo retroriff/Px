@@ -1,14 +1,15 @@
 /*
-TODO: Write about VST functionality on Examples
+TODO: Multiname
 TODO: Fix when Ndef is reevaluated, proxy FXs stop
 TODO: Fix error when it is started with ".hpf(1, \wave)"
 TODO: Fix Px.release disables FX before releasing
 */
 
 Nfx {
-    classvar <effects;
     classvar <activeArgs;
     classvar <activeEffects;
+    classvar <effects;
+    classvar <mixer;
     classvar <presetsPath;
     classvar <proxy;
     classvar proxyName;
@@ -18,6 +19,7 @@ Nfx {
         activeArgs = Dictionary.new;
         activeEffects = Array.new;
         effects = Dictionary.new;
+        mixer = Dictionary.new;
 
         effects.add(\blp -> {
             \filterIn -> { |in|
@@ -93,12 +95,12 @@ Nfx {
         var path;
 
         if (index.isNil) {
-            ^"VST is not enabled".postln;
+            ^"🔴 VST is not enabled";
         };
 
         path = presetsPath ++ this.prGetVstPluginName ++ "/" ++ preset ++ ".fxp";
         vstController.readProgram(path);
-        "Loaded".scatArgs(("\\" ++ preset), "preset").postln;
+        "🔥 Loaded".scatArgs(("\\" ++ preset), "preset").postln;
     }
 
     *vstWriteProgram { |preset|
@@ -125,6 +127,10 @@ Nfx {
             this.prActivateVst(args, fx);
         };
 
+        if (mix.isNil or: (mix == Nil)) {
+            ^this.prDisableFx(fx, mix);
+        };
+
         this.prSetMixerValue(fx, mix);
     }
 
@@ -138,7 +144,7 @@ Nfx {
         if (proxy[index].isNil) {
             proxy[index] = effects.at(fx).(*args);
             activeArgs = activeArgs.add(fx -> args);
-            "Enabled".scatArgs(("\\" ++ fx), "FX").postln;
+            "✨ Enabled".scatArgs(("\\" ++ fx), "FX").postln;
         };
     }
 
@@ -146,21 +152,31 @@ Nfx {
         var plugin = args[0];
         var index = this.prGetIndex(fx);
 
+        if (index.isNil) {
+            ^"🔴 VST is not enabled";
+        };
+
         vstController = VSTPluginNodeProxyController(proxy, index).open(
             plugin,
             editor: true
         );
 
-        "Open VST Editor: Ndef.vstController.editor;".postln;
-        "Set VST parameter: Ndef.vstController.set(1, 1);".postln;
-        "Enabled".scatArgs("\\vst", plugin).postln;
+        "✨ Enabled".scatArgs("\\vst", plugin).postln;
+        "👉 Open VST Editor: Ndef.vstController.editor;".postln;
+        "👉 Set VST parameter: Ndef.vstController.set(1, 1);".postln;
     }
 
-    *prGetIndex { |fx|
-        var index = activeEffects.indexOf(fx);
-        if (index.notNil)
-        { index = index + 1 };
-        ^index;
+    *prDisableFx { |fx, mix|
+        var index = this.prGetIndex(fx);
+        var wetIndex = (\wet ++ index).asSymbol;
+
+        if (index.isNil) {
+            ^"🔴".scatArgs(("\\" ++ fx), "FX not found").postln;
+        };
+
+        this.prFadeOutFx(index, fx, wetIndex);
+        activeArgs.removeAt(fx);
+        activeEffects.removeAt(activeEffects.indexOf(fx));
     }
 
     *prFadeOutFx { |index, fx, wetIndex|
@@ -175,13 +191,22 @@ Nfx {
                 { proxy.set(wetIndex, wet) }
                 {
                     proxy[index] = nil;
+
                     if (vstController.notNil)
                     { vstController.close };
-                    "Disabled".scatArgs(("\\" ++ fx), "FX").postln;
+
+                    "🔇 Disabled".scatArgs(("\\" ++ fx), "FX").postln;
                 };
                 0.25.wait;
             }
         }
+    }
+
+    *prGetIndex { |fx|
+        var index = activeEffects.indexOf(fx);
+        if (index.notNil)
+        { index = index + 1 };
+        ^index;
     }
 
     *prUpdateEffect { |args, fx|
@@ -196,14 +221,11 @@ Nfx {
         var wetIndex = (\wet ++ index).asSymbol;
 
         if (index.isNil)
-        { ^"FX not found".postln };
+        { ^"🔴".scatArgs(("\\" ++ fx), "FX not found").postln };
 
-        if (mix.isNil or: (mix == Nil)) {
-            this.prFadeOutFx(index, fx, wetIndex);
-            activeArgs.removeAt(fx);
-            activeEffects.removeAt(activeEffects.indexOf(fx));
-        } {
-            proxy.set(wetIndex, mix)
+        if (mix != mixer[fx]) {
+            proxy.set(wetIndex, mix);
+            mixer[fx] = mix;
         };
     }
 }

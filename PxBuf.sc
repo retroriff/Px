@@ -18,7 +18,7 @@
 
     *buf { |folder, file|
         if (samplesDict[folder].size == 0) {
-            this.prPrint("Folder doesn't exist or empty");
+            this.prPrint("🔴 Folder doesn't exist or empty");
             ^samplesDict[folder].size;
         };
 
@@ -28,7 +28,7 @@
 
         if (file.isArray.not and: { file >= samplesDict[folder].size }) {
             file = samplesDict[folder].size - 1;
-            this.prPrint("Folder" + folder + "maximum number is" + (samplesDict[folder].size - 1));
+            this.prPrint("🔴 Folder" + folder + "maximum number is" + (samplesDict[folder].size - 1));
         };
 
         ^samplesDict[folder][file];

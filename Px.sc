@@ -202,7 +202,7 @@ Px {
     *chorus { | name |
         name = name ?? currentName;
         if (chorus.isNil)
-        { this.prPrint("Chorus is empty. Please run \"save\"") }
+        { this.prPrint("💩 Chorus is empty. Please run \"save\"") }
         { this.new(chorus, name) }
     }
 
@@ -217,10 +217,10 @@ Px {
     *release { |fadeTime = 10, name|
         name = name ?? currentName;
         if (name == \all) {
-            Ndef(\x).proxyspace.clear(fadeTime);
+            Ndef(\x).proxyspace.free(fadeTime);
             nodeProxy.clear;
         } {
-            nodeProxy[name ?? currentName].clear(fadeTime);
+            nodeProxy[name ?? currentName].free(fadeTime);
             nodeProxy.removeAt(name);
         };
     }
@@ -234,7 +234,7 @@ Px {
         trace = trace ?? false;
         if (nodeProxy[name].isPlaying)
         { this.new(patterns, name, quant, trace) }
-        { this.prPrint("Pdef(\\".catArgs(name, ") is not playing")) }
+        { this.prPrint("💩 Pdef(\\".catArgs(name, ") is not playing")) }
     }
 
     *shuffle { |name|
@@ -268,14 +268,14 @@ Px {
     *prCreateNewSeeds {
         seeds.order do: { |id|
             var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
-            this.prPrint("Shuffle:".scatArgs(id, " ->", newSeed));
+            this.prPrint("🎲 Shuffle:".scatArgs(id, "->", newSeed));
             seeds[id] = newSeed;
         };
     }
 
     *prGenerateRandNumber { |id|
         var seed = 1000.rand;
-        this.prPrint("Seed:".scatArgs(id, " ->", seed));
+        this.prPrint("🎲 Seed:".scatArgs(id, "->", seed));
         ^seed;
     }
 

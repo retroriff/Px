@@ -168,3 +168,11 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | -------- | ------------------------------ | ------------------------------------ |
 | `init`   | time?: number                  | Controls the latency. Default is 0.2 |
 | `preset` | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
+
+## Unit tests
+
+```
+PxTest.run;
+// Disable passing tests verbosity
+UnitTest.reportPasses = false;
+```

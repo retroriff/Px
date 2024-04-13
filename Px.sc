@@ -1,26 +1,30 @@
 /*
 TODO: Create UnitTest
+✅ Class vars
+✅ Class params
+🔴 Event updates (E.g. solo)
+🔴 Methods
 */
 
 Px {
-    classvar chorus;
+    classvar <chorusPatterns;
     classvar <currentName;
-    classvar <lastPatterns;
+    classvar <>lastPatterns;
     classvar <nodeProxy;
     classvar <samplesDict;
     classvar <seeds;
 
     *initClass {
+        lastPatterns = Dictionary.new;
         nodeProxy = Dictionary.new;
+        seeds = Dictionary.new;
     }
 
     *new { | patterns, name, quant, trace |
         var pDef, ptparList;
 
         var copyPatternsToLastPatterns = {
-            if (lastPatterns.isNil)
-            { lastPatterns = Dictionary[name -> patterns] }
-            { lastPatterns[name] = patterns }
+            lastPatterns[name] = patterns;
         };
 
         var getSoloPatterns = {
@@ -201,9 +205,10 @@ Px {
 
     *chorus { | name |
         name = name ?? currentName;
-        if (chorus.isNil)
+
+        if (chorusPatterns.isNil)
         { this.prPrint("💩 Chorus is empty. Please run \"save\"") }
-        { this.new(chorus, name) }
+        { this.new(chorusPatterns, name) }
     }
 
     *vol { |value|
@@ -226,12 +231,13 @@ Px {
     }
 
     *save { |name|
-        chorus = lastPatterns[name ?? currentName];
+        chorusPatterns = lastPatterns[name ?? currentName];
     }
 
     *send { |patterns, name, quant, trace|
-        name = this.prGetName(name);
+        name = name ?? currentName;
         trace = trace ?? false;
+
         if (nodeProxy[name].isPlaying)
         { this.new(patterns, name, quant, trace) }
         { this.prPrint("💩 Pdef(\\".catArgs(name, ") is not playing")) }
@@ -239,7 +245,7 @@ Px {
 
     *shuffle { |name|
         this.prCreateNewSeeds;
-        name = this.prGetName(name);
+        name = name ?? currentName;
         this.send(lastPatterns[name], name);
     }
 
@@ -288,14 +294,13 @@ Px {
     *prGetPatternSeed { |pattern|
         var id = pattern[\id].asSymbol;
         if (pattern[\seed].isNil) {
-            if (seeds.isNil) {
-                seeds = Dictionary[id -> this.prGenerateRandNumber(id) ]
-            } {
-                var seed = if (seeds[id].isNil)
-                { this.prGenerateRandNumber(id) }
-                { seeds[id] };
-                seeds.add(id -> seed);
-            };
+            var seed;
+
+            if (seeds[id].isNil)
+            { seed = this.prGenerateRandNumber(id) }
+            { seed = seeds[id] };
+
+            seeds.add(id -> seed);
             ^seeds[id];
         } {
             ^pattern[\seed]

@@ -2,8 +2,9 @@
 TODO: Create UnitTest
 ✅ Class vars
 ✅ Class params
-🔴 Event updates (E.g. solo)
-🔴 Methods
+🔴 Event updates (E.g. solo, private methods)
+🔴 Methods (buf)
+🔴 Methods params
 */
 
 Px {
@@ -215,10 +216,6 @@ Px {
         nodeProxy[currentName].vol_(value);
     }
 
-    *gui {
-        PdefAllGui.new;
-    }
-
     *release { |fadeTime = 10, name|
         name = name ?? currentName;
         if (name == \all) {
@@ -307,7 +304,7 @@ Px {
         };
     }
 
-    *prPrint { | value |
+    *prPrint { |value|
         value.postln;
     }
 }

@@ -71,7 +71,6 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ### Px class methods
 
-- `gui`: Displays a graphical user interface showing all Pdefs
 - `release` (time: nil | number, name: string | \all) Sets the release time. Accepts either nil or an integer value. To clear all instances use \all.
 - `save`: Saves a chorus
 - `shuffle`: Generates new random seeds

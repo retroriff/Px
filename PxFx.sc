@@ -1,6 +1,6 @@
 +Px {
     *blp { |mix = 0.4|
-        Nfx(currentName).blp(mix);
+        Nfx(lastName).blp(mix);
     }
 
     *delay { |mix, args|
@@ -8,7 +8,7 @@
     }
 
     *hpf { |mix = 1, freq = 1200|
-        Nfx(currentName).hpf(mix, freq);
+        Nfx(lastName).hpf(mix, freq);
     }
 
     *lpf { |mix, args|
@@ -16,11 +16,11 @@
     }
 
     *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
-        Nfx(currentName).reverb(mix, room, damp);
+        Nfx(lastName).reverb(mix, room, damp);
     }
 
     *vst { |mix = 1, plugin|
-        Nfx(currentName).vst(mix, plugin);
+        Nfx(lastName).vst(mix, plugin);
     }
 
     *wah { |mix, args|
@@ -28,11 +28,11 @@
     }
 
     *prFx { |fx, mix, args|
-        lastPatterns[currentName].do { |pattern|
+        lastPatterns[lastName].do { |pattern|
             pattern.prFx(fx, mix, args);
         };
 
-        this.send(lastPatterns[currentName], currentName);
+        this.prSend(lastPatterns[lastName], lastName);
     }
 
     *prCreatePatternFx { |pattern|

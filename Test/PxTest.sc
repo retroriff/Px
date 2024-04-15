@@ -1,53 +1,77 @@
-/*
-TODO: Hide post messages when testing
-*/
-
 PxTest : UnitTest {
     var expectedResult;
 
+    prGetNames {
+        // We play first \px2 so classvar "lastName" is \px
+        ^[\px2, \px];
+    }
+
     setUp {
-        Px.lastPatterns = Dictionary.new;
-        Px([
-            (i: \bd).amp(0.5),
-            (i: \sn, dur: 1/4),
-        ]);
+        var names = this.prGetNames;
+        ~isUnitTestRunning = true;
+
+        names do: { |name|
+            if (name == \px)
+            { name = nil };
+
+            Px([
+                (i: \bd).amp(0.5),
+                (i: \sn, dur: 1/4),
+            ], name);
+        };
     }
 
     tearDown {
-        Px.stop;
+        this.prGetNames do: { |name| Px.stop(name) };
+        Px.chorusPatterns = Dictionary.new;
+        Px.lastPatterns = Dictionary.new;
         Ndef.clear;
         Pdef.clear;
         TempoClock.default.tempo = 110 / 60;
+        ~isUnitTestRunning = false;
     }
 
     // Params
     test_playPx {
-        expectedResult = Dictionary[(\px -> [
-            (i: \bd, amp: 0.5),
-            (i: \sn, dur: 0.25)
-        ])];
+        var expectedResult = Dictionary.new;
+        var names = this.prGetNames;
+
+        names do: { |name|
+            expectedResult.add(name -> [
+                (i: \bd, amp: 0.5),
+                (i: \sn, dur: 0.25)
+            ]);
+        };
+
+        this.assertEquals(
+            Px.lastPatterns,
+            expectedResult,
+            "👀 Ndef(\\px) is playing"
+        );
 
         this.ifAsserts(
             Px.lastPatterns == expectedResult,
             "👀 Patterns are correctly generated",
-            this.assert(
-                Ndef(\px).isPlaying,
-                "👀 Ndef(\\px) is playing"
-            );
-            this.assert(
-                Px.nodeProxy.size > 0,
-                "👀 Dictionary nodeProxy is not empty"
+            names do: { |name|
+                this.assert(
+                    Ndef(name).isPlaying,
+                    "👀 Ndef(\\" ++ name ++ ") is playing"
+                );
+            };
+
+            this.assertEquals(
+                Px.nodeProxy.size,
+                2,
+                "👀 Dictionary nodeProxy has correct items"
             );
         );
     }
 
-    test_currentName {
-        Px([(i: \bd)], \test);
-
+    test_lastName {
         this.assertEquals(
-            Px.currentName,
-            \test,
-            "👀 Px has a custom name",
+            Px.lastName,
+            \px,
+            "👀 Px.lastName stores the last played instance name",
         );
     }
 
@@ -69,15 +93,39 @@ PxTest : UnitTest {
 
 
     // Methods
+    test_buf {
+        var buf = Px.buf("fm", 0);
+        this.assertEquals(
+            buf.asString.contains("Buffer"),
+            true,
+            "👀 Buf returns a buffer",
+        );
+    }
+
     test_chorus {
         Px([(i: \bd).amp(0.5)]).save;
         Px.chorus;
-        expectedResult = [(i: \bd, amp: 0.5)];
+        expectedResult = Dictionary[
+            \px -> [(i: \bd, amp: 0.5)]
+        ];
 
         this.assertEquals(
             Px.chorusPatterns,
             expectedResult,
-            "👀 Chorus is saved",
+            "👀 Chorus to default \\px is saved and played",
+        );
+
+        Px([(i: \bd).amp(0.5)], \px2).save;
+        Px.chorus(\px2);
+        expectedResult = Dictionary[
+            \px -> [(i: \bd, amp: 0.5)],
+            \px2 -> [(i: \bd, amp: 0.5)]
+        ];
+
+        this.assertEquals(
+            Px.chorusPatterns,
+            expectedResult,
+            "👀 Chorus to \\px2 is also saved and played",
         );
     }
 
@@ -90,12 +138,15 @@ PxTest : UnitTest {
 
     test_release {
         Px.release(0);
+        Px.release(0, \px2);
 
-        this.assertEquals(
-            Ndef(\px).isPlaying,
-            false,
-            "👀 New seed is saved",
-        );
+        this.prGetNames do: { |name|
+            this.assertEquals(
+                Ndef(name).isPlaying,
+                false,
+                "👀 Px instance \\" ++ name ++ " has been stopped",
+            );
+        }
     }
 
     test_shuffle {
@@ -112,7 +163,7 @@ PxTest : UnitTest {
 
         this.assertEquals(
             TempoClock.tempo,
-            1,
+            1.0,
             "👀 Tempo has been set",
         );
     }
@@ -125,12 +176,20 @@ PxTest : UnitTest {
         );
 
         expectedResult = 0.5;
-        Px.vol(expectedResult);
 
-        this.assertEquals(
-            Ndef(\px).vol,
-            expectedResult,
-            "👀 Volume is 0.5",
-        );
+        this.prGetNames do: { |name|
+            var volName = name;
+
+            if (name == \px)
+            { volName = nil };
+
+            Px.vol(expectedResult, volName);
+
+            this.assertEquals(
+                Ndef(name).vol,
+                expectedResult,
+                "👀 Volume for \\" ++ name ++ " is " ++ expectedResult,
+            );
+        };
     }
 }

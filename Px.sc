@@ -1,21 +1,25 @@
 /*
 TODO: Create UnitTest
+🔴 newCopyArgs + var
 ✅ Class vars
 ✅ Class params
 🔴 Event updates (E.g. solo, private methods)
-🔴 Methods (buf)
 🔴 Methods params
+
+Bugs & Improvements:
+🔴 Classvar "seeds" should also be multiname
 */
 
 Px {
-    classvar <chorusPatterns;
-    classvar <currentName;
+    classvar <>chorusPatterns;
+    classvar <lastName;
     classvar <>lastPatterns;
     classvar <nodeProxy;
     classvar <samplesDict;
     classvar <seeds;
 
     *initClass {
+        chorusPatterns = Dictionary.new;
         lastPatterns = Dictionary.new;
         nodeProxy = Dictionary.new;
         seeds = Dictionary.new;
@@ -204,35 +208,33 @@ Px {
         };
     }
 
-    *chorus { | name |
-        name = name ?? currentName;
+    *chorus { |name|
+        name = name ?? lastName;
 
-        if (chorusPatterns.isNil)
+        if (chorusPatterns[name].isNil)
         { this.prPrint("💩 Chorus is empty. Please run \"save\"") }
-        { this.new(chorusPatterns, name) }
-    }
-
-    *vol { |value|
-        nodeProxy[currentName].vol_(value);
+        { this.new(chorusPatterns[name], name) }
     }
 
     *release { |fadeTime = 10, name|
-        name = name ?? currentName;
+        name = this.prGetName(name);
         if (name == \all) {
             Ndef(\x).proxyspace.free(fadeTime);
             nodeProxy.clear;
         } {
-            nodeProxy[name ?? currentName].free(fadeTime);
+            nodeProxy[name].free(fadeTime);
             nodeProxy.removeAt(name);
         };
     }
 
     *save { |name|
-        chorusPatterns = lastPatterns[name ?? currentName];
+        name = name ?? lastName;
+
+        chorusPatterns[name] = lastPatterns[name ?? lastName];
     }
 
-    *send { |patterns, name, quant, trace|
-        name = name ?? currentName;
+    *prSend { |patterns, name, quant, trace|
+        name = name ?? lastName;
         trace = trace ?? false;
 
         if (nodeProxy[name].isPlaying)
@@ -241,15 +243,15 @@ Px {
     }
 
     *shuffle { |name|
+        name = name ?? lastName;
         this.prCreateNewSeeds;
-        name = name ?? currentName;
-        this.send(lastPatterns[name], name);
+        this.prSend(lastPatterns[name], name);
     }
 
     *stop { |name|
-        name = name ?? currentName;
-        nodeProxy[currentName].stop;
-        nodeProxy.removeAt(currentName);
+        name = name ?? lastName;
+        nodeProxy[name].stop;
+        nodeProxy.removeAt(name);
     }
 
     *synthDef { |synthDef|
@@ -265,7 +267,12 @@ Px {
 
     *trace { |name|
         name = this.prGetName(name);
-        this.send(lastPatterns[name], name, trace: true);
+        this.prSend(lastPatterns[name], name, trace: true);
+    }
+
+    *vol { |value, name|
+        name = name ?? lastName;
+        nodeProxy[name].vol_(value);
     }
 
     *prCreateNewSeeds {
@@ -284,7 +291,7 @@ Px {
 
     *prGetName { | name |
         name = name ?? this.name.asString.toLower.asSymbol;
-        currentName = name;
+        lastName = name;
         ^name;
     }
 
@@ -300,12 +307,13 @@ Px {
             seeds.add(id -> seed);
             ^seeds[id];
         } {
-            ^pattern[\seed]
+            ^pattern[\seed];
         };
     }
 
     *prPrint { |value|
-        value.postln;
+        if (~isUnitTestRunning != true)
+        { value.postln };
     }
 }
 

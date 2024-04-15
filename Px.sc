@@ -1,10 +1,9 @@
 /*
 TODO: Create UnitTest
-🔴 newCopyArgs + var
 ✅ Class vars
 ✅ Class params
+✅ Methods params
 🔴 Event updates (E.g. solo, private methods)
-🔴 Methods params
 
 Bugs & Improvements:
 🔴 Classvar "seeds" should also be multiname
@@ -233,15 +232,6 @@ Px {
         chorusPatterns[name] = lastPatterns[name ?? lastName];
     }
 
-    *prSend { |patterns, name, quant, trace|
-        name = name ?? lastName;
-        trace = trace ?? false;
-
-        if (nodeProxy[name].isPlaying)
-        { this.new(patterns, name, quant, trace) }
-        { this.prPrint("💩 Pdef(\\".catArgs(name, ") is not playing")) }
-    }
-
     *shuffle { |name|
         name = name ?? lastName;
         this.prCreateNewSeeds;
@@ -257,7 +247,7 @@ Px {
     *synthDef { |synthDef|
         if (synthDef.isNil)
         { SynthDescLib.global.browse }
-        { this.prPrint(SynthDescLib.global[synthDef]) };
+        { ^SynthDescLib.global[synthDef] };
     }
 
     *tempo { |tempo|
@@ -309,6 +299,15 @@ Px {
         } {
             ^pattern[\seed];
         };
+    }
+
+    *prSend { |patterns, name, quant, trace|
+        name = name ?? lastName;
+        trace = trace ?? false;
+
+        if (nodeProxy[name].isPlaying)
+        { this.new(patterns, name, quant, trace) }
+        { this.prPrint("💩 Pdef(\\".catArgs(name, ") is not playing")) }
     }
 
     *prPrint { |value|

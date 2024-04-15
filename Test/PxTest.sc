@@ -158,6 +158,16 @@ PxTest : UnitTest {
         );
     }
 
+    test_synthDef {
+        var synthDef = Px.synthDef(\bd).asString;
+
+        this.assertEquals(
+            synthDef.contains("SynthDesc 'bd'"),
+            true,
+            "👀 Method synthDef returns control details",
+        );
+    }
+
     test_tempo {
         Px.tempo(60);
 

@@ -3,7 +3,8 @@ TODO: Create UnitTest
 ✅ Class vars
 ✅ Class params
 ✅ Methods params
-🔴 Event updates (E.g. solo, private methods)
+🔴 Event updates (E.g. human, amp exists, default dur,
+beat generates amp Pseq, fill adds a totalBeat with []
 
 Bugs & Improvements:
 🔴 Classvar "seeds" should also be multiname
@@ -12,6 +13,7 @@ Bugs & Improvements:
 Px {
     classvar <>chorusPatterns;
     classvar <lastName;
+    classvar <>lastFormattedPatterns;
     classvar <>lastPatterns;
     classvar <nodeProxy;
     classvar <samplesDict;
@@ -19,6 +21,7 @@ Px {
 
     *initClass {
         chorusPatterns = Dictionary.new;
+        lastFormattedPatterns = Dictionary.new;
         lastPatterns = Dictionary.new;
         nodeProxy = Dictionary.new;
         seeds = Dictionary.new;
@@ -27,12 +30,11 @@ Px {
     *new { | patterns, name, quant, trace |
         var pDef, ptparList;
 
-        var copyPatternsToLastPatterns = {
-            lastPatterns[name] = patterns;
-        };
-
         var getSoloPatterns = {
-            var soloList = patterns.select { |pattern| pattern['solo'].notNil };
+            var soloList = patterns.select { |pattern|
+                pattern['solo'].notNil
+            };
+
             if (soloList.isEmpty.not)
             { soloList }
             { patterns }
@@ -46,6 +48,7 @@ Px {
                 { 0 }
                 { indexDict[patternStr] + 1 };
                 pattern = pattern ++ (id: pattern[\id] ?? (patternStr ++ "_" ++ indexDict[patternStr]));
+                pattern[\id] = pattern[\id].asSymbol;
             };
         };
 
@@ -174,11 +177,13 @@ Px {
         };
 
         name = this.prGetName(name);
-        copyPatternsToLastPatterns.value;
         patterns = getSoloPatterns.value;
-        patterns = this.prCreateBufIns(patterns);
+        lastPatterns[name] = patterns;
+
         patterns = createIds.value;
+        patterns = this.prCreateBufIns(patterns);
         patterns = this.prCreateLoops(patterns);
+        lastFormattedPatterns[name] = patterns;
 
         patterns do: { |pattern, i|
             var pbind;
@@ -252,7 +257,7 @@ Px {
 
     *tempo { |tempo|
         TempoClock.default.tempo = tempo.clip(10, 300) / 60;
-        this.prLoadSynthDefs;
+        this.loadSynthDefsAfterUpdatingTempo;
     }
 
     *trace { |name|

@@ -34,6 +34,13 @@
         ^samplesDict[folder][file];
     }
 
+    *loadSynthDefsAfterUpdatingTempo {
+        PathName(("SynthDefs/").resolveRelative).filesDo{ |file|
+            var filePath = File.readAllString(file.fullPath);
+            file.fullPath.load;
+        };
+    }
+
     *prCreateBufIns { |patterns|
         patterns = patterns.collect { |pattern|
             pattern[\play].notNil.if {
@@ -123,13 +130,6 @@
         };
 
         ^patterns;
-    }
-
-    *prLoadSynthDefs {
-        PathName(("SynthDefs/").resolveRelative).filesDo{ |file|
-            var filePath = File.readAllString(file.fullPath);
-            file.fullPath.load;
-        };
     }
 }
 

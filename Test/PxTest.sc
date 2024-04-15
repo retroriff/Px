@@ -27,7 +27,6 @@ PxTest : UnitTest {
         Px.lastPatterns = Dictionary.new;
         Ndef.clear;
         Pdef.clear;
-        TempoClock.default.tempo = 110 / 60;
         ~isUnitTestRunning = false;
     }
 
@@ -176,6 +175,9 @@ PxTest : UnitTest {
             1.0,
             "👀 Tempo has been set",
         );
+
+        Px.tempo(117);
+        Px.loadSynthDefsAfterUpdatingTempo;
     }
 
     test_vol {
@@ -201,5 +203,60 @@ PxTest : UnitTest {
                 "👀 Volume for \\" ++ name ++ " is " ++ expectedResult,
             );
         };
+    }
+
+    // Event functions
+    test_ids {
+        Px([(i: \bd)]);
+
+        this.assertEquals(
+            Px.lastFormattedPatterns[\px][0][\id],
+            \bd_0,
+            "👀 Px generates ids",
+        );
+    }
+
+    test_loop {
+        Px([(loop: ["fm", 0])]);
+        expectedResult = Px.lastFormattedPatterns[\px][0];
+
+        this.assert(
+            expectedResult[\buf].asString.contains("Buffer"),
+            "👀 Loop calls a buffer",
+        );
+
+        this.assertEquals(
+            expectedResult[\i],
+            \lplay,
+            "👀 SynthDef is \\lplay",
+        );
+    }
+
+    test_play {
+        Px([(play: ["fm", 0])]);
+        expectedResult = Px.lastFormattedPatterns[\px][0];
+
+        this.assert(
+            expectedResult[\buf].asString.contains("Buffer"),
+            "👀 Play calls a buffer",
+        );
+
+        this.assertEquals(
+            expectedResult[\i],
+            \playbuf,
+            "👀 SynthDef is \\playbuf",
+        );
+    }
+
+
+    test_solo {
+        Px([(i: \bd).solo, (i: \sn)]);
+        expectedResult = [(i: \bd, solo: true)];
+
+        this.assertEquals(
+            Px.lastPatterns[\px],
+            expectedResult,
+            "👀 Px only plays solo patterns",
+        );
     }
 }

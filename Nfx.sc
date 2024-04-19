@@ -7,10 +7,10 @@ TODO: Fix Px.release disables FX before releasing
 
 Nfx {
     classvar <activeArgs;
-    classvar <activeEffects;
+    classvar <>activeEffects;
     classvar <effects;
-    classvar <mixer;
-    classvar <presetsPath;
+    classvar <>mixer;
+    classvar <>presetsPath;
     classvar <proxy;
     classvar proxyName;
     classvar <vstController;
@@ -65,7 +65,7 @@ Nfx {
             proxy[i + 1] = nil;
         };
         activeEffects = Array.new;
-        "All effects have been disabled".postln;
+        this.prPrint("All effects have been disabled");
     }
 
     *hpf { |mix = 1, freq = 1200|
@@ -100,7 +100,7 @@ Nfx {
 
         path = presetsPath ++ this.prGetVstPluginName ++ "/" ++ preset ++ ".fxp";
         vstController.readProgram(path);
-        "🔥 Loaded".scatArgs(("\\" ++ preset), "preset").postln;
+        this.prPrint("🔥 Loaded".scatArgs(("\\" ++ preset), "preset"));
     }
 
     *vstWriteProgram { |preset|
@@ -144,7 +144,7 @@ Nfx {
         if (proxy[index].isNil) {
             proxy[index] = effects.at(fx).(*args);
             activeArgs = activeArgs.add(fx -> args);
-            "✨ Enabled".scatArgs(("\\" ++ fx), "FX").postln;
+            this.prPrint("✨ Enabled".scatArgs(("\\" ++ fx), "FX"));
         };
     }
 
@@ -161,9 +161,9 @@ Nfx {
             editor: true
         );
 
-        "✨ Enabled".scatArgs("\\vst", plugin).postln;
-        "👉 Open VST Editor: Ndef.vstController.editor;".postln;
-        "👉 Set VST parameter: Ndef.vstController.set(1, 1);".postln;
+        this.prPrint("✨ Enabled".scatArgs("\\vst", plugin));
+        this.prPrint("👉 Open VST Editor: Nfx.vstController.editor;");
+        this.prPrint("👉 Set VST parameter: Nfx.vstController.set(1, 1);");
     }
 
     *prDisableFx { |fx, mix|
@@ -171,18 +171,17 @@ Nfx {
         var wetIndex = (\wet ++ index).asSymbol;
 
         if (index.isNil) {
-            ^"🔴".scatArgs(("\\" ++ fx), "FX not found").postln;
+            ^this.prPrint("🔴".scatArgs(("\\" ++ fx), "FX not found"));
         };
 
-        this.prFadeOutFx(index, fx, wetIndex);
         activeArgs.removeAt(fx);
         activeEffects.removeAt(activeEffects.indexOf(fx));
+        this.prFadeOutFx(index, fx, wetIndex);
     }
 
     *prFadeOutFx { |index, fx, wetIndex|
         var wet = proxy.get(wetIndex, { |f| f });
         var fadeOut = wet / 25;
-
         fork {
             while { wet > 0.0 } {
                 wet = wet - fadeOut;
@@ -195,7 +194,8 @@ Nfx {
                     if (vstController.notNil)
                     { vstController.close };
 
-                    "🔇 Disabled".scatArgs(("\\" ++ fx), "FX").postln;
+                    if (proxy.isPlaying)
+                    { this.prPrint("🔇 Disabled".scatArgs(("\\" ++ fx), "FX")) };
                 };
                 0.25.wait;
             }
@@ -207,6 +207,11 @@ Nfx {
         if (index.notNil)
         { index = index + 1 };
         ^index;
+    }
+
+    *prPrint { |value|
+        if (~isUnitTestRunning != true)
+        { value.postln };
     }
 
     *prUpdateEffect { |args, fx|
@@ -221,7 +226,7 @@ Nfx {
         var wetIndex = (\wet ++ index).asSymbol;
 
         if (index.isNil)
-        { ^"🔴".scatArgs(("\\" ++ fx), "FX not found").postln };
+        { ^this.prPrint("🔴".scatArgs(("\\" ++ fx), "FX not found")) };
 
         if (mix != mixer[fx]) {
             proxy.set(wetIndex, mix);

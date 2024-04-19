@@ -17,16 +17,16 @@ PxTest : UnitTest {
             Px([
                 (i: \bd).amp(0.5),
                 (i: \sn, dur: 1/4),
-            ], name);
+            ], name).vol(0, name);
         };
     }
 
     tearDown {
         this.prGetNames do: { |name| Px.stop(name) };
-        Px.chorusPatterns = Dictionary.new;
-        Px.lastPatterns = Dictionary.new;
         Ndef.clear;
         Pdef.clear;
+        Px.chorusPatterns = Dictionary.new;
+        Px.lastPatterns = Dictionary.new;
         ~isUnitTestRunning = false;
     }
 
@@ -181,16 +181,10 @@ PxTest : UnitTest {
     }
 
     test_vol {
-        this.assertEquals(
-            Ndef(\px).vol,
-            1,
-            "👀 Default volume is 1",
-        );
-
-        expectedResult = 0.5;
 
         this.prGetNames do: { |name|
             var volName = name;
+            expectedResult = 0.1;
 
             if (name == \px)
             { volName = nil };
@@ -200,12 +194,62 @@ PxTest : UnitTest {
             this.assertEquals(
                 Ndef(name).vol,
                 expectedResult,
-                "👀 Volume for \\" ++ name ++ " is " ++ expectedResult,
+                "👀 Volume for \\" ++ name ++ " has been set",
             );
         };
     }
 
     // Event functions
+    test_amp {
+        Px([(i: \bd)]);
+
+        this.assertEquals(
+            Px.lastFormattedPatterns[\px][0][\amp],
+            1,
+            "👀 Default \\amp has been added",
+        );
+    }
+
+    test_beat {
+        Px([(i: \bd).beat]);
+
+        this.assertEquals(
+            Px.lastFormattedPatterns[\px][0][\amp].class,
+            Pseq,
+            "👀 Beat generates an \\amp Pseq",
+        );
+    }
+
+    test_dur {
+        Px([(i: \bd)]);
+
+        this.assertEquals(
+            Px.lastFormattedPatterns[\px][0][\dur],
+            1,
+            "👀 Default \\dur has been added",
+        );
+    }
+
+    test_fill {
+        Px([(i: \bd).beat, (i: \sn).fill]);
+
+        this.assertEquals(
+            Px.lastFormattedPatterns[\px][1][\totalBeat].isArray,
+            true,
+            "👀 Fill generates a \\totalBeat array",
+        );
+    }
+
+    test_human {
+        Px([(i: \bd).human]);
+
+        this.assertEquals(
+            Px.lastFormattedPatterns[\px][0][\lag].class,
+            Pwhite,
+            "👀 Human adds a lag pair to pattern",
+        );
+    }
+
     test_ids {
         Px([(i: \bd)]);
 

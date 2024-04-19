@@ -1,13 +1,5 @@
 /*
-TODO: Create UnitTest
-✅ Class vars
-✅ Class params
-✅ Methods params
-🔴 Event updates (E.g. human, amp exists, default dur,
-beat generates amp Pseq, fill adds a totalBeat with []
-
-Bugs & Improvements:
-🔴 Classvar "seeds" should also be multiname
+TODO: Classvar "seeds" should also be multiname
 */
 
 Px {
@@ -110,7 +102,7 @@ Px {
             };
             var invertBeat = getInvertBeat.(patterns[i - 1][\amp], pattern[\amp]);
             var totalBeat = getTotalBeat.(invertBeat);
-            pattern[i] = pattern[i] ++ (\totalBeat: totalBeat);
+            patterns[i].putAll([\totalBeat, totalBeat]);
             totalBeat;
         };
 

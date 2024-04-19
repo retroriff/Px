@@ -136,7 +136,6 @@ Nfx {
 
     *prActivateEffect { |args, fx|
         var index;
-
         proxy = Ndef(proxyName);
         activeEffects = activeEffects.add(fx);
         index = this.prGetIndex(fx);

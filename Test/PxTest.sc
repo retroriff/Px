@@ -27,6 +27,7 @@ PxTest : UnitTest {
         Pdef.clear;
         Px.chorusPatterns = Dictionary.new;
         Px.lastPatterns = Dictionary.new;
+        Px.lastFormattedPatterns = Dictionary.new;
         ~isUnitTestRunning = false;
     }
 

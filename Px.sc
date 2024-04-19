@@ -175,7 +175,6 @@ Px {
         patterns = createIds.value;
         patterns = this.prCreateBufIns(patterns);
         patterns = this.prCreateLoops(patterns);
-        lastFormattedPatterns[name] = patterns;
 
         patterns do: { |pattern, i|
             var pbind;
@@ -197,6 +196,7 @@ Px {
             ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
         };
 
+        lastFormattedPatterns[name] = patterns;
         pDef = Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant ?? 4);
 
         if (nodeProxy[name].isPlaying.not) {

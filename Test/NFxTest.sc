@@ -1,13 +1,19 @@
-/*
-TODO: Unit tests
-🔴 Px methods: blp, clear, delay, hpf, lpf, wah, prCreatePatternFx, PbindFx
-🔴 Event methods: delay, hpf, lpf, reverb, wah
-*/
-
 NfxTest : PxTest {
     tearDown {
         Nfx.mixer = Dictionary.new;
         ^super.tearDown;
+    }
+
+
+    test_clear {
+        Px.blp.reverb;
+        Nfx.clear;
+
+        this.assertEquals(
+            Nfx.activeEffects.size,
+            0,
+            "👀 All FX have been deleted from activeEffects",
+        );
     }
 
     test_fx {

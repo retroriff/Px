@@ -1,6 +1,8 @@
-# Px: A patterns player class for SuperCollider
+# Px: SuperCollider Patterns and FX Classes Optimized for Live Coding
 
 A set of classes that generates patterns on a nodeproxy. This is a very basic example usage:
+
+A set of classes generates patterns on a nodeproxy and simplify the integration of effects. Designed for ease of use, they provide a straightforward solution for creating pattern shortcuts and enhancing them with effects. Below is a basic example:
 
 ```
 Px(i: \bd);

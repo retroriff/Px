@@ -31,9 +31,29 @@ Nfx {
             }
         });
 
+        effects.add(\delay -> { |delaytime = 8, decaytime = 2|
+            \filterIn -> { |in|
+                in + CombN.ar(in,
+                    maxdelaytime: TempoClock.tempo / 4,
+                    delaytime: TempoClock.tempo / \delay1.kr(delaytime),
+                    decaytime: \delay2.kr(decaytime),
+                    mul: -12.dbamp);
+            }
+        });
+
         effects.add(\hpf -> { |freq = 1200|
             \filterIn -> { |in|
                 RHPF.ar(in, \hpf1.kr(freq).poll, rq: 0.1);
+            }
+        });
+
+        effects.add(\gverb -> { |roomsize = 200, revtime = 0.7|
+            \filterIn -> { |in|
+                GVerb.ar(
+                    in,
+                    \gverb1.kr(roomsize),
+                    \gverb2.kr(revtime)
+                );
             }
         });
 
@@ -68,14 +88,22 @@ Nfx {
         this.prPrint("All effects have been disabled");
     }
 
+    *blp { |mix = 0.4|
+        this.prAddEffect(\blp, mix);
+    }
+
+    *delay { |mix = 0.4, delaytime = 8, decaytime = 2|
+        this.prAddEffect(\delay, mix, [delaytime, decaytime]);
+    }
+
+    *gverb { |mix = 0.5, roomsize = 200, revtime = 5|
+        this.prAddEffect(\gverb, mix, [roomsize, revtime]);
+    }
+
     *hpf { |mix = 1, freq = 1200|
         if (freq == \wave)
         { freq = Ndef(\hpf1, { SinOsc.kr(1/8).range(400, 1200) } ) };
         this.prAddEffect(\hpf, mix, [freq]);
-    }
-
-    *blp { |mix = 0.4|
-        this.prAddEffect(\blp, mix);
     }
 
     *reverb { |mix = 0.3, room = 0.7, damp = 0.7|

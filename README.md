@@ -82,13 +82,14 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ### Px FX class methods
 
-| Name     | Arguments                                         | Description                           |
-| -------- | ------------------------------------------------- | ------------------------------------- |
-| `blp`    | mix?: number \| Nil                               | Adds a BLP filter to the proxy        |
-| `delay`  | mix?: number \| Nil                               | Adds a delay filter to the proxy      |
-| `hpf`    | mix?: number \| Nil, wave?: boolean               | Adds a HPF filter to the proxy        |
-| `reverb` | mix?: number \| Nil, room?: number, damp?: number | Adds a reverb filter to the proxy     |
-| `vst`    | mix?: number \| Nil, plugin?: string              | Adds a VST plugin filter to the proxy |
+| Name     | Arguments                                                   | Description                           |
+| -------- | ----------------------------------------------------------- | ------------------------------------- |
+| `blp`    | mix?: number \| Nil                                         | Adds a BLP filter to the proxy        |
+| `delay`  | mix?: number \| Nil                                         | Adds a delay filter to the proxy      |
+| `gverb`  | mix?: number \| Nil, delaytime?: number, decaytime?: number | Adds a gverb filter to the proxy      |
+| `hpf`    | mix?: number \| Nil, wave?: boolean                         | Adds a HPF filter to the proxy        |
+| `reverb` | mix?: number \| Nil, room?: number, damp?: number           | Adds a reverb filter to the proxy     |
+| `vst`    | mix?: number \| Nil, plugin?: string                        | Adds a VST plugin filter to the proxy |
 
 ## Nfx
 
@@ -168,7 +169,7 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `init`   | time?: number                  | Controls the latency. Default is 0.2 |
 | `preset` | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
 
-## Unit tests
+## Unit Tests
 
 ```
 PxTest.run;

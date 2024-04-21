@@ -3,8 +3,12 @@
         Nfx(lastName).blp(mix);
     }
 
-    *delay { |mix, args|
-        this.prFx(\delay, mix, args);
+    *delay { |mix, delaytime = 8, decaytime = 2|
+        Nfx(lastName).delay(mix, delaytime, decaytime);
+    }
+
+    *gverb { |mix = 0.3, roomsize = 200, revtime = 5|
+        Nfx(lastName).gverb(mix, roomsize, revtime);
     }
 
     *hpf { |mix = 1, freq = 1200|

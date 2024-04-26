@@ -41,12 +41,6 @@ Nfx {
             }
         });
 
-        effects.add(\hpf -> { |freq = 1200|
-            \filterIn -> { |in|
-                RHPF.ar(in, \hpf1.kr(freq).poll, rq: 0.1);
-            }
-        });
-
         effects.add(\gverb -> { |roomsize = 200, revtime = 0.7|
             \filterIn -> { |in|
                 GVerb.ar(
@@ -54,6 +48,18 @@ Nfx {
                     \gverb1.kr(roomsize),
                     \gverb2.kr(revtime)
                 );
+            }
+        });
+
+        effects.add(\hpf -> { |freq = 1200|
+            \filterIn -> { |in|
+                RHPF.ar(in, \hpf1.kr(freq).poll, rq: 0.1);
+            }
+        });
+
+        effects.add(\lpf -> { |freq = 200|
+            \filterIn -> { |in|
+                RLPF.ar(in, \lpf1.kr(freq), rq: 0.1);
             }
         });
 
@@ -98,6 +104,12 @@ Nfx {
 
     *gverb { |mix = 0.5, roomsize = 200, revtime = 5|
         this.prAddEffect(\gverb, mix, [roomsize, revtime]);
+    }
+
+    *lpf { |mix = 0.4, freq = 200|
+        if (freq == \wave)
+        { freq = Ndef(\lpf1, { SinOsc.kr(1/8).range(200, 400) } ) };
+        this.prAddEffect(\lpf, mix, [freq]);
     }
 
     *hpf { |mix = 1, freq = 1200|

@@ -9,6 +9,7 @@ Ns {
         var createDefaults = {
             var defaultPattern = (
                 i: \saw,
+                amp: 1,
                 degree: [0],
                 dur: [1],
                 env: 0,
@@ -43,6 +44,7 @@ Ns {
         };
 
         var setControls = {
+            Ndef(\ns).set(\amp, pattern[\amp]);
             Ndef(\ns).set(\degree, pattern[\degree]);
             Ndef(\ns).set(\degreeSize, pattern[\degree].size);
             Ndef(\ns).set(\dur, pattern[\dur]);
@@ -56,5 +58,10 @@ Ns {
         createWave.value;
         setControls.value;
         Ndef(\ns).play;
+    }
+
+    *release { |fadeTime = 10, name|
+        name = name ?? \ns;
+        Ndef(\ns).free(fadeTime);
     }
 }

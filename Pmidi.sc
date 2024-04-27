@@ -44,14 +44,19 @@ Pmidi {
 
         MIDIClient.init(verbose: false);
 
+        if (this.prDetectDevice(deviceName) == false) {
+            ^super.prPrint("🔴 Device not detected. ✅ Playing SynthDefs");
+        };
+
         if (deviceName.notNil) {
             if (portName.isNil)
             { portName = deviceName };
+
             midiOut = MIDIOut.newByName(deviceName, portName);
-            super.prPrint("MIDIOut:".scatArgs(deviceName, deviceName));
+            super.prPrint("🎛️ MIDIOut:".scatArgs(deviceName));
         } {
             midiOut = MIDIOut.new(0);
-            super.prPrint("MIDIOut:".scatArgs("port 0"));
+            super.prPrint("🎛️ MIDIOut:".scatArgs("port 0"));
         };
 
         deviceName = deviceName ?? "default";
@@ -63,6 +68,10 @@ Pmidi {
         };
 
         midiClient[deviceName].latency = latency ?? 0.2;
+    }
+
+    *prDetectDevice { |name|
+        ^MIDIClient.destinations.detect({ |endpoint| endpoint.name == name }) !== nil;
     }
 }
 

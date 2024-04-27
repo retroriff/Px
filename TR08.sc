@@ -1,4 +1,14 @@
 TR08 : Play {
+    classvar <lastPreset;
+    classvar <presetsDict;
+    classvar <presetPatterns;
+
+    *initClass {
+        lastPreset = Array.new;
+        presetsDict = Dictionary.new;
+        ^super.initClass;
+    }
+
     *new { | patterns, name, quant, trace|
         var drumKit = Dictionary[
             \bd -> 36,
@@ -29,11 +39,13 @@ TR08 : Play {
             { Array.new }
         };
 
-        if (MIDIClient.initialized == false or: { midiClient.notNil and: { midiClient["TR-08"].isNil } } )
+        if (MIDIClient.initialized == false
+            or: { midiClient.notNil and: { midiClient["TR-08"].isNil }}
+        )
         { this.init(0.195) };
 
         patterns.collect { |pattern|
-            pattern.putAll([\midinote: drumKit[pattern[\i]]] ++ midiPairs.value);
+            pattern.putAll([\midinote: drumKit[pattern[\i].asSymbol]] ++ midiPairs.value);
         };
 
         ^super.new(patterns, name ?? \tr08, quant, trace, midiout: "TR-08");
@@ -44,49 +56,50 @@ TR08 : Play {
     }
 
     *preset { |name, number|
-        var preset, presetsDict = Dictionary();
+        var newPreset = [name, number];
 
-        var createPatternFromPreset = { |preset|
+        var createPatternFromPreset = {
+            var presetNumber, preset;
             var patterns = Array.new;
+            var presetGroup = presetsDict[name ?? \electro];
+            number = number ?? 1;
+            presetNumber = number.clip(1, presetGroup.size) - 1;
+            preset = presetGroup[presetNumber];
+
+            if (number > presetGroup.size) {
+                super.prPrint("🧩 This set has".scatArgs(presetGroup.size, "presets"));
+            };
+
             if (preset.notNil) {
                 preset[\preset].do { |pattern|
                     var amp = Pseq(pattern[\list].clip(0, 1), inf);
                     patterns = patterns.add((i: pattern[\i], amp: amp, dur: 1/4));
                 };
             };
+
             if (preset[\name].notNil)
-            { super.prPrint("Preset:".scatArgs(preset[\name])) };
-            patterns;
+            { super.prPrint("🎧 Preset:".scatArgs(preset[\name])) };
+
+            presetPatterns = patterns;
+            lastPreset = [name, number];
+
         };
 
-        // TODO: Read files only once, when presetsDict is empty. Move presetsDict to initClass
-        // TODO: Decide if we want presets to be YAML, JSON or events
-        var presetFormat = "yaml";
+        if (presetsDict.size == 0)
+        { this.prCreatePresetsDict };
 
-        PathName(("Presets/" ++ presetFormat ++ "/").resolveRelative).filesDo{ |file|
-            var fileName = file.fileNameWithoutExtension;
+        if (newPreset != lastPreset) {
+           createPatternFromPreset.value;
+        };
+
+        TR08(presetPatterns);
+    }
+
+    *prCreatePresetsDict {
+        PathName(("Presets/yaml/").resolveRelative).filesDo{ |file|
+            var fileName = file.fileNameWithoutExtension.asSymbol;
             var filePath = File.readAllString(file.fullPath);
-
-            case
-            { presetFormat == "json" }
-            { presetsDict.put(fileName.asSymbol, PresetsFromJSON(filePath.parseJSON)) }
-
-            { presetFormat == "scd" }
-            { presetsDict.put(fileName.asSymbol, filePath.load ) }
-
-            { presetFormat == "yaml" }
-            { presetsDict.put(fileName.asSymbol, PresetsFromYAML(filePath.parseYAML)) }
+            presetsDict.put(fileName, PresetsFromYAML(filePath.parseYAML))
         };
-
-
-        // TODO: Check maximum amount of presets
-        /*if (number > presetsDict.size) {
-            presetsDict.postln;
-            super.prPrint("This set has".scatArgs(presetsDict.size, "presets"));
-            number = presetsDict.size;
-        };*/
-
-        preset = presetsDict[name ?? \electro][number ?? 0];
-        TR08(createPatternFromPreset.(preset));
     }
 }

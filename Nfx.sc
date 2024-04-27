@@ -1,5 +1,4 @@
 /*
-TODO: Multiname
 TODO: Fix when Ndef is reevaluated, proxy FXs stop
 TODO: Fix error when it is started with ".hpf(1, \wave)"
 TODO: Fix Px.release disables FX before releasing
@@ -17,9 +16,10 @@ Nfx {
 
     *initClass {
         activeArgs = Dictionary.new;
-        activeEffects = Array.new;
+        activeEffects = Dictionary.new;
         effects = Dictionary.new;
         mixer = Dictionary.new;
+        proxy = Dictionary.new;
 
         effects.add(\blp -> {
             \filterIn -> { |in|
@@ -88,9 +88,9 @@ Nfx {
     *clear {
         activeArgs = activeArgs.clear;
         activeEffects do: { |fx, i|
-            proxy[i + 1] = nil;
+            proxy[proxyName][i + 1] = nil;
         };
-        activeEffects = Array.new;
+        activeEffects = activeEffects.clear;
         this.prPrint("All effects have been disabled");
     }
 
@@ -149,17 +149,22 @@ Nfx {
     }
 
     *prGetVstPluginName {
-        ^activeArgs[\vst][0];
+        ^activeArgs[proxyName][\vst][0];
     }
 
     *prAddEffect { |fx, mix, args|
-        var hasFx = activeEffects.includes(fx);
+        var hasFx;
+
+        if (activeEffects[proxyName].isNil)
+        { activeEffects[proxyName] = Array.new };
+
+        hasFx = activeEffects[proxyName].includes(fx);
 
         if (hasFx == false and: (mix != Nil)) {
             this.prActivateEffect(args, fx);
         };
 
-        if (args != activeArgs[fx]) {
+        if (args != activeArgs[proxyName][fx] and: (mix != Nil)) {
             this.prUpdateEffect(args, fx);
         };
 
@@ -176,13 +181,17 @@ Nfx {
 
     *prActivateEffect { |args, fx|
         var index;
-        proxy = Ndef(proxyName);
-        activeEffects = activeEffects.add(fx);
+        proxy[proxyName] = Ndef(proxyName);
+        activeEffects[proxyName] = activeEffects[proxyName].add(fx);
         index = this.prGetIndex(fx);
 
-        if (proxy[index].isNil) {
-            proxy[index] = effects.at(fx).(*args);
-            activeArgs = activeArgs.add(fx -> args);
+        if (proxy[proxyName][index].isNil) {
+            proxy[proxyName][index] = effects.at(fx).(*args);
+
+            if (activeArgs[proxyName].isNil)
+            { activeArgs[proxyName] = Dictionary.new };
+
+            activeArgs[proxyName].add(fx -> args);
             this.prPrint("✨ Enabled".scatArgs(("\\" ++ fx), "FX"));
         };
     }
@@ -195,7 +204,7 @@ Nfx {
             ^"🔴 VST is not enabled";
         };
 
-        vstController = VSTPluginNodeProxyController(proxy, index).open(
+        vstController = VSTPluginNodeProxyController(proxy[proxyName], index).open(
             plugin,
             editor: true
         );
@@ -213,38 +222,46 @@ Nfx {
             ^this.prPrint("🔴".scatArgs(("\\" ++ fx), "FX not found"));
         };
 
-        activeArgs.removeAt(fx);
-        activeEffects.removeAt(activeEffects.indexOf(fx));
+        activeArgs[proxyName].removeAt(fx);
+        mixer[proxyName].removeAt(fx);
+
+        if (activeEffects[proxyName].indexOf(fx).notNil)
+        { activeEffects[proxyName].removeAt(activeEffects[proxyName].indexOf(fx)) };
+
         this.prFadeOutFx(index, fx, wetIndex);
     }
 
     *prFadeOutFx { |index, fx, wetIndex|
-        var wet = proxy.get(wetIndex, { |f| f });
+        var wet = proxy[proxyName].get(wetIndex, { |f| f });
         var fadeOut = wet / 25;
+
         fork {
             while { wet > 0.0 } {
                 wet = wet - fadeOut;
 
                 if (wet > 0)
-                { proxy.set(wetIndex, wet) }
+                { proxy[proxyName].set(wetIndex, wet) }
                 {
-                    proxy[index] = nil;
+                    proxy[proxyName][index] = nil;
 
                     if (vstController.notNil)
                     { vstController.close };
 
-                    if (proxy.isPlaying)
+                    if (proxy[proxyName].isPlaying)
                     { this.prPrint("🔇 Disabled".scatArgs(("\\" ++ fx), "FX")) };
                 };
+
                 0.25.wait;
             }
         }
     }
 
     *prGetIndex { |fx|
-        var index = activeEffects.indexOf(fx);
+        var index = activeEffects[proxyName].indexOf(fx);
+
         if (index.notNil)
         { index = index + 1 };
+
         ^index;
     }
 
@@ -255,8 +272,8 @@ Nfx {
 
     *prUpdateEffect { |args, fx|
         args do: { |value, i|
-            proxy.set((fx ++ (i + 1)).asSymbol, value);
-            activeArgs = activeArgs.add(fx -> args);
+            proxy[proxyName].set((fx ++ (i + 1)).asSymbol, value);
+            activeArgs[proxyName].add(fx -> args);
         }
     }
 
@@ -267,9 +284,12 @@ Nfx {
         if (index.isNil)
         { ^this.prPrint("🔴".scatArgs(("\\" ++ fx), "FX not found")) };
 
-        if (mix != mixer[fx]) {
-            proxy.set(wetIndex, mix);
-            mixer[fx] = mix;
+        if (mixer[proxyName].isNil)
+        { mixer[proxyName] = Dictionary.new };
+
+        if (mix != mixer[proxyName][fx]) {
+            proxy[proxyName].set(wetIndex, mix);
+            mixer[proxyName][fx] = mix;
         };
     }
 }

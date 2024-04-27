@@ -4,7 +4,6 @@ NfxTest : PxTest {
         ^super.tearDown;
     }
 
-
     test_clear {
         Px.blp.reverb;
         Nfx.clear;
@@ -13,6 +12,16 @@ NfxTest : PxTest {
             Nfx.activeEffects.size,
             0,
             "👀 All FX have been deleted from activeEffects",
+        );
+    }
+
+    text_name {
+        Nfx(\px2).reverb(1, 1, 1);
+
+        this.assertEquals(
+            Nfx.activeEffects[\px2],
+            [\gverb],
+            "👀 Enables FX to custom proxy name",
         );
     }
 
@@ -26,13 +35,13 @@ NfxTest : PxTest {
         );
 
         this.assertEquals(
-            Nfx(\px).activeArgs[\reverb],
+            Nfx(\px).activeArgs[\px][\reverb],
             [1, 1],
             "👀 FX receives args",
         );
 
         this.assertEquals(
-            Nfx(\px).mixer[\reverb],
+            Nfx(\px).mixer[\px][\reverb],
             1,
             "👀 FX sets mixer",
         );
@@ -40,7 +49,7 @@ NfxTest : PxTest {
         Px.reverb(Nil);
 
         this.assertEquals(
-            Nfx.activeEffects.size,
+            Nfx.activeEffects[\px].size,
             0,
             "👀 FX deleted from activeEffects",
         );
@@ -50,7 +59,7 @@ NfxTest : PxTest {
         Px.vst(0.3, "ValhallaFreqEcho");
 
         this.assertEquals(
-            Nfx.activeEffects,
+            Nfx.activeEffects[\px],
             [\vst],
             "👀 VST FX is enabled",
         );
@@ -64,7 +73,7 @@ NfxTest : PxTest {
         Px.vst(Nil);
 
         this.assertEquals(
-            Nfx.activeEffects.size,
+            Nfx.activeEffects[\px].size,
             0,
             "👀 VST FX deleted from activeEffects",
         );

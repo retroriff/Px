@@ -1,19 +1,27 @@
+/*
+TODO: Initialize Ndef(\ns);
+TODO: Add \root support;
+TODO: Set initial default note;
+*/
+
 Ns {
     classvar waveList;
 
     *initClass {
-        waveList = [\saw, \pulse];
+        waveList = [\pulse, \saw, \sine, \triangle];
     }
 
     *new { |pattern|
         var createDefaults = {
             var defaultPattern = (
-                i: \saw,
                 amp: 1,
                 degree: [0],
                 dur: [1],
                 env: 0,
-                scale: \dorian
+                octave: [0],
+                scale: \dorian,
+                vcf: 1,
+                wave: \saw;
             );
 
             defaultPattern.keys do: { |key|
@@ -21,9 +29,29 @@ Ns {
             };
         };
 
-        var createDur = {
-            if (pattern[\dur].isNumber)
-            { pattern[\dur] = [pattern[\dur]] };
+        var calculateOctaves = {
+            var degrees = pattern[\degree];
+            var octaves = pattern[\octave];
+            var maxLen = max(degrees.size, octaves.size);
+            var results = [];
+            var degIndex = 0;
+            var octIndex = 0;
+
+            while ({ results.size < maxLen }) {
+                var deg = degrees[degIndex];
+                var oct = octaves[octIndex];
+                results = results.add(deg + (oct * 12));
+
+                degIndex = (degIndex + 1) % degrees.size;
+                octIndex = (octIndex + 1) % octaves.size;
+            };
+
+            pattern[\degree] = results;
+        };
+
+        var convertToArray = { |key|
+            if (pattern[key].isNumber)
+            { pattern[key] = [pattern[key]] };
         };
 
         var createEuclid = {
@@ -32,31 +60,39 @@ Ns {
             };
         };
 
-        var createWave = {
+        var setArraySize = { |key|
+            var keySizeName = (key ++ "Size").asSymbol;
+            pattern.putAll([keySizeName, pattern[key].size]);
+        };
+
+        var setControl = { |key, value|
+            Ndef(\ns).set(key, value);
+        };
+
+        var setDefaultControls = {
+            var keys = [\amp, \degree, \degreeSize, \dur, \durSize, \env, \vcf];
+            pattern[\degree].postln;
+            keys do: { |key| setControl.(key, pattern[key]) };
+        };
+
+        var setWaveControl = {
             waveList do: { |wave|
                 var value = 0;
 
                 if (pattern[\wave] == wave)
                 { value = 1 };
 
-                Ndef(\ns).set(wave, value);
+                setControl.(wave, value)
             };
         };
 
-        var setControls = {
-            Ndef(\ns).set(\amp, pattern[\amp]);
-            Ndef(\ns).set(\degree, pattern[\degree]);
-            Ndef(\ns).set(\degreeSize, pattern[\degree].size);
-            Ndef(\ns).set(\dur, pattern[\dur]);
-            Ndef(\ns).set(\durSize, pattern[\dur].size);
-            Ndef(\ns).set(\env, pattern[\env]);
-        };
-
         createDefaults.value;
-        createDur.value;
+        [\degree, \dur, \octave] do: { |key| convertToArray.(key) };
+        calculateOctaves.value;
+        [\degree, \dur] do: { |key| setArraySize.(key) };
         createEuclid.value;
-        createWave.value;
-        setControls.value;
+        setWaveControl.value;
+        setDefaultControls.value;
         Ndef(\ns).play;
     }
 

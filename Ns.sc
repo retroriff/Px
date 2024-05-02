@@ -1,13 +1,16 @@
 /*
 TODO: Initialize Ndef(\ns);
 TODO: Add \root support;
-TODO: Set initial default note;
+TODO: Trace debug
+TODO: Unit tests
 */
 
 Ns {
+    classvar defaultScale;
     classvar waveList;
 
     *initClass {
+        defaultScale = \scriabin;
         waveList = [\pulse, \saw, \sine, \triangle];
     }
 
@@ -15,11 +18,12 @@ Ns {
         var createDefaults = {
             var defaultPattern = (
                 amp: 1,
+                chord: [0],
                 degree: [0],
                 dur: [1],
                 env: 0,
                 octave: [0],
-                scale: \dorian,
+                scale: defaultScale,
                 vcf: 1,
                 wave: \saw;
             );
@@ -65,33 +69,29 @@ Ns {
             pattern.putAll([keySizeName, pattern[key].size]);
         };
 
-        var setControl = { |key, value|
-            Ndef(\ns).set(key, value);
-        };
-
         var setDefaultControls = {
-            var keys = [\amp, \degree, \degreeSize, \dur, \durSize, \env, \vcf];
-            pattern[\degree].postln;
-            keys do: { |key| setControl.(key, pattern[key]) };
-        };
+            var keys = [
+                \amp,
+                \chord,
+                \chordSize,
+                \degree,
+                \degreeSize,
+                \dur,
+                \durSize,
+                \env,
+                \vcf
+            ];
 
-        var setWaveControl = {
-            waveList do: { |wave|
-                var value = 0;
-
-                if (pattern[\wave] == wave)
-                { value = 1 };
-
-                setControl.(wave, value)
-            };
+            keys do: { |key| this.setControl(key, pattern[key]) };
         };
 
         createDefaults.value;
-        [\degree, \dur, \octave] do: { |key| convertToArray.(key) };
+        [\chord, \degree, \dur, \octave] do: { |key| convertToArray.(key) };
         calculateOctaves.value;
-        [\degree, \dur] do: { |key| setArraySize.(key) };
+        [\chord, \degree, \dur] do: { |key| setArraySize.(key) };
         createEuclid.value;
-        setWaveControl.value;
+        this.setScaleControl(pattern[\scale]);
+        this.setWaveControl(pattern[\wave]);
         setDefaultControls.value;
         Ndef(\ns).play;
     }
@@ -99,5 +99,41 @@ Ns {
     *release { |fadeTime = 10, name|
         name = name ?? \ns;
         Ndef(\ns).free(fadeTime);
+    }
+
+    *set { |key, value|
+        case
+        { key == \scale }
+        { ^this.setScaleControl(value) }
+
+        { key == \wave }
+        { ^this.setWaveControl(value) };
+
+        ^this.setControl(key, value);
+    }
+
+    *setControl { |key, value|
+        Ndef(\ns).set(key, value);
+    }
+
+    *setScaleControl { |value|
+        var buffer;
+
+        if (value == \default)
+        { value = defaultScale };
+
+        buffer = Buffer.loadCollection(Server.default, Scale.at(value));
+        Ndef(\ns).set(\scale, buffer);
+    }
+
+    *setWaveControl { |patternWave|
+        waveList do: { |wave|
+            var value = 0;
+
+            if (patternWave == wave)
+            { value = 1 };
+
+            this.setControl(wave, value);
+        };
     }
 }

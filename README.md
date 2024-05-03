@@ -17,7 +17,7 @@ Additional code examples can be found [here](/Examples/).
 
 1. ⚡️ [Px: A Pattern Shortcuts Generator](#px)
 2. ✨ [Nfx: A Nodeproxy Effects Handler](#nfx)
-3. 💥 [Play: A Notes Handler with Midi Support](#play)
+3. 💥 [Play: A Notes Handler with MIDI Support](#play)
 4. 🔥 [Ns: A Sequenced Synth](#ns)
 5. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#tr08)
 
@@ -81,7 +81,7 @@ The superclass that generates the patterns from an array of events with a simpli
 - `trace`: Prints out the results of the streams for debugging purposes.
 - `vol`: Controls the volume of the nodeproxy
 
-### Px FX class methods
+### FX class methods
 
 | Name     | Arguments                                                   | Description                           |
 | -------- | ----------------------------------------------------------- | ------------------------------------- |
@@ -115,7 +115,7 @@ To open the VST plugin editor, use `Nfx.vstController.editor`
 
 Additionally, we can set parameter automations with `Nfx.vstController.set(1, 1)`
 
-## Play: A Notes Handler with Midi Support
+## Play: A Notes Handler with MIDI Support
 
 Custom pattern player designed to handle degrees, and can send MIDI messages based on incoming pattern data. It also helps to manage MIDI-related functionalities within SuperCollider, providing a way to control MIDI events and output.
 
@@ -154,7 +154,7 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `\lt`  | **L**ow**T**om      | 43           |
 | `\mc`  | **M**id**C**onga    | 63           |
 | `\mt`  | **M**id**T**om      | 47           |
-| `\hc`  | **H**iC\*\*onga     | 62           |
+| `\hc`  | **H**i**C**onga     | 62           |
 | `\ht`  | **H**i**T**om       | 50           |
 | `\cl`  | **CL**aves          | 75           |
 | `\rs`  | **R**im**S**hot     | 37           |
@@ -201,11 +201,12 @@ Ns(
 // Runs all tests
 PxTestAll.run
 
-// Single tests:
+// Individual tests:
 PxEventTest.run
 PxTest.run
 NfxTest.run
+NsTest.run
 
-// Disable passing tests verbosity
+// Disables passing tests verbosity
 UnitTest.reportPasses = false
 ```

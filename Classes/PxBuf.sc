@@ -35,7 +35,7 @@
     }
 
     *loadSynthDefsAfterUpdatingTempo {
-        PathName(("SynthDefs/").resolveRelative).filesDo{ |file|
+        PathName(("../SynthDefs/").resolveRelative).filesDo{ |file|
             var filePath = File.readAllString(file.fullPath);
             file.fullPath.load;
         };

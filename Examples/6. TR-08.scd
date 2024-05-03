@@ -29,4 +29,4 @@ TR08([
 )
 
 // Or play a preset:
-TR08.preset(\electro, 0);
+TR08.preset(\electro, 2);

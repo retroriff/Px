@@ -1,8 +1,6 @@
 /*
 TODO: Initialize Ndef(\ns);
 TODO: Add \root support;
-TODO: Trace debug
-TODO: Unit tests
 */
 
 Ns {

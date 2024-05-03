@@ -15,11 +15,12 @@ Additional code examples can be found [here](/Examples/).
 
 **📋 Table of Contents**
 
-1. ⚡️ [Px: A Pattern Shortcuts Generator](#px)
-2. ✨ [Nfx: A Nodeproxy Effects Handler](#nfx)
-3. 💥 [Play: A Notes Handler with MIDI Support](#play)
-4. 🔥 [Ns: A Sequenced Synth](#ns)
-5. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#tr08)
+1. ⚡️ [Px: A Pattern Shortcuts Generator](#px-a-pattern-shortcuts-generator)
+2. ✨ [Nfx: A Nodeproxy Effects Handler](#nfx-a-nodeproxy-effects-handler)
+3. 💥 [Play: A Notes Handler with MIDI Support](#play-a-notes-handler-with-midi-support)
+4. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#tr08-a-roland-tr-08-controller)
+5. 🔥 [Ns: A Sequenced Synth](#ns-a-sequenced-synth)
+6. 👀 [Unit Tests](#unit-tests)
 
 ## Px: A Pattern Shortcuts Generator
 
@@ -53,7 +54,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
 | `weight` | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
-### Px FX event methods
+### FX event methods
 
 | Name     | Arguments                                                                   | Description              |
 | -------- | --------------------------------------------------------------------------- | ------------------------ |

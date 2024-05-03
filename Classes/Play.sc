@@ -1,7 +1,3 @@
-/*
-TODO: Fix all examples
-*/
-
 Play : Px {
     classvar <midiClient;
 

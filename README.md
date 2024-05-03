@@ -18,7 +18,7 @@ Additional code examples can be found [here](/Examples/).
 1. ⚡️ [Px: A Pattern Shortcuts Generator](#px-a-pattern-shortcuts-generator)
 2. ✨ [Nfx: A Nodeproxy Effects Handler](#nfx-a-nodeproxy-effects-handler)
 3. 💥 [Play: A Notes Handler with MIDI Support](#play-a-notes-handler-with-midi-support)
-4. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#tr08-a-roland-tr-08-controller)
+4. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#tr08-a-roland-tr-08-midi-controller)
 5. 🔥 [Ns: A Sequenced Synth](#ns-a-sequenced-synth)
 6. 👀 [Unit Tests](#unit-tests)
 
@@ -143,7 +143,7 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 | `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
 | `holdOff` | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
 
-## TR08: A Roland TR-08 Controller
+## TR08: A Roland TR-08 MIDI Controller
 
 It can send MIDI messages to a Roland TR08. if the device is not available, plays TR-808 SynthDefs instead:
 

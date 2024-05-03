@@ -7,6 +7,7 @@ TODO: Unit tests
 
 Ns {
     classvar defaultScale;
+    classvar <lastControls;
     classvar waveList;
 
     *initClass {
@@ -31,6 +32,8 @@ Ns {
             defaultPattern.keys do: { |key|
                 pattern[key] = pattern[key] ?? defaultPattern[key];
             };
+
+            lastControls = defaultPattern;
         };
 
         var calculateOctaves = {
@@ -82,7 +85,7 @@ Ns {
                 \vcf
             ];
 
-            keys do: { |key| this.setControl(key, pattern[key]) };
+            keys do: { |key| this.prSetControl(key, pattern[key]) };
         };
 
         createDefaults.value;
@@ -90,8 +93,8 @@ Ns {
         calculateOctaves.value;
         [\chord, \degree, \dur] do: { |key| setArraySize.(key) };
         createEuclid.value;
-        this.setScaleControl(pattern[\scale]);
-        this.setWaveControl(pattern[\wave]);
+        this.prSetScaleControl(pattern[\scale]);
+        this.prSetWaveControl(pattern[\wave]);
         setDefaultControls.value;
         Ndef(\ns).play;
     }
@@ -104,36 +107,42 @@ Ns {
     *set { |key, value|
         case
         { key == \scale }
-        { ^this.setScaleControl(value) }
+        { ^this.prSetScaleControl(value) }
 
         { key == \wave }
-        { ^this.setWaveControl(value) };
+        { ^this.prSetWaveControl(value) };
 
-        ^this.setControl(key, value);
+        ^this.prSetControl(key, value);
     }
 
-    *setControl { |key, value|
+    *prSetControl { |key, value|
+        this.prUpdateLastControls(key, value);
         Ndef(\ns).set(key, value);
     }
 
-    *setScaleControl { |value|
+    *prSetScaleControl { |value|
         var buffer;
 
         if (value == \default)
         { value = defaultScale };
 
         buffer = Buffer.loadCollection(Server.default, Scale.at(value));
+        this.prUpdateLastControls(\scale, value);
         Ndef(\ns).set(\scale, buffer);
     }
 
-    *setWaveControl { |patternWave|
+    *prSetWaveControl { |patternWave|
         waveList do: { |wave|
             var value = 0;
 
             if (patternWave == wave)
             { value = 1 };
 
-            this.setControl(wave, value);
+            this.prSetControl(wave, value);
         };
+    }
+
+    *prUpdateLastControls { |key, value|
+        lastControls.putAll([key, value]);
     }
 }

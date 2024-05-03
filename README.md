@@ -1,26 +1,27 @@
 # SuperCollider Patterns and FX Classes Optimized for Live Coding
 
-A set of classes generates patterns on a nodeproxy and simplify the integration of effects. Designed for ease of use, they provide a straightforward solution for creating pattern shortcuts and enhancing them with effects. Below is a basic example:
+A set of classes designed to generate patterns on a NodeProxy and streamline the integration of effects. These classes prioritize ease of use, offering a straightforward solution for creating pattern shortcuts and enhancing them with effects. Below is a basic example:
 
 ```
 Px(i: \bd);
 ```
 
-More code examples can be found [here](/Examples/).
+Additional code examples can be found [here](/Examples/).
 
 **Dependencies**:
 
 - [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) (PbindFx)
 - [VSTPlugin](https://github.com/Spacechild1/vstplugin)
 
-**Classes**
+**📋 Table of Contents**
 
-1. [Px](#px)
-2. [Nfx](#nfx)
-3. [Play](#play)
-4. [TR08](#tr08)
+1. ⚡️ [Px: A Pattern Shortcuts Generator](#px)
+2. ✨ [Nfx: A Nodeproxy Effects Handler](#nfx)
+3. 💥 [Play: A Notes Handler with Midi Support](#play)
+4. 🔥 [Ns: A Sequenced Synth](#ns)
+5. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#tr08)
 
-## Px
+## Px: A Pattern Shortcuts Generator
 
 The superclass that generates the patterns from an array of events with a simplified syntax for a fast edition.
 
@@ -91,28 +92,30 @@ The superclass that generates the patterns from an array of events with a simpli
 | `reverb` | mix?: number \| Nil, room?: number, damp?: number           | Adds a reverb filter to the proxy     |
 | `vst`    | mix?: number \| Nil, plugin?: string                        | Adds a VST plugin filter to the proxy |
 
-## Nfx
+## Nfx: A Nodeproxy Effects Handler
 
-If we want to load or save VST presets, the class must initialized with the presets folder path:
+The Nfx class facilitates the addition of effects to the Px set classes, as well as to any other Ndef.
 
-```
+To enable loading or saving of VST presets, initialize the class with the path to the presets folder:
+
+```js
 Nfx.setPresetsPath(<path>);
 ```
 
 ### Nfx class methods
 
-It has the same [class methods as Px](#px-class-methods), with the addition of:
+It offers the same [class methods as Px](#px-class-methods), with the following additions:
 
 - `activeEffects`: Checks the active proxy filters
 - `clear`: Clears all effects
 - `vstReadProgram` (preset: string): Loads a VST preset from the default presets folder
 - `vstWriteProgram` (preset: string): Write a VST preset to the default presets folder
 
-We can open the VST plugin editor with `Nfx.vstController.editor`
+To open the VST plugin editor, use `Nfx.vstController.editor`
 
-We also can set params automations: `Nfx.vstController.set(1, 1)`
+Additionally, we can set parameter automations with `Nfx.vstController.set(1, 1)`
 
-## Play
+## Play: A Notes Handler with Midi Support
 
 Custom pattern player designed to handle degrees, and can send MIDI messages based on incoming pattern data. It also helps to manage MIDI-related functionalities within SuperCollider, providing a way to control MIDI events and output.
 
@@ -139,7 +142,7 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 | `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
 | `holdOff` | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
 
-## TR08
+## TR08: A Roland TR-08 Controller
 
 It can send MIDI messages to a Roland TR08. if the device is not available, plays TR-808 SynthDefs instead:
 
@@ -169,10 +172,40 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `init`   | time?: number                  | Controls the latency. Default is 0.2 |
 | `preset` | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
 
+## Ns: A Sequenced Synth
+
+A class designed for controlling a synthesizer equipped with a built-in sequencer. Unlike the Play class, Ns is limited to playing only a predefined synthesizer with integrated sequencers. Below is an example demonstrating the arguments it accepts:
+
+```js
+(
+Ns(
+    (
+        amp: 1,
+        chord: [0, 2, 4],
+        dur: 1/4,
+        euclid: [3, 5],
+        degree: [0, 1, 2, 3],
+        octave: [0, 0, 0, 1],
+        env: 1,
+        scale: \dorian,
+        vcf: 1,
+        wave: \saw,
+    )
+);
+)
+```
+
 ## Unit Tests
 
-```
-PxTest.run;
+```js
+// Runs all tests
+PxTestAll.run
+
+// Single tests:
+PxEventTest.run
+PxTest.run
+NfxTest.run
+
 // Disable passing tests verbosity
-UnitTest.reportPasses = false;
+UnitTest.reportPasses = false
 ```

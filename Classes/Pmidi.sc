@@ -1,7 +1,3 @@
-/*
-TODO: Fix all examples
-*/
-
 Pmidi {
     *init { | latency, deviceName, portName |
         Play.initMidi(latency, deviceName, portName);
@@ -48,7 +44,7 @@ Pmidi {
 
         MIDIClient.init(verbose: false);
 
-        if (this.prDetectDevice(deviceName) == false) {
+        if (deviceName.notNil and: (this.prDetectDevice(deviceName) == false)) {
             ^super.prPrint("🔴 Device not detected. ✅ Playing SynthDefs");
         };
 

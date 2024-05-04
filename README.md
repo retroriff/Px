@@ -1,4 +1,4 @@
-# SuperCollider Patterns and FX Classes Optimized for Live Coding
+# Px: A Tailored Class Set for Enhanced Live Coding in SuperCollider
 
 A set of classes designed to generate patterns on a NodeProxy and streamline the integration of effects. These classes prioritize ease of use, offering a straightforward solution for creating pattern shortcuts and enhancing them with effects. Below is a basic example:
 
@@ -8,21 +8,21 @@ Px(i: \bd);
 
 Additional code examples can be found [here](/Examples/).
 
-**Dependencies**:
-
-- [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) (PbindFx)
-- [VSTPlugin](https://github.com/Spacechild1/vstplugin)
-
-**📋 Table of Contents**
+**📖 Table of Contents**
 
 1. ⚡️ [Px: A Pattern Shortcuts Generator](#px-a-pattern-shortcuts-generator)
 2. ✨ [Nfx: A Nodeproxy Effects Handler](#nfx-a-nodeproxy-effects-handler)
 3. 💥 [Play: A Notes Handler with MIDI Support](#play-a-notes-handler-with-midi-support)
 4. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#tr08-a-roland-tr-08-midi-controller)
 5. 🔥 [Ns: A Sequenced Synth](#ns-a-sequenced-synth)
-6. 👀 [Unit Tests](#unit-tests)
+6. ✅ [Unit Tests](#unit-tests)
 
-## Px: A Pattern Shortcuts Generator
+**🛠️ Dependencies**:
+
+- [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) (PbindFx)
+- [VSTPlugin](https://github.com/Spacechild1/vstplugin)
+
+## ⚡️ Px: A Pattern Shortcuts Generator
 
 The superclass that generates the patterns from an array of events with a simplified syntax for a fast edition.
 
@@ -93,7 +93,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `reverb` | mix?: number \| Nil, room?: number, damp?: number           | Adds a reverb filter to the proxy     |
 | `vst`    | mix?: number \| Nil, plugin?: string                        | Adds a VST plugin filter to the proxy |
 
-## Nfx: A Nodeproxy Effects Handler
+## ✨ Nfx: A Nodeproxy Effects Handler
 
 The Nfx class facilitates the addition of effects to the Px set classes, as well as to any other Ndef.
 
@@ -116,7 +116,7 @@ To open the VST plugin editor, use `Nfx.vstController.editor`
 
 Additionally, we can set parameter automations with `Nfx.vstController.set(1, 1)`
 
-## Play: A Notes Handler with MIDI Support
+## 💥 Play: A Notes Handler with MIDI Support
 
 Custom pattern player designed to handle degrees, and can send MIDI messages based on incoming pattern data. It also helps to manage MIDI-related functionalities within SuperCollider, providing a way to control MIDI events and output.
 
@@ -143,7 +143,7 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 | `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
 | `holdOff` | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
 
-## TR08: A Roland TR-08 MIDI Controller
+## 🎛️ TR08: A Roland TR-08 MIDI Controller
 
 It can send MIDI messages to a Roland TR08. if the device is not available, plays TR-808 SynthDefs instead:
 
@@ -174,7 +174,7 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `loadPresets` | None                           | Reloads presets from YAML files      |
 | `preset`      | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
 
-## Ns: A Sequenced Synth
+## 🔥 Ns: A Sequenced Synth
 
 A class designed for controlling a synthesizer equipped with a built-in sequencer. Unlike the Play class, Ns is limited to playing only a predefined synthesizer with integrated sequencers. Below is an example demonstrating the arguments it accepts:
 
@@ -201,7 +201,7 @@ The synth must be previously loaded with `Ns.loadSynth`;
 
 **Tip**: The shuffle array method provides the capability to specify a random seed for the scramble method.
 
-## Unit Tests
+## ✅ Unit Tests
 
 ```js
 // Runs all tests

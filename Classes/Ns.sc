@@ -1,5 +1,4 @@
 /*
-TODO: Initialize Ndef(\ns);
 TODO: Add \root support;
 */
 
@@ -95,6 +94,13 @@ Ns {
         this.prSetWaveControl(pattern[\wave]);
         setDefaultControls.value;
         Ndef(\ns).play;
+    }
+
+    *loadSynth {
+        var path = "../SynthDefs/NdefNs.scd";
+        var file = PathName((path).resolveRelative);
+        File.readAllString(file.fullPath);
+        file.fullPath.load;
     }
 
     *release { |fadeTime = 10, name|

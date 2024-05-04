@@ -24,6 +24,9 @@ Ns.set(\wave, \sine);
 Ns.set(\wave, \triangle);
 Ns.set(\chord, [0, 3, 5]);
 
+// Using shuffle we can specify a random seed for the scramble method
+Ns.set(\degree, [0, 1, 2, 3].shuffle(71));
+
 // We can check what has been set:
 
 Ns.lastControls

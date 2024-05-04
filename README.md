@@ -196,6 +196,10 @@ Ns(
 )
 ```
 
+The synth must be previously loaded with `Ns.loadSynth`;
+
+**Tip**: The shuffle array method provides the capability to specify a random seed for the scramble method.
+
 ## Unit Tests
 
 ```js
@@ -203,6 +207,7 @@ Ns(
 PxTestAll.run
 
 // Individual tests:
+PxArrayTest.run
 PxEventTest.run
 PxTest.run
 NfxTest.run

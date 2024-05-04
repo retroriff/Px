@@ -1,4 +1,5 @@
 /*
+TODO: Load effects externally
 TODO: Fix when Ndef is reevaluated, proxy FXs stop
 TODO: Fix error when it is started with ".hpf(1, \wave)"
 TODO: Fix Px.release disables FX before releasing
@@ -53,7 +54,7 @@ Nfx {
 
         effects.add(\hpf -> { |freq = 1200|
             \filterIn -> { |in|
-                RHPF.ar(in, \hpf1.kr(freq).poll, rq: 0.1);
+                RHPF.ar(in, \hpf1.kr(freq), rq: 0.1);
             }
         });
 

@@ -1,8 +1,10 @@
 /*
+TODO: Intro / Fill in
 TODO: Unit tests
 */
 
 TR08 : Play {
+    classvar hasLoadedPresets;
     classvar <lastPreset;
     classvar <presetsDict;
     classvar <presetPatterns;
@@ -59,6 +61,11 @@ TR08 : Play {
         Play.initMidi(latency, deviceName: "TR-08");
     }
 
+    *loadPresets {
+        hasLoadedPresets = true;
+        this.prCreatePresetsDict;
+    }
+
     *preset { |name, number|
         var newPreset = [name, number];
 
@@ -84,15 +91,15 @@ TR08 : Play {
             if (preset[\name].notNil)
             { super.prPrint("🎧 Preset:".scatArgs(preset[\name])) };
 
-            presetPatterns = patterns;
+            hasLoadedPresets = false;
             lastPreset = [name, number];
-
+            presetPatterns = patterns;
         };
 
         if (presetsDict.size == 0)
         { this.prCreatePresetsDict };
 
-        if (newPreset != lastPreset) {
+        if (newPreset != lastPreset or: (hasLoadedPresets == true)) {
            createPatternFromPreset.value;
         };
 

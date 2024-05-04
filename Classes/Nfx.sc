@@ -1,5 +1,4 @@
 /*
-TODO: Load effects externally
 TODO: Fix when Ndef is reevaluated, proxy FXs stop
 TODO: Fix error when it is started with ".hpf(1, \wave)"
 TODO: Fix Px.release disables FX before releasing
@@ -21,65 +20,7 @@ Nfx {
         effects = Dictionary.new;
         mixer = Dictionary.new;
         proxy = Dictionary.new;
-
-        effects.add(\blp -> {
-            \filterIn -> { |in|
-                BLowPass4.ar(
-                    in: in,
-                    freq: SinOsc.kr(1/8).range(700, 20000),
-                    rq: 0.1
-                );
-            }
-        });
-
-        effects.add(\delay -> { |delaytime = 8, decaytime = 2|
-            \filterIn -> { |in|
-                in + CombN.ar(in,
-                    maxdelaytime: TempoClock.tempo / 4,
-                    delaytime: TempoClock.tempo / \delay1.kr(delaytime),
-                    decaytime: \delay2.kr(decaytime),
-                    mul: -12.dbamp);
-            }
-        });
-
-        effects.add(\gverb -> { |roomsize = 200, revtime = 0.7|
-            \filterIn -> { |in|
-                GVerb.ar(
-                    in,
-                    \gverb1.kr(roomsize),
-                    \gverb2.kr(revtime)
-                );
-            }
-        });
-
-        effects.add(\hpf -> { |freq = 1200|
-            \filterIn -> { |in|
-                RHPF.ar(in, \hpf1.kr(freq), rq: 0.1);
-            }
-        });
-
-        effects.add(\lpf -> { |freq = 200|
-            \filterIn -> { |in|
-                RLPF.ar(in, \lpf1.kr(freq), rq: 0.1);
-            }
-        });
-
-        effects.add(\reverb -> { |room = 0.7, damp = 0.7|
-            \filterIn -> { |in|
-                FreeVerb.ar(
-                    in,
-                    mix: 1,
-                    room: \reverb1.kr(room),
-                    damp: \reverb2.kr(damp)
-                );
-            }
-        });
-
-        effects.add(\vst -> {
-            \vstFilter -> { |in|
-                VSTPlugin.ar(in, 2);
-            }
-        });
+        this.loadEffects;
     }
 
     *new { |name|
@@ -105,6 +46,13 @@ Nfx {
 
     *gverb { |mix = 0.5, roomsize = 200, revtime = 5|
         this.prAddEffect(\gverb, mix, [roomsize, revtime]);
+    }
+
+    *loadEffects {
+        PathName(("../Effects/").resolveRelative).filesDo{ |file|
+            var effect = File.readAllString(file.fullPath).interpret;
+            effects.putAll(effect);
+        };
     }
 
     *lpf { |mix = 0.4, freq = 200|

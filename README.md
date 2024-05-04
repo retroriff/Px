@@ -26,7 +26,7 @@ Additional code examples can be found [here](/Examples/).
 
 The superclass that generates the patterns from an array of events with a simplified syntax for a fast edition.
 
-### Px class args
+### Px class arguments
 
 | Arg        | Value            | Description                                          |
 | ---------- | ---------------- | ---------------------------------------------------- |
@@ -109,6 +109,7 @@ It offers the same [class methods as Px](#px-class-methods), with the following 
 
 - `activeEffects`: Checks the active proxy filters
 - `clear`: Clears all effects
+- `loadEffects`: Allows to reload the effect files.
 - `vstReadProgram` (preset: string): Loads a VST preset from the default presets folder
 - `vstWriteProgram` (preset: string): Write a VST preset to the default presets folder
 

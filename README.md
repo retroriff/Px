@@ -168,10 +168,11 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 
 ### TR08 class methods
 
-| Name     | Arguments                      | Description                          |
-| -------- | ------------------------------ | ------------------------------------ |
-| `init`   | time?: number                  | Controls the latency. Default is 0.2 |
-| `preset` | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
+| Name          | Arguments                      | Description                          |
+| ------------- | ------------------------------ | ------------------------------------ |
+| `init`        | time?: number                  | Controls the latency. Default is 0.2 |
+| `loadPresets` | None                           | Reloads presets from YAML files      |
+| `preset`      | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
 
 ## Ns: A Sequenced Synth
 

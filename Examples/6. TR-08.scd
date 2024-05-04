@@ -30,3 +30,6 @@ TR08([
 
 // Or play a preset:
 TR08.preset(\electro, 2);
+
+// If we edit the YAML presets file, we can reload them:
+TR08.loadPresets;

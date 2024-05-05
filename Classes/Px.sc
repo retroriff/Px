@@ -212,6 +212,13 @@ Px {
         { this.new(chorusPatterns[name], name) }
     }
 
+    *play { |name|
+        var patterns;
+        name = name ?? lastName;
+        patterns = lastPatterns[name] ?? [(i: \bd)];
+        this.new(patterns, name);
+    }
+
     *release { |fadeTime = 10, name|
         name = this.prGetName(name);
         if (name == \all) {

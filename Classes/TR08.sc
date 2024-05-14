@@ -66,6 +66,10 @@ TR08 : Play {
         this.prCreatePresetsDict;
     }
 
+    *play {
+        ^super.play(\tr08);
+    }
+
     *preset { |name, number|
         var newPreset = [name, number];
 
@@ -104,6 +108,10 @@ TR08 : Play {
         };
 
         TR08(presetPatterns);
+    }
+
+    *stop {
+        ^super.stop(\tr08);
     }
 
     *prCreatePresetsDict {

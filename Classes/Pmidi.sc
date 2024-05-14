@@ -45,7 +45,8 @@ Pmidi {
         MIDIClient.init(verbose: false);
 
         if (deviceName.notNil and: (this.prDetectDevice(deviceName) == false)) {
-            ^super.prPrint("🔴 Device not detected. ✅ Playing SynthDefs");
+            super.prPrint("🔴 Device not detected");
+            ^super.prPrint("✅ Playing SynthDefs");
         };
 
         if (deviceName.notNil) {

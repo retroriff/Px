@@ -43,7 +43,7 @@ Ns {
 
             while ({ results.size < maxLen }) {
                 var deg = degrees[degIndex];
-                var oct = octaves[octIndex];
+                var oct = octaves[octIndex].clip(-3, 3);
                 results = results.add(deg + (oct * 12));
 
                 degIndex = (degIndex + 1) % degrees.size;

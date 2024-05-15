@@ -6,6 +6,7 @@ m = NetAddr("127.0.0.1", NetAddr.langPort);
 
 px = OSCFunc({ |msg|
     var code = msg[1];
+    code = code.asString;
     code.interpret;
     ("🤖 " ++ code).postln;
 }, '/px');

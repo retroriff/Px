@@ -1,8 +1,14 @@
 (
-var ns, tr08, tr08Preset;
+var ns, px, tr08, tr08Preset;
 
 n = NetAddr("127.0.0.1", 57120);
 m = NetAddr("127.0.0.1", NetAddr.langPort);
+
+px = OSCFunc({ |msg|
+    var code = msg[1];
+    code.interpret;
+    ("🤖 " ++ code).postln;
+}, '/px');
 
 ns = OSCFunc({ |msg|
     var event = Event.new;

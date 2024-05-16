@@ -1,4 +1,5 @@
 /*
+TODO: Fix Ns.set(\euclid, [3, 5]);
 TODO: Add \root support;
 */
 
@@ -103,9 +104,14 @@ Ns {
         file.fullPath.load;
     }
 
+    *play { |name|
+        name = name ?? \ns;
+        Ndef(name).play;
+    }
+
     *release { |fadeTime = 10, name|
         name = name ?? \ns;
-        Ndef(\ns).free(fadeTime);
+        Ndef(name).free(fadeTime);
     }
 
     *set { |key, value|
@@ -117,6 +123,11 @@ Ns {
         { ^this.prSetWaveControl(value) };
 
         ^this.prSetControl(key, value);
+    }
+
+    *stop { |name|
+        name = name ?? \ns;
+        Ndef(name).stop;
     }
 
     *prSetControl { |key, value|

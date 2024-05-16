@@ -1,10 +1,9 @@
 (
 var ns, px, tr08, tr08Preset;
-
 n = NetAddr("127.0.0.1", 57120);
-m = NetAddr("127.0.0.1", NetAddr.langPort);
+// m = NetAddr("127.0.0.1", NetAddr.langPort);
 
-px = OSCFunc({ |msg|
+px = OSCFunc.new({ |msg|
     var code = msg[1];
     code = code.asString;
     code.interpret;
@@ -66,6 +65,7 @@ tr08Preset = OSCFunc({ |msg|
 }, '/tr08/preset');
 )
 
+Px.listen
 // Send messages
 m.sendMsg("/play");
 m.sendMsg("/stop");

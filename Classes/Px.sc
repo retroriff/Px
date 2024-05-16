@@ -8,6 +8,8 @@ Px {
     classvar <>lastFormattedPatterns;
     classvar <>lastPatterns;
     classvar <nodeProxy;
+    classvar <listener;
+    classvar netAddress;
     classvar <samplesDict;
     classvar <seeds;
 

@@ -7,6 +7,6 @@ Px.listen;
 n = NetAddr("127.0.0.1", NetAddr.langPort);
 n.sendMsg("/px", "TR08.preset(\\electro, 1)");
 
-// Disables the listener and disconnects all network addresses
+// And disable the listener and disconnects all network addresses
 
 Px.listenOff;

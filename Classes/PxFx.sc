@@ -31,14 +31,6 @@
         this.prFx(\wah, mix, args);
     }
 
-    *prFx { |fx, mix, args|
-        lastPatterns[lastName].do { |pattern|
-            pattern.prFx(fx, mix, args);
-        };
-
-        this.prSend(lastPatterns[lastName], lastName);
-    }
-
     *prCreatePatternFx { |pattern|
         if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
             pattern[\fx].do { |fx, i|
@@ -57,20 +49,20 @@
         ^PbindFx(pattern.asPairs, *pattern[\fx]);
     }
 
+    *prFx { |fx, mix, args|
+        lastPatterns[lastName].do { |pattern|
+            pattern.prFx(fx, mix, args);
+        };
+
+        this.prSend(lastPatterns[lastName], lastName);
+    }
+
     *prHasFX { |pattern|
         ^pattern[\fx].notNil;
     }
 }
 
 +Event {
-    prFx { |fx, mix, args|
-        if ([\hpf, \lpf].includes(fx) and: { mix == \rand }) {
-            mix = 1;
-            args = [\freq, this.prCreatePatternKey(\rand)] ++ args;
-        };
-        ^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)] ++ args];
-    }
-
     delay { |mix, args|
         this.prFx(\delay, mix, args);
     }
@@ -89,5 +81,13 @@
 
     wah { |mix, args|
         this.prFx(\wah, mix, args);
+    }
+
+    prFx { |fx, mix, args|
+        if ([\hpf, \lpf].includes(fx) and: { mix == \rand }) {
+            mix = 1;
+            args = [\freq, this.prCreatePatternKey(\rand)] ++ args;
+        };
+        ^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)] ++ args];
     }
 }

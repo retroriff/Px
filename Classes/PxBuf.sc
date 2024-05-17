@@ -1,21 +1,4 @@
 +Px {
-    *loadSamples { |samplesPath|
-        samplesDict = Dictionary.new;
-        samplesDict.add(\foldernames -> PathName(samplesPath).entries);
-        for (0, samplesDict[\foldernames].size - 1, { |i|
-            if (samplesDict[\foldernames][i].folderName != "sets") {
-                samplesDict.add(
-                    samplesDict[\foldernames][i].folderName ->
-                    samplesDict[\foldernames][i].entries.collect(
-                        { |sf|
-                            Buffer.read(Server.default, sf.fullPath);
-                        }
-                    )
-                )
-            }
-        });
-    }
-
     *buf { |folder, file|
         if (samplesDict[folder].size == 0) {
             this.prPrint("🔴 Folder doesn't exist or empty");
@@ -32,6 +15,23 @@
         };
 
         ^samplesDict[folder][file];
+    }
+
+    *loadSamples { |samplesPath|
+        samplesDict = Dictionary.new;
+        samplesDict.add(\foldernames -> PathName(samplesPath).entries);
+        for (0, samplesDict[\foldernames].size - 1, { |i|
+            if (samplesDict[\foldernames][i].folderName != "sets") {
+                samplesDict.add(
+                    samplesDict[\foldernames][i].folderName ->
+                    samplesDict[\foldernames][i].entries.collect(
+                        { |sf|
+                            Buffer.read(Server.default, sf.fullPath);
+                        }
+                    )
+                )
+            }
+        });
     }
 
     *loadSynthDefsAfterUpdatingTempo {

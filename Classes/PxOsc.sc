@@ -1,7 +1,3 @@
-/*
-TODO: Update examples
-*/
-
 +Px {
     *listen {
         if (OSCdef.all[\px].isNil) {

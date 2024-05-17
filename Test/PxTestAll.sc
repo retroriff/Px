@@ -4,6 +4,7 @@ PxTestAll {
         NsTest.run;
         PxArrayTest.run;
         PxEventTest.run;
+        PxOscTest.run;
         PxTest.run;
     }
 }

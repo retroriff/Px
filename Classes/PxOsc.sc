@@ -1,5 +1,4 @@
 /*
-TODO: Update README
 TODO: Update examples
 */
 

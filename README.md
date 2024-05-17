@@ -15,7 +15,8 @@ Additional code examples can be found [here](/Examples/).
 3. 💥 [Play: A Notes Handler with MIDI Support](#play-a-notes-handler-with-midi-support)
 4. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#tr08-a-roland-tr-08-midi-controller)
 5. 🔥 [Ns: A Sequenced Synth](#ns-a-sequenced-synth)
-6. ✅ [Unit Tests](#unit-tests)
+6. 📡 [OSC Communication](#osc-communication)
+7. ✅ [Unit Tests](#unit-tests)
 
 **🛠️ Dependencies**:
 
@@ -201,6 +202,14 @@ Ns(
 The synth must be previously loaded with `Ns.loadSynth`;
 
 **Tip**: The shuffle array method provides the capability to specify a random seed for the scramble method.
+
+## OSC Communication
+
+Px also has methods to handle a OSC listener, useful for applications where remote control or interaction is needed, allowing real-time data to be sent and received via the network.
+
+- `listen`: Creates a new OSC receiver to listen for OSC messages sent to a specific address and port (127.0.0.1 on port 57120). Once an OSC message is received at the specified address on the /px endpoint, the method extracts the message and evaluates it as code.
+
+- `listenOff`: It frees the OSCdef instance and disconnects all network addresses, ensuring that no further messages are received or processed.
 
 ## ✅ Unit Tests
 

@@ -59,6 +59,14 @@ Play : Px {
         ^this ++ (\degree: pattern ?? [value, scale, size]);
     }
 
+    root { |key|
+        ^this ++ (\root: key);
+    }
+
+    scale { |key|
+        ^this ++ (\scale: Scale.at(key).semitones);
+    }
+
     octave { |value|
         if (value.isArray) {
             value = Pseq(value, inf);

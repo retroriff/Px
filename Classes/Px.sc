@@ -244,7 +244,7 @@ Px {
 
     *stop { |name|
         name = name ?? lastName;
-        nodeProxy[name].stop;
+        nodeProxy[name].free;
         nodeProxy.removeAt(name);
     }
 

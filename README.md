@@ -143,7 +143,8 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 | --------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | `control` | number, number \| Pattern \| \rand \| \wrand \| [symbol: \rand \| \wrand, value1: number, value2?: number, weight?: number] | Sends a controller message                                            |
 | `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
-| `holdOff` | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
+| `holdOff` | None                                                                                                                        | Releases holded notes                                                 |
+| `panic`   | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
 
 ## 🎛️ TR08: A Roland TR-08 MIDI Controller
 

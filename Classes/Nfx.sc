@@ -45,7 +45,7 @@ Nfx {
         this.prAddEffect(\delay, mix, [delaytime, decaytime]);
     }
 
-    *gverb { |mix = 0.5, roomsize = 200, revtime = 5|
+    *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
         this.prAddEffect(\gverb, mix, [roomsize, revtime]);
     }
 
@@ -224,6 +224,7 @@ Nfx {
         args do: { |value, i|
             proxy[proxyName].set((fx ++ (i + 1)).asSymbol, value);
             activeArgs[proxyName].add(fx -> args);
+            this.prPrint("🌶️ Updated".scatArgs(fx));
         }
     }
 

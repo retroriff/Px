@@ -45,11 +45,24 @@ Play([
 ]).shuffle;
 )
 
-// And holdOff as a "Panic" message, kills all notes on the channel pattern
+// And holdOff to relased a holded note:
+(
+Play([
+    (id: \drone, \chan: 1, octave: 8).degree(0).hold,
+]);
+)
+
+(
+Play([
+    (id: \drone, \chan: 1, octave: 8).degree(0).holdOff,
+]);
+)
+
+// And user "panic" message to kill all notes on the channel pattern
 (
 Play([
     (chan: 0, \dur: 1, octave: 4).degree(\rand, \phrygian, 3).seed(345),
-    (id: \drone, \chan: 1, octave: 8).degree(\rand, \minor, 1).holdOff,
+    (id: \drone, \chan: 1, octave: 8).degree(\rand, \minor, 1).panic,
 ]);
 )
 

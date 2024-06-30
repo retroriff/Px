@@ -7,7 +7,7 @@
         Nfx(lastName).delay(mix, delaytime, decaytime);
     }
 
-    *gverb { |mix = 0.3, roomsize = 200, revtime = 5|
+    *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
         Nfx(lastName).gverb(mix, roomsize, revtime);
     }
 

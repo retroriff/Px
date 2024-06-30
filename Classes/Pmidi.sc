@@ -95,6 +95,10 @@ Pmidi {
     }
 
     holdOff {
+        ^this ++ (\midicmd: \noteOff);
+    }
+
+    panic {
         ^this ++ (\midicmd: \allNotesOff) ++ this.prSendSingleMessage;
     }
 
@@ -132,6 +136,6 @@ Pmidi {
     }
 
     prSendSingleMessage {
-        (\dur: Pseq([1], 1));
+        ^(\dur: Pseq([1], 1));
     }
 }

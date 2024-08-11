@@ -1,5 +1,6 @@
 PxTestAll {
     *run {
+        CrossfaderTest.run;
         NfxTest.run;
         NsTest.run;
         PxArrayTest.run;

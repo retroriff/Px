@@ -21,7 +21,7 @@ Px([(i: \bd)]);
 (
 TR08([
     (i: \bd, dur: 1),
-    (i: \rm, dur: 1).beat.weight(0.4),
+    (i: \rs, dur: 1/4).beat.weight(0.4),
     (i: \sn, dur: 1/4).fill.weight(0.42),
     (i: \ch, dur: 1/4).beat.weight(0.82),
     (i: \ma, dur: 1/4).fill.weight(0.82),

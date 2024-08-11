@@ -16,7 +16,8 @@ Additional code examples can be found [here](/Examples/).
 4. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#tr08-a-roland-tr-08-midi-controller)
 5. 🔥 [Ns: A Sequenced Synth](#ns-a-sequenced-synth)
 6. 📡 [OSC Communication](#osc-communication)
-7. ✅ [Unit Tests](#unit-tests)
+7. 🎚️ [Crossfader](#crossfader)
+8. ✅ [Unit Tests](#unit-tests)
 
 **🛠️ Dependencies**:
 
@@ -211,6 +212,16 @@ Px also has methods to handle a OSC listener, useful for applications where remo
 - `listen`: Creates a new OSC receiver to listen for OSC messages sent to a specific address and port (127.0.0.1 on port 57120). Once an OSC message is received at the specified address on the /px endpoint, the method extracts the message and evaluates it as code.
 
 - `listenOff`: It frees the OSCdef instance and disconnects all network addresses, ensuring that no further messages are received or processed.
+
+## 🎚️ Crossfader
+
+Straightforward crossfader utility classes that smoothly transitions audio from source A to source B over an optional specified duration (default is 20 seconds):
+
+```
+Crossfader(\a, \b, 10);
+FadeIn(\a, 10);
+FadeOut(\a, 10);
+```
 
 ## ✅ Unit Tests
 

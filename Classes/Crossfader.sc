@@ -1,9 +1,9 @@
 Crossfader {
-    classvar defaultDuration;
+    classvar defaultFadeTime;
     classvar stepSize;
 
     *initClass {
-        defaultDuration = 20;
+        defaultFadeTime = 30;
         stepSize = 0.1;
     }
 
@@ -12,52 +12,23 @@ Crossfader {
         this.fadeOut(a, fadeDuration);
     }
 
-    *fadeIn { |name, fadeDuration|
-        this.prCreateFade(name, "in", fadeDuration);
+    *fadeIn { |name, fadeTime|
+        Ndef(name).play(fadeTime: fadeTime ?? defaultFadeTime);
     }
 
-    *fadeOut { |name, fadeDuration|
-        this.prCreateFade(name, "out", fadeDuration);
-    }
-
-    *prCreateFade { |name, fadeType = "in", customDuration|
-        var currentVol = Ndef(name).vol;
-        var newVol;
-        var fade = 0;
-        var fadeDuration = customDuration ?? defaultDuration;
-        var fadeStep = stepSize / fadeDuration;
-        var numSteps = fadeDuration / stepSize;
-        var waitTime = fadeDuration / numSteps;
-
-        fork {
-            while { fade < 1 } {
-                fade = fade + fadeStep;
-
-                case
-                { fadeType == "in" }
-                { newVol = (currentVol + fade) }
-
-                { fadeType == "out" }
-                { newVol = (currentVol - fade) };
-
-                Ndef(name).vol_(newVol.clip(0, 1));
-
-                waitTime.wait;
-            };
-            "🎚️ Fade".scatArgs(fadeType, "complete").postln;
-        };
-
+    *fadeOut { |name, fadeTime|
+        Ndef(name).stop(fadeTime: fadeTime ?? defaultFadeTime);
     }
 }
 
 FadeIn {
-    *new { |name, fadeDuration|
-        Crossfader.fadeIn(name, fadeDuration);
+    *new { |name, fadeTime|
+        Crossfader.fadeIn(name, fadeTime);
     }
 }
 
 FadeOut {
-    *new { |name, fadeDuration|
-        Crossfader.fadeOut(name, fadeDuration);
+    *new { |name, fadeTime|
+        Crossfader.fadeOut(name, fadeTime);
     }
 }

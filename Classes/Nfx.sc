@@ -49,6 +49,12 @@ Nfx {
         this.prAddEffect(\gverb, mix, [roomsize, revtime]);
     }
 
+    *hpf { |mix = 1, freq = 1200|
+        if (freq == \wave)
+        { freq = Ndef(\hpf1, { SinOsc.kr(1/8).range(400, 1200) } ) };
+        this.prAddEffect(\hpf, mix, [freq]);
+    }
+
     *loadEffects {
         PathName(("../Effects/").resolveRelative).filesDo{ |file|
             var effect = File.readAllString(file.fullPath).interpret;
@@ -62,10 +68,10 @@ Nfx {
         this.prAddEffect(\lpf, mix, [freq]);
     }
 
-    *hpf { |mix = 1, freq = 1200|
-        if (freq == \wave)
-        { freq = Ndef(\hpf1, { SinOsc.kr(1/8).range(400, 1200) } ) };
-        this.prAddEffect(\hpf, mix, [freq]);
+    *pan { |center = 0|
+        if (center == \wave)
+        { center = Ndef(\pan1, { SinOsc.kr(1/8).range(-1.0, 1.0) } ) };
+        this.prAddEffect(\pan, 1, [center]);
     }
 
     *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
@@ -142,7 +148,7 @@ Nfx {
             { activeArgs[proxyName] = Dictionary.new };
 
             activeArgs[proxyName].add(fx -> args);
-            this.prPrint("✨ Enabled".scatArgs(("\\" ++ fx), "FX"));
+            this.prPrint("✨ Enabled".scatArgs(("\\" ++ fx)));
         };
     }
 

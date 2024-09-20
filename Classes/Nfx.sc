@@ -68,10 +68,13 @@ Nfx {
         this.prAddEffect(\lpf, mix, [freq]);
     }
 
-    *pan { |center = 0|
-        if (center == \wave)
-        { center = Ndef(\pan1, { SinOsc.kr(1/8).range(-1.0, 1.0) } ) };
-        this.prAddEffect(\pan, 1, [center]);
+    *pan { |pos = 0|
+        if (pos == \wave)
+        { pos = Ndef(\pan1, { SinOsc.kr(1/8).range(-1.0, 1.0) } ) };
+
+        if (pos == Nil)
+        { pos = 0 };
+        this.prAddEffect(\pan, 1, [pos]);
     }
 
     *reverb { |mix = 0.3, room = 0.7, damp = 0.7|

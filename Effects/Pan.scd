@@ -1,12 +1,11 @@
 (
 Dictionary[
-    \pan -> { |center = 0|
+    \pan -> { |pos = 0|
         \filterIn -> { |in|
-            center.postln;
-            Splay.ar(
+            Pan2.ar(
                 in,
-                center: \pan1.kr(center)
-            );
+                pos: \pan1.kr(pos)
+            ).sum;
         }
     };
 ]

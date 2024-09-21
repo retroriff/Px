@@ -92,6 +92,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `delay`  | mix?: number \| Nil                                         | Adds a delay filter to the proxy      |
 | `gverb`  | mix?: number \| Nil, delaytime?: number, decaytime?: number | Adds a gverb filter to the proxy      |
 | `hpf`    | mix?: number \| Nil, wave?: boolean                         | Adds a HPF filter to the proxy        |
+| `pan`    | number \| \wave                                             | Sets the balance                      |
 | `reverb` | mix?: number \| Nil, room?: number, damp?: number           | Adds a reverb filter to the proxy     |
 | `vst`    | mix?: number \| Nil, plugin?: string                        | Adds a VST plugin filter to the proxy |
 
@@ -221,6 +222,16 @@ Straightforward crossfader utility classes that smoothly transitions audio from 
 Crossfader(\a, \b, 10);
 FadeIn(\a, 10);
 FadeOut(\a, 10);
+```
+
+They can be used directly with symbols methods and binary operator syntax:
+
+```
+\a.in
+\a in: 10
+\a.out
+\a out: 10
+\a fadeTo: \b
 ```
 
 ## ✅ Unit Tests

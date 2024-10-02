@@ -29,6 +29,12 @@ TODO: Fix solo
         this.prUpdatePattern([\dur, value]);
     }
 
+    euclid { |value|
+        var hits = value[0];
+        var total = value[1];
+        this.prUpdatePattern([\euclid, [hits, total]]);
+    }
+
     fade { |value|
         this.prFade(value);
     }
@@ -63,7 +69,7 @@ TODO: Fix solo
     }
 
     rest { |value|
-         this.prUpdatePattern([\rest, value]);
+        this.prUpdatePattern([\rest, value]);
     }
 
     rotate { |value|

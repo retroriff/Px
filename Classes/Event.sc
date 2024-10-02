@@ -4,16 +4,6 @@ X : Event {
     }
 }
 
-+Number {
-    px { |pattern|
-        Px ([pattern], this);
-    }
-
-    *i { |name|
-        ^Event.new.i(name);
-    }
-}
-
 +Event {
     a { |args|
         this.amp(args);

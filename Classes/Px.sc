@@ -197,7 +197,9 @@ Px {
         };
 
         lastFormattedPatterns[name] = patterns;
-        pDef = Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant ?? 4);
+
+        if (patterns.size > 0)
+        { pDef = Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant ?? 4) };
 
         if (nodeProxy[name].isPlaying.not) {
             nodeProxy.add(name -> Ndef(name, pDef).play);

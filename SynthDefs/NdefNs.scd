@@ -2,9 +2,9 @@
 a = Ndef(\ns);
 a[0] = {
 	var deg, degreeFix, env, freq, sig = 0, test, trig, vcf;
-    var dur = \dur.kr(0!16);
+    var dur = \dur.kr(0 ! 16);
     var durSize = \durSize.kr(16);
-    var degree = \degree.kr(0!256);
+    var degree = \degree.kr(0 ! 256);
     var degreeSize = \degreeSize.kr(256);
     var scale = \scale.kr(Buffer.loadCollection(s, Scale.at(\scriabin)));
 

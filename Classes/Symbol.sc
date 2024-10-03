@@ -7,8 +7,10 @@
         ^FadeIn(this, fadeTime);
     }
 
-    play {
-        ^Ndef(this).play;
+    play { |value|
+        if (value.isNil)
+        { ^Ndef(this).play }
+        { Px.stop(this) };
     }
 
     out { |fadeTime|

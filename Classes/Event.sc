@@ -39,7 +39,7 @@ X : Event {
         { direction }
         { [direction, time.clip(0.1, time)] };
 
-        ^this.putAll([\fade, fade]);
+        ^this.putAll([\fade, fade.asSymbol]);
     }
 
     fill { |rest|

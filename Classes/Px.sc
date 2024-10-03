@@ -100,7 +100,9 @@ Px {
                 var beat = pattern[\totalBeat] ?? Array.fill(steps, 0);
                 (beat + invertBeat).collect { |step| step.clip(0, 1) };
             };
-            var invertBeat = getInvertBeat.(patterns[i - 1][\amp], pattern[\amp]);
+
+            var previousPatternId = (pattern[\id].asInteger - 1).asSymbol;
+            var invertBeat = getInvertBeat.(lastPatterns[previousPatternId][0][\amp], pattern[\amp]);
             var totalBeat = getTotalBeat.(invertBeat);
             patterns[i].putAll([\totalBeat, totalBeat]);
             totalBeat;
@@ -109,15 +111,20 @@ Px {
         var createPatternAmp = { |pattern, i|
             var amp = pattern[\amp] ?? pattern[\a] ?? 1;
             pattern.removeAt(\a);
+
             if (pattern[\beat].notNil) {
                 amp = createPatternBeat.(amp, pattern);
             };
+
             if (pattern[\fill].notNil) {
                 amp = createPatternFillFromBeat.(amp, i, pattern);
             };
+
             pattern[\dur] = createPatternBeatRest.(pattern);
+
             if (amp.isArray)
             { amp = Pseq(amp, inf) };
+
             pattern[\amp] = amp;
             pattern;
         };
@@ -153,9 +160,10 @@ Px {
 
         var createPatternFade = { |fade, pbind|
             var defaultFadeTime = 16;
-            var dir = if (fade.isString) { fade } { fade[0] };
-            var fadeTime = if (fade.isString) { defaultFadeTime } { fade[1] };
-            if (dir == "in")
+            var dir = if (fade.isArray) { fade[0] } { fade };
+            var fadeTime = if (fade.isArray) { fade[1] } { defaultFadeTime };
+
+            if (dir == \in)
             { PfadeIn(pbind, fadeTime) }
             { PfadeOut(pbind, fadeTime) }
         };

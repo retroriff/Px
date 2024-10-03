@@ -36,7 +36,7 @@ TODO: Fix solo
     }
 
     fade { |value|
-        this.prFade(value);
+        this.prFade(value.asSymbol);
     }
 
     fill { |value|
@@ -49,23 +49,35 @@ TODO: Fix solo
     }
 
     i { |value|
-        Px([(i: value)], name: this.asSymbol);
+        this.prPlay(i: value);
     }
 
     in { |value|
-        this.prFade("in", value);
+        this.prFade(\in, value);
     }
 
     ins { |value|
         this.i(value);
     }
 
+    off { |value|
+        this.prUpdatePattern([\off, value]);
+    }
+
+    loop { |value|
+        this.prPlay(loop: value);
+    }
+
     out { |value|
-        this.prFade("out", value);
+        this.prFade(\out, value);
     }
 
     pan { |value|
         this.prUpdatePattern([\pan, value]);
+    }
+
+    play { |value|
+        this.prPlay(play: value);
     }
 
     rest { |value|
@@ -90,7 +102,7 @@ TODO: Fix solo
     }
 
     prUpdatePattern { |pairs|
-        var pattern = Px.lastFormattedPatterns[this.asSymbol][0];
+        var pattern = Px.lastPatterns[this.asSymbol][0];
         pattern = pattern.putAll(pairs);
 
         Px([pattern], name: this.asSymbol);
@@ -105,6 +117,19 @@ TODO: Fix solo
 
         this.prUpdatePattern([\fade, fade]);
     }
+
+    prPlay { |i, play, loop|
+        var id = this.asSymbol;
+        Px(
+            patterns: [(
+                i: i,
+                id: id,
+                play: play,
+                loop: loop
+            )],
+            name: id
+        );
+    }
 }
 
 +Symbol {
@@ -112,21 +137,31 @@ TODO: Fix solo
     a {}
     amp {}
     beat {}
+    delay {}
     dur {}
     fill {}
+    hpf {}
     human {}
     i {}
     in {}
     ins {}
+    lpf {}
+    off {}
     out {}
     pan {}
     rest {}
+    reverb {}
     rotate {}
-    solo {}
     seed {}
+    solo {}
+    wah {}
     weight {}
 
     i { |value|
+        Px.stop(this);
+    }
+
+    loop { |value|
         Px.stop(this);
     }
 }

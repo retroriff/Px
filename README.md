@@ -232,6 +232,8 @@ They can be used directly with symbols methods and binary operator syntax:
 \a.out
 \a out: 10
 \a fadeTo: \b
+\a.play
+\a.stop
 ```
 
 ## ✅ Unit Tests

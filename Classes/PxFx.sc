@@ -138,7 +138,7 @@
     }
 
     prFx { |fx, mix|
-        var lastFx = Px.lastPatterns[this.asSymbol][0][\fx] ?? [];
+        var lastFx = Px.lastPatterns[this.asSymbol][\fx] ?? [];
         lastFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
         this.prUpdatePattern([\fx, lastFx]);
     }

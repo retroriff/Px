@@ -1,8 +1,3 @@
-/*
-TODO: Fix seed
-TODO: Fix solo
-*/
-
 +Number {
     a { |value|
         this.amp(value);
@@ -101,10 +96,10 @@ TODO: Fix solo
     }
 
     prUpdatePattern { |pairs|
-        var pattern = Px.lastPatterns[this.asSymbol][0];
+        var pattern = Px.lastPatterns[this.asSymbol];
         pattern = pattern.putAll(pairs);
 
-        Px([pattern], name: this.asSymbol);
+        Px(pattern);
     }
 
     prFade { |direction, time|
@@ -120,13 +115,12 @@ TODO: Fix solo
     prPlay { |i, play, loop|
         var id = this.asSymbol;
         Px(
-            patterns: [(
+            newPattern: (
                 i: i,
                 id: id,
                 play: play,
                 loop: loop
-            )],
-            name: id
+            )
         );
     }
 }

@@ -5,7 +5,7 @@ Pmidi {
 }
 
 +Play {
-    *prCreateMidiPatterns { | patterns, midiout|
+    *prCreateMidiPatterns { | newPattern, midiout|
         var isMidiControl = { |pattern|
             if (pattern[\hasGate] == false or: { pattern[\midicmd] == \noteOff })
             { true }
@@ -26,17 +26,15 @@ Pmidi {
             ]);
         };
 
-        patterns.collect { |pattern|
-            var isMidi = if (pattern[\chan].notNil) { true };
+        var isMidi = if (newPattern[\chan].notNil) { true };
 
-            if (isMidi == true)
-            { pattern = addMidiTypes.(pattern) };
+        if (isMidi == true)
+        { newPattern = addMidiTypes.(newPattern) };
 
-            if (isMidiControl.(pattern)  == true)
-            { pattern ++ (\midiControl: 1) };
-        };
+        if (isMidiControl.(newPattern) == true)
+        { newPattern ++ (\midiControl: 1) };
 
-        ^patterns;
+        ^newPattern;
     }
 
     *initMidi { | latency, deviceName, portName |

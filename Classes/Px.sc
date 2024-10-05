@@ -1,6 +1,8 @@
 /*
 Fix: Solo doesn't work properly
+Fix: Weight doesn't work properly: 3 i: \ch dur: 0.25 beat: 1 weight: 0.1;
 Fix: Px methods
+Fix: Ptpar per a off
 */
 
 Px {
@@ -21,7 +23,7 @@ Px {
     }
 
     *new { | newPattern, quant, trace |
-        var pDef, pbind, ptparList;
+        var pDef, pbind, ptpar;
 
         var name = newPattern[\id];
 
@@ -72,6 +74,9 @@ Px {
                 var rhythmSeq = { |weight|
                     Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
                 };
+
+                weight.postln;
+                rhythmSeq.(rhythmWeight).postln;
 
                 thisThread.randSeed = seed;
 
@@ -220,9 +225,9 @@ Px {
             if (trace == true)
             { pbind = pbind.trace };
 
-            ptparList = ptparList ++ [newPattern[\off] ?? 0, pbind];
+            ptpar = [newPattern[\off] ?? 0, pbind];
             lastFormattedPatterns[name] = newPattern;
-            pDef = Pdef(name.asSymbol, pbind).quant_(quant ?? 4);
+            pDef = Pdef(name.asSymbol, Ptpar(ptpar)).quant_(quant ?? 4);
 
             if (nodeProxy[name].isPlaying.not and: (newPattern[\solo] != false)) {
                 nodeProxy.add(name -> Ndef(name, pDef).play);
@@ -294,6 +299,12 @@ Px {
         if (name.isNil)
         { this.prPrint("Please specify a pattern name to trace") }
         { this.prSend(lastPatterns[name], trace: true) };
+    }
+
+    *traceOff { |name|
+        if (name.isNil)
+        { this.prPrint("Please specify a pattern name to disable trace") }
+        { this.prSend(lastPatterns[name]) };
     }
 
     *vol { |value, name|

@@ -7,6 +7,12 @@
         this.prUpdatePattern([\amp, value]);
     }
 
+    args { |value|
+        if (value.class == Event) {
+            this.prUpdatePattern(value.asPairs);
+        }
+    }
+
     beat { |value|
         var pairs = Array.new;
 
@@ -129,9 +135,11 @@
     // Prevent methods to generate errors when a Px is stopped through a symbol
     a {}
     amp {}
+    args {}
     beat {}
     delay {}
     dur {}
+    euclid {}
     fill {}
     hpf {}
     human {}

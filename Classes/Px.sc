@@ -71,12 +71,10 @@ Px {
                 var weight = pattern[\weight] ?? 0.7;
                 var rhythmWeight = (weight * 10).floor / 10;
                 var pseqWeight = weight - rhythmWeight * 10;
+
                 var rhythmSeq = { |weight|
                     Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
                 };
-
-                weight.postln;
-                rhythmSeq.(rhythmWeight).postln;
 
                 thisThread.randSeed = seed;
 

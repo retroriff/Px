@@ -20,6 +20,7 @@
     *loadSamples { |samplesPath|
         samplesDict = Dictionary.new;
         samplesDict.add(\foldernames -> PathName(samplesPath).entries);
+
         for (0, samplesDict[\foldernames].size - 1, { |i|
             if (samplesDict[\foldernames][i].folderName != "sets") {
                 samplesDict.add(
@@ -51,7 +52,8 @@
             pattern.removeAt(\loop);
         };
 
-        ^pattern;
+        // TODO: Without any event transformation, weight fails: i: \bd beat: 1 weight: 0.2
+        ^pattern ++ (fix: 1);
     }
 
     *prCreateLoops { |pattern|
@@ -118,8 +120,9 @@
                 if ([Buffer, Pseq].includes(buf.class))
                 { pattern[\buf] = buf }
                 { pattern[\amp] = 0 };
-            }
-            { pattern[\amp] = 0 };
+            } {
+                pattern[\amp] = 0;
+            };
         };
 
         ^pattern;

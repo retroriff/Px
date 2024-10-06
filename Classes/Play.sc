@@ -5,6 +5,7 @@ Play : Px {
         newPattern.putAll([\degree: this.prGenerateDegrees(newPattern) ?? 0 ]);
         newPattern = this.prCreateMidiPatterns(newPattern, midiout);
         name = super.prGetName(name);
+
         ^super.new(newPattern, name, quant, trace);
     }
 
@@ -14,8 +15,10 @@ Play : Px {
                 degrees = degrees.collect { |degree|
                     degree + (0..numOctaves).flat.collect { |oct| oct * 7 };
                 };
+
                 degrees = degrees.as(Array).flat;
             };
+
             degrees;
         };
 
@@ -30,9 +33,11 @@ Play : Px {
         if (pattern[\degree].isArray) {
             var degrees = pattern[\degree][0];
             var length = pattern[\midiControl] ?? inf;
+            
             if (degrees == \rand) {
                 degrees = createRandomDegrees.(pattern, size: pattern[\degree][2]);
             };
+            
             pattern[\degree] = Pseq(degreesWithVariations.(pattern, degrees), length);
         };
 

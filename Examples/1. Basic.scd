@@ -24,8 +24,8 @@
 (
 1 i: \bd reverb: 0.2 wah: 0.1;
 2 i: \sn dur: 2 off: 1 delay: 0.2;
-5 i: \ch dur: 0.25 beat: 1 weight: 0.3;
-4 i: \ma dur: 0.25 euclid: [3, 5] weight: 0.2;
+4 i: \ch dur: 0.25 beat: 1 weight: 0.3;
+5 i: \ma dur: 0.25 beat: 1 weight: 0.2;
 )
 
 // Add some rest time
@@ -49,15 +49,10 @@
 Px.shuffle;
 
 // We can set up our own rhythm:
-(
 1 i: \bd dur: 0.25 beat: [1, 0, 1, 0, 0, 1, 0, 1];
-2 i: \sn fill: 1 delay: 0.2;
-3 i: \lc fill: 1 delay: 0.3;
-Px.reverb(0.3);
-)
 
 // We can fill the gaps of a pattern beat
-1 i: \bd dur: 0.5 beat: 1 weight: 0.5
+1 i: \bd dur: 0.25 beat: [1, 0, 1, 0, 0, 1, 0, 1];
 2 i: \sn dur: 0.5 fill: 1
 
 // And set up a fill weight
@@ -73,28 +68,27 @@ Px reverb: 0.1 delay: 0.1;
 // Fill also accepts a rest argument:
 (
 1 i: \bd dur: 0.25 beat: 1 seed: 857;
-2 i: \lt dur: 0.25 fill: 1 weight: 0.4;
+2 i: \lt dur: 0.25 fill: 1 weight: 0.4 rest: 4;
 3 i: \sn dur: 0.25 fill: 8 weight: 0.2 seed: 405;
 Px reverb: 0.4;
 )
 
 // We can keep our favorite beats providing a seed number:
 (
-1 i: \bd reverb: 0.2 wah: 0.1;
-2 i: \sn dur: 2 off: 1 delay: 0.3;
+1 i: \bd reverb: 0.2;
+2 i: \sn dur: 2 off: 1 delay: 0.2;
 3 i: \ch dur: 0.25 beat: 1 weight: 0.12 seed: 250;
 4 i: \ma dur: 0.25 beat: 1 weight: 0.26;
 Px.shuffle;
 )
 
 // And check what's going on:
-
 Px.trace(\1);
 Px.traceOff(\1);
 
 // Fade in and fade out tracks:
 (
-1 i: \bd reverb: 0.2 wah: 0.1 fade: \in;
+1 i: \bd reverb: 0.2 wah: 0.1 fade: \out;
 2 i: \sn dur: 2 off: 1 delay: 0.3;
 3 i: \ch dur: 0.25 beat: 1 weight: 0.12 seed: 250 in: 20;
 4 i: \ma dur: 0.25 beat: 1 weight: 0.26;
@@ -110,7 +104,7 @@ Px.shuffle;
 )
 
 // Change the tempo
-Px.tempo(110);
+Px.tempo(100);
 
 // And finalize the session with a default fade out:
 Px.release;

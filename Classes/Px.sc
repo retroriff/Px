@@ -1,8 +1,6 @@
 /*
 Fix: Solo doesn't work properly
-Fix: Weight doesn't work properly: 3 i: \ch dur: 0.25 beat: 1 weight: 0.1;
 Fix: Px methods
-Fix: Ptpar per a off
 */
 
 Px {
@@ -57,9 +55,11 @@ Px {
 
         var createPatternBeatRest = { |pattern|
             var dur = pattern[\dur];
+
             if (pattern[\rest].notNil) {
                 dur = Pseq([Pn(dur, 15), pattern[\rest] + dur], inf);
             };
+
             dur;
         };
 
@@ -104,40 +104,45 @@ Px {
         };
 
         var createPatternFillFromBeat = { |amp, pattern|
-            var steps = 16;
-
-            var getInvertBeat = { |beatAmp, invertAmp = 1|
-                var invertBeat = beatAmp.iter.loop.nextN(steps).linlin(0, amp, amp, Rest());
-                var weight = pattern[\weight] ?? 1;
-
-                thisThread.randSeed = this.prGetPatternSeed(pattern);
-
-                invertBeat.collect { |step|
-                    if (step == amp) {
-                        step = [0, amp].wchoose([1 - weight, weight]);
-                    };
-
-                    step;
-                };
-            };
-
-            var getTotalBeat = { |invertBeat|
-                var beat = pattern[\totalBeat] ?? Array.fill(steps, 0);
-                (beat + invertBeat).collect { |step| step.clip(0, 1) };
-            };
-
             var previousPatternId = (pattern[\id].asInteger - 1).asSymbol;
-            var invertBeat = getInvertBeat.(lastPatterns[previousPatternId][\beats], pattern[\amp]);
-            var totalBeat = getTotalBeat.(invertBeat);
+            var previousBeats = lastPatterns[previousPatternId][\beats];
 
-            lastPatterns[name][\beats] = invertBeat;
-            newPattern.putAll([\totalBeat, totalBeat]);
-            totalBeat;
+            if (previousBeats.notNil) {
+                var steps = 16;
+
+                var getInvertBeat = { |beatAmp, invertAmp = 1|
+                    var invertBeat = beatAmp.iter.loop.nextN(steps).linlin(0, amp, amp, Rest());
+                    var weight = pattern[\weight] ?? 1;
+
+                    thisThread.randSeed = this.prGetPatternSeed(pattern);
+
+                    invertBeat.collect { |step|
+                        if (step == amp) {
+                            step = [0, amp].wchoose([1 - weight, weight]);
+                        };
+
+                        step;
+                    };
+                };
+
+                var getTotalBeat = { |invertBeat|
+                    var beat = pattern[\totalBeat] ?? Array.fill(steps, 0);
+                    (beat + invertBeat).collect { |step| step.clip(0, 1) };
+                };
+
+                var invertBeat = getInvertBeat.(previousBeats, pattern[\amp]);
+                var totalBeat = getTotalBeat.(invertBeat);
+
+                lastPatterns[name][\beats] = invertBeat;
+                newPattern.putAll([\totalBeat, totalBeat]);
+                totalBeat;
+            } {
+                amp;
+            }
         };
 
         var createPatternAmp = { |pattern|
-            var amp = pattern[\amp] ?? pattern[\a] ?? 1;
-            pattern.removeAt(\a);
+            var amp = pattern[\amp] ?? 1;
 
             if (pattern[\beat].notNil) {
                 amp = createPatternBeat.(amp, pattern);
@@ -161,6 +166,7 @@ Px {
                 var delay = pattern[\human] * 0.04;
                 pattern[\lag] = Pwhite(delay.neg, delay);
             };
+
             pattern;
         };
 

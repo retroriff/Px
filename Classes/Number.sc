@@ -103,9 +103,8 @@
 
     prUpdatePattern { |pairs|
         var pattern = Px.lastPatterns[this.asSymbol];
-        pattern = pattern.putAll(pairs);
 
-        Px(pattern);
+        Px(pattern.putAll(pairs));
     }
 
     prFade { |direction, time|

@@ -31,7 +31,7 @@ Px {
             };
 
             if (hasSolo) {
-                var muteList = lastPatterns.select { |pattern|
+                var muteList = lastPatterns select: { |pattern|
                     pattern['solo'] != true
                 };
 
@@ -40,15 +40,16 @@ Px {
                     Px.stop(pattern[\id]);
                 }
             } {
-                var muteList = lastPatterns.select { |pattern|
-                    pattern['solo'] == false
+                var muteList = lastPatterns select: { |pattern|
+                    pattern['solo'] == false;
                 };
 
                 muteList do: { |pattern|
                     lastPatterns[pattern[\id]].removeAt(\solo);
 
-                    if (nodeProxy[name].isPlaying == false)
-                    { Px.play(pattern[\id]) };
+                    if (nodeProxy[pattern[\id]].isPlaying == false) {
+                        Px.play(pattern[\id])
+                    };
                 }
             };
         };

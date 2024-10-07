@@ -18,6 +18,6 @@
     }
 
     stop {
-        ^Ndef(this).stop;
+        ^Px.stop(this);
     }
 }

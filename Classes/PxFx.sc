@@ -90,6 +90,7 @@
             mix = 1;
             args = [\freq, this.prCreatePatternKey(\rand)] ++ args;
         };
+
         ^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)] ++ args];
     }
 }

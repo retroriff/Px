@@ -174,7 +174,11 @@ Px {
     *release { |fadeTime = 10, name|
         if (name.isNil) {
             Ndef(\x).proxyspace.free(fadeTime);
-            Ndef(\px).clear;
+
+            fork {
+                (fadeTime + 1).wait;
+                Ndef.clear;
+            }
         } {
             Ndef(\px).free(fadeTime);
         };
@@ -182,11 +186,6 @@ Px {
 
     *save {
         ^chorusPatterns = Dictionary.newFrom(lastPatterns);
-    }
-
-    *shuffle {
-        this.prCreateNewSeeds;
-        this.new;
     }
 
     *stop { |id|
@@ -223,37 +222,6 @@ Px {
 
     *vol { |value, name|
         ^Ndef( name ?? \px).vol_(value);
-    }
-
-    *prCreateNewSeeds {
-        seeds.order do: { |id|
-            var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
-            this.prPrint("🎲 Shuffle:".scatArgs(id, "->", newSeed));
-            seeds[id] = newSeed;
-        };
-    }
-
-    *prGenerateRandNumber { |id|
-        var seed = 1000.rand;
-        this.prPrint("🎲 Seed:".scatArgs(id, "->", seed));
-        ^seed;
-    }
-
-    *prGetPatternSeed { |pattern|
-        var id = pattern[\id].asSymbol;
-
-        if (pattern[\seed].isNil) {
-            var seed;
-
-            if (seeds[id].isNil)
-            { seed = this.prGenerateRandNumber(id) }
-            { seed = seeds[id] };
-
-            seeds.add(id -> seed);
-            ^seeds[id];
-        } {
-            ^pattern[\seed];
-        };
     }
 
     *prPrint { |value|

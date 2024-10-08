@@ -18,7 +18,7 @@
 (
 1 i: \bd reverb: 0.2 wah: 0.1;
 2 i: \sn dur: 2 off: 1 delay: 0.2;
-3 i: \ch dur: 0.25 beat: 1;
+3 i: \ch dur: 0.25 beat: 1 solo: 1;
 4 i: \ma dur: 0.25 euclid: [3, 5];
 )
 
@@ -35,7 +35,7 @@
 1 i: \bd;
 2 i: \sn dur: 2 off: 1 delay: 0.2;
 3 i: \cp dur: 0.25 beat: 1 weight: 0.2 rest: 4;
-5 i: \ma dur: 0.25 beat: 1 weight: 0.25;
+4 i: \ma dur: 0.25 beat: 1 weight: 0.25;
 )
 
 // And add random variations with another weight defined as a hundredth:

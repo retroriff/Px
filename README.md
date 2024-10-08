@@ -32,36 +32,28 @@ Additional code examples can be found [here](/Examples/).
 
 The superclass that generates the patterns from an array of events with a simplified syntax for a fast edition.
 
-### Px class arguments
-
-| Arg        | Value            | Description                                          |
-| ---------- | ---------------- | ---------------------------------------------------- |
-| `patterns` | Event[]          | An array containing all the patterns in Event format |
-| `name`     | string \| symbol | A user defined name for the generated Pdef           |
-| `trace`    | boolean          | Print out the results of the streams                 |
-
-### Px event methods
+### Pattern methods
 
 | Name     | Arguments                                         | Description                                                                                                                                                                                  |
 | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `amp`    | number \| number[] \| Pattern                     | Amplification. An array generates a Pseq                                                                                                                                                     |
 | `args`   | Event                                             | Additional args                                                                                                                                                                              |
-| `beat`   | seed?: integer, rest?: number, set?: number[]     | Generates a random rhythm, or own rhythym defined by set                                                                                                                                     |
+| `beat`   | 1 (enable)                                        | Generates a random rhythm, or own rhythym defined by set                                                                                                                                     |
 | `dur`    | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
-| `euclid` | hits: number, total: number                       | Generates an Euclidian rhythm                                                                                                                                                                |
-| `fill`   | none                                              | Fills the rests gap of its previous pattern. Due to its dependency with the previous item, using solo can generate an error. We can mute patterns using `a: 0` instead                       |
+| `euclid` | [hits: number, total: number]                     | Generates an Euclidian rhythm                                                                                                                                                                |
+| `fill`   | 1 (enable)                                        | Fills the rests gap of its previous sequential pattern                                                                                                                                       |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
-| `in`     | seconds?: integer                                 | (\fade: "in")                                                                                                                                                                                |
-| `out`    | seconds?: integer                                 | (\fade: "out")                                                                                                                                                                               |
-| `pan`    | range -1..1 \| \rand \| \rotate \| Pattern        | Pan                                                                                                                                                                                          |
+| `in`     | seconds?: integer                                 | Fades in the pattern. Same as `fade: \in` "in")                                                                                                                                              |
+| `out`    | seconds?: integer                                 | Fades out the pattern. Same as `fade: \out`                                                                                                                                                  |
+| `pan`    | range -1..1 \| \rand \| \rotate \| Pattern        | A pan controller                                                                                                                                                                             |
 | `rate`   | number \| \rand \| [\wrand, item1, item2, weight] | Rate value                                                                                                                                                                                   |
 | `rotate` | none                                              | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
-| `seed`   | seed: integer                                     | Generate a specific seed                                                                                                                                                                     |
-| `solo`   | none                                              | (\solo: true)                                                                                                                                                                                |
+| `seed`   | seed: integer                                     | Generate a specific random seed                                                                                                                                                              |
+| `solo`   | 1 (enable)                                        | Mutes all patterns that don't contain a solo method                                                                                                                                          |
 | `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
 | `weight` | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
-### FX event methods
+### FX pattern methods
 
 | Name     | Arguments                                                                   | Description              |
 | -------- | --------------------------------------------------------------------------- | ------------------------ |
@@ -71,12 +63,13 @@ The superclass that generates the patterns from an array of events with a simpli
 | `reverb` | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a reverb effect     |
 | `wah`    | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect        |
 
-### Event buf loopers
+### Instrument methods
 
-| Name   | Arguments                                        | Description                |
-| ------ | ------------------------------------------------ | -------------------------- |
-| `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer |
-| `play` | [folder: string, file: number \| \rand]          | Plays a buffer             |
+| Name   | Arguments                                        | Description                   |
+| ------ | ------------------------------------------------ | ----------------------------- |
+| `i`    | name: string                                     | Plays a Synthdef. Same as `i` |
+| `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer    |
+| `play` | [folder: string, file: number \| \rand]          | Plays a buffer                |
 
 ### Px class methods
 
@@ -87,7 +80,15 @@ The superclass that generates the patterns from an array of events with a simpli
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments
 - `tempo`: Sets a new tempo
 - `trace`: Prints out the results of the streams for debugging purposes.
+- `traceOff`: Disables trace.
 - `vol`: Controls the volume of the nodeproxy
+
+### Px class arguments
+
+| Arg        | Value   | Description                          |
+| ---------- | ------- | ------------------------------------ |
+| `patterns` | Event   | A pattern in Event format            |
+| `trace`    | boolean | Print out the results of the streams |
 
 ### FX class methods
 

@@ -1,6 +1,7 @@
 /*
 Fix: Fill
-Fix: Px a pattern has a out, it should remove itself from lastPatterns after playing
+Fix: Px a pattern has an out, it should remove itself from lastPatterns after playing
+Fix: PxTest
 */
 
 Px {

@@ -1,6 +1,6 @@
 /*
 Fix: Px methods
-Fix: Px fill with rest
+Fix: Px a pattern has a out, it should remove itself from lastPatterns after playing
 */
 
 Px {

@@ -67,10 +67,6 @@ X : Event {
         ^this.putAll([\pan, value]);
     }
 
-    px { |name, quant, trace|
-        Px([this], name, quant, trace);
-    }
-
     rotate {
         ^this.pan(\rotate);
     }

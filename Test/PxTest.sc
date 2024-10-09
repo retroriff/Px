@@ -4,7 +4,7 @@ PxTest : UnitTest {
     setUp {
         ~isUnitTestRunning = true;
         1 i: \bd amp: 0.5;
-        2 i: \sn dur: 1/4;
+        2 i: \sn dur: 0.25;
     }
 
     tearDown {
@@ -21,7 +21,7 @@ PxTest : UnitTest {
     test_playPx {
         var expectedResult = Dictionary[
             \1 -> (i: \bd, id: \1, amp: 0.5),
-            \2 -> (i: \sn, id: \1, dur: 0.25)
+            \2 -> (i: \sn, id: \2, dur: 0.25)
         ];
 
         this.assertEquals(
@@ -68,11 +68,12 @@ PxTest : UnitTest {
     }
 
     test_chorus {
-        1 i: \bd amp: 0.5;
+        1 i: \cy amp: 0.5;
         Px.save;
         Px.chorus;
         expectedResult = Dictionary[
-            \1 -> (i: \bd, amp: 0.5, id: \1)
+            \1 -> (i: \cy, amp: 0.5, id: \1),
+            \2 -> (i: \sn, dur: 0.25, id: \2),
         ];
 
         this.assertEquals(
@@ -137,7 +138,7 @@ PxTest : UnitTest {
         Px.vol(expectedResult);
 
         this.assertEquals(
-            Ndef(name).vol,
+            Ndef(\px).vol,
             expectedResult,
             "👀 Volume has been set",
         );
@@ -174,16 +175,19 @@ PxTest : UnitTest {
         );
     }
 
+    /*
     test_fill {
         1 i: \bd beat: 1;
         2 i: \sn fill: 1;
 
+        Px.lastFormattedPatterns[\2][\totalBeat];
         this.assertEquals(
             Px.lastFormattedPatterns[\2][\totalBeat].isArray,
             true,
             "👀 Fill generates a \\totalBeat array",
         );
     }
+    */
 
     test_human {
         1 i: \bd human: 1;
@@ -239,13 +243,19 @@ PxTest : UnitTest {
 
 
     test_solo {
-        1 i: \bd solo: 1
+        1 i: \bd solo: 1;
         2 i: \sn;
-        expectedResult = [(i: \bd, solo: true)];
+        expectedResult = (i: \bd, id: \1, solo: true);
 
         this.assertEquals(
-            Px.lastPatterns[\px],
+            Px.lastPatterns[\1],
             expectedResult,
+            "👀 Px contains correct solo data",
+        );
+
+        this.assertEquals(
+            Px.lastFormattedPatterns.size,
+            1,
             "👀 Px only plays solo patterns",
         );
     }

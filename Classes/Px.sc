@@ -1,7 +1,7 @@
 /*
 Fix: Fill
+Fix: PxTest Fill test
 Fix: Px a pattern has an out, it should remove itself from lastPatterns after playing
-Fix: PxTest
 */
 
 Px {
@@ -190,12 +190,14 @@ Px {
     }
 
     *stop { |id|
-        if (id.notNil)
-        { lastPatterns.removeAt(id) };
+        if (id.notNil) {
+            lastPatterns.removeAt(id);
 
-        if (lastPatterns.size > 0)
-        { ^this.new }
-        { ^Ndef(\px).free };
+            if (lastPatterns.size > 0)
+            { ^this.new };
+        };
+
+        ^Ndef(\px).free;
     }
 
     *synthDef { |synthDef|

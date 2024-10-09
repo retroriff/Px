@@ -1,7 +1,6 @@
 /*
 Fix: Fill
 Fix: PxTest Fill test
-Fix: Px a pattern has an out, it should remove itself from lastPatterns after playing
 */
 
 Px {
@@ -87,12 +86,22 @@ Px {
 
         var createPatternFade = { |fade, pbind|
             var defaultFadeTime = 16;
-            var dir = if (fade.isArray) { fade[0] } { fade };
-            var fadeTime = if (fade.isArray) { fade[1] } { defaultFadeTime };
+            var direction, fadeTime;
 
-            if (dir == \in)
-            { PfadeIn(pbind, fadeTime) }
-            { PfadeOut(pbind, fadeTime) }
+            if (fade.isArray) {
+                direction = fade[0];
+                fadeTime = fade[1];
+            } {
+                direction = fade;
+                fadeTime = defaultFadeTime;
+            };
+
+            if (direction == \in) {
+                PfadeIn(pbind, fadeTime);
+            } {
+                lastPatterns.removeAt(newPattern[\id]);
+                PfadeOut(pbind, fadeTime);
+            }
         };
 
         var createPatternPan = { |pattern|

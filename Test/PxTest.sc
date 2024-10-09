@@ -189,6 +189,21 @@ PxTest : UnitTest {
     }
     */
 
+    test_fade {
+        1 i: \bd out: 10;
+        2 i: \sn in: 0;
+
+        expectedResult = Dictionary[
+            \2 -> (i: \sn, id: \2, 'fade': [\in, 0.1]),
+        ];
+
+        this.assertEquals(
+            Px.lastPatterns,
+            expectedResult,
+            "👀 Fades in and out is deleted from last patterns.",
+        );
+    }
+
     test_human {
         1 i: \bd human: 1;
 

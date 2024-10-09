@@ -1,4 +1,4 @@
-+Px {
++ Px {
     *blp { |mix = 0.4|
         Nfx(lastName).blp(mix);
     }
@@ -64,7 +64,7 @@
     }
 }
 
-+Event {
++ Event {
     delay { |mix, args|
         this.prFx(\delay, mix, args);
     }
@@ -95,7 +95,7 @@
     }
 }
 
-+Number {
++ Number {
     delay { |mix|
         this.prFx(\delay, mix);
     }

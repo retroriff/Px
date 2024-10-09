@@ -4,7 +4,7 @@ Pmidi {
     }
 }
 
-+Play {
++ Play {
     *prCreateMidiPatterns { | newPattern, midiout|
         var isMidiControl = { |pattern|
             if (pattern[\hasGate] == false or: { pattern[\midicmd] == \noteOff })
@@ -74,7 +74,7 @@ Pmidi {
     }
 }
 
-+Event {
++ Event {
     control { |ctlNum, value|
         var controlEvent = (
             \midicmd: \control,

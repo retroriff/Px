@@ -1,4 +1,4 @@
-+Px {
++ Px {
     *shuffle {
         this.prCreateNewSeeds;
         this.new;

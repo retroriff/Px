@@ -1,4 +1,4 @@
-+Px {
++ Px {
     *buf { |folder, file|
         if (samplesDict[folder].size == 0) {
             this.prPrint("🔴 Folder doesn't exist or empty");
@@ -133,7 +133,38 @@
     }
 }
 
-+Event {
++ Number {
+    rand { |folder|
+        ^this.prUpdatePattern([\buf, [folder, \rand]]);
+    }
+
+    rate { |args|
+        var value = this.prCreatePatternKey(args);
+        ^this.prUpdatePattern([\rate, value]);
+    }
+
+    trim { |startPosition|
+        case
+        { startPosition.isNil or: (startPosition == 1) }
+        { startPosition = \seq }
+
+        { startPosition.isArray }
+        { startPosition = Pseq(startPosition, inf) }
+
+        { startPosition = startPosition.clip(0, 0.75) };
+
+        ^this.prUpdatePattern([\trim, startPosition]);
+    }
+}
+
++ Symbol {
+    // Prevent methods to generate errors when a Px is stopped through a symbol
+    rand {}
+    rate {}
+    trim {}
+}
+
++ Event {
     rand { |folder|
         ^this.putAll([\buf, [folder, \rand]]);
     }

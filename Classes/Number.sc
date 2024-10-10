@@ -1,4 +1,4 @@
-+Number {
++ Number {
     a { |value|
         this.amp(value);
     }
@@ -101,10 +101,26 @@
         this.prUpdatePattern([\weight, value.clip(0, 1)]);
     }
 
-    prUpdatePattern { |pairs|
-        var pattern = Px.lastPatterns[this.asSymbol];
+    prCreatePatternKey { |value|
+        if (value == \rand)
+        { ^Pwhite(0.0, 1) };
 
-        Px(pattern.putAll(pairs));
+        if (value.isArray) {
+            if (value[0] == \wrand) {
+                var item1 = value[1].clip(-1, 1);
+                var item2 = value[2].clip(-1, 1);
+                var weight = value[3].clip(0, 1);
+                ^Pwrand([item1, item2], [1 - weight, weight], inf);
+            };
+            if (value[0] == \rand) {
+                ^Pwhite(value[1], value[2])
+            };
+        };
+
+        if (value.isNumber)
+        { ^value.clip(-1, 1) };
+
+        ^value ?? 1;
     }
 
     prFade { |direction, time|
@@ -128,9 +144,15 @@
             )
         );
     }
+
+    prUpdatePattern { |pairs|
+        var pattern = Px.lastPatterns[this.asSymbol];
+
+        Px(pattern.putAll(pairs));
+    }
 }
 
-+Symbol {
++ Symbol {
     // Prevent methods to generate errors when a Px is stopped through a symbol
     a {}
     amp {}

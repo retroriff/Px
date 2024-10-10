@@ -1,10 +1,4 @@
-X : Event {
-    *i { |name|
-        ^super.new.ins(name);
-    }
-}
-
-+Event {
++ Event {
     a { |args|
         this.amp(args);
     }

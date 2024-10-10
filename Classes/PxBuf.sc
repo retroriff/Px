@@ -134,13 +134,8 @@
 }
 
 + Number {
-    rand { |folder|
-        ^this.prUpdatePattern([\buf, [folder, \rand]]);
-    }
-
-    rate { |args|
-        var value = this.prCreatePatternKey(args);
-        ^this.prUpdatePattern([\rate, value]);
+    r { |args|
+        ^this.prUpdatePattern([\rate, this.prCreatePatternKey(args)]);
     }
 
     trim { |startPosition|
@@ -159,13 +154,12 @@
 
 + Symbol {
     // Prevent methods to generate errors when a Px is stopped through a symbol
-    rand {}
-    rate {}
+    r {}
     trim {}
 }
 
 + Event {
-    rand { |folder|
+    rand2 { |folder|
         ^this.putAll([\buf, [folder, \rand]]);
     }
 

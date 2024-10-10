@@ -112,6 +112,7 @@
                 var weight = value[3].clip(0, 1);
                 ^Pwrand([item1, item2], [1 - weight, weight], inf);
             };
+
             if (value[0] == \rand) {
                 ^Pwhite(value[1], value[2])
             };

@@ -34,27 +34,14 @@ Px.shuffle;
 1 loop: ["mt-4", 0] trim: Pwhite(0.0, 0.75);
 
 // The buffer rate can also be changed
-
-
->>> doesn't work
-
-1 loop: ["gl1", 0] rate: [\rand, 1, -1];
-2 loop: ["gl1", 1] rate: [\rand, 1, -1, 0.52];
-
+1 loop: ["gl1", 0] r: [\rand, 1, -1];
+1 loop: ["gl1", 1] r: [\wrand, 1, -1, 0.52];
 
 // The loop duration can be stretched:
-(
-Px([
-    (loop: ["mt-2", 0], dur: 4),
-]);
-)
+1 loop: ["mt-2", 0] dur: 4
 
 // We can play the buffer's rate with degree notes:
-(
-Px([
-    (play: ["fm"]).degree(\rand, \minor, 3),
-]);
-)
+1 play: ["fm"] degree: [\rand, \minor, 3]
 
 // That's all for now
 Px.stop;

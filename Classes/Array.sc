@@ -1,4 +1,4 @@
-+Array {
++ Array {
     shuffle { |seed|
         if (seed.isNil)
         { thisThread.randSeed = this.prGenerateRandNumber }

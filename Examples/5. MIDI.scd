@@ -1,34 +1,20 @@
 // We can initialize our MIDI output with 0 latency:
-Pmidi.init;
+Px.initMidi;
 
 // Or define a latency:
-Pmidi.init(0.1);
+Px.initMidi(0.1);
 
-// But Pmidi can be omitted when we send our MIDI output to port 0:
-1 chan: 0 dur: 1 octave: 4 degree: [\rand, \phrygian, 3];
+// But initMidi method can be omitted when we send our MIDI output to port 0:
+1 chan: 0 dur: 1 octave: 4 degree: \rand scale: \phrygian length: 3;
 
-// We can send controller messages
-1 control: [0, 0.8];
-1 control: [1, 0.2];
-(
-Play([
-    (chan: 0, \dur: 1, octave: 4).degree(\rand, \phrygian, 3),
-    (\chan: 0).control(0, 0.8),
-    (\chan: 0).control(1, 0.2),
-]);
-)
+// We can send controller messages. The identifier number must be sequential:
+2 control: [0, 0];
+2 control: [1, 0.2];
 
 // Send random controllers:
-1 control: [0, \rand];
-1 control: [1, [\wrand, 0, 0.2, 0.3]];
-
-(
-Play([
-    (chan: 0, \dur: 1, octave: 4).degree(\rand, \phrygian, 3),
-    (\chan: 0).control(0, \rand),
-    (\chan: 0).control(1, [\wrand, 0, 0.2, 0.3]),
-]);
-)
+2 control: [0, \rand];
+2 control: [1, [\rand, 0, 0.8]];
+2 control: [1, [\wrand, 0, 0.2, 0.3]];
 
 // Use hold and to keep a key press:
 1 chan: 0 dur: 1 octave: 4 degree: [\rand, \phrygian, 3] seed: 345;

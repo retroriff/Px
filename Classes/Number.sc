@@ -119,13 +119,14 @@
 
     prPlay { |i, play, loop|
         var id = this.asSymbol;
+
         Px(
             newPattern: (
                 i: i,
                 id: id,
                 play: play,
                 loop: loop
-            )
+            );
         );
     }
 }

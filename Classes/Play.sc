@@ -1,21 +1,19 @@
 + Px {
     *prGenerateDegrees { |pattern|
         var createRandomDegrees, degreesWithVariations;
-
         if (pattern[\degree].isNil)
         { ^pattern };
 
-        createRandomDegrees = { |size = 1|
+        createRandomDegrees = {
+            var length = pattern[\length] ?? 1;
             var scale = pattern[\scale] ?? \phrygian;
             var scaleDegrees = Scale.at(scale.asSymbol).degrees;
-            var randomDegrees = Array.newClear(size);
-
-            thisThread.randSeed = super.prGetPatternSeed(pattern);
-            randomDegrees = size.collect { scaleDegrees.choose };
+            var randomDegrees = Array.newClear(length);
+            thisThread.randSeed = this.prGetPatternSeed(pattern);
+            randomDegrees = length.collect { scaleDegrees.choose };
         };
 
         degreesWithVariations = { |degrees, numOctaves = 1|
-            "kaka3".postln;
             if (pattern[\arp].notNil) {
                 degrees = degrees.collect { |degree|
                     degree + (0..numOctaves).flat.collect { |oct| oct * 7 };
@@ -24,26 +22,21 @@
                 degrees = degrees.as(Array).flat;
             };
 
-            "kaka4".postln;
-            degrees.postln;
             degrees;
         };
 
-
-        if (pattern[\degree].isArray) {
-            var length = pattern[\midiControl] ?? inf;
+        if (pattern[\degree].isKindOf(Pattern).not) {
             var degrees = pattern[\degree];
-
-            "kaka1".postln;
-
+            var length = pattern[\midiControl] ?? inf;
             if (degrees == \rand) {
-                degrees = createRandomDegrees.(pattern[\size]);
+                degrees = createRandomDegrees.value;
             };
 
             pattern[\degree] = Pseq(degreesWithVariations.(degrees), length);
         };
 
-        "kaka2".postln;
+        if (pattern[\scale].notNil)
+        { pattern[\scale] = Scale.at(pattern[\scale]).semitones };
 
         ^pattern;
     }
@@ -70,6 +63,10 @@
         ^this.prUpdatePattern([\legato, value]);
     }
 
+    length { |value|
+        ^this.prUpdatePattern([\length, value]);
+    }
+
     octave { |value|
         if (value.isArray) {
             value = Pseq(value, inf);
@@ -83,21 +80,18 @@
     }
 
     scale { |value|
-        ^this.prUpdatePattern([\scale, Scale.at(value).semitones]);
-    }
-
-    size { |value|
-        ^this.prUpdatePattern([\size, value]);
+        ^this.prUpdatePattern([\scale, value]);
     }
 }
 
 + Symbol {
     arp {}
     degree {}
+    legato {}
+    length {}
     octave {}
     root {}
     scale {}
-    size {}
 }
 
 + Event {

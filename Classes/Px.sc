@@ -134,10 +134,9 @@ Px {
             pattern = createPatternAmp.(pattern);
             pattern = createPatternDur.(pattern);
             pattern = createPatternPan.(pattern);
-            pattern = this.prCreatePatternFx(pattern);
             pattern = this.prGenerateDegrees(pattern);
-            pattern.postln;
-            // pattern = this.prCreateMidiPatterns(pattern);
+            pattern = this.prCreateMidiPatterns(pattern);
+            pattern = this.prCreatePatternFx(pattern);
 
             if (pattern[\amp].isArray)
             { pattern[\amp] = Pseq(pattern[\amp], inf) };

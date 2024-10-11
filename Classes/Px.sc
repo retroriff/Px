@@ -11,6 +11,7 @@ Px {
     classvar <lastName;
     classvar <>lastFormattedPatterns;
     classvar <>lastPatterns;
+    classvar <midiClient;
     classvar <pbindList;
     classvar <samplesDict;
     classvar <seeds;
@@ -24,7 +25,7 @@ Px {
     }
 
     *new { | newPattern, quant, trace |
-        var pDef, pbind, ptpar;
+        var patterns, pbind, pdef, ptpar, ptparList;
 
         var handleSoloPatterns = { |patterns|
             var hasSolo = patterns any: { |pattern|
@@ -115,8 +116,6 @@ Px {
             pattern;
         };
 
-        var patterns, ptparList;
-
         if (Ndef(\px).isPlaying.not) {
             chorusPatterns = Dictionary.new;
             lastPatterns = Dictionary.new;
@@ -136,6 +135,9 @@ Px {
             pattern = createPatternDur.(pattern);
             pattern = createPatternPan.(pattern);
             pattern = this.prCreatePatternFx(pattern);
+            pattern = this.prGenerateDegrees(pattern);
+            pattern.postln;
+            // pattern = this.prCreateMidiPatterns(pattern);
 
             if (pattern[\amp].isArray)
             { pattern[\amp] = Pseq(pattern[\amp], inf) };
@@ -156,10 +158,10 @@ Px {
         if (newPattern.notNil)
         { lastFormattedPatterns[newPattern[\id]] = patterns[newPattern[\id]]};
 
-        pDef = Pdef(\px, Ptpar(ptparList)).quant_(quant ?? 4);
+        pdef = Pdef(\px, Ptpar(ptparList)).quant_(quant ?? 4);
 
         if (Ndef(\px).isPlaying.not) {
-            Ndef(\px, pDef).play;
+            Ndef(\px, pdef).play;
         };
     }
 

@@ -30,7 +30,7 @@
         };
 
 
-        if (pattern[\degree].isKindOf(Event)) {
+        if (pattern[\degree].isArray) {
             var length = pattern[\midiControl] ?? inf;
             var degrees = pattern[\degree];
 

@@ -1,3 +1,8 @@
+/*
+TODO: Controls [\rand, 0, 0.1] i [\wrand, 0, 0.1, 0.9]
+TODO: MIDIOut instances
+*/
+
 + Px {
     *initMidi { | latency, deviceName, portName |
         var midiOut;

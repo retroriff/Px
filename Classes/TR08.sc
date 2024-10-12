@@ -99,7 +99,10 @@ TR08 : Px {
             createPatternFromPreset.value;
         };
 
-        TR08(presetPatterns);
+        presetPatterns do: { |pattern|
+            var id = (pattern[\i].asString.catArgs("_", 808)).asSymbol;
+            TR08(pattern.putAll([\id, id]));
+        }
     }
 
     *stop {

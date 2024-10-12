@@ -3,7 +3,7 @@ TODO: Intro / Fill in
 TODO: Unit tests
 */
 
-TR08 : Play {
+TR08 : Px {
     classvar hasLoadedPresets;
     classvar <lastPreset;
     classvar <presetsDict;
@@ -15,7 +15,9 @@ TR08 : Play {
         ^super.initClass;
     }
 
-    *new { | patterns, name, quant, trace|
+    *new { | newPattern, quant, trace|
+        var ins = newPattern[\i];
+
         var drumKit = Dictionary[
             \bd -> 36,
             \sn -> 38,
@@ -35,30 +37,24 @@ TR08 : Play {
             \ch -> 42,
         ];
 
-        var isTR08Detected = {
-            MIDIClient.destinations.detect({ |endpoint| endpoint.name == "TR-08" }) !== nil
-        };
+        var isTR08Detected = MIDIClient.destinations.detect({ |endpoint| endpoint.name == "TR-08" }) !== nil;
 
-        var midiPairs = {
-            if (isTR08Detected.value == true)
-            { [\chan: 0] }
-            { Array.new }
-        };
-
-        if (MIDIClient.initialized == false
-            or: { midiClient.notNil and: { midiClient["TR-08"].isNil }}
-        )
+        if (MIDIClient.initialized == false or: { midiClient.notNil and: { midiClient["TR-08"].isNil }})
         { this.init(0.195) };
 
-        patterns.collect { |pattern|
-            pattern.putAll([\midinote: drumKit[pattern[\i].asSymbol]] ++ midiPairs.value);
-        };
+        if (isTR08Detected.value == true)
+        { newPattern.putAll([\chan: 0]) };
 
-        ^super.new(patterns, name ?? \tr08, quant, trace, midiout: "TR-08");
+        newPattern.putAll([\midinote: drumKit[ins]]);
+        newPattern.putAll([\midiout, "TR-08"]);
+        newPattern.putAll([\id, ins]);
+        newPattern.removeAt(\i);
+
+        ^super.new(newPattern, quant, trace);
     }
 
     *init { |latency|
-        Play.initMidi(latency, deviceName: "TR-08");
+        Px.initMidi(latency, deviceName: "TR-08");
     }
 
     *loadPresets {
@@ -104,7 +100,7 @@ TR08 : Play {
         { this.prCreatePresetsDict };
 
         if (newPreset != lastPreset or: (hasLoadedPresets == true)) {
-           createPatternFromPreset.value;
+            createPatternFromPreset.value;
         };
 
         TR08(presetPatterns);

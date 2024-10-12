@@ -77,15 +77,15 @@ TODO: MIDIOut instances
 }
 
 + Number {
-    chan { |value, controlEvent|
+    chan { |value, midiControlEvent|
         var id = this.asSymbol;
         var newPattern = (
             chan: value,
             id: id,
         );
 
-        if (controlEvent.notNil)
-        { newPattern = newPattern.putPairs(controlEvent) };
+        if (midiControlEvent.notNil)
+        { newPattern = newPattern.putPairs(midiControlEvent) };
 
         Px(newPattern);
     }
@@ -108,14 +108,18 @@ TODO: MIDIOut instances
         ^this.chan(previousPattern[\chan], controlEvent);
     }
 
+    device { |value|
+        this.prUpdatePattern([\midiout, value]);
+    }
+
     hold { |value|
         if (value == 1)
         { ^this.prUpdatePattern([\hasGate, false] ++ this.prSendSingleMessage) }
         { ^this.prUpdatePattern([\midicmd, \noteOff]) };
     }
 
-    midiout { |value|
-        this.prUpdatePattern([\midiout, value]);
+    note { |value|
+        this.prUpdatePattern([\midinote, value]);
     }
 
     panic {
@@ -128,8 +132,6 @@ TODO: MIDIOut instances
 
     prCreateControl { |value|
         var createPwhite = { |lower, upper|
-            this.prConvertToMidiValue(lower).postln;
-            this.prConvertToMidiValue(upper).postln;
             Pwhite(this.prConvertToMidiValue(lower), this.prConvertToMidiValue(upper));
         };
 
@@ -146,7 +148,7 @@ TODO: MIDIOut instances
         { ^createPwhite.(0, 1) }
 
         { value.isArray and: { value[0] == \rand} }
-        { "rand".postln; ^createPwhite.(value[1], value[2]) }
+        { ^createPwhite.(value[1], value[2]) }
 
         { value.isArray and: { value[0] == \wrand} }
         { ^createPwrand.(value[1], value[2], value[3].clip(0, 1)) }
@@ -160,6 +162,15 @@ TODO: MIDIOut instances
     prSendSingleMessage {
         ^(\dur: Pseq([1], 1)).asPairs;
     }
+}
+
++ Symbol {
+    chan {}
+    control {}
+    hold {}
+    note {}
+    midiout {}
+    panic {}
 }
 
 + Event {
@@ -207,7 +218,7 @@ TODO: MIDIOut instances
 
         case
         { value == \rand }
-        { "rand".postln;^createPwhite.(0, 1) }
+        { ^createPwhite.(0, 1) }
 
         { value.isArray and: { value[0] == \rand} }
         { ^createPwhite.(value[1], value[2]) }

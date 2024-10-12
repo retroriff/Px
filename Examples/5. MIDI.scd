@@ -31,4 +31,4 @@ Px.shuffle
 Px.initMidi(deviceName: "TR-08");
 
 // And play patterns as usual:
-1 chan: 0 note: 36 beat: 1 weight: 0.3 midiout: "TR-08";
+1 chan: 0 note: 36 device: "TR-08" beat: 1 weight: 0.7;

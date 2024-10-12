@@ -103,8 +103,8 @@
                     };
 
                     if (pattern[\degree].notNil) {
-                        var degree = Play.prGenerateDegrees(pattern);
-                        pattern[\rate] = degree.midiratio;
+                        var patternWithdegrees = this.prGenerateDegrees(pattern, midiratio: true);
+                        pattern[\rate] = patternWithdegrees[\degree];
                     };
 
                     buf = switch (pattern[\buf][1])

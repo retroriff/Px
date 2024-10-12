@@ -3,7 +3,7 @@
 2 play: ["fm", 17] dur: 4 delay: 0.2 reverb: 0.2;
 
 // Or generate a sequence of random files:
-2 play: ["fm", \rand] dur: 1 delay: 0.2 reverb: 0.2;
+3 play: ["fm", \rand] dur: 1 delay: 0.2 reverb: 0.2;
 
 // Change the random sequence:
 Px.shuffle
@@ -13,6 +13,7 @@ Px.shuffle
 
 // We can also play random loops:
 \2 play: 1;
+\3 play: 1;
 1 loop: ["mt-4", \rand];
 
 // As usual, we can generate a new sequence:
@@ -38,10 +39,11 @@ Px.shuffle;
 1 loop: ["gl1", 1] r: [\wrand, 1, -1, 0.52];
 
 // The loop duration can be stretched:
-1 loop: ["mt-2", 0] dur: 4
+1 loop: ["mt-2", 0] dur: 4;
 
 // We can play the buffer's rate with degree notes:
-1 play: ["fm"] degree: [\rand, \minor, 3]
+2 play: ["fm"] degree: \rand length: 3 beat: 1 dur: 0.25 amp: 0.5 ;
+Px.reverb(0.2).delay(0.2).blp;
 
 // That's all for now
 Px.stop;

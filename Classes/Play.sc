@@ -1,5 +1,5 @@
 + Px {
-    *prGenerateDegrees { |pattern|
+    *prGenerateDegrees { |pattern, midiratio|
         var createRandomDegrees, degreesWithVariations;
         if (pattern[\degree].isNil)
         { ^pattern };
@@ -9,6 +9,7 @@
             var scale = pattern[\scale] ?? \phrygian;
             var scaleDegrees = Scale.at(scale.asSymbol).degrees;
             var randomDegrees = Array.newClear(length);
+
             thisThread.randSeed = this.prGetPatternSeed(pattern);
             randomDegrees = length.collect { scaleDegrees.choose };
         };
@@ -28,14 +29,18 @@
         if (pattern[\degree].isKindOf(Pattern).not) {
             var degrees = pattern[\degree];
             var length = pattern[\midiControl] ?? inf;
+
             if (degrees == \rand) {
                 degrees = createRandomDegrees.value;
             };
 
+            if (midiratio == true)
+            { degrees = degrees.midiratio };
+
             pattern[\degree] = Pseq(degreesWithVariations.(degrees), length);
         };
 
-        if (pattern[\scale].notNil)
+        if (pattern[\scale].notNil and: (pattern[\scale].isArray.not))
         { pattern[\scale] = Scale.at(pattern[\scale]).semitones };
 
         ^pattern;

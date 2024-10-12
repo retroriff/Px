@@ -35,15 +35,11 @@ TR08 : Play {
             \ch -> 42,
         ];
 
-        var isTR08Detected = {
-            MIDIClient.destinations.detect({ |endpoint| endpoint.name == "TR-08" }) !== nil
-        };
+        var isTR08Detected = MIDIClient.destinations.detect({ |endpoint| endpoint.name == "TR-08" }) !== nil;
 
-        var midiPairs = {
-            if (isTR08Detected.value == true)
+        var midiPairs = if (isTR08Detected.value == true)
             { [\chan: 0] }
-            { Array.new }
-        };
+            { Array.new };
 
         if (MIDIClient.initialized == false
             or: { midiClient.notNil and: { midiClient["TR-08"].isNil }}

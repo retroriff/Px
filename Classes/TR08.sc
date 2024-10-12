@@ -16,8 +16,6 @@ TR08 : Px {
     }
 
     *new { | newPattern, quant, trace|
-        var ins = newPattern[\i];
-
         var drumKit = Dictionary[
             \bd -> 36,
             \sn -> 38,
@@ -45,10 +43,8 @@ TR08 : Px {
         if (isTR08Detected.value == true)
         { newPattern.putAll([\chan: 0]) };
 
-        newPattern.putAll([\midinote: drumKit[ins]]);
+        newPattern.putAll([\midinote: drumKit[newPattern[\i]]]);
         newPattern.putAll([\midiout, "TR-08"]);
-        newPattern.putAll([\id, ins]);
-        newPattern.removeAt(\i);
 
         ^super.new(newPattern, quant, trace);
     }

@@ -101,10 +101,23 @@
         this.prUpdatePattern([\weight, value.clip(0, 1)]);
     }
 
-    prUpdatePattern { |pairs|
-        var pattern = Px.lastPatterns[this.asSymbol];
+    createId { |ins|
+        if (this.prHasDrumMachine and: (ins.notNil))
+        { ^ins.asString.catArgs("_", this).asSymbol }
+        { ^this.asSymbol };
+    }
 
-        Px(pattern.putAll(pairs));
+    prHasDrumMachine {
+        var drumMachines = [808];
+        ^drumMachines.includes(this);
+    }
+
+    prUpdatePattern { |pairs|
+        var pattern = Px.patternState;
+
+        if (pattern.notNil) {
+            this.prPlayClass(pattern.putAll(pairs));
+        }
     }
 
     prFade { |direction, time|
@@ -118,16 +131,22 @@
     }
 
     prPlay { |i, play, loop|
-        var id = this.asSymbol;
-
-        Px(
-            newPattern: (
-                i: i,
-                id: id,
-                play: play,
-                loop: loop
-            );
+        var newPattern = (
+            i: i,
+            id: this.createId(i),
+            play: play,
+            loop: loop
         );
+
+        this.prPlayClass(newPattern);
+    }
+
+    prPlayClass { |newPattern|
+        Px.patternState = newPattern;
+
+        if (this.prHasDrumMachine)
+        { ^TR08(newPattern) }
+        { ^Px(newPattern) };
     }
 }
 
@@ -159,10 +178,16 @@
     weight {}
 
     i { |value|
-        Px.stop(this);
+        var number = this.asInteger;
+        var id = number.createId(value);
+        Px.stop(id);
     }
 
     loop { |value|
+        Px.stop(this);
+    }
+
+    play { |value|
         Px.stop(this);
     }
 }

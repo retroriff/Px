@@ -11,6 +11,7 @@ Px {
     classvar <lastName;
     classvar <>lastFormattedPatterns;
     classvar <>lastPatterns;
+    classvar <>patternState;
     classvar <midiClient;
     classvar <pbindList;
     classvar <samplesDict;

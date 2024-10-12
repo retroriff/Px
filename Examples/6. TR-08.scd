@@ -1,13 +1,9 @@
 // TR-08 has MIDI a specific config for this device that will simplify our code:
-(
 Px.initMidi(deviceName: "TR-08");
 808 i: \bd;
-)
 
 // Which is the same as (default latency is 0.195):
-(
 TR08((i: \bd));
-)
 
 // Let's sync the device with SC setting up a different latency:
 (

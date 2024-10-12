@@ -1,7 +1,7 @@
 // TR-08 has MIDI a specific config for this device that will simplify our code:
 (
-Pmidi.init(deviceName: "TR-08");
-Play([(chan: 0, \midinote: 36)], midiout: "TR-08");
+Px.initMidi(deviceName: "TR-08");
+1 chan: 0 \midinote: 36 midiout: "TR-08";
 )
 
 // Which is the same as (default latency is 0.195):

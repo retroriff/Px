@@ -4,6 +4,7 @@ TODO: PxTest fill test
 TODO: Replace Ptpar by Pbind with \timingOffset
 TODO: Delete Event classes when the migration to Number is done
 TODO: Add chorus & save to examples
+TODO: Rest doesn't work properly 808 i: \oh beat: 1 dur: 0.125 amp: 0.7 weight: 0.7 rest: Prand([1, 2, 4, 6], inf).trace;
 */
 
 Px {
@@ -46,14 +47,14 @@ Px {
             var amp = pattern[\amp] ?? 1;
 
             if (pattern[\beat].notNil) {
-                amp = this.prCreatePatternBeat(amp, pattern);
+                amp = this.prCreateBeat(amp, pattern);
             };
 
             if (pattern[\fill].notNil) {
-                amp = this.prCreatePatternFillFromBeat(amp, pattern);
+                amp = this.prCreateFillFromBeat(amp, pattern);
             };
 
-            pattern[\dur] = this.prCreatePatternBeatRest(pattern);
+            pattern[\dur] = this.prCreateBeatRest(pattern);
 
             pattern[\amp] = amp;
             pattern;

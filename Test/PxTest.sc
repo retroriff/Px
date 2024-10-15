@@ -180,11 +180,11 @@ PxTest : UnitTest {
         1 i: \bd beat: 1;
         2 i: \sn fill: 1;
 
-        Px.lastFormattedPatterns[\2][\totalBeat];
+        Px.lastFormattedPatterns[\2][\totalBeats];
         this.assertEquals(
-            Px.lastFormattedPatterns[\2][\totalBeat].isArray,
+            Px.lastFormattedPatterns[\2][\totalBeats].isArray,
             true,
-            "👀 Fill generates a \\totalBeat array",
+            "👀 Fill generates a \\totalBeats array",
         );
     }
     */

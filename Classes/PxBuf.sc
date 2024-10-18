@@ -17,23 +17,37 @@
         ^samplesDict[folder][file];
     }
 
+
     *loadSamples { |samplesPath|
         samplesDict = Dictionary.new;
         samplesDict.add(\foldernames -> PathName(samplesPath).entries);
 
         for (0, samplesDict[\foldernames].size - 1, { |i|
-            if (samplesDict[\foldernames][i].folderName != "sets") {
-                samplesDict.add(
-                    samplesDict[\foldernames][i].folderName ->
-                    samplesDict[\foldernames][i].entries.collect(
-                        { |sf|
-                            Buffer.read(Server.default, sf.fullPath);
-                        }
-                    )
-                )
+            var folder = samplesDict[\foldernames][i];
+
+            var addFileToDictionary = { |folderName, files|
+                samplesDict[folderName] = files.collect({ |file|
+                    Buffer.read(Server.default, file.fullPath)
+                });
+            };
+
+            var hasFiles = folder.files.size;
+
+            if (hasFiles > 0) {
+                addFileToDictionary.(folder.folderName, folder.files);
+            } {
+                folder.entries do: { |entry|
+                    var entryHasFiles = entry.files.size;
+
+                    if (entryHasFiles > 0) {
+                        var subFolderName = folder.folderName ++ "/" ++ entry.folderName;
+                        addFileToDictionary.(subFolderName, entry.files);
+                    }
+                };
             }
         });
     }
+
 
     *loadSynthDefsAfterUpdatingTempo {
         PathName(("../SynthDefs/").resolveRelative).filesDo{ |file|

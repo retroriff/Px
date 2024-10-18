@@ -1,10 +1,11 @@
 /*
-TODO: Fix fill
+TODO: Fix fill with drum machines. Id should check existing ids with same name (808) and generate 80800 + total
 TODO: PxTest fill test
+TODO: Rest doesn't work properly 808 i: \oh beat: 1 dur: 0.125 amp: 0.7 weight: 0.7 rest: Prand([1, 2, 4, 6], inf).trace;
 TODO: Replace Ptpar by Pbind with \timingOffset
 TODO: Delete Event classes when the migration to Number is done
 TODO: Add chorus & save to examples
-TODO: Rest doesn't work properly 808 i: \oh beat: 1 dur: 0.125 amp: 0.7 weight: 0.7 rest: Prand([1, 2, 4, 6], inf).trace;
+TODO: Make fill work with hundreth weighted beats (high difficulty)
 */
 
 Px {

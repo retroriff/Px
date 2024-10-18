@@ -37,20 +37,34 @@ TR08 : Px {
 
         var isTR08Detected = MIDIClient.destinations.detect({ |endpoint| endpoint.name == "TR-08" }) !== nil;
 
-        if (MIDIClient.initialized == false or: { midiClient.notNil and: { midiClient["TR-08"].isNil }})
-        { this.init(0.195) };
+        var initializeMIDIDevice = {
+            if (MIDIClient.initialized == false or: { midiClient.notNil and: { midiClient["TR-08"].isNil }})
+            { this.init(0.195, newPattern[\drumMachine]) };
+        };
+
+        var addTR08Pairs = {
+            newPattern.putAll([\chan: 0]);
+            newPattern.putAll([\midinote: drumKit[newPattern[\i]]]);
+            newPattern.putAll([\midiout, "TR-08"]);
+        };
+
+        var addDrumMachinePlayBuf = {
+            var folder = newPattern[\drumMachine].asString.catArgs("/", newPattern[\i].asString);
+            newPattern.putAll([\play: [folder, 0]]);
+        };
+
+        initializeMIDIDevice.value;
 
         if (isTR08Detected.value == true)
-        { newPattern.putAll([\chan: 0]) };
-
-        newPattern.putAll([\midinote: drumKit[newPattern[\i]]]);
-        newPattern.putAll([\midiout, "TR-08"]);
+        { addTR08Pairs.value }
+        { addDrumMachinePlayBuf.value };
 
         ^super.new(newPattern, quant, trace);
     }
 
-    *init { |latency|
-        Px.initMidi(latency, deviceName: "TR-08");
+    *init { |latency, drumMachine|
+        if (drumMachine == 808)
+        { Px.initMidi(latency, deviceName: "TR-08") };
     }
 
     *loadPresets {

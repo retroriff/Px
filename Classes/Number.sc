@@ -108,7 +108,7 @@
     }
 
     prHasDrumMachine {
-        var drumMachines = [808];
+        var drumMachines = [606, 707, 808, 909];
         ^drumMachines.includes(this);
     }
 
@@ -145,7 +145,7 @@
         Px.patternState = newPattern;
 
         if (this.prHasDrumMachine)
-        { ^TR08(newPattern) }
+        { ^TR08(newPattern.putAll([\drumMachine, this])) }
         { ^Px(newPattern) };
     }
 }

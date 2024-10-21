@@ -130,7 +130,7 @@ PxTest : UnitTest {
         );
 
         Px.tempo(117);
-        Px.loadSynthDefsAfterUpdatingTempo;
+        Px.loadSynthDefs;
     }
 
     test_vol {

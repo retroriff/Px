@@ -9,7 +9,6 @@
             var scale = pattern[\scale] ?? \phrygian;
             var scaleDegrees = Scale.at(scale.asSymbol).degrees;
             var randomDegrees = Array.newClear(length);
-
             thisThread.randSeed = this.prGetPatternSeed(pattern);
             randomDegrees = length.collect { scaleDegrees.choose };
         };

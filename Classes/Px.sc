@@ -6,6 +6,7 @@ TODO: Replace Ptpar by Pbind with \timingOffset
 TODO: Delete Event classes when the migration to Number is done
 TODO: Add chorus & save to examples
 TODO: Make fill work with hundreth weighted beats (high difficulty)
+TODO: 303 instrument
 */
 
 Px {
@@ -224,7 +225,7 @@ Px {
 
     *tempo { |tempo|
         TempoClock.default.tempo = tempo.clip(10, 300) / 60;
-        this.loadSynthDefsAfterUpdatingTempo;
+        this.loadSynthDefs;
     }
 
     *trace { |name|

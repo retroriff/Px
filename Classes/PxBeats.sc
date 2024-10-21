@@ -18,7 +18,6 @@
             if (pseqWeight > 0) {
                 var seq1 = Pseq(rhythmSeq.(rhythmWeight), 1);
                 var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
-                var test = Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight]).asStream.postln;
                 beats = [Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
             } {
                 beats = rhythmSeq.(weight);

@@ -11,5 +11,6 @@
 909 i: \sn dur: 2 off: 1;
 909 i: \oh dur: 0.25 beat: 1 amp: 0.4 degree: \rand length: 3 rotate: 1;
 909 i: \rd dur: 0.25 beat: 1 amp: 0.3;
+909 i: \oh dur: 1 amp: 0.8 off: 0.5;
 909 i: \cr dur: 16 off: 4;
 )

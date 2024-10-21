@@ -49,7 +49,7 @@
     }
 
 
-    *loadSynthDefsAfterUpdatingTempo {
+    *loadSynthDefs {
         PathName(("../SynthDefs/").resolveRelative).filesDo{ |file|
             file.fullPath.load;
         };

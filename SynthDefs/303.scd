@@ -1,5 +1,5 @@
 (
-SynthDef (\303, {
+SynthDef(\303, {
     |amp = 0.5, ctf = 0.1, dec = 0.3, env = 0.01, freq = 440,
     gate = 1, out = 0, res = 0.2, sus = 0, wave = 0|
 

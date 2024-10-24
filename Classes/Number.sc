@@ -101,6 +101,24 @@
         this.prUpdatePattern([\weight, value.clip(0, 1)]);
     }
 
+    // 303 SynthDef methods
+    ctf { |value|
+        this.prUpdatePattern([\ctf, value]);
+    }
+
+    env { |value|
+        this.prUpdatePattern([\env, value]);
+    }
+
+    res { |value|
+        this.prUpdatePattern([\res, value]);
+    }
+
+    wave { |value|
+        this.prUpdatePattern([\wave, value]);
+    }
+
+    // Functions
     createId { |ins|
         if (this.prHasDrumMachine and: (ins.notNil))
         { ^ins.asString.catArgs("_", this).asSymbol }
@@ -110,14 +128,6 @@
     prHasDrumMachine {
         var drumMachines = [606, 707, 808, 909];
         ^drumMachines.includes(this);
-    }
-
-    prUpdatePattern { |pairs|
-        var pattern = Px.patternState;
-
-        if (pattern.notNil) {
-            this.prPlayClass(pattern.putAll(pairs));
-        }
     }
 
     prFade { |direction, time|
@@ -148,6 +158,14 @@
         { ^TR08(newPattern.putAll([\drumMachine, this])) }
         { ^Px(newPattern) };
     }
+
+    prUpdatePattern { |pairs|
+        var pattern = Px.patternState;
+
+        if (pattern.notNil) {
+            this.prPlayClass(pattern.putAll(pairs));
+        }
+    }
 }
 
 + Symbol {
@@ -176,6 +194,11 @@
     solo {}
     wah {}
     weight {}
+    // 303 SynthDef
+    env {}
+    ctf {}
+    res {}
+    wave {}
 
     i { |value|
         var number = this.asInteger;

@@ -1,18 +1,18 @@
 + Px {
     *blp { |mix = 0.4|
-        Nfx(lastName).blp(mix);
+        Nfx(\px).blp(mix);
     }
 
     *delay { |mix, delaytime = 8, decaytime = 2|
-        Nfx(lastName).delay(mix, delaytime, decaytime);
+        Nfx(\px).delay(mix, delaytime, decaytime);
     }
 
     *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
-        Nfx(lastName).gverb(mix, roomsize, revtime);
+        Nfx(\px).gverb(mix, roomsize, revtime);
     }
 
     *hpf { |mix = 1, freq = 1200|
-        Nfx(lastName).hpf(mix, freq);
+        Nfx(\px).hpf(mix, freq);
     }
 
     *lpf { |mix, args|
@@ -20,11 +20,11 @@
     }
 
     *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
-        Nfx(lastName).reverb(mix, room, damp);
+        Nfx(\px).reverb(mix, room, damp);
     }
 
     *vst { |mix = 1, plugin|
-        Nfx(lastName).vst(mix, plugin);
+        Nfx(\px).vst(mix, plugin);
     }
 
     *wah { |mix, args|
@@ -139,7 +139,8 @@
     }
 
     prFx { |fx, mix|
-        var lastFx = Px.lastPatterns[this.asSymbol][\fx] ?? [];
+        var id = Px.patternState[\id];
+        var lastFx = Px.lastPatterns[id][\fx] ?? [];
         lastFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
         this.prUpdatePattern([\fx, lastFx]);
     }

@@ -1,19 +1,20 @@
 + Px {
     *prGenerateDegrees { |pattern, midiratio|
-        var createRandomDegrees, degreesWithVariations;
-        if (pattern[\degree].isNil)
-        { ^pattern };
+        var createRandomDegrees = {
+            var length, scale, scaleDegrees, randomDegrees;
+            length = pattern[\length] ?? 1;
+            scale = pattern[\scale] ?? \phrygian;
 
-        createRandomDegrees = {
-            var length = pattern[\length] ?? 1;
-            var scale = pattern[\scale] ?? \phrygian;
-            var scaleDegrees = Scale.at(scale.asSymbol).degrees;
-            var randomDegrees = Array.newClear(length);
+            if (scale.isArray)
+            { scaleDegrees = scale }
+            { scaleDegrees = Scale.at(scale.asSymbol).degrees };
+
+            randomDegrees = Array.newClear(length);
             thisThread.randSeed = this.prGetPatternSeed(pattern);
             randomDegrees = length.collect { scaleDegrees.choose };
         };
 
-        degreesWithVariations = { |degrees, numOctaves = 1|
+        var degreesWithVariations = { |degrees, numOctaves = 1|
             if (pattern[\arp].notNil) {
                 degrees = degrees.collect { |degree|
                     degree + (0..numOctaves).flat.collect { |oct| oct * 7 };
@@ -25,22 +26,24 @@
             degrees;
         };
 
+        if (pattern[\scale].notNil and: (pattern[\scale].isArray.not))
+        { pattern[\scale] = Scale.at(pattern[\scale]).semitones };
+
+        if (pattern[\degree].isNil)
+        { ^pattern };
+
         if (pattern[\degree].isKindOf(Pattern).not) {
             var degrees = pattern[\degree];
             var length = pattern[\midiControl] ?? inf;
 
-            if (degrees == \rand) {
-                degrees = createRandomDegrees.value;
-            };
+            if (degrees == \rand)
+            { degrees = createRandomDegrees.value };
 
             if (midiratio == true)
             { degrees = degrees.midiratio };
 
             pattern[\degree] = Pseq(degreesWithVariations.(degrees), length);
         };
-
-        if (pattern[\scale].notNil and: (pattern[\scale].isArray.not))
-        { pattern[\scale] = Scale.at(pattern[\scale]).semitones };
 
         ^pattern;
     }
@@ -61,6 +64,10 @@
         { pattern = value };
 
         ^this.prUpdatePattern([\degree, pattern ?? value]);
+    }
+
+    detune { |value|
+        ^this.prUpdatePattern([\detune, value]);
     }
 
     legato { |value|
@@ -86,16 +93,22 @@
     scale { |value|
         ^this.prUpdatePattern([\scale, value]);
     }
+
+    sus { |value|
+        ^this.prUpdatePattern([\sus, value]);
+    }
 }
 
 + Symbol {
     arp {}
     degree {}
+    detune {}
     legato {}
     length {}
     octave {}
     root {}
     scale {}
+    sus {}
 }
 
 + Event {

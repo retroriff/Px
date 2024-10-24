@@ -6,7 +6,7 @@ TODO: Replace Ptpar by Pbind with \timingOffset
 TODO: Delete Event classes when the migration to Number is done
 TODO: Add chorus & save to examples
 TODO: Make fill work with hundreth weighted beats (high difficulty)
-TODO: 303 instrument
+TODO: octave: \beats and octave: [\beats, 5]
 */
 
 Px {

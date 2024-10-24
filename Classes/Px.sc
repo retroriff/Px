@@ -7,6 +7,7 @@ TODO: Delete Event classes when the migration to Number is done
 TODO: Add chorus & save to examples
 TODO: Make fill work with hundreth weighted beats (high difficulty)
 TODO: octave: \beats and octave: [\beats, 5]
+TODO: Define global Px seed for all patterns
 */
 
 Px {

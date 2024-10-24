@@ -132,13 +132,17 @@
     }
 
     prGenerateDrumMachineId { |ins|
-        var drumMachineCount = Px.lastPatterns count: ({ |pattern|
+        var existingPattern = Px.lastPatterns.detect({ |pattern|
+            pattern[\drumMachine] == this and: (pattern[\i] == ins);
+        });
+
+        var drumMachineCount = Px.lastPatterns.count({ |pattern|
             pattern[\drumMachine] == this and: (pattern[\i] != ins);
         });
-        var baseMultiplier = 100;
-        var offset = 1;
-        (this * baseMultiplier + offset + drumMachineCount).asSymbol.postln;
-        ^(this * baseMultiplier + offset + drumMachineCount).asSymbol;
+
+        if (existingPattern.notNil)
+        { ^existingPattern[\id] }
+        { ^(this * 100 + 1 + drumMachineCount).asSymbol };
     }
 
     prHasDrumMachine {

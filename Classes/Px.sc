@@ -1,5 +1,5 @@
 /*
-TODO: Fix fill with drum machines. Id should check existing ids with same name (808) and generate 80800 + total
+TODO: Fix fill with drum machines, should also work with weight
 TODO: PxTest fill test
 TODO: Rest doesn't work properly 808 i: \oh beat: 1 dur: 0.125 amp: 0.7 weight: 0.7 rest: Prand([1, 2, 4, 6], inf).trace;
 TODO: Replace Ptpar by Pbind with \timingOffset

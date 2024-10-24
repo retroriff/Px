@@ -120,9 +120,25 @@
 
     // Functions
     createId { |ins|
-        if (this.prHasDrumMachine and: (ins.notNil))
-        { ^ins.asString.catArgs("_", this).asSymbol }
-        { ^this.asSymbol };
+        if (this.prShouldGenerateDrumMachineId(ins)) {
+            ^this.prGenerateDrumMachineId(ins);
+        }
+
+        ^this.asSymbol;
+    }
+
+    prShouldGenerateDrumMachineId { |ins|
+        ^this.prHasDrumMachine and: (ins.notNil);
+    }
+
+    prGenerateDrumMachineId { |ins|
+        var drumMachineCount = Px.lastPatterns count: ({ |pattern|
+            pattern[\drumMachine] == this and: (pattern[\i] != ins);
+        });
+        var baseMultiplier = 100;
+        var offset = 1;
+        (this * baseMultiplier + offset + drumMachineCount).asSymbol.postln;
+        ^(this * baseMultiplier + offset + drumMachineCount).asSymbol;
     }
 
     prHasDrumMachine {

@@ -40,5 +40,4 @@ SynthDef(\303, {
 
     Out.ar(out, sig * amp);
 }).add;
-)
-
+);

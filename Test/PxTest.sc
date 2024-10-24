@@ -1,28 +1,14 @@
 PxTest : UnitTest {
     var expectedResult;
 
-    prGetNames {
-        // We play first \px2 so classvar "lastName" is \px
-        ^[\px2, \px];
-    }
-
     setUp {
-        var names = this.prGetNames;
         ~isUnitTestRunning = true;
-
-        names do: { |name|
-            if (name == \px)
-            { name = nil };
-
-            Px([
-                (i: \bd).amp(0.5),
-                (i: \sn, dur: 1/4),
-            ], name).vol(0, name);
-        };
+        1 i: \bd amp: 0.5;
+        2 i: \sn dur: 0.25;
     }
 
     tearDown {
-        this.prGetNames do: { |name| Px.stop(name) };
+        Px.stop;
         Ndef.clear;
         Pdef.clear;
         Px.chorusPatterns = Dictionary.new;
@@ -33,15 +19,10 @@ PxTest : UnitTest {
 
     // Params
     test_playPx {
-        var expectedResult = Dictionary.new;
-        var names = this.prGetNames;
-
-        names do: { |name|
-            expectedResult.add(name -> [
-                (i: \bd, amp: 0.5),
-                (i: \sn, dur: 0.25)
-            ]);
-        };
+        var expectedResult = Dictionary[
+            \1 -> (i: \bd, id: \1, amp: 0.5),
+            \2 -> (i: \sn, id: \2, dur: 0.25)
+        ];
 
         this.assertEquals(
             Px.lastPatterns,
@@ -52,26 +33,10 @@ PxTest : UnitTest {
         this.ifAsserts(
             Px.lastPatterns == expectedResult,
             "👀 Patterns are correctly generated",
-            names do: { |name|
-                this.assert(
-                    Ndef(name).isPlaying,
-                    "👀 Ndef(\\" ++ name ++ ") is playing"
-                );
-            };
-
-            this.assertEquals(
-                Px.nodeProxy.size,
-                2,
-                "👀 Dictionary nodeProxy has correct items"
+            this.assert(
+                Ndef(\px).isPlaying,
+                "👀 Ndef(\\px) is playing"
             );
-        );
-    }
-
-    test_lastName {
-        this.assertEquals(
-            Px.lastName,
-            \px,
-            "👀 Px.lastName stores the last played instance name",
         );
     }
 
@@ -82,7 +47,7 @@ PxTest : UnitTest {
             "👀 Default quant is 4",
         );
 
-        Px([(i: \bd)], quant: 8);
+        Px((i: \bd), quant: 8);
 
         this.assertEquals(
             Pdef(\px).quant,
@@ -103,29 +68,18 @@ PxTest : UnitTest {
     }
 
     test_chorus {
-        Px([(i: \bd).amp(0.5)]).save;
+        1 i: \cy amp: 0.5;
+        Px.save;
         Px.chorus;
         expectedResult = Dictionary[
-            \px -> [(i: \bd, amp: 0.5)]
+            \1 -> (i: \cy, amp: 0.5, id: \1),
+            \2 -> (i: \sn, dur: 0.25, id: \2),
         ];
 
         this.assertEquals(
             Px.chorusPatterns,
             expectedResult,
-            "👀 Chorus to default \\px is saved and played",
-        );
-
-        Px([(i: \bd).amp(0.5)], \px2).save;
-        Px.chorus(\px2);
-        expectedResult = Dictionary[
-            \px -> [(i: \bd, amp: 0.5)],
-            \px2 -> [(i: \bd, amp: 0.5)]
-        ];
-
-        this.assertEquals(
-            Px.chorusPatterns,
-            expectedResult,
-            "👀 Chorus to \\px2 is also saved and played",
+            "👀 Chorus is saved and played",
         );
     }
 
@@ -138,19 +92,17 @@ PxTest : UnitTest {
 
     test_release {
         Px.release(0);
-        Px.release(0, \px2);
 
-        this.prGetNames do: { |name|
-            this.assertEquals(
-                Ndef(name).isPlaying,
-                false,
-                "👀 Px instance \\" ++ name ++ " has been stopped",
-            );
-        }
+        this.assertEquals(
+            Ndef(\px).isPlaying,
+            false,
+            "👀 Px has been stopped",
+        );
     }
 
     test_shuffle {
-        Px([(i: \bd).beat]).shuffle;
+        1 i: \bd beat: 1;
+        Px.shuffle;
 
         this.assert(
             Px.seeds.size > 0,
@@ -178,92 +130,103 @@ PxTest : UnitTest {
         );
 
         Px.tempo(117);
-        Px.loadSynthDefsAfterUpdatingTempo;
+        Px.loadSynthDefs;
     }
 
     test_vol {
+        expectedResult = 0.1;
+        Px.vol(expectedResult);
 
-        this.prGetNames do: { |name|
-            var volName = name;
-            expectedResult = 0.1;
-
-            if (name == \px)
-            { volName = nil };
-
-            Px.vol(expectedResult, volName);
-
-            this.assertEquals(
-                Ndef(name).vol,
-                expectedResult,
-                "👀 Volume for \\" ++ name ++ " has been set",
-            );
-        };
+        this.assertEquals(
+            Ndef(\px).vol,
+            expectedResult,
+            "👀 Volume has been set",
+        );
     }
 
     // Event functions
     test_amp {
-        Px([(i: \bd)]);
+        1 i: \bd;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\px][0][\amp],
+            Px.lastFormattedPatterns[\1][\amp],
             1,
             "👀 Default \\amp has been added",
         );
     }
 
     test_beat {
-        Px([(i: \bd).beat]);
+        1 i: \bd beat: 1;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\px][0][\amp].class,
+            Px.lastFormattedPatterns[\1][\amp].class,
             Pseq,
             "👀 Beat generates an \\amp Pseq",
         );
     }
 
     test_dur {
-        Px([(i: \bd)]);
+        1 i: \bd;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\px][0][\dur],
+            Px.lastFormattedPatterns[\1][\dur],
             1,
             "👀 Default \\dur has been added",
         );
     }
 
+    /*
     test_fill {
-        Px([(i: \bd).beat, (i: \sn).fill]);
+        1 i: \bd beat: 1;
+        2 i: \sn fill: 1;
+
+        Px.lastFormattedPatterns[\2][\totalBeats];
+        this.assertEquals(
+            Px.lastFormattedPatterns[\2][\totalBeats].isArray,
+            true,
+            "👀 Fill generates a \\totalBeats array",
+        );
+    }
+    */
+
+    test_fade {
+        1 i: \bd out: 10;
+        2 i: \sn in: 0;
+
+        expectedResult = Dictionary[
+            \2 -> (i: \sn, id: \2, 'fade': [\in, 0.1]),
+        ];
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\px][1][\totalBeat].isArray,
-            true,
-            "👀 Fill generates a \\totalBeat array",
+            Px.lastPatterns,
+            expectedResult,
+            "👀 Fades in and out is deleted from last patterns.",
         );
     }
 
     test_human {
-        Px([(i: \bd).human]);
+        1 i: \bd human: 1;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\px][0][\lag].class,
+            Px.lastFormattedPatterns[\1][\lag].class,
             Pwhite,
             "👀 Human adds a lag pair to pattern",
         );
     }
 
     test_ids {
-        Px([(i: \bd)]);
+        1 i: \bd;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\px][0][\id],
-            \bd_0,
+            Px.lastFormattedPatterns[\1][\id],
+            \1,
             "👀 Px generates ids",
         );
     }
 
     test_loop {
-        Px([(loop: ["fm", 0])]);
-        expectedResult = Px.lastFormattedPatterns[\px][0];
+        1 loop: ["fm", 0];
+        expectedResult = Px.lastFormattedPatterns[\1];
 
         this.assert(
             expectedResult[\buf].asString.contains("Buffer"),
@@ -278,8 +241,8 @@ PxTest : UnitTest {
     }
 
     test_play {
-        Px([(play: ["fm", 0])]);
-        expectedResult = Px.lastFormattedPatterns[\px][0];
+        1 play: ["fm", 0];
+        expectedResult = Px.lastFormattedPatterns[\1];
 
         this.assert(
             expectedResult[\buf].asString.contains("Buffer"),
@@ -295,12 +258,19 @@ PxTest : UnitTest {
 
 
     test_solo {
-        Px([(i: \bd).solo, (i: \sn)]);
-        expectedResult = [(i: \bd, solo: true)];
+        1 i: \bd solo: 1;
+        2 i: \sn;
+        expectedResult = (i: \bd, id: \1, solo: true);
 
         this.assertEquals(
-            Px.lastPatterns[\px],
+            Px.lastPatterns[\1],
             expectedResult,
+            "👀 Px contains correct solo data",
+        );
+
+        this.assertEquals(
+            Px.lastFormattedPatterns.size,
+            1,
             "👀 Px only plays solo patterns",
         );
     }

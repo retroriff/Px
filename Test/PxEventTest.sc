@@ -90,21 +90,21 @@ PxEventTest : UnitTest {
 
     test_fade {
         result = (i: \bd).in(10);
-        expectedResult = (i: \bd, \fade: ["in", 10]);
+        expectedResult = (i: \bd, \fade: [\in, 10]);
 
         this.assertEquals(
             result,
             expectedResult,
-            "👀 Fade in s added to event",
+            "👀 Fade \\in is added to event",
         );
 
         result = (i: \bd).out(5);
-        expectedResult = (i: \bd, \fade: ["out", 5]);
+        expectedResult = (i: \bd, \fade: [\out, 5]);
 
         this.assertEquals(
             result,
             expectedResult,
-            "👀 Fade out is added to event",
+            "👀 Fade \\out is added to event",
         );
     }
 

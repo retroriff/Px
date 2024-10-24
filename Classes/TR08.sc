@@ -3,7 +3,7 @@ TODO: Intro / Fill in
 TODO: Unit tests
 */
 
-TR08 : Play {
+TR08 : Px {
     classvar hasLoadedPresets;
     classvar <lastPreset;
     classvar <presetsDict;
@@ -15,7 +15,7 @@ TR08 : Play {
         ^super.initClass;
     }
 
-    *new { | patterns, name, quant, trace|
+    *new { | newPattern, quant, trace|
         var drumKit = Dictionary[
             \bd -> 36,
             \sn -> 38,
@@ -37,24 +37,34 @@ TR08 : Play {
 
         var isTR08Detected = MIDIClient.destinations.detect({ |endpoint| endpoint.name == "TR-08" }) !== nil;
 
-        var midiPairs = if (isTR08Detected.value == true)
-            { [\chan: 0] }
-            { Array.new };
-
-        if (MIDIClient.initialized == false
-            or: { midiClient.notNil and: { midiClient["TR-08"].isNil }}
-        )
-        { this.init(0.195) };
-
-        patterns.collect { |pattern|
-            pattern.putAll([\midinote: drumKit[pattern[\i].asSymbol]] ++ midiPairs.value);
+        var initializeMIDIDevice = {
+            if (MIDIClient.initialized == false or: { midiClient.notNil and: { midiClient["TR-08"].isNil }})
+            { this.init(0.195, newPattern[\drumMachine]) };
         };
 
-        ^super.new(patterns, name ?? \tr08, quant, trace, midiout: "TR-08");
+        var addTR08Pairs = {
+            newPattern.putAll([\chan: 0]);
+            newPattern.putAll([\midinote: drumKit[newPattern[\i]]]);
+            newPattern.putAll([\midiout, "TR-08"]);
+        };
+
+        var addDrumMachinePlayBuf = {
+            var folder = newPattern[\drumMachine].asString.catArgs("/", newPattern[\i].asString);
+            newPattern.putAll([\play: [folder, 0]]);
+        };
+
+        initializeMIDIDevice.value;
+
+        if (isTR08Detected.value == true)
+        { addTR08Pairs.value }
+        { addDrumMachinePlayBuf.value };
+
+        ^super.new(newPattern, quant, trace);
     }
 
-    *init { |latency|
-        Play.initMidi(latency, deviceName: "TR-08");
+    *init { |latency, drumMachine|
+        if (drumMachine == 808)
+        { Px.initMidi(latency, deviceName: "TR-08") };
     }
 
     *loadPresets {
@@ -100,10 +110,13 @@ TR08 : Play {
         { this.prCreatePresetsDict };
 
         if (newPreset != lastPreset or: (hasLoadedPresets == true)) {
-           createPatternFromPreset.value;
+            createPatternFromPreset.value;
         };
 
-        TR08(presetPatterns);
+        presetPatterns do: { |pattern|
+            var id = (pattern[\i].asString.catArgs("_", 808)).asSymbol;
+            TR08(pattern.putAll([\id, id]));
+        }
     }
 
     *stop {

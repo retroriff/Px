@@ -1,20 +1,4 @@
-X : Event {
-    *i { |name|
-        ^super.new.ins(name);
-    }
-}
-
-+Number {
-    px { |pattern|
-        Px ([pattern], this);
-    }
-
-    *i { |name|
-        ^Event.new.i(name);
-    }
-}
-
-+Event {
++ Event {
     a { |args|
         this.amp(args);
     }
@@ -49,7 +33,7 @@ X : Event {
         { direction }
         { [direction, time.clip(0.1, time)] };
 
-        ^this.putAll([\fade, fade]);
+        ^this.putAll([\fade, fade.asSymbol]);
     }
 
     fill { |rest|
@@ -75,10 +59,6 @@ X : Event {
 
     pan { |value|
         ^this.putAll([\pan, value]);
-    }
-
-    px { |name, quant, trace|
-        Px([this], name, quant, trace);
     }
 
     rotate {

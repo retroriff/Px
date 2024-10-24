@@ -1,5 +1,13 @@
 /*
-TODO: Classvar "seeds" should also be multiname
+TODO: Fix fill with drum machines, should also work with weight
+TODO: PxTest fill test
+TODO: Rest doesn't work properly 808 i: \oh beat: 1 dur: 0.125 amp: 0.7 weight: 0.7 rest: Prand([1, 2, 4, 6], inf).trace;
+TODO: Replace Ptpar by Pbind with \timingOffset
+TODO: Delete Event classes when the migration to Number is done
+TODO: Add chorus & save to examples
+TODO: Make fill work with hundreth weighted beats (high difficulty)
+TODO: octave: \beats and octave: [\beats, 5]
+TODO: Define global Px seed for all patterns
 */
 
 Px {
@@ -7,7 +15,9 @@ Px {
     classvar <lastName;
     classvar <>lastFormattedPatterns;
     classvar <>lastPatterns;
-    classvar <nodeProxy;
+    classvar <>patternState;
+    classvar <midiClient;
+    classvar <pbindList;
     classvar <samplesDict;
     classvar <seeds;
 
@@ -15,109 +25,40 @@ Px {
         chorusPatterns = Dictionary.new;
         lastFormattedPatterns = Dictionary.new;
         lastPatterns = Dictionary.new;
-        nodeProxy = Dictionary.new;
+        pbindList = Dictionary.new;
         seeds = Dictionary.new;
     }
 
-    *new { | patterns, name, quant, trace |
-        var pDef, ptparList;
+    *new { | newPattern, quant, trace |
+        var patterns, pbind, pdef, ptpar, ptparList;
 
-        var getSoloPatterns = {
-            var soloList = patterns.select { |pattern|
-                pattern['solo'].notNil
+        var handleSoloPatterns = { |patterns|
+            var hasSolo = patterns any: { |pattern|
+                pattern['solo'] == true;
             };
 
-            if (soloList.isEmpty.not)
-            { soloList }
-            { patterns }
-        };
-
-        var createIds = {
-            var indexDict = Dictionary.new;
-            patterns = patterns.collect { |pattern|
-                var patternStr = pattern.i.asString;
-                indexDict[patternStr] = indexDict[patternStr].isNil.if
-                { 0 }
-                { indexDict[patternStr] + 1 };
-                pattern = pattern ++ (id: pattern[\id] ?? (patternStr ++ "_" ++ indexDict[patternStr]));
-                pattern[\id] = pattern[\id].asSymbol;
-            };
-        };
-
-        var createPatternBeatRest = { |pattern|
-            var dur = pattern[\dur];
-            if (pattern[\rest].notNil) {
-                dur = Pseq([Pn(dur, 15), pattern[\rest] + dur], inf);
-            };
-            dur;
-        };
-
-        var createPatternBeat = { |amp, pattern|
-            if (pattern[\beatSet].isNil) {
-                var seed = this.prGetPatternSeed(pattern);
-                var weight = pattern[\weight] ?? 0.7;
-                var rhythmWeight = (weight * 10).floor / 10;
-                var pseqWeight = weight - rhythmWeight * 10;
-                var rhythmSeq = { |weight|
-                    Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
-                };
-                thisThread.randSeed = seed;
-                if (pseqWeight > 0) {
-                    var seq1 = Pseq(rhythmSeq.(rhythmWeight), 1);
-                    var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
-                    [Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
-                } {
-                    rhythmSeq.(weight);
-                };
-            } {
-                createPatternBeatSet.(amp, pattern);
-            };
-        };
-
-        var createPatternBeatSet = { |amp, pattern|
-            var list = pattern[\beatSet].collect { |step|
-                if (step >= 1)
-                { step = amp };
-                step;
-            };
-            Pseq(list, inf);
-        };
-
-        var createPatternFillFromBeat = { |amp, i, pattern|
-            var steps = 16;
-            var getInvertBeat = { |beatAmp, invertAmp = 1|
-                var invertBeat = beatAmp.iter.loop.nextN(steps).linlin(0, amp, amp, Rest());
-                var weight = pattern[\weight] ?? 1;
-                thisThread.randSeed = this.prGetPatternSeed(pattern);
-                invertBeat.collect { |step|
-                    if (step == amp) {
-                        step = [0, amp].wchoose([1 - weight, weight]);
-                    };
-                    step;
+            if (hasSolo) {
+                patterns = patterns select: { |pattern|
+                    pattern['solo'] == true
                 };
             };
-            var getTotalBeat = { |invertBeat|
-                var beat = pattern[\totalBeat] ?? Array.fill(steps, 0);
-                (beat + invertBeat).collect { |step| step.clip(0, 1) };
-            };
-            var invertBeat = getInvertBeat.(patterns[i - 1][\amp], pattern[\amp]);
-            var totalBeat = getTotalBeat.(invertBeat);
-            patterns[i].putAll([\totalBeat, totalBeat]);
-            totalBeat;
+
+            patterns;
         };
 
-        var createPatternAmp = { |pattern, i|
-            var amp = pattern[\amp] ?? pattern[\a] ?? 1;
-            pattern.removeAt(\a);
+        var createPatternAmp = { |pattern|
+            var amp = pattern[\amp] ?? 1;
+
             if (pattern[\beat].notNil) {
-                amp = createPatternBeat.(amp, pattern);
+                amp = this.prCreateBeat(amp, pattern);
             };
+
             if (pattern[\fill].notNil) {
-                amp = createPatternFillFromBeat.(amp, i, pattern);
+                amp = this.prCreateFillFromBeat(amp, pattern);
             };
-            pattern[\dur] = createPatternBeatRest.(pattern);
-            if (amp.isArray)
-            { amp = Pseq(amp, inf) };
+
+            pattern[\dur] = this.prCreateBeatRest(pattern);
+
             pattern[\amp] = amp;
             pattern;
         };
@@ -127,6 +68,7 @@ Px {
                 var delay = pattern[\human] * 0.04;
                 pattern[\lag] = Pwhite(delay.neg, delay);
             };
+
             pattern;
         };
 
@@ -137,7 +79,7 @@ Px {
             { dur = 1 };
 
             if (dur.isArray) {
-                var containsString = dur.any { |item| item.isString };
+                var containsString = dur any: { |item| item.isString };
                 dur = containsString.if { 1 } { Pseq(dur, inf) };
             };
 
@@ -153,11 +95,22 @@ Px {
 
         var createPatternFade = { |fade, pbind|
             var defaultFadeTime = 16;
-            var dir = if (fade.isString) { fade } { fade[0] };
-            var fadeTime = if (fade.isString) { defaultFadeTime } { fade[1] };
-            if (dir == "in")
-            { PfadeIn(pbind, fadeTime) }
-            { PfadeOut(pbind, fadeTime) }
+            var direction, fadeTime;
+
+            if (fade.isArray) {
+                direction = fade[0];
+                fadeTime = fade[1];
+            } {
+                direction = fade;
+                fadeTime = defaultFadeTime;
+            };
+
+            if (direction == \in) {
+                PfadeIn(pbind, fadeTime);
+            } {
+                lastPatterns.removeAt(newPattern[\id]);
+                PfadeOut(pbind, fadeTime);
+            }
         };
 
         var createPatternPan = { |pattern|
@@ -168,20 +121,30 @@ Px {
             pattern;
         };
 
-        name = this.prGetName(name);
-        patterns = getSoloPatterns.value;
-        lastPatterns[name] = patterns;
+        if (Ndef(\px).isPlaying.not) {
+            chorusPatterns = Dictionary.new;
+            lastPatterns = Dictionary.new;
+        };
 
-        patterns = createIds.value;
+        if (newPattern.notNil)
+        { lastPatterns[newPattern[\id]] = newPattern };
+
+        patterns = handleSoloPatterns.(lastPatterns);
         patterns = this.prCreateBufIns(patterns);
         patterns = this.prCreateLoops(patterns);
 
-        patterns do: { |pattern, i|
+        patterns do: { |pattern|
             var pbind;
-            pattern = createPatternAmp.(pattern, i);
+
+            pattern = createPatternAmp.(pattern);
             pattern = createPatternDur.(pattern);
             pattern = createPatternPan.(pattern);
+            pattern = this.prGenerateDegrees(pattern);
+            pattern = this.prCreateMidiPatterns(pattern);
             pattern = this.prCreatePatternFx(pattern);
+
+            if (pattern[\amp].isArray)
+            { pattern[\amp] = Pseq(pattern[\amp], inf) };
 
             if (this.prHasFX(pattern) == true)
             { pbind = this.prCreatePbindFx(pattern) }
@@ -196,56 +159,63 @@ Px {
             ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
         };
 
-        lastFormattedPatterns[name] = patterns;
-        pDef = Pdef(name.asSymbol, Ptpar(ptparList)).quant_(quant ?? 4);
+        if (newPattern.notNil)
+        { lastFormattedPatterns[newPattern[\id]] = patterns[newPattern[\id]]};
 
-        if (nodeProxy[name].isPlaying.not) {
-            nodeProxy.add(name -> Ndef(name, pDef).play);
+        pdef = Pdef(\px, Ptpar(ptparList)).quant_(quant ?? 4);
+
+        if (Ndef(\px).isPlaying.not) {
+            Ndef(\px, pdef).play;
         };
     }
 
-    *chorus { |name|
-        name = name ?? lastName;
+    *chorus {
+        if (chorusPatterns.isNil) {
+            ^this.prPrint("💩 Chorus is empty. Please run \"save\"")
+        };
 
-        if (chorusPatterns[name].isNil)
-        { this.prPrint("💩 Chorus is empty. Please run \"save\"") }
-        { this.new(chorusPatterns[name], name) }
+        lastPatterns = Dictionary.newFrom(chorusPatterns);
+        ^this.new;
     }
 
     *play { |name|
-        var patterns;
-        name = name ?? lastName;
-        patterns = lastPatterns[name] ?? [(i: \bd)];
-        this.new(patterns, name);
+        var newPattern;
+
+        if (name.notNil)
+        { newPattern = lastPatterns[name] };
+
+        if (newPattern.isNil)
+        { newPattern = (i: \bd, id: \1) };
+
+        ^this.new(newPattern);
     }
 
     *release { |fadeTime = 10, name|
-        name = this.prGetName(name);
-        if (name == \all) {
+        if (name.isNil) {
             Ndef(\x).proxyspace.free(fadeTime);
-            nodeProxy.clear;
+
+            fork {
+                (fadeTime + 1).wait;
+                Ndef.clear;
+            }
         } {
-            nodeProxy[name].free(fadeTime);
-            nodeProxy.removeAt(name);
+            Ndef(\px).free(fadeTime);
         };
     }
 
-    *save { |name|
-        name = name ?? lastName;
-
-        chorusPatterns[name] = lastPatterns[name ?? lastName];
+    *save {
+        ^chorusPatterns = Dictionary.newFrom(lastPatterns);
     }
 
-    *shuffle { |name|
-        name = name ?? lastName;
-        this.prCreateNewSeeds;
-        this.prSend(lastPatterns[name], name);
-    }
+    *stop { |id|
+        if (id.notNil) {
+            lastPatterns.removeAt(id);
 
-    *stop { |name|
-        name = name ?? lastName;
-        nodeProxy[name].free;
-        nodeProxy.removeAt(name);
+            if (lastPatterns.size > 0)
+            { ^this.new };
+        };
+
+        ^Ndef(\px).free;
     }
 
     *synthDef { |synthDef|
@@ -256,62 +226,23 @@ Px {
 
     *tempo { |tempo|
         TempoClock.default.tempo = tempo.clip(10, 300) / 60;
-        this.loadSynthDefsAfterUpdatingTempo;
+        this.loadSynthDefs;
     }
 
     *trace { |name|
-        name = this.prGetName(name);
-        this.prSend(lastPatterns[name], name, trace: true);
+        if (name.isNil)
+        { this.prPrint("Please specify a pattern name to trace") }
+        { this.new(lastPatterns[name], trace: true) };
+    }
+
+    *traceOff { |name|
+        if (name.isNil)
+        { ^this.prPrint("Please specify a pattern name to disable trace") }
+        { ^this.new(lastPatterns[name]) };
     }
 
     *vol { |value, name|
-        name = name ?? lastName;
-        nodeProxy[name].vol_(value);
-    }
-
-    *prCreateNewSeeds {
-        seeds.order do: { |id|
-            var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
-            this.prPrint("🎲 Shuffle:".scatArgs(id, "->", newSeed));
-            seeds[id] = newSeed;
-        };
-    }
-
-    *prGenerateRandNumber { |id|
-        var seed = 1000.rand;
-        this.prPrint("🎲 Seed:".scatArgs(id, "->", seed));
-        ^seed;
-    }
-
-    *prGetName { | name |
-        name = name ?? this.name.asString.toLower.asSymbol;
-        lastName = name;
-        ^name;
-    }
-
-    *prGetPatternSeed { |pattern|
-        var id = pattern[\id].asSymbol;
-        if (pattern[\seed].isNil) {
-            var seed;
-
-            if (seeds[id].isNil)
-            { seed = this.prGenerateRandNumber(id) }
-            { seed = seeds[id] };
-
-            seeds.add(id -> seed);
-            ^seeds[id];
-        } {
-            ^pattern[\seed];
-        };
-    }
-
-    *prSend { |patterns, name, quant, trace|
-        name = name ?? lastName;
-        trace = trace ?? false;
-
-        if (nodeProxy[name].isPlaying)
-        { this.new(patterns, name, quant, trace) }
-        { this.prPrint("💩 Pdef(\\".catArgs(name, ") is not playing")) }
+        ^Ndef( name ?? \px).vol_(value);
     }
 
     *prPrint { |value|
@@ -319,4 +250,3 @@ Px {
         { value.postln };
     }
 }
-

@@ -1,5 +1,4 @@
 // We can send arguments to the \ns nodeproxy synth:
-
 (
 Ns(
     (
@@ -18,7 +17,6 @@ Ns(
 )
 
 // Or set individual values
-
 Ns.set(\wave, \pulse);
 Ns.set(\wave, \sine);
 Ns.set(\wave, \triangle);
@@ -28,9 +26,7 @@ Ns.set(\chord, [0, 3, 5]);
 Ns.set(\degree, [0, 1, 2, 3].shuffle(71));
 
 // We can check what has been set:
-
-Ns.lastControls
+Ns.lastControls;
 
 // And stop it with a fade out
-
-Ns.release(5)
+Ns.release(5);

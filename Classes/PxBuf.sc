@@ -1,4 +1,4 @@
-+Px {
++ Px {
     *buf { |folder, file|
         if (samplesDict[folder].size == 0) {
             this.prPrint("🔴 Folder doesn't exist or empty");
@@ -17,24 +17,39 @@
         ^samplesDict[folder][file];
     }
 
+
     *loadSamples { |samplesPath|
         samplesDict = Dictionary.new;
         samplesDict.add(\foldernames -> PathName(samplesPath).entries);
+
         for (0, samplesDict[\foldernames].size - 1, { |i|
-            if (samplesDict[\foldernames][i].folderName != "sets") {
-                samplesDict.add(
-                    samplesDict[\foldernames][i].folderName ->
-                    samplesDict[\foldernames][i].entries.collect(
-                        { |sf|
-                            Buffer.read(Server.default, sf.fullPath);
-                        }
-                    )
-                )
+            var folder = samplesDict[\foldernames][i];
+
+            var addFileToDictionary = { |folderName, files|
+                samplesDict[folderName] = files.collect({ |file|
+                    Buffer.read(Server.default, file.fullPath)
+                });
+            };
+
+            var hasFiles = folder.files.size;
+
+            if (hasFiles > 0) {
+                addFileToDictionary.(folder.folderName, folder.files);
+            } {
+                folder.entries do: { |entry|
+                    var entryHasFiles = entry.files.size;
+
+                    if (entryHasFiles > 0) {
+                        var subFolderName = folder.folderName ++ "/" ++ entry.folderName;
+                        addFileToDictionary.(subFolderName, entry.files);
+                    }
+                };
             }
         });
     }
 
-    *loadSynthDefsAfterUpdatingTempo {
+
+    *loadSynthDefs {
         PathName(("../SynthDefs/").resolveRelative).filesDo{ |file|
             file.fullPath.load;
         };
@@ -52,7 +67,7 @@
                 pattern.removeAt(\loop);
             };
 
-            pattern;
+            pattern ++ (fix: 1);
         };
 
         ^patterns;
@@ -102,8 +117,8 @@
                     };
 
                     if (pattern[\degree].notNil) {
-                        var degree = Play.prGenerateDegrees(pattern);
-                        pattern[\rate] = degree.midiratio;
+                        var patternWithdegrees = this.prGenerateDegrees(pattern, midiratio: true);
+                        pattern[\rate] = patternWithdegrees[\degree];
                     };
 
                     buf = switch (pattern[\buf][1])
@@ -132,8 +147,33 @@
     }
 }
 
-+Event {
-    rand { |folder|
++ Number {
+    r { |args|
+        ^this.prUpdatePattern([\rate, this.prCreatePatternKey(args)]);
+    }
+
+    trim { |startPosition|
+        case
+        { startPosition.isNil or: (startPosition == 1) }
+        { startPosition = \seq }
+
+        { startPosition.isArray }
+        { startPosition = Pseq(startPosition, inf) }
+
+        { startPosition = startPosition.clip(0, 0.75) };
+
+        ^this.prUpdatePattern([\trim, startPosition]);
+    }
+}
+
++ Symbol {
+    // Prevent methods to generate errors when a Px is stopped through a symbol
+    r {}
+    trim {}
+}
+
++ Event {
+    rand2 { |folder|
         ^this.putAll([\buf, [folder, \rand]]);
     }
 

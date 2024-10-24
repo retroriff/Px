@@ -4,7 +4,6 @@ Crossfader {
 
     *initClass {
         defaultFadeTime = 30;
-        stepSize = 0.1;
     }
 
     *new { |a, b, fadeDuration|

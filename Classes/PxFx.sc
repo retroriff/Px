@@ -1,18 +1,18 @@
-+Px {
++ Px {
     *blp { |mix = 0.4|
-        Nfx(lastName).blp(mix);
+        Nfx(\px).blp(mix);
     }
 
     *delay { |mix, delaytime = 8, decaytime = 2|
-        Nfx(lastName).delay(mix, delaytime, decaytime);
+        Nfx(\px).delay(mix, delaytime, decaytime);
     }
 
     *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
-        Nfx(lastName).gverb(mix, roomsize, revtime);
+        Nfx(\px).gverb(mix, roomsize, revtime);
     }
 
     *hpf { |mix = 1, freq = 1200|
-        Nfx(lastName).hpf(mix, freq);
+        Nfx(\px).hpf(mix, freq);
     }
 
     *lpf { |mix, args|
@@ -20,11 +20,11 @@
     }
 
     *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
-        Nfx(lastName).reverb(mix, room, damp);
+        Nfx(\px).reverb(mix, room, damp);
     }
 
     *vst { |mix = 1, plugin|
-        Nfx(lastName).vst(mix, plugin);
+        Nfx(\px).vst(mix, plugin);
     }
 
     *wah { |mix, args|
@@ -37,11 +37,13 @@
                 if (SynthDescLib.global[fx[1]].notNil) {
                     if (fx[1] == \reverb)
                     { fx = fx ++ [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, 1] };
+
                     pattern[\fx][i] = fx;
                     pattern = pattern ++ [\fxOrder, (1..pattern[\fx].size)];
                 }
-            }
+            };
         };
+
         ^pattern;
     }
 
@@ -62,7 +64,7 @@
     }
 }
 
-+Event {
++ Event {
     delay { |mix, args|
         this.prFx(\delay, mix, args);
     }
@@ -88,6 +90,59 @@
             mix = 1;
             args = [\freq, this.prCreatePatternKey(\rand)] ++ args;
         };
+
         ^this.[\fx] = this.[\fx] ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)] ++ args];
     }
 }
+
++ Number {
+    delay { |mix|
+        this.prFx(\delay, mix);
+    }
+
+    hpf { |mix|
+        this.prFx(\hpf, mix);
+    }
+
+    lpf { |mix|
+        this.prFx(\lpf, mix);
+    }
+
+    reverb { |mix|
+        this.prFx(\reverb, mix);
+    }
+
+    wah { |mix|
+        this.prFx(\wah, mix);
+    }
+
+    prCreatePatternKey { |value|
+        if (value == \rand)
+        { ^Pwhite(0.0, 1) };
+
+        if (value.isArray) {
+            if (value[0] == \wrand) {
+                var item1 = value[1].clip(-1, 1);
+                var item2 = value[2].clip(-1, 1);
+                var weight = value[3].clip(0, 1);
+                ^Pwrand([item1, item2], [1 - weight, weight], inf);
+            };
+            if (value[0] == \rand) {
+                ^Pwhite(value[1], value[2])
+            };
+        };
+
+        if (value.isNumber)
+        { ^value.clip(-1, 1) };
+
+        ^value ?? 1;
+    }
+
+    prFx { |fx, mix|
+        var id = Px.patternState[\id];
+        var lastFx = Px.lastPatterns[id][\fx] ?? [];
+        lastFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
+        this.prUpdatePattern([\fx, lastFx]);
+    }
+}
+

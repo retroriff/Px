@@ -171,26 +171,3 @@
     r {}
     trim {}
 }
-
-+ Event {
-    rand2 { |folder|
-        ^this.putAll([\buf, [folder, \rand]]);
-    }
-
-    rate { |args|
-        ^this.putAll([\rate, this.prCreatePatternKey(args)]);
-    }
-
-    trim { |startPosition|
-        case
-        { startPosition.isNil }
-        { startPosition = \seq }
-
-        { startPosition.isArray }
-        { startPosition = Pseq(startPosition, inf) }
-
-        { startPosition = startPosition.clip(0, 0.75) };
-
-        ^this.putAll([\trim, startPosition]);
-    }
-}

@@ -110,36 +110,3 @@
     scale {}
     sus {}
 }
-
-+ Event {
-    arp {
-        ^this ++ (arp: true);
-    }
-
-    degree { |value, scale, size|
-        var pattern;
-
-        if (value.isInteger)
-        { value = [value] };
-
-        if (value.isKindOf(Pattern))
-        { pattern = value };
-
-        ^this ++ (\degree: pattern ?? [value, scale, size]);
-    }
-
-    octave { |value|
-        if (value.isArray) {
-            value = Pseq(value, inf);
-        }
-        ^this ++ (\octave: value);
-    }
-
-    root { |key|
-        ^this ++ (\root: key);
-    }
-
-    scale { |key|
-        ^this ++ (\scale: Scale.at(key).semitones);
-    }
-}

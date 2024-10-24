@@ -1,10 +1,9 @@
 /*
-TODO: Fix fill with drum machines, should also work with weight
+TODO: Add chorus & save to examples
 TODO: PxTest fill test
+TODO: Fix fill with drum machines, should also work with weight
 TODO: Rest doesn't work properly 808 i: \oh beat: 1 dur: 0.125 amp: 0.7 weight: 0.7 rest: Prand([1, 2, 4, 6], inf).trace;
 TODO: Replace Ptpar by Pbind with \timingOffset
-TODO: Delete Event classes when the migration to Number is done
-TODO: Add chorus & save to examples
 TODO: Make fill work with hundreth weighted beats (high difficulty)
 TODO: octave: \beats and octave: [\beats, 5]
 TODO: Define global Px seed for all patterns

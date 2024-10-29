@@ -152,6 +152,10 @@
         ^this.prUpdatePattern([\rate, this.prCreatePatternKey(args)]);
     }
 
+    start { |value|
+        ^this.prUpdatePattern([\start, value]);
+    }
+
     trim { |startPosition|
         case
         { startPosition.isNil or: (startPosition == 1) }
@@ -169,5 +173,6 @@
 + Symbol {
     // Prevent methods to generate errors when a Px is stopped through a symbol
     r {}
+    start {}
     trim {}
 }

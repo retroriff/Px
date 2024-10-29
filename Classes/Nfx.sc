@@ -13,7 +13,7 @@ Nfx {
     classvar <>mixer;
     classvar <>presetsPath;
     classvar <proxy;
-    classvar proxyName;
+    classvar <proxyName;
     classvar <vstController;
 
     *initClass {
@@ -31,11 +31,13 @@ Nfx {
 
     *clear {
         activeArgs = activeArgs.clear;
+
         activeEffects do: { |fx, i|
             proxy[proxyName][i + 1] = nil;
         };
+
         activeEffects = activeEffects.clear;
-        this.prPrint("All effects have been disabled");
+        this.prPrint("🌵 All effects have been disabled");
     }
 
     *blp { |mix = 0.4|

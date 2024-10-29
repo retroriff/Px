@@ -34,7 +34,7 @@
         var dur = pattern[\dur];
 
         if (pattern[\rest].notNil) {
-            dur = Pseq([Pn(dur, 15), pattern[\rest] + dur], inf);
+            dur = Pseq([Pn(dur, repeats: 15), pattern[\rest] + dur], inf);
         };
 
         ^dur;

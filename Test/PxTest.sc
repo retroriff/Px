@@ -175,19 +175,17 @@ PxTest : UnitTest {
         );
     }
 
-    /*
     test_fill {
         1 i: \bd beat: 1;
         2 i: \sn fill: 1;
 
-        Px.lastFormattedPatterns[\2][\totalBeats];
+        Px.lastPatterns[\2][\totalBeats];
         this.assertEquals(
-            Px.lastFormattedPatterns[\2][\totalBeats].isArray,
+            Px.lastPatterns[\2][\totalBeats].isArray,
             true,
             "👀 Fill generates a \\totalBeats array",
         );
     }
-    */
 
     test_fade {
         1 i: \bd out: 10;

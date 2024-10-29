@@ -104,6 +104,14 @@ Px.traceOff(\1);
 Px.shuffle;
 )
 
+// Save a chorus
+Px.save
+
+// And play it later
+1 i: \bd reverb: 0.2 wah: 0.1 pan: 1 dur: 0.5;
+2 i: \sn dur: 2 off: 1 delay: 0.3 pan: -1 dur: 0.25;
+Px.chorus;
+
 // Change the tempo
 Px.tempo(100);
 

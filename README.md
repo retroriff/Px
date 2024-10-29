@@ -17,11 +17,12 @@ Additional code examples can be found [here](/Examples/).
 1. ⚡️ [Px: Pattern Shortcuts Generator](#-px-pattern-shortcuts-generator)
 2. ✨ [Nfx: Nodeproxy Effects Handler](#-nfx-nodeproxy-effects-handler)
 3. 💥 [Notes Handler with MIDI Support](#notes-handler-with-midi-support)
-4. 🎛️ [TR08: Roland TR-08 MIDI Controller](#-tr08-roland-tr-08-midi-controller)
-5. 🔥 [Ns: Sequenced Synth](#-ns-sequenced-synth)
-6. 📡 [OSC Communication](#-osc-communication)
-7. 🎚️ [Crossfader](#-crossfader)
-8. ✅ [Unit Tests](#-unit-tests)
+4. 🛢️ [Drum Machines](#-drum-machines)
+5. 🎛️ [TR08: Roland TR-08 MIDI Controller](#-tr08-roland-tr-08-midi-controller)
+6. 🔥 [Ns: Sequenced Synth](#-ns-sequenced-synth)
+7. 📡 [OSC Communication](#-osc-communication)
+8. 🎚️ [Crossfader](#-crossfader)
+9. ✅ [Unit Tests](#-unit-tests)
 
 **🛠️ Dependencies**:
 
@@ -153,6 +154,18 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 | `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
 | `holdOff` | None                                                                                                                        | Releases holded notes                                                 |
 | `panic`   | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
+
+## 🛢️ Drum Machines
+
+We can simplify the usage of drum machine using shortcodes. The available drum machines are 606, 707, 808 and 909. Here's an example:
+
+```js
+707 i: \bd dur: 1;
+707 i: \sn dur: 2 off: 1;
+
+// Stop all
+\707 i: \all
+```
 
 ## 🎛️ TR08: A Roland TR-08 MIDI Controller
 

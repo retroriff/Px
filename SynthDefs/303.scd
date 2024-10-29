@@ -35,7 +35,7 @@ SynthDef(\303, {
     var sig = RLPF.ar(
         in: Select.ar(wave, waves),
         freq: ctfFreq.value + (filEnv * envFreq),
-        rq: res
+        rq: res.clip(0.1, 1);
     ).dup;
 
     Out.ar(out, sig * amp);

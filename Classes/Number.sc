@@ -223,7 +223,10 @@
     i { |value|
         var number = this.asInteger;
         var id = number.createId(value);
-        Px.stop(id);
+
+        if (this.prHasDrumMachine and: (value == \all))
+        { this.prStopDrumMachineInstruments }
+        { Px.stop(id) };
     }
 
     loop { |value|
@@ -232,5 +235,19 @@
 
     play { |value|
         Px.stop(this);
+    }
+
+    prHasDrumMachine {
+        var drumMachines = [\606, \707, \808, \909];
+        ^drumMachines.includes(this);
+    }
+
+    prStopDrumMachineInstruments {
+        var patterns = Px.lastPatterns.copy;
+
+        patterns.do({ |pattern|
+            if (pattern[\drumMachine] == this.asInteger)
+            { Px.stop(pattern[\id]) };
+        });
     }
 }

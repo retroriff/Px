@@ -1,5 +1,4 @@
 /*
-TODO: Define global Px seed for all patterns
 TODO: Fix fill with drum machines, should also work with weight
 TODO: Rest doesn't work properly 808 i: \oh beat: 1 dur: 0.125 amp: 0.7 weight: 0.7 rest: Prand([1, 2, 4, 6], inf).trace;
 TODO: Replace Ptpar by Pbind with \timingOffset
@@ -126,7 +125,7 @@ Px {
         if (newPattern.notNil)
         { lastPatterns[newPattern[\id]] = newPattern };
 
-        patterns = handleSoloPatterns.(lastPatterns);
+        patterns = handleSoloPatterns.(lastPatterns.copy);
         patterns = this.prCreateBufIns(patterns);
         patterns = this.prCreateLoops(patterns);
 

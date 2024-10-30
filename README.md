@@ -75,14 +75,15 @@ The superclass that generates the patterns from an array of events with a simpli
 ### Px class methods
 
 - `release` (time: nil | number, name: string | \all) Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.
-- `save`: Saves a chorus
-- `shuffle`: Generates new random seeds
-- `stop`: Stops the Pdef
-- `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments
-- `tempo`: Sets a new tempo
+- `save`: Saves a chorus.
+- `seed`: Sets a global seed for all patterns.
+- `shuffle`: Generates new random seeds.
+- `stop`: Stops the Pdef.
+- `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
+- `tempo`: Sets a new tempo.
 - `trace`: Prints out the results of the streams for debugging purposes.
 - `traceOff`: Disables trace.
-- `vol`: Controls the volume of the nodeproxy
+- `vol`: Controls the volume of the nodeproxy.
 
 ### Px class arguments
 

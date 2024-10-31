@@ -102,12 +102,20 @@
     }
 
     // 303 SynthDef methods
+    atk { |value|
+        this.prUpdatePattern([\atk, value]);
+    }
+
     ctf { |value|
         this.prUpdatePattern([\ctf, value]);
     }
 
     env { |value|
         this.prUpdatePattern([\env, value]);
+    }
+
+    rel { |value|
+        this.prUpdatePattern([\rel, value]);
     }
 
     res { |value|
@@ -215,8 +223,10 @@
     wah {}
     weight {}
     // 303 SynthDef
-    env {}
+    atk {}
     ctf {}
+    env {}
+    rel {}
     res {}
     wave {}
 

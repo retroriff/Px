@@ -47,6 +47,27 @@
 
         ^pattern;
     }
+
+    *prGenerateOctaves { |pattern|
+        var octave = pattern[\octave];
+        var isBeat = octave.isArray and: { octave[0] == \beat };
+
+        if (isBeat) {
+            var octaveBeat = this.prCreateBeat(
+                pattern,
+                defaultWeight: 0.3,
+                min: octave[1],
+                max: octave[1] + 1
+            );
+
+            octave = octaveBeat;
+        };
+
+        if (octave.isArray)
+        { pattern[\octave] = Pseq(octave, inf) };
+
+        ^pattern;
+    }
 }
 
 + Number {
@@ -79,10 +100,6 @@
     }
 
     octave { |value|
-        if (value.isArray) {
-            value = Pseq(value, inf);
-        }
-
         ^this.prUpdatePattern([\octave, value]);
     }
 

@@ -113,9 +113,9 @@ TR08 : Px {
             createPatternFromPreset.value;
         };
 
-        presetPatterns do: { |pattern|
-            var id = (pattern[\i].asString.catArgs("_", 808)).asSymbol;
-            TR08(pattern.putAll([\id, id]));
+        presetPatterns do: { |pattern, i|
+            var id = 800 * 100 + i;
+            TR08(pattern.putAll([\id, id, \drumMachine, 808]));
         }
     }
 

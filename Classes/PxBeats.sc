@@ -1,38 +1,32 @@
-+Px {
-    *seed { |value|
-        lastPatterns do: { |pattern|
-            pattern[\seed] = value;
++ Px {
+    *prCreateBeat { |pattern, defaultWeight = 0.7, min = 0, max = 1|
+        var seed = this.prGetPatternSeed(pattern);
+        var weight = pattern[\weight] ?? defaultWeight;
+        var rhythmWeight = (weight * 10).floor / 10;
+        var pseqWeight = weight - rhythmWeight * 10;
+        var test;
+
+        var rhythmSeq = { |weight|
+            Array.fill(16, { [min, max].wchoose([1 - weight, weight]) });
         };
 
-        ^this.new;
+        thisThread.randSeed = seed;
+
+        if (pseqWeight > 0) {
+            var seq1 = Pseq(rhythmSeq.(rhythmWeight), 1);
+            var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
+            ^[Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
+        };
+
+        ^rhythmSeq.(weight);
     }
 
-    *prCreateBeat { |amp, pattern|
+    *prCreateRhythmBeat { |amp, pattern|
         var beats;
 
-        if (pattern[\beatSet].isNil) {
-            var seed = this.prGetPatternSeed(pattern);
-            var weight = pattern[\weight] ?? 0.7;
-            var rhythmWeight = (weight * 10).floor / 10;
-            var pseqWeight = weight - rhythmWeight * 10;
-            var lastPatternBeats;
-
-            var rhythmSeq = { |weight|
-                Array.fill(16, { [ 0, amp ].wchoose([1 - weight, weight]) });
-            };
-
-            thisThread.randSeed = seed;
-
-            if (pseqWeight > 0) {
-                var seq1 = Pseq(rhythmSeq.(rhythmWeight), 1);
-                var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
-                beats = [Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
-            } {
-                beats = rhythmSeq.(weight);
-            };
-        } {
-            beats = this.prCreateBeatSet(amp, pattern);
-        };
+        if (pattern[\beatSet].isNil)
+        { beats = this.prCreateBeat(pattern, max: amp) }
+        { beats = this.prCreateBeatSet(amp, pattern) };
 
         lastPatterns[pattern[\id]][\beats] = beats;
         ^beats;

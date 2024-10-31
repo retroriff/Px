@@ -1,4 +1,12 @@
 + Px {
+    *seed { |value|
+        lastPatterns do: { |pattern|
+            pattern[\seed] = value;
+        };
+
+        ^this.new;
+    }
+
     *shuffle {
         this.prCreateNewSeeds;
         this.new;

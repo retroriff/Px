@@ -4,7 +4,7 @@
 707 i: \sn dur: 2 off: 1;
 707 i: \oh dur: 0.25 beat: 1 amp: 0.4 degree: \rand length: 3 rotate: 1;
 707 i: \rd dur: 0.25 beat: 1 amp: 0.3;
-707 i: \ss dur: 0.25 off: 0.5 beat: 1;
+\707 i: \ss dur: 0.25 off: 0.5 beat: 1;
 )
 
 \707 i: \all
@@ -34,5 +34,5 @@
 (
 1 i: \303 dur: 0.25 amp: 0.9 octave: ([0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,1] + 5) ctf: 0.1 env: 0.9 res: 0.4 wave: 0 root: 3;
 2 i: \303 dur: 0.25 amp: 0.6 octave: ([0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,1] + 5) degree: [0, 1, 5, 3] scale: \scriabin root: 3;
-3 i: \303 dur: Pseq([0.5, 1, 2, 4, 8], inf) amp: 1 sus: Pkey(\dur) ctf: Pwhite(0.1, 1) env: Pwhite(0.1, 1) res: Pwhite(0.1, 1) delay: 0.2 reverb: 0.2 pan: -1;
+3 i: \303 dur: Pseq([0.5, 1, 2, 4, 8], inf) amp: 1 sus: Pkey(\dur) ctf: Pwhite(0.1, 1) env: Pwhite(0.1, 1) res: Pwhite(0.1, 1) delay: 0.2 reverb: 0.2;
 )

@@ -147,10 +147,10 @@ TODO: MIDIOut instances
         { value == \rand }
         { ^createPwhite.(0, 1) }
 
-        { value.isArray and: { value[0] == \rand} }
+        { value.isArray and: { value[0] == \rand } }
         { ^createPwhite.(value[1], value[2]) }
 
-        { value.isArray and: { value[0] == \wrand} }
+        { value.isArray and: { value[0] == \wrand } }
         { ^createPwrand.(value[1], value[2], value[3].clip(0, 1)) }
 
         { value.isNumber }

@@ -134,10 +134,11 @@ Custom pattern player designed to handle degrees, and can send MIDI messages bas
 
 ### Event methods
 
-| Name     | Arguments                                                           | Description                  |
-| -------- | ------------------------------------------------------------------- | ---------------------------- |
-| `arp`    | None                                                                | Creates a very basic arpegio |
-| `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                 |
+| Name     | Arguments                                                           | Description                            |
+| -------- | ------------------------------------------------------------------- | -------------------------------------- |
+| `arp`    | None                                                                | Creates a very basic arpegio           |
+| `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                           |
+| `octave` | number \| array \| [\beats, octave: number]                         | Can create a sequence or a random beat |
 
 ### MIDI
 

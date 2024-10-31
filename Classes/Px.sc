@@ -1,9 +1,6 @@
 /*
-TODO: Fix fill with drum machines, should also work with weight
-TODO: Rest doesn't work properly 808 i: \oh beat: 1 dur: 0.125 amp: 0.7 weight: 0.7 rest: Prand([1, 2, 4, 6], inf).trace;
 TODO: Replace Ptpar by Pbind with \timingOffset
-TODO: Make fill work with hundreth weighted beats (high difficulty)
-TODO: octave: \beats and octave: [\beats, 5]
+TODO: Make fill work with hundreth weighted beats
 */
 
 Px {
@@ -46,7 +43,7 @@ Px {
             var amp = pattern[\amp] ?? 1;
 
             if (pattern[\beat].notNil) {
-                amp = this.prCreateBeat(amp, pattern);
+                amp = this.prCreateRhythmBeat(amp, pattern);
             };
 
             if (pattern[\fill].notNil) {
@@ -136,6 +133,7 @@ Px {
             pattern = createPatternDur.(pattern);
             pattern = createPatternPan.(pattern);
             pattern = this.prGenerateDegrees(pattern);
+            pattern = this.prGenerateOctaves(pattern);
             pattern = this.prCreateMidiPatterns(pattern);
             pattern = this.prCreatePatternFx(pattern);
 

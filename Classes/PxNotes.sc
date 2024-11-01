@@ -1,4 +1,12 @@
 + Px {
+    *root { |value|
+        lastPatterns do: { |pattern|
+            pattern[\root] = value;
+        };
+
+        ^this.new;
+    }
+
     *prGenerateDegrees { |pattern, midiratio|
         var createRandomDegrees = {
             var length, scale, scaleDegrees, randomDegrees;

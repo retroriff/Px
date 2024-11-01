@@ -185,11 +185,11 @@ Px {
     }
 
     *release { |fadeTime = 10, name|
-        if (name.isNil) {
+        if (name == \all) {
             Ndef(\x).proxyspace.free(fadeTime);
 
             fork {
-                (fadeTime + 1).wait;
+                (fadeTime + 5).wait;
                 Ndef.clear;
             }
         } {

@@ -32,7 +32,9 @@
 \909 i: \all
 
 (
-1 i: \303 dur: 0.25 amp: 0.9 octave: ([0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,1] + 5) ctf: 0.1 env: 0.9 res: 0.4 wave: 0 root: 3;
-2 i: \303 dur: 0.25 amp: 0.6 octave: ([0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,1] + 5) degree: [0, 1, 5, 3] scale: \scriabin root: 3;
-3 i: \303 dur: Pseq([0.5, 1, 2, 4, 8], inf) amp: 1 sus: Pkey(\dur) ctf: Pwhite(0.1, 1) env: Pwhite(0.1, 1) res: Pwhite(0.1, 1) delay: 0.2 reverb: 0.2;
+1 i: \303 dur: 0.25 amp: 0.9 octave: ([0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,1] + 5) ctf: 0.1 env: 0.9 res: 0.4 wave: 0;
+2 i: \303 dur: 0.25 amp: 0.6 octave: ([0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,1] + 5) degree: [0, 1, 5, 3] scale: \scriabin;
+3 i: \303 dur: Pseq([0.5, 1, 2, 4, 8], inf) sus: Pkey(\dur) ctf: Pwhite(0.1, 1) env: Pwhite(0.1, 1) res: Pwhite(0.1, 1) delay: 0.2 reverb: 0.2;
 )
+
+Px root: 3

@@ -220,8 +220,12 @@ Px {
     }
 
     *tempo { |tempo|
+        if (tempo.isNil) {
+            ^this.prPrint("🕰️ Current tempo is" + (TempoClock.tempo * 60));
+        };
+
         TempoClock.default.tempo = tempo.clip(10, 300) / 60;
-        this.loadSynthDefs;
+        ^this.loadSynthDefs;
     }
 
     *trace { |name|

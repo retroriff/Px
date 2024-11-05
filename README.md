@@ -81,7 +81,7 @@ The superclass that generates the patterns from an array of events with a simpli
 - `shuffle`: Generates new random seeds.
 - `stop`: Stops the Pdef.
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
-- `tempo`: Sets a new tempo.
+- `tempo` (bpm: nil | number): Sets the tempo if bpm is given; returns current tempo if nil.
 - `trace`: Prints out the results of the streams for debugging purposes.
 - `traceOff`: Disables trace.
 - `vol`: Controls the volume of the nodeproxy.

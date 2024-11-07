@@ -22,7 +22,11 @@ TR08.init(0.195);
 )
 
 // Or play a preset:
-TR08.preset(\electro, 2);
+TR08.preset(\electro);
 
 // If we edit the YAML presets file, we can reload them:
 TR08.loadPresets;
+
+// Two methods to stop it:
+TR08.stop;
+\808 i: \all;

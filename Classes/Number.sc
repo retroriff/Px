@@ -219,11 +219,9 @@
     hpf {}
     human {}
     i {}
-    in {}
     ins {}
     lpf {}
     off {}
-    out {}
     pan {}
     rest {}
     reverb {}

@@ -120,7 +120,7 @@ TR08 : Px {
     }
 
     *stop {
-        ^super.stop(\tr08);
+        ^\808.i(\all);
     }
 
     *prCreatePresetsDict {

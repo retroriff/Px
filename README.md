@@ -12,11 +12,19 @@ A set of classes designed to generate patterns on a NodeProxy and streamline the
 
 Additional code examples can be found [here](/Examples/).
 
-**📖 Table of Contents**
+** 📖 Table of Contents**
 
-V1. ⚡️ [Px: Pattern Shortcuts Generator](#-px-pattern-shortcuts-generator) 2. ✨ [Nfx: Nodeproxy Effects Handler](#-nfx-nodeproxy-effects-handler) 3. 💥 [Notes Handler with MIDI Support](#notes-handler-with-midi-support) 4. 🛢️ [Drum Machines](#-drum-machines) 5. 🎛️ [TR08: Roland TR-08 MIDI Controller](#-tr08-roland-tr-08-midi-controller) 6. 🔥 [Ns: Sequenced Synth](#-ns-sequenced-synth) 7. 📡 [OSC Communication](#-osc-communication) 8. 🎚️ [Crossfader](#-crossfader) 9. ✅ [Unit Tests](#-unit-tests)
+1. ⚡️ [Px: Pattern Shortcuts Generator](#-px-pattern-shortcuts-generator)
+2. ✨ [Nfx: Nodeproxy Effects Handler](#-nfx-nodeproxy-effects-handler)
+3. 💥 [Notes Handler with MIDI Support](#notes-handler-with-midi-support)
+4. 🛢️ [Drum Machines](#-drum-machines)
+5. 🎛️ [TR08: Roland TR-08 MIDI Controller](#-tr08-roland-tr-08-midi-controller)
+6. 🔥 [Ns: Sequenced Synth](#-ns-sequenced-synth)
+7. 📡 [OSC Communication](#-osc-communication)
+8. 🎚️ [Crossfader](#-crossfader)
+9. ✅ [Unit Tests](#-unit-tests)
 
-**🛠️ Dependencies**:
+** 🛠️ Dependencies**:
 
 - [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) (PbindFx)
 - [VSTPlugin](https://github.com/Spacechild1/vstplugin)

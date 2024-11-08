@@ -1,4 +1,4 @@
-# Px: A Tailored Class Set for Enhanced Live Coding in SuperCollider
+# A Tailored Class Set for Enhanced Live Coding in SuperCollider
 
 A set of classes designed to generate patterns on a NodeProxy and streamline the integration of effects. These classes prioritize ease of use, offering a straightforward solution for creating pattern shortcuts and enhancing them with effects. Below is a basic example:
 

@@ -14,15 +14,7 @@ Additional code examples can be found [here](/Examples/).
 
 **📖 Table of Contents**
 
-1. ⚡️ [Px: Pattern Shortcuts Generator](#-px-pattern-shortcuts-generator)
-2. ✨ [Nfx: Nodeproxy Effects Handler](#-nfx-nodeproxy-effects-handler)
-3. 💥 [Notes Handler with MIDI Support](#notes-handler-with-midi-support)
-4. 🛢️ [Drum Machines](#-drum-machines)
-5. 🎛️ [TR08: Roland TR-08 MIDI Controller](#-tr08-roland-tr-08-midi-controller)
-6. 🔥 [Ns: Sequenced Synth](#-ns-sequenced-synth)
-7. 📡 [OSC Communication](#-osc-communication)
-8. 🎚️ [Crossfader](#-crossfader)
-9. ✅ [Unit Tests](#-unit-tests)
+V1. ⚡️ [Px: Pattern Shortcuts Generator](#-px-pattern-shortcuts-generator) 2. ✨ [Nfx: Nodeproxy Effects Handler](#-nfx-nodeproxy-effects-handler) 3. 💥 [Notes Handler with MIDI Support](#notes-handler-with-midi-support) 4. 🛢️ [Drum Machines](#-drum-machines) 5. 🎛️ [TR08: Roland TR-08 MIDI Controller](#-tr08-roland-tr-08-midi-controller) 6. 🔥 [Ns: Sequenced Synth](#-ns-sequenced-synth) 7. 📡 [OSC Communication](#-osc-communication) 8. 🎚️ [Crossfader](#-crossfader) 9. ✅ [Unit Tests](#-unit-tests)
 
 **🛠️ Dependencies**:
 
@@ -33,7 +25,7 @@ Additional code examples can be found [here](/Examples/).
 
 The superclass that generates the patterns from an array of events with a simplified syntax for a fast edition.
 
-### Pattern methods
+### Integer methods to play a pattern
 
 | Name     | Arguments                                         | Description                                                                                                                                                                                  |
 | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -44,17 +36,19 @@ The superclass that generates the patterns from an array of events with a simpli
 | `euclid` | [hits: number, total: number]                     | Generates an Euclidian rhythm                                                                                                                                                                |
 | `fill`   | 1 (enable)                                        | Fills the rests gap of its previous sequential pattern                                                                                                                                       |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
-| `in`     | seconds?: integer                                 | Fades in the pattern. Same as `fade: \in` "in")                                                                                                                                              |
-| `out`    | seconds?: integer                                 | Fades out the pattern. Same as `fade: \out`                                                                                                                                                  |
+| `in`     | seconds: integer                                  | Fades in the pattern. Same as `fade: \in` "in")                                                                                                                                              |
+| `off`    | beats: integer                                    | Offset value                                                                                                                                                                                 |
+| `out`    | seconds: integer                                  | Fades out the pattern. Same as `fade: \out`                                                                                                                                                  |
 | `pan`    | range -1..1 \| \rand \| \rotate \| Pattern        | A pan controller                                                                                                                                                                             |
-| `r`      | number \| \rand \| [\wrand, item1, item2, weight] | Rate value                                                                                                                                                                                   |
-| `rotate` | none                                              | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
+| `r`      | number \| \rand \| [\wrand, item1, item2, weight] | Rate value. The term rate was discarded because it was an existing Integer method                                                                                                            |
+| `rest`   | beats: integer                                    | Rests muted for a specific amount of beats                                                                                                                                                   |
+| `rotate` | 1 (enable)                                        | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
 | `seed`   | seed: integer                                     | Generate a specific random seed                                                                                                                                                              |
 | `solo`   | 1 (enable)                                        | Mutes all patterns that don't contain a solo method                                                                                                                                          |
 | `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
 | `weight` | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
-### FX pattern methods
+### FX integer pattern methods
 
 | Name     | Arguments                                                                   | Description              |
 | -------- | --------------------------------------------------------------------------- | ------------------------ |
@@ -66,15 +60,17 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ### Instrument methods
 
-| Name   | Arguments                                        | Description                   |
-| ------ | ------------------------------------------------ | ----------------------------- |
-| `i`    | name: string                                     | Plays a Synthdef. Same as `i` |
-| `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer    |
-| `play` | [folder: string, file: number \| \rand]          | Plays a buffer                |
+| Name   | Arguments                                        | Description                     |
+| ------ | ------------------------------------------------ | ------------------------------- |
+| `i`    | name: string                                     | Plays a Synthdef. Same as `ins` |
+| `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer      |
+| `play` | [folder: string, file: number \| \rand]          | Plays a buffer                  |
 
 ### Px class methods
 
-- `release` (time: nil | number) Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.
+- `chorus`: Plays a saved chorus.
+- `play`: It is only needed when it has been stopped.
+- `release` (time: nil | number): Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.
 - `root`: Sets a global root note to all patterns.
 - `save`: Saves a chorus.
 - `seed`: Sets a global seed for all patterns.
@@ -86,14 +82,9 @@ The superclass that generates the patterns from an array of events with a simpli
 - `traceOff`: Disables trace.
 - `vol`: Controls the volume of the nodeproxy.
 
-### Px class arguments
-
-| Arg        | Value   | Description                          |
-| ---------- | ------- | ------------------------------------ |
-| `patterns` | Event   | A pattern in Event format            |
-| `trace`    | boolean | Print out the results of the streams |
-
 ### FX class methods
+
+Px has the same FX methods than Nfx, but it is helpful as a shortcut.
 
 | Name     | Arguments                                                   | Description                           |
 | -------- | ----------------------------------------------------------- | ------------------------------------- |
@@ -129,7 +120,7 @@ To open the VST plugin editor, use `Nfx.vstController.editor`
 
 Additionally, we can set parameter automations with `Nfx.vstController.set(1, 1)`
 
-## 💥 A Notes Handler with MIDI Support
+## 💥 Notes Handler with MIDI Support
 
 Custom pattern player designed to handle degrees, and can send MIDI messages based on incoming pattern data. It also helps to manage MIDI-related functionalities within SuperCollider, providing a way to control MIDI events and output.
 
@@ -140,6 +131,7 @@ Custom pattern player designed to handle degrees, and can send MIDI messages bas
 | `arp`    | None                                                                | Creates a very basic arpegio           |
 | `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                           |
 | `octave` | number \| array \| [\beats, octave: number]                         | Can create a sequence or a random beat |
+| `root`   | number \| array                                                     | Sets the root value                    |
 
 ### MIDI
 
@@ -200,6 +192,7 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `init`        | time?: number                  | Controls the latency. Default is 0.2 |
 | `loadPresets` | None                           | Reloads presets from YAML files      |
 | `preset`      | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
+| `stop`        | None                           | Same as `\808 i: \all`               |
 
 ## 🔥 Ns: A Sequenced Synth
 
@@ -240,7 +233,7 @@ Px also has methods to handle a OSC listener, useful for applications where remo
 
 Straightforward crossfader utility classes that smoothly transitions audio from source A to source B over an optional specified duration (default is 20 seconds):
 
-```
+```js
 Crossfader(\a, \b, 10);
 FadeIn(\a, 10);
 FadeOut(\a, 10);
@@ -248,7 +241,7 @@ FadeOut(\a, 10);
 
 They can be used directly with symbols methods and binary operator syntax:
 
-```
+```js
 \a.in
 \a in: 10
 \a.out

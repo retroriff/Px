@@ -140,11 +140,11 @@
     }
 
     prGenerateDrumMachineId { |ins|
-        var findExistingPatternForIns = Px.lastPatterns.detect({ |pattern|
+        var findExistingPatternForIns = Px.last.detect({ |pattern|
             pattern[\drumMachine] == this and: (pattern[\i] == ins);
         });
 
-        var drumMachinesPatternsExcludingIns = Px.lastPatterns.select({ |pattern|
+        var drumMachinesPatternsExcludingIns = Px.last.select({ |pattern|
             pattern[\drumMachine] == this and: (pattern[\i] != ins)
         });
 
@@ -261,7 +261,7 @@
     }
 
     prStopDrumMachineInstruments {
-        var patterns = Px.lastPatterns.copy;
+        var patterns = Px.last.copy;
 
         patterns.do({ |pattern|
             if (pattern[\drumMachine] == this.asInteger)

@@ -7,8 +7,8 @@ TODO: Make fill work with hundreth weighted beats
 Px {
     classvar <>chorusPatterns;
     classvar <lastName;
-    classvar <>lastFormattedPatterns;
-    classvar <>lastPatterns;
+    classvar <>lastFormatted;
+    classvar <>last;
     classvar <>patternState;
     classvar <midiClient;
     classvar <pbindList;
@@ -17,8 +17,8 @@ Px {
 
     *initClass {
         chorusPatterns = Dictionary.new;
-        lastFormattedPatterns = Dictionary.new;
-        lastPatterns = Dictionary.new;
+        lastFormatted = Dictionary.new;
+        last = Dictionary.new;
         pbindList = Dictionary.new;
         seeds = Dictionary.new;
     }
@@ -102,7 +102,7 @@ Px {
             if (direction == \in) {
                 PfadeIn(pbind, fadeTime);
             } {
-                lastPatterns.removeAt(newPattern[\id]);
+                last.removeAt(newPattern[\id]);
                 PfadeOut(pbind, fadeTime);
             }
         };
@@ -117,13 +117,13 @@ Px {
 
         if (Ndef(\px).isPlaying.not) {
             chorusPatterns = Dictionary.new;
-            lastPatterns = Dictionary.new;
+            last = Dictionary.new;
         };
 
         if (newPattern.notNil)
-        { lastPatterns[newPattern[\id]] = newPattern };
+        { last[newPattern[\id]] = newPattern };
 
-        patterns = handleSoloPatterns.(lastPatterns.copy);
+        patterns = handleSoloPatterns.(last.copy);
         patterns = this.prCreateBufIns(patterns);
         patterns = this.prCreateLoops(patterns);
 
@@ -155,7 +155,7 @@ Px {
         };
 
         if (newPattern.notNil)
-        { lastFormattedPatterns[newPattern[\id]] = patterns[newPattern[\id]]};
+        { lastFormatted[newPattern[\id]] = patterns[newPattern[\id]]};
 
         pdef = Pdef(\px, Ptpar(ptparList)).quant_(quant ?? 4);
 
@@ -169,7 +169,7 @@ Px {
             ^this.prPrint("💩 Chorus is empty. Please run \"save\"")
         };
 
-        lastPatterns = Dictionary.newFrom(chorusPatterns);
+        last = Dictionary.newFrom(chorusPatterns);
         ^this.new;
     }
 
@@ -177,7 +177,7 @@ Px {
         var newPattern;
 
         if (name.notNil)
-        { newPattern = lastPatterns[name] };
+        { newPattern = last[name] };
 
         if (newPattern.isNil)
         { newPattern = (i: \bd, id: \1) };
@@ -199,14 +199,14 @@ Px {
     }
 
     *save {
-        ^chorusPatterns = Dictionary.newFrom(lastPatterns);
+        ^chorusPatterns = Dictionary.newFrom(last);
     }
 
     *stop { |id|
         if (id.notNil) {
-            lastPatterns.removeAt(id);
+            last.removeAt(id);
 
-            if (lastPatterns.size > 0)
+            if (last.size > 0)
             { ^this.new };
         };
 
@@ -231,13 +231,13 @@ Px {
     *trace { |name|
         if (name.isNil)
         { this.prPrint("Please specify a pattern name to trace") }
-        { this.new(lastPatterns[name], trace: true) };
+        { this.new(last[name], trace: true) };
     }
 
     *traceOff { |name|
         if (name.isNil)
         { ^this.prPrint("Please specify a pattern name to disable trace") }
-        { ^this.new(lastPatterns[name]) };
+        { ^this.new(last[name]) };
     }
 
     *vol { |value, name|

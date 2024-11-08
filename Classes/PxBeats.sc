@@ -28,7 +28,7 @@
         { beats = this.prCreateBeat(pattern, max: amp) }
         { beats = this.prCreateBeatSet(amp, pattern) };
 
-        lastPatterns[pattern[\id]][\beats] = beats;
+        last[pattern[\id]][\beats] = beats;
         ^beats;
     }
 
@@ -73,12 +73,12 @@
         };
 
         var getTotalBeat = { |invertBeat|
-            var beat = lastPatterns[previousPatternId][\totalBeats] ?? Array.fill(steps, 0);
+            var beat = last[previousPatternId][\totalBeats] ?? Array.fill(steps, 0);
             (beat + invertBeat) collect: { |step| step.clip(0, 1) };
         };
 
-        if (lastPatterns[previousPatternId].notNil)
-        { previousBeats = lastPatterns[previousPatternId][\beats] ?? lastPatterns[previousPatternId][\totalBeats] };
+        if (last[previousPatternId].notNil)
+        { previousBeats = last[previousPatternId][\beats] ?? last[previousPatternId][\totalBeats] };
 
         if (previousBeats.isNil)
         { ^amp };
@@ -86,7 +86,7 @@
         invertBeat = getInvertBeat.(previousBeats, pattern[\amp]);
         totalBeat = getTotalBeat.(invertBeat);
 
-        lastPatterns[pattern[\id]].putAll([\totalBeats, totalBeat]);
+        last[pattern[\id]].putAll([\totalBeats, totalBeat]);
         ^totalBeat;
     }
 }

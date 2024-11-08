@@ -49,7 +49,7 @@ Displays help information for the Px class or a specific SynthDef.
 argument:: synthDef
 The name of a SynthDef to display help information for.
 
-method:: lastPatterns
+method:: last
 Returns the last used patterns for a given name.
 
 method:: trace

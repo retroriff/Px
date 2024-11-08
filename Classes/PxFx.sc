@@ -52,11 +52,11 @@
     }
 
     *prFx { |fx, mix, args|
-        lastPatterns[lastName].do { |pattern|
+        last[lastName].do { |pattern|
             pattern.prFx(fx, mix, args);
         };
 
-        this.prSend(lastPatterns[lastName], lastName);
+        this.prSend(last[lastName], lastName);
     }
 
     *prHasFX { |pattern|
@@ -109,7 +109,7 @@
 
     prFx { |fx, mix|
         var id = Px.patternState[\id];
-        var lastFx = Px.lastPatterns[id][\fx] ?? [];
+        var lastFx = Px.last[id][\fx] ?? [];
         lastFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
         this.prUpdatePattern([\fx, lastFx]);
     }

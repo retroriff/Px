@@ -9,20 +9,20 @@ PxFxTest : PxTest {
         Px((i: \bd, id: \1).reverb.hpf);
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\1][\fx][0].includes(\reverb),
+            Px.lastFormatted[\1][\fx][0].includes(\reverb),
             true,
             "👀 Pattern first FX is enabled",
         );
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\1][\fx][1].includes(\hpf),
+            Px.lastFormatted[\1][\fx][1].includes(\hpf),
             true,
             "👀 Pattern second FX is enabled",
         );
 
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\1][\fx][0].includes(\decayTime),
+            Px.lastFormatted[\1][\fx][0].includes(\decayTime),
             true,
             "👀 Pattern reverb FX contains \\decaytime",
         );

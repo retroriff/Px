@@ -12,8 +12,8 @@ PxTest : UnitTest {
         Ndef.clear;
         Pdef.clear;
         Px.chorusPatterns = Dictionary.new;
-        Px.lastPatterns = Dictionary.new;
-        Px.lastFormattedPatterns = Dictionary.new;
+        Px.last = Dictionary.new;
+        Px.lastFormatted = Dictionary.new;
         ~isUnitTestRunning = false;
     }
 
@@ -25,13 +25,13 @@ PxTest : UnitTest {
         ];
 
         this.assertEquals(
-            Px.lastPatterns,
+            Px.last,
             expectedResult,
             "👀 Ndef(\\px) is playing"
         );
 
         this.ifAsserts(
-            Px.lastPatterns == expectedResult,
+            Px.last == expectedResult,
             "👀 Patterns are correctly generated",
             this.assert(
                 Ndef(\px).isPlaying,
@@ -149,7 +149,7 @@ PxTest : UnitTest {
         1 i: \bd;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\1][\amp],
+            Px.lastFormatted[\1][\amp],
             1,
             "👀 Default \\amp has been added",
         );
@@ -159,7 +159,7 @@ PxTest : UnitTest {
         1 i: \bd beat: 1;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\1][\amp].class,
+            Px.lastFormatted[\1][\amp].class,
             Pseq,
             "👀 Beat generates an \\amp Pseq",
         );
@@ -169,7 +169,7 @@ PxTest : UnitTest {
         1 i: \bd;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\1][\dur],
+            Px.lastFormatted[\1][\dur],
             1,
             "👀 Default \\dur has been added",
         );
@@ -179,9 +179,9 @@ PxTest : UnitTest {
         1 i: \bd beat: 1;
         2 i: \sn fill: 1;
 
-        Px.lastPatterns[\2][\totalBeats];
+        Px.last[\2][\totalBeats];
         this.assertEquals(
-            Px.lastPatterns[\2][\totalBeats].isArray,
+            Px.last[\2][\totalBeats].isArray,
             true,
             "👀 Fill generates a \\totalBeats array",
         );
@@ -196,7 +196,7 @@ PxTest : UnitTest {
         ];
 
         this.assertEquals(
-            Px.lastPatterns,
+            Px.last,
             expectedResult,
             "👀 Fades in and out is deleted from last patterns.",
         );
@@ -206,7 +206,7 @@ PxTest : UnitTest {
         1 i: \bd human: 1;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\1][\lag].class,
+            Px.lastFormatted[\1][\lag].class,
             Pwhite,
             "👀 Human adds a lag pair to pattern",
         );
@@ -216,7 +216,7 @@ PxTest : UnitTest {
         1 i: \bd;
 
         this.assertEquals(
-            Px.lastFormattedPatterns[\1][\id],
+            Px.lastFormatted[\1][\id],
             \1,
             "👀 Px generates ids",
         );
@@ -224,7 +224,7 @@ PxTest : UnitTest {
 
     test_loop {
         1 loop: ["fm", 0];
-        expectedResult = Px.lastFormattedPatterns[\1];
+        expectedResult = Px.lastFormatted[\1];
 
         this.assert(
             expectedResult[\buf].asString.contains("Buffer"),
@@ -240,7 +240,7 @@ PxTest : UnitTest {
 
     test_play {
         1 play: ["fm", 0];
-        expectedResult = Px.lastFormattedPatterns[\1];
+        expectedResult = Px.lastFormatted[\1];
 
         this.assert(
             expectedResult[\buf].asString.contains("Buffer"),
@@ -261,13 +261,13 @@ PxTest : UnitTest {
         expectedResult = (i: \bd, id: \1, solo: true);
 
         this.assertEquals(
-            Px.lastPatterns[\1],
+            Px.last[\1],
             expectedResult,
             "👀 Px contains correct solo data",
         );
 
         this.assertEquals(
-            Px.lastFormattedPatterns.size,
+            Px.lastFormatted.size,
             1,
             "👀 Px only plays solo patterns",
         );

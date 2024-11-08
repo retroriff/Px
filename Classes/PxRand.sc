@@ -1,6 +1,6 @@
 + Px {
     *seed { |value|
-        lastPatterns do: { |pattern|
+        last do: { |pattern|
             pattern[\seed] = value;
         };
 

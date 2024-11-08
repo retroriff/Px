@@ -100,7 +100,7 @@ TODO: MIDIOut instances
             \control: this.prCreateControl(control)
         ).asPairs;
 
-        var previousPattern = Px.lastPatterns[(this  - 1).asSymbol];
+        var previousPattern = Px.last[(this  - 1).asSymbol];
 
         if (ctlNum.isInteger)
         { controlEvent = controlEvent ++ this.prSendSingleMessage };

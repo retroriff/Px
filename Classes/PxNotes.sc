@@ -1,6 +1,6 @@
 + Px {
     *root { |value|
-        lastPatterns do: { |pattern|
+        last do: { |pattern|
             pattern[\root] = value;
         };
 

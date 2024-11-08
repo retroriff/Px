@@ -14,11 +14,11 @@ Additional code examples can be found [here](/Examples/).
 
 **📖 Table of Contents**
 
-1. ⚡️ [Px: Pattern Shortcuts Generator](#-px-pattern-shortcuts-generator)
-2. ✨ [Nfx: Nodeproxy Effects Handler](#-nfx-nodeproxy-effects-handler)
+1. ⚡️ [Px: A Pattern Shortcuts Generator](#-a-px-pattern-shortcuts-generator)
+2. ✨ [Nfx: A Nodeproxy Effects Handler](#-a-nfx-nodeproxy-effects-handler)
 3. 💥 [Notes Handler with MIDI Support](#notes-handler-with-midi-support)
 4. 🛢️ [Drum Machines](#-drum-machines)
-5. 🔥 [Ns: Sequenced Synth](#-ns-sequenced-synth)
+5. 🔥 [Ns: A Sequenced Synth](#-a-ns-sequenced-synth)
 6. 📡 [OSC Communication](#-osc-communication)
 7. 🎚️ [Crossfader](#-crossfader)
 8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#-tr08-a-roland-tr-08-midi-controller)

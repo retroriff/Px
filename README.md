@@ -21,7 +21,7 @@ Additional code examples can be found [here](/Examples/).
 5. 🔥 [Ns: Sequenced Synth](#-ns-sequenced-synth)
 6. 📡 [OSC Communication](#-osc-communication)
 7. 🎚️ [Crossfader](#-crossfader)
-8. 🎛️ [TR08: Roland TR-08 MIDI Controller](#-tr08-roland-tr-08-midi-controller)
+8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#-tr08-a-roland-tr-08-midi-controller)
 9. ✅ [Unit Tests](#-unit-tests)
 
 **🛠️ Dependencies**:

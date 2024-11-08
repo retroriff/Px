@@ -6,19 +6,19 @@ TODO: Make fill work with hundreth weighted beats
 
 Px {
     classvar <>chorusPatterns;
-    classvar <lastName;
-    classvar <>lastFormatted;
     classvar <>last;
-    classvar <>patternState;
+    classvar <>lastFormatted;
+    classvar <lastName;
     classvar <midiClient;
+    classvar <>patternState;
     classvar <pbindList;
     classvar <samplesDict;
     classvar <seeds;
 
     *initClass {
         chorusPatterns = Dictionary.new;
-        lastFormatted = Dictionary.new;
         last = Dictionary.new;
+        lastFormatted = Dictionary.new;
         pbindList = Dictionary.new;
         seeds = Dictionary.new;
     }

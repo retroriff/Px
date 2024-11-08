@@ -12,7 +12,7 @@ A set of classes designed to generate patterns on a NodeProxy and streamline the
 
 Additional code examples can be found [here](/Examples/).
 
-** 📖 Table of Contents**
+**📖 Table of Contents**
 
 1. ⚡️ [Px: Pattern Shortcuts Generator](#-px-pattern-shortcuts-generator)
 2. ✨ [Nfx: Nodeproxy Effects Handler](#-nfx-nodeproxy-effects-handler)
@@ -24,7 +24,7 @@ Additional code examples can be found [here](/Examples/).
 8. 🎚️ [Crossfader](#-crossfader)
 9. ✅ [Unit Tests](#-unit-tests)
 
-** 🛠️ Dependencies**:
+**🛠️ Dependencies**:
 
 - [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) (PbindFx)
 - [VSTPlugin](https://github.com/Spacechild1/vstplugin)

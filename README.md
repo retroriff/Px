@@ -14,7 +14,7 @@ Additional code examples can be found [here](/Examples/).
 
 **📖 Table of Contents**
 
-1. ⚡️ [Px: A Pattern Shortcuts Generator](#-px-a-pattern-shortcuts-generator)
+1. ⚡️ [Px: A Pattern Shortcuts Generator](#%EF%B8%8F-px-a-pattern-shortcuts-generator)
 2. ✨ [Nfx: A Nodeproxy Effects Handler](#-nfx-a-nodeproxy-effects-handler)
 3. 💥 [Notes Handler with MIDI Support](#notes-handler-with-midi-support)
 4. 🛢️ [Drum Machines](#-drum-machines)

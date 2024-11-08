@@ -16,12 +16,12 @@ Additional code examples can be found [here](/Examples/).
 
 1. ⚡️ [Px: A Pattern Shortcuts Generator](#%EF%B8%8F-px-a-pattern-shortcuts-generator)
 2. ✨ [Nfx: A Nodeproxy Effects Handler](#-nfx-a-nodeproxy-effects-handler)
-3. 💥 [Notes Handler with MIDI Support](#notes-handler-with-midi-support)
-4. 🛢️ [Drum Machines](#-drum-machines)
+3. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
+4. 🛢️ [Drum Machines](#%EF%B8%8F-drum-machines)
 5. 🔥 [Ns: A Sequenced Synth](#-ns-a-sequenced-synth)
 6. 📡 [OSC Communication](#-osc-communication)
-7. 🎚️ [Crossfader](#-crossfader)
-8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#-tr08-a-roland-tr-08-midi-controller)
+7. 🎚️ [Crossfader](#%EF%B8%8F-crossfader)
+8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#%EF%B8%8F-tr08-a-roland-tr-08-midi-controller)
 9. ✅ [Unit Tests](#-unit-tests)
 
 **🛠️ Dependencies**:

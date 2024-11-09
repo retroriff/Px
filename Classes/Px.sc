@@ -99,12 +99,9 @@ Px {
                 fadeTime = defaultFadeTime;
             };
 
-            if (direction == \in) {
-                PfadeIn(pbind, fadeTime);
-            } {
-                last.removeAt(newPattern[\id]);
-                PfadeOut(pbind, fadeTime);
-            }
+            if (direction == \in)
+            { PfadeIn(pbind, fadeTime) }
+            { PfadeOut(pbind, fadeTime) };
         };
 
         var createPatternPan = { |pattern|
@@ -162,6 +159,27 @@ Px {
         if (Ndef(\px).isPlaying.not) {
             Ndef(\px, pdef).play;
         };
+
+        if (newPattern.notNil) {
+            this.prRemoveFinitePatternFromLast(newPattern);
+        }
+    }
+
+    *prRemoveFinitePatternFromLast { |pattern|
+        var hasFadeIn = pattern[\fade].isArray
+        and: { pattern[\fade][0] == \in };
+
+        var hasFadeOut = pattern[\fade].isArray
+        and: { pattern[\fade][0] == \out };
+
+        var hasRepeats = pattern[\repeats].notNil;
+
+        case
+        { hasFadeOut or: hasRepeats }
+        { last.removeAt(pattern[\id]) }
+
+        { hasFadeIn }
+        { last[pattern[\id]].removeAt(\fade) };
     }
 
     *chorus {

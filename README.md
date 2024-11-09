@@ -104,6 +104,14 @@ Px has the same FX methods than Nfx, but it is helpful as a shortcut.
 | `reverb` | mix?: number \| Nil, room?: number, damp?: number           | Adds a reverb filter to the proxy     |
 | `vst`    | mix?: number \| Nil, plugin?: string                        | Adds a VST plugin filter to the proxy |
 
+### Pattern shortcuts
+
+The following array shortcuts will be automacally converted to patterns:
+
+| Shortcut             | Pattern conversion                    | Works with         | How                                                                            |
+| -------------------- | ------------------------------------- | ------------------ | ------------------------------------------------------------------------------ |
+| `[\lin, 0, 1, 8, 1]` | `Pseg([0.01, 1, 1], [5, 1], \linear)` | amp, ctf, env, res | Linear (`\lin`) or exponential (`\exp`), start, end, repeats? (omitted is inf) |
+
 ## ✨ Nfx: A Nodeproxy Effects Handler
 
 The Nfx class facilitates the addition of effects to the Px set classes, as well as to any other Ndef.

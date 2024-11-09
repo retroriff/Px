@@ -4,7 +4,8 @@
     }
 
     amp { |value|
-        this.prUpdatePattern([\amp, value]);
+        var pairs = this.prCreatePatternFromArray(\amp, value);
+        this.prUpdatePattern(pairs);
     }
 
     args { |value|
@@ -107,11 +108,13 @@
     }
 
     ctf { |value|
-        this.prUpdatePattern([\ctf, value]);
+        var pairs = this.prCreatePatternFromArray(\ctf, value);
+        this.prUpdatePattern(pairs);
     }
 
     env { |value|
-        this.prUpdatePattern([\env, value]);
+        var pairs = this.prCreatePatternFromArray(\env, value);
+        this.prUpdatePattern(pairs);
     }
 
     rel { |value|
@@ -119,7 +122,8 @@
     }
 
     res { |value|
-        this.prUpdatePattern([\res, value]);
+        var pairs = this.prCreatePatternFromArray(\res, value);
+        this.prUpdatePattern(pairs);
     }
 
     wave { |value|
@@ -133,6 +137,56 @@
         }
 
         ^this.asSymbol;
+    }
+
+    prCreatePatternFromArray { |key, value|
+        var curves, isCurve;
+        var pairs = [key, value];
+
+        if (value.isArray.not)
+        { ^pairs };
+
+        isCurve = [\exp, \lin].includes(value[0]);
+
+        case
+        { isCurve }
+        { ^this.prCreatePseg(key, value) };
+
+        ^pairs;
+    }
+
+    prPreventNonZeroExponential { |curve, value|
+        if (curve == \exp and: (value == 0))
+        { ^0.01 }
+        { ^value };
+    }
+
+    prCreatePseg { |key, value|
+        var curve = value[0];
+        var start = this.prPreventNonZeroExponential(value[0], value[1]);
+        var end = this.prPreventNonZeroExponential(value[0], value[2]);
+        var beats = value[3] ?? 8;
+        var dur = value[4] ?? inf;
+        var hasRepeats = dur.isInteger;
+        var curvesDict = Dictionary[
+            \exp -> \exponential,
+            \lin -> \linear
+        ];
+        var durs, levels, pseg;
+        var repeats = Array.new;
+
+        if (hasRepeats) {
+            levels = [start, end];
+            durs = [beats, dur];
+            repeats = [\repeats, dur];
+        } {
+            levels = [start, end, end];
+            durs = [beats, inf];
+        };
+
+        pseg = Pseg(levels, durs, curvesDict[curve]);
+
+        ^[key, pseg] ++ repeats;
     }
 
     prShouldGenerateDrumMachineId { |ins|
@@ -230,7 +284,7 @@
     solo {}
     wah {}
     weight {}
-    // 303 SynthDef
+    // Synth
     atk {}
     ctf {}
     env {}

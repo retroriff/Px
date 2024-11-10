@@ -4,10 +4,10 @@ A set of classes designed to generate patterns on a NodeProxy and streamline the
 
 ```js
 // Play
-1 i: \bd
+1 i: \bd dur: 1
 
 // Stop
-\1 i:\bd
+\1 i:\bd dur: 1
 ```
 
 Additional code examples can be found [here](/Examples/).

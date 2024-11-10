@@ -1,6 +1,6 @@
 (
 \1 i: \bd dur: 1;
-1 i: \bd beat: 1 weight: 0.23 reverb: 0.6;
+1 i: \bd dur: 1 beat: 1 weight: 0.23 reverb: 0.6;
 \2 i: \cp dur: 2 off: 1 beat: 1 weight: 0.34 seed: 25;
 \3 play: ["michael", 0] dur: 1/4 beat: 1 weight: 0.02 reverb: \rand;
 \4 i: \sn dur: 2 off: 1 delay: 0.5 reverb: 0.3;

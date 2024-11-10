@@ -1,5 +1,5 @@
 // We can separately filter our patterns using these FX filters:
-1 i: \bd reverb: 0.4 delay: 0.2;
+1 i: \bd dur: 1 reverb: 0.4 delay: 0.2;
 2 i: \sn dur: 2 off: 1 reverb: 0.3 delay: 0.2;
 3 i: \cy dur: 0.25 beat: 1 wah: 0.6 reverb: 0.3;
 
@@ -27,7 +27,7 @@ Nfx(\x).reverb(1, 1, 1);
 
 // Global FX also can load a VST plugin:
 (
-1 i: \bd;
+1 i: \bd dur: 1;
 2 i: \sn dur: 2 off: 1;
 3 i: \cy dur: 0.25 beat: 1;
 Px.vst(0.4, "ValhallaFreqEcho");

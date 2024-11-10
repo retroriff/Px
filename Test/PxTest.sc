@@ -3,7 +3,7 @@ PxTest : UnitTest {
 
     setUp {
         ~isUnitTestRunning = true;
-        1 i: \bd amp: 0.5;
+        1 i: \bd dur: 1 amp: 0.5;
         2 i: \sn dur: 0.25;
     }
 
@@ -20,7 +20,7 @@ PxTest : UnitTest {
     // Params
     test_playPx {
         var expectedResult = Dictionary[
-            \1 -> (i: \bd, id: \1, amp: 0.5),
+            \1 -> (i: \bd, id: \1, dur: 1, amp: 0.5),
             \2 -> (i: \sn, id: \2, dur: 0.25)
         ];
 
@@ -47,7 +47,7 @@ PxTest : UnitTest {
             "👀 Default quant is 4",
         );
 
-        Px((i: \bd), quant: 8);
+        Px((i: \bd, dur: 1), quant: 8);
 
         this.assertEquals(
             Pdef(\px).quant,
@@ -146,7 +146,7 @@ PxTest : UnitTest {
 
     // Event functions
     test_amp {
-        1 i: \bd;
+        1 i: \bd dur: 1;
 
         this.assertEquals(
             Px.lastFormatted[\1][\amp],
@@ -156,7 +156,7 @@ PxTest : UnitTest {
     }
 
     test_beat {
-        1 i: \bd beat: 1;
+        1 i: \bd dur: 1 beat: 1;
 
         this.assertEquals(
             Px.lastFormatted[\1][\amp].class,
@@ -166,7 +166,7 @@ PxTest : UnitTest {
     }
 
     test_dur {
-        1 i: \bd;
+        1 i: \bd dur: 1;
 
         this.assertEquals(
             Px.lastFormatted[\1][\dur],
@@ -176,7 +176,7 @@ PxTest : UnitTest {
     }
 
     test_fill {
-        1 i: \bd beat: 1;
+        1 i: \bd dur: 1 beat: 1;
         2 i: \sn fill: 1;
 
         Px.last[\2][\totalBeats];
@@ -188,8 +188,8 @@ PxTest : UnitTest {
     }
 
     test_fade {
-        1 i: \bd out: 10;
-        2 i: \sn in: 0;
+        1 i: \bd dur: 1 out: 10;
+        2 i: \sn dur: 1 in: 0;
 
         expectedResult = Dictionary[
             \2 -> (i: \sn, id: \2, 'fade': [\in, 0.1]),
@@ -203,7 +203,7 @@ PxTest : UnitTest {
     }
 
     test_human {
-        1 i: \bd human: 1;
+        1 i: \bd dur: 1 human: 1;
 
         this.assertEquals(
             Px.lastFormatted[\1][\lag].class,
@@ -213,7 +213,7 @@ PxTest : UnitTest {
     }
 
     test_ids {
-        1 i: \bd;
+        1 i: \bd dur: 1;
 
         this.assertEquals(
             Px.lastFormatted[\1][\id],
@@ -256,9 +256,9 @@ PxTest : UnitTest {
 
 
     test_solo {
-        1 i: \bd solo: 1;
-        2 i: \sn;
-        expectedResult = (i: \bd, id: \1, solo: true);
+        1 i: \bd dur: 1 solo: 1;
+        2 i: \sn dur: 1;
+        expectedResult = (i: \bd, dur: 1, id: \1, solo: true);
 
         this.assertEquals(
             Px.last[\1],

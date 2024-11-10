@@ -67,10 +67,10 @@ Px {
         };
 
         var createPatternDur = { |pattern|
-            var dur = pattern[\dur] ?? 1;
+            var dur = pattern[\dur];
 
-            if (dur == 0)
-            { dur = 1 };
+            if (dur.isNil or: (dur == 0))
+            { dur = Pseq([8], 1) };
 
             if (dur.isArray) {
                 var containsString = dur any: { |item| item.isString };
@@ -156,26 +156,23 @@ Px {
 
         pdef = Pdef(\px, Ptpar(ptparList)).quant_(quant ?? 4);
 
-        if (Ndef(\px).isPlaying.not) {
-            Ndef(\px, pdef).play;
-        };
+        if (Ndef(\px).isPlaying.not)
+        { Ndef(\px, pdef).play };
 
-        if (newPattern.notNil) {
-            this.prRemoveFinitePatternFromLast(newPattern);
-        }
+        if (newPattern.notNil)
+        { this.prRemoveFinitePatternFromLast(newPattern) };
     }
 
     *prRemoveFinitePatternFromLast { |pattern|
         var hasFadeIn = pattern[\fade].isArray
         and: { pattern[\fade][0] == \in };
-
         var hasFadeOut = pattern[\fade].isArray
         and: { pattern[\fade][0] == \out };
-
         var hasRepeats = pattern[\repeats].notNil;
+        var hasEmptyDur = pattern[\dur].isNil;
 
         case
-        { hasFadeOut or: hasRepeats }
+        { hasFadeOut or: hasRepeats or: hasEmptyDur }
         { last.removeAt(pattern[\id]) }
 
         { hasFadeIn }
@@ -198,7 +195,7 @@ Px {
         { newPattern = last[name] };
 
         if (newPattern.isNil)
-        { newPattern = (i: \bd, id: \1) };
+        { newPattern = (i: \bd, id: \1, dur: 1) };
 
         ^this.new(newPattern);
     }

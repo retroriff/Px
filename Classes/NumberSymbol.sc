@@ -95,7 +95,8 @@
     }
 
     solo { |value|
-        this.prUpdatePattern([\solo, true]);
+        var isSolo = value != 0;
+        this.prUpdatePattern([\solo, isSolo]);
     }
 
     weight { |value|
@@ -124,6 +125,10 @@
     res { |value|
         var pairs = this.prCreatePatternFromArray(\res, value);
         this.prUpdatePattern(pairs);
+    }
+
+    set {
+        Px.patternState = Px.last[this.asSymbol];
     }
 
     wave { |value|

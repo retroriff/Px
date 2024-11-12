@@ -15,10 +15,22 @@
         if (pseqWeight > 0) {
             var seq1 = Pseq(rhythmSeq.(rhythmWeight), 1);
             var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
+
             ^[Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
         };
 
         ^rhythmSeq.(weight);
+    }
+
+    *prCreateBeatSet { |amp, pattern|
+        var list = pattern[\beatSet].collect { |step|
+            if (step >= 0)
+            { step = amp };
+
+            step;
+        };
+
+        ^Pseq(list, inf);
     }
 
     *prCreateRhythmBeat { |amp, pattern|
@@ -40,16 +52,6 @@
         };
 
         ^dur;
-    }
-
-    *prCreateBeatSet { |amp, pattern|
-        var list = pattern[\beatSet].collect { |step|
-            if (step >= 1)
-            { step = amp };
-            step;
-        };
-
-        ^Pseq(list, inf);
     }
 
     *prCreateFillFromBeat { |amp, pattern|

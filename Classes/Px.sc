@@ -1,6 +1,4 @@
 /*
-TODO: Set method should work on Routine 1
-TODO: Set documentation
 TODO: Create global seed, so when we reevaluate patterns we don't delete the seed
 TODO: Replace Ptpar by Pbind with \timingOffset
 TODO: Make fill work with hundreth weighted beats

@@ -112,9 +112,12 @@ Px.save
 2 i: \sn dur: 2 off: 1 delay: 0.3 pan: -1 dur: 0.25;
 Px.chorus;
 
-// Slide series to create dynamic transitions or fills:
+// Slide series to create dynamic transitions or fills
 2 i: \sn dur: 0.25 amp: [\exp, 0, 1, 8, 1]
 3 i: \303 dur: 0.25 octave: 5 ctf: [\lin, 0, 1, 8]
+
+// Update an existing pattern when we omit i, play and loop
+3 set: 1 dur: 1
 
 // Change the tempo
 Px.tempo(100);

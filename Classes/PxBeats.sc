@@ -24,7 +24,7 @@
 
     *prCreateBeatSet { |amp, pattern|
         var list = pattern[\beatSet].collect { |step|
-            if (step >= 0)
+            if (step >= 1)
             { step = amp };
 
             step;

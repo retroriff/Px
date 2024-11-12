@@ -21,7 +21,8 @@
         { pairs = [\beat, true] };
 
         if (value.isArray)
-        { pairs.addAll([\beatSet, value]) };
+        { pairs.addAll([\beatSet, value]) }
+        { this.prRemoveBeatSetWhenSet };
 
         this.prUpdatePattern(pairs);
     }
@@ -164,6 +165,11 @@
         if (curve == \exp and: (value == 0))
         { ^0.01 }
         { ^value };
+    }
+
+    prRemoveBeatSetWhenSet {
+        var id = Px.patternState[\id];
+        Px.last[id].removeAt(\beatSet);
     }
 
     prCreatePseg { |key, value|

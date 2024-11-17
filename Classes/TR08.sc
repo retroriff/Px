@@ -115,8 +115,26 @@ TR08 : Px {
 
         presetPatterns do: { |pattern, i|
             var id = 800 * 100 + i;
-            TR08(pattern.putAll([\id, id, \drumMachine, 808]));
+            TR08(pattern.copy.putAll([\id, id, \drumMachine, 808]));
         }
+    }
+
+    *release { |time = 10|
+        var fade = [\out, time.clip(0.1, time)];
+
+        last do: { |pattern|
+            if (pattern['drumMachine'] == 808) {
+                pattern.putAll([\fade, fade, \out, time]);
+            };
+        };
+
+        super.new;
+
+        last do: { |pattern|
+            if (pattern['drumMachine'] == 808) {
+                this.prRemoveFinitePatternFromLast(pattern);
+            };
+        };
     }
 
     *stop {

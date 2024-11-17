@@ -1,4 +1,10 @@
 /*
+TODO: Fade out can't be done simultaneously in multiple patterns
+because prRemoveFinitePatternFromLast is removing them.
+To fix it we could disuse individual Pdefs instead of Ptpar.
+After doing it we must fix and probably simplify TR08.release.
+
+TODO: Bug when dur after beat 1 play: ["electro/zap", 0] dur: 0.25 beat: 1;
 TODO: Create global seed, so when we reevaluate patterns we don't delete the seed
 TODO: Replace Ptpar by Pbind with \timingOffset
 TODO: Make fill work with hundreth weighted beats

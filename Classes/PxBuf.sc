@@ -101,8 +101,10 @@
                     };
 
                     var getRandSeqBufs = {
+                        var files;
                         thisThread.randSeed = this.prGetPatternSeed(pattern);
-                        Pseq(this.buf(pattern[\buf][0], Array.rand(8, 0, filesCount - 1)), inf);
+                        files = Array.rand(8, 0, filesCount - 1);
+                        Pseq(this.buf(pattern[\buf][0], files), inf);
                     };
 
                     var getRandBuf = {
@@ -121,11 +123,20 @@
                         pattern[\rate] = patternWithdegrees[\degree];
                     };
 
-                    buf = switch (pattern[\buf][1])
-                    { \rand } { getRandSeqBufs.value }
-                    { \jump } { getJumpBufs.value }
-                    { nil } { getRandBuf.value }
-                    { this.buf(pattern[\buf][0], pattern[\buf][1]) };
+                    case
+                    { pattern[\buf][1] == \rand }
+                    { buf = getRandSeqBufs.value }
+
+                    { pattern[\buf][1] == \jump }
+                    { buf = getJumpBufs.value }
+
+                    { pattern[\buf][1].isNil }
+                    { buf = getRandBuf.value }
+
+                    { pattern[\buf][1].isArray }
+                    { buf = Pseq(this.buf(pattern[\buf][0], pattern[\buf][1]), inf) }
+
+                    { buf = this.buf(pattern[\buf][0], pattern[\buf][1]) };
 
                     if (pattern[\trim].notNil) {
                         if (pattern[\trim] == \seq)

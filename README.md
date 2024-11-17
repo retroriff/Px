@@ -73,7 +73,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | ------ | ------------------------------------------------ | ------------------------------- |
 | `i`    | name: string                                     | Plays a Synthdef. Same as `ins` |
 | `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer      |
-| `play` | [folder: string, file: number \| \rand]          | Plays a buffer                  |
+| `play` | [folder: string, file: number \| array \| \rand] | Plays a buffer                  |
 
 ### Px class methods
 

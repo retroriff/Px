@@ -109,9 +109,9 @@
 
     prFx { |fx, mix|
         var id = Px.patternState[\id];
-        var lastFx = Px.last[id][\fx] ?? [];
-        lastFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
-        this.prUpdatePattern([\fx, lastFx]);
+        var lastFx = Px.patternState[\fx] ?? [];
+        var allFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
+        this.prUpdatePattern([\fx, allFx]);
     }
 }
 

@@ -17,7 +17,7 @@ Px {
     classvar <lastName;
     classvar <midiClient;
     classvar <>patternState;
-    classvar <pbindList;
+    classvar <>ndefList;
     classvar <samplesDict;
     classvar <seeds;
 
@@ -25,12 +25,12 @@ Px {
         chorusPatterns = Dictionary.new;
         last = Dictionary.new;
         lastFormatted = Dictionary.new;
-        pbindList = Dictionary.new;
+        ndefList = Dictionary.new;
         seeds = Dictionary.new;
     }
 
     *new { | newPattern, quant, trace |
-        var patterns, pbind, pdef, ptpar, ptparList;
+        var patterns, pbindef, pdef, ptpar;
 
         var handleSoloPatterns = { |patterns|
             var hasSolo = patterns any: { |pattern|
@@ -93,7 +93,7 @@ Px {
             humanize.(pattern);
         };
 
-        var createPatternFade = { |fade, pbind|
+        var createPatternFade = { |fade, pbindef|
             var defaultFadeTime = 16;
             var direction, fadeTime;
 
@@ -106,8 +106,8 @@ Px {
             };
 
             if (direction == \in)
-            { PfadeIn(pbind, fadeTime) }
-            { PfadeOut(pbind, fadeTime) };
+            { PfadeIn(pbindef, fadeTime) }
+            { PfadeOut(pbindef, fadeTime) };
         };
 
         var createPatternPan = { |pattern|
@@ -131,7 +131,7 @@ Px {
         patterns = this.prCreateLoops(patterns);
 
         patterns do: { |pattern|
-            var pbind;
+            var ndef, pbindef;
 
             pattern = createPatternAmp.(pattern);
             pattern = createPatternDur.(pattern);
@@ -145,25 +145,30 @@ Px {
             { pattern[\amp] = Pseq(pattern[\amp], inf) };
 
             if (this.prHasFX(pattern) == true)
-            { pbind = this.prCreatePbindFx(pattern) }
-            { pbind = Pbind(*pattern.asPairs) };
+            { pbindef = this.prCreatePbindFx(pattern) }
+            { pbindef = Pbindef(pattern[\id], *pattern.asPairs).quant_(quant ?? 4) };
 
             if (pattern[\fade].notNil)
-            { pbind = createPatternFade.(pattern[\fade], pbind) };
+            { pbindef = createPatternFade.(pattern[\fade], pbindef) };
 
             if (trace == true)
-            { pbind = pbind.trace };
+            { pbindef = pbindef.trace };
 
-            ptparList = ptparList ++ [pattern[\off] ?? 0, pbind];
+            // if (ndefList[pattern[\id]].isNil) {
+                ndef = Ndef(pattern[\id], pbindef);
+                ndefList = ndefList.add(ndef);
+                ndefList.postln;
+        // };
         };
 
         if (newPattern.notNil)
         { lastFormatted[newPattern[\id]] = patterns[newPattern[\id]]};
 
-        pdef = Pdef(\px, Ptpar(ptparList)).quant_(quant ?? 4);
+        // pdef = Pdef(\px, Ptpar(ptparList)).quant_(quant ?? 4);
+        Ndef(\px, { Mix(ndefList) }).play;
 
-        if (Ndef(\px).isPlaying.not)
-        { Ndef(\px, pdef).play };
+/*        if (Ndef(\px).isPlaying.not)
+        { Ndef(\px, pdef).play };*/
 
         if (newPattern.notNil)
         { this.prRemoveFinitePatternFromLast(newPattern) };

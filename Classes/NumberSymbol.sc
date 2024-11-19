@@ -63,7 +63,7 @@
     }
 
     off { |value|
-        this.prUpdatePattern([\off, value]);
+        this.prUpdatePattern([\timingOffset, value]);
     }
 
     loop { |value|

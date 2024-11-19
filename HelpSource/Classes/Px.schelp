@@ -8,6 +8,34 @@ The `Px` class is a patterns builder that shorten and simplify
 the patterns syntax and incorporates some additional features
 for live coding.
 
+Px is a concatenation of Ndef proxies, where each Ndef represents a Pbindef
+that defines a sequence of musical events. We can control multiple sound sources
+by mixing them, adjusting individual parameters, and applying effects globally or independently.
+
+code::
+a = Ndef(\bd, Pbindef(\bd, \i, \lplay, \buf, ~buf.("mt-8", 0), \dur, 8, \amp, 0.4));
+b = Ndef(\sn, Pbindef(\sn, \i, \sn, \dur, 2, \timingOffset, 1, \amp, 1.3));
+c = Dictionary.newFrom([\bd, a, \sn, b]);
+Ndef(\px, { Mix(c) }).quant_(4).play;
+
+// Reevaluations can be executed with Pbindef:
+Pbindef(\bd, \i, \lplay, \buf, ~buf.("mt-8", 0), \dur, 16, \amp, 0.4);
+
+// And additions or removals are reevaluated from \px:
+c.removeAt(\sn);
+Ndef(\px, { Mix(c) });
+
+// Pbindef Ndef can be controlled independently:
+Ndef(\sn).release(10);
+
+// Nfx can apply FX to \px and to each item:
+Nfx(\px).reverb(Nil)
+Nfx(\sn).reverb(0.5)
+
+// We can use Pdef utilities:
+Pdef.gui
+::
+
 ClassMethods::
 
 method:: new

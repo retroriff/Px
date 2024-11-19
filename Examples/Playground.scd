@@ -24,3 +24,29 @@
 
 21 play: ["fm", 17] dur: 16 off: 0.5 delay: 0.5 reverb: 0.6;
 )
+
+
+// Ndefs
+
+a = Ndef(\bd, Pbindef(\bd, \i, \lplay, \buf, ~buf.("mt-8", 0), \dur, 8, \amp, 0.4));
+b = Ndef(\sn, Pbindef(\sn, \i, \sn, \dur, 2, \timingOffset, 1, \amp, 1.3));
+c = Dictionary.newFrom([\bd, a, \sn, b]);
+
+Ndef(\px, { Mix(c) }).quant_(4).play;
+
+// Reevaluations can be executed with Pbindef:
+Pbindef(\bd, \i, \lplay, \buf, ~buf.("mt-8", 0), \dur, 16, \amp, 0.4);
+
+// And additions or removals are reevaluated from \px:
+c.removeAt(\sn);
+Ndef(\px, { Mix(c) });
+
+// Pbindef Ndef can be controlled independently:
+Ndef(\sn).release(10);
+
+// Nfx can apply FX to \px and to each item:
+Nfx(\px).reverb(Nil)
+Nfx(\sn).reverb(0.5)
+
+// We can use Pdef utilities:
+Pdef.gui

@@ -30,7 +30,7 @@ Px {
     }
 
     *new { | newPattern, quant, trace |
-        var patterns, pbindef, pdef, ptpar;
+        var patterns;
 
         var handleSoloPatterns = { |patterns|
             var hasSolo = patterns any: { |pattern|
@@ -121,6 +121,7 @@ Px {
         if (Ndef(\px).isPlaying.not) {
             chorusPatterns = Dictionary.new;
             last = Dictionary.new;
+            ndefList = Dictionary.new;
         };
 
         if (newPattern.notNil)
@@ -131,7 +132,7 @@ Px {
         patterns = this.prCreateLoops(patterns);
 
         patterns do: { |pattern|
-            var ndef, pbindef;
+            var pbindef;
 
             pattern = createPatternAmp.(pattern);
             pattern = createPatternDur.(pattern);
@@ -146,7 +147,7 @@ Px {
 
             if (this.prHasFX(pattern) == true)
             { pbindef = this.prCreatePbindFx(pattern) }
-            { pbindef = Pbindef(pattern[\id], *pattern.asPairs).quant_(quant ?? 4) };
+            { pbindef = Pbind(*pattern.asPairs) };
 
             if (pattern[\fade].notNil)
             { pbindef = createPatternFade.(pattern[\fade], pbindef) };
@@ -154,21 +155,19 @@ Px {
             if (trace == true)
             { pbindef = pbindef.trace };
 
-            // if (ndefList[pattern[\id]].isNil) {
-                ndef = Ndef(pattern[\id], pbindef);
-                ndefList = ndefList.add(ndef);
-                ndefList.postln;
-        // };
+            pbindef = Pdef(pattern[\id], pbindef);
+
+            if (ndefList[pattern[\id]].isNil)
+            { ndefList.put(pattern[\id], Ndef(pattern[\id], pbindef)) }
+            { pbindef };
         };
 
         if (newPattern.notNil)
         { lastFormatted[newPattern[\id]] = patterns[newPattern[\id]]};
 
-        // pdef = Pdef(\px, Ptpar(ptparList)).quant_(quant ?? 4);
-        Ndef(\px, { Mix(ndefList) }).play;
-
-/*        if (Ndef(\px).isPlaying.not)
-        { Ndef(\px, pdef).play };*/
+        if (Ndef(\px).isPlaying.not)
+        { Ndef(\px, { Mix.new(ndefList.values) }).quant_(4).play }
+        { Ndef(\px, { Mix.new(ndefList.values) }) };
 
         if (newPattern.notNil)
         { this.prRemoveFinitePatternFromLast(newPattern) };
@@ -184,7 +183,10 @@ Px {
 
         case
         { hasFadeOut or: hasRepeats or: hasEmptyDur }
-        { last.removeAt(pattern[\id]) }
+        {
+            last.removeAt(pattern[\id]);
+            ndefList.removeAt(pattern[\id]);
+        }
 
         { hasFadeIn }
         { last[pattern[\id]].removeAt(\fade) };
@@ -231,6 +233,7 @@ Px {
     *stop { |id|
         if (id.notNil) {
             last.removeAt(id);
+            ndefList.removeAt(id);
 
             if (last.size > 0)
             { ^this.new };

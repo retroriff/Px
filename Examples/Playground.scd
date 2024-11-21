@@ -1,8 +1,8 @@
 // Ndefs
 
 a = Ndef(\bd, Pbindef(\bd, \i, \lplay, \buf, ~buf.("mt-8", 0), \dur, 8, \amp, 0.4));
-b = Ndef(\sn, Pbindef(\sn, \i, \sn, \dur, 2, \timingOffset, 1, \amp, 1.3));
-c = Dictionary.newFrom([\bd, a, \sn, b]);
+b = Ndef(\sn, Pbindef(\sn, \i, \playbuf, \buf, ~buf.("fm", 17), \dur, 16, \amp, 1));
+c = Dictionary.newFrom([\sn, b]);
 
 Ndef(\px, { Mix(c) }).quant_(4).play;
 
@@ -24,11 +24,14 @@ Nfx(\sn).reverb(0.5)
 Pdef.gui
 a = [\a, \b]
 a.add(\c)
-a
+
+Ndef(\px, Pbindef(\bd, \i, \playbuf, \buf, ~buf.("fm", 17), \dur, 16, \amp, 1)).play
+13 play: ["fm", 17] dur: 16 amp: 1;
+
 
 (
 \1 i: \bd dur: 1;
-1 i: \bd dur: 0.25 beat: 1 reverb: 1;
+1 i: \bd dur: 16;
 \2 i: \cp dur: 2 off: 1 beat: 1 weight: 0.34 seed: 25;
 \3 play: ["michael", 0] dur: 1/4 beat: 1 weight: 0.02 reverb: \rand;
 \4 i: \sn dur: 2 off: 1 delay: 0.5 reverb: 0.3;
@@ -52,3 +55,5 @@ a
 
 21 play: ["fm", 17] dur: 16 off: 0.5 delay: 0.5 reverb: 0.6;
 )
+
+s.plotTree

@@ -1,9 +1,11 @@
 /*
+TODO: Solo solution
 TODO: Fade out can't be done simultaneously in multiple patterns
 because prRemoveFinitePatternFromLast is removing them.
 To fix it we could disuse individual Pdefs instead of Ptpar.
 After doing it we must fix and probably simplify TR08.release.
 
+TODO: hasEmptyDur, solution to play single hits
 TODO: Bug when dur after beat 1 play: ["electro/zap", 0] dur: 0.25 beat: 1;
 TODO: Create global seed, so when we reevaluate patterns we don't delete the seed
 TODO: Replace Ptpar by Pbind with \timingOffset
@@ -63,23 +65,18 @@ Px {
             if (trace == true)
             { pbindef = pbindef.trace };
 
-            pbindef = Pdef(pattern[\id], pbindef);
+            pbindef = Pdef(pattern[\id], pbindef).quant_(4);
 
             if (ndefList[pattern[\id]].isNil)
-            { ndefList.keys.postln; pattern[\id].postln; ndefList.put(pattern[\id], pbindef) };
+            { ndefList.put(pattern[\id], Ndef(pattern[\id], pbindef)) };
         };
 
         if (newPattern.notNil)
         { lastFormatted[newPattern[\id]] = patterns[newPattern[\id]]};
 
-        ndefList2 = ndefList.keysValuesDo({ |key, pbindef|
-            var ndef = Ndef(key, pbindef);
-            ndefList[key] = ndef;
-        });
-
-        if (Ndef(\px).isPlaying.not)
-        { Ndef(\px, { Mix.new(ndefList2.values) }).quant_(4).play };
-        { Ndef(\px, { Mix.new(ndefList2.values) }) };
+        if (Ndef(\px).isPlaying)
+        { Ndef(\px).source = { Mix.new(ndefList.values) } }
+        { Ndef(\px, { Mix.new(ndefList.values) }).play };
 
         if (newPattern.notNil)
         { this.prRemoveFinitePatternFromLast(newPattern) };
@@ -94,7 +91,9 @@ Px {
 
         var hasRepeats = pattern[\repeats].notNil;
 
-        var hasEmptyDur = pattern[\dur].isNil;
+        // TODO
+        // var hasEmptyDur = pattern[\dur].isNil;;
+        var hasEmptyDur = false;
 
         case
         { hasFadeOut or: hasRepeats or: hasEmptyDur }

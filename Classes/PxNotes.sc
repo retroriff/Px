@@ -7,7 +7,7 @@
         ^this.new;
     }
 
-    *prGenerateDegrees { |pattern, midiratio|
+    *prCreateDegrees { |pattern, midiratio|
         var createRandomDegrees = {
             var length, scale, scaleDegrees, randomDegrees;
             length = pattern[\length] ?? 1;
@@ -56,7 +56,7 @@
         ^pattern;
     }
 
-    *prGenerateOctaves { |pattern|
+    *prCreateOctaves { |pattern|
         var octave = pattern[\octave];
         var isBeat = octave.isArray and: { octave[0] == \beat };
 

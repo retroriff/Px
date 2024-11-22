@@ -31,7 +31,7 @@
         this.prFx(\wah, mix, args);
     }
 
-    *prCreatePatternFx { |pattern|
+    *prCreateFx { |pattern|
         if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
             pattern[\fx].do { |fx, i|
                 if (SynthDescLib.global[fx[1]].notNil) {

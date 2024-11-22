@@ -55,7 +55,7 @@
         };
     }
 
-    *prCreateBufIns { |patterns|
+    *prCreateBufInstruments { |patterns|
         patterns = patterns.collect { |pattern|
             pattern[\play].notNil.if {
                 pattern = pattern ++ (i: \playbuf, buf: pattern[\play]);
@@ -73,88 +73,86 @@
         ^patterns;
     }
 
-    *prCreateLoops { |patterns|
-        patterns.do { |pattern|
-            if (pattern[\buf].notNil) {
-                var filesCount = this.buf(pattern[\buf][0]).size;
+    *prCreateLoops { |pattern|
+        if (pattern[\buf].notNil) {
+            var filesCount = this.buf(pattern[\buf][0]).size;
 
-                if (filesCount > 0 and: { pattern[\buf].isArray }) {
-                    var buf;
+            if (filesCount > 0 and: { pattern[\buf].isArray }) {
+                var buf;
 
-                    var getJumpBufs = {
-                        var minLength = 1, mixLength = pattern[\dur], steps = 16;
-                        var mixBuf = {
-                            var initialBuf = (this.buf(pattern[\buf][0]).size).rand;
-                            var buf = Array.fill(minLength, initialBuf);
-                            var rest = (steps - minLength) / minLength;
-                            thisThread.randSeed = this.prGetPatternSeed(pattern);
-                            rest.do({
-                                var newBuf = (this.buf(pattern[\buf][0]).size).rand;
-                                buf = buf ++ Array.fill(minLength, newBuf);
-                            });
-                            buf;
-                        };
-                        pattern[\dur] = mixLength / steps;
-                        pattern[\beats] = mixLength;
-                        pattern[\start] = Pseq((0..steps - 1) / steps, inf);
-                        Pseq(this.buf(pattern[\buf][0], mixBuf.value), inf);
-                    };
-
-                    var getRandSeqBufs = {
-                        var files;
+                var getJumpBufs = {
+                    var minLength = 1, mixLength = pattern[\dur], steps = 16;
+                    var mixBuf = {
+                        var initialBuf = (this.buf(pattern[\buf][0]).size).rand;
+                        var buf = Array.fill(minLength, initialBuf);
+                        var rest = (steps - minLength) / minLength;
                         thisThread.randSeed = this.prGetPatternSeed(pattern);
-                        files = Array.rand(8, 0, filesCount - 1);
-                        Pseq(this.buf(pattern[\buf][0], files), inf);
+                        rest.do({
+                            var newBuf = (this.buf(pattern[\buf][0]).size).rand;
+                            buf = buf ++ Array.fill(minLength, newBuf);
+                        });
+                        buf;
                     };
+                    pattern[\dur] = mixLength / steps;
+                    pattern[\beats] = mixLength;
+                    pattern[\start] = Pseq((0..steps - 1) / steps, inf);
+                    Pseq(this.buf(pattern[\buf][0], mixBuf.value), inf);
+                };
 
-                    var getRandBuf = {
-                        thisThread.randSeed = this.prGetPatternSeed(pattern);
-                        this.buf(pattern[\buf][0], (this.buf(pattern[\buf][0]).size).rand);
-                    };
+                var getRandSeqBufs = {
+                    var files;
+                    thisThread.randSeed = this.prGetPatternSeed(pattern);
+                    files = Array.rand(8, 0, filesCount - 1);
+                    Pseq(this.buf(pattern[\buf][0], files), inf);
+                };
 
-                    if (pattern[\i] == \lplay) {
-                        var sampleLength = pattern[\buf][0].split($-);
-                        if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
-                        { pattern[\dur] = pattern[\dur] ?? sampleLength[1].asInteger };
-                    };
+                var getRandBuf = {
+                    thisThread.randSeed = this.prGetPatternSeed(pattern);
+                    this.buf(pattern[\buf][0], (this.buf(pattern[\buf][0]).size).rand);
+                };
 
-                    if (pattern[\degree].notNil) {
-                        var patternWithdegrees = this.prGenerateDegrees(pattern, midiratio: true);
-                        pattern[\rate] = patternWithdegrees[\degree];
-                    };
+                if (pattern[\i] == \lplay) {
+                    var sampleLength = pattern[\buf][0].split($-);
+                    if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
+                    { pattern[\dur] = pattern[\dur] ?? sampleLength[1].asInteger };
+                };
 
-                    case
-                    { pattern[\buf][1] == \rand }
-                    { buf = getRandSeqBufs.value }
+                if (pattern[\degree].notNil) {
+                    var patternWithdegrees = this.prCreateDegrees(pattern, midiratio: true);
+                    pattern[\rate] = patternWithdegrees[\degree];
+                };
 
-                    { pattern[\buf][1] == \jump }
-                    { buf = getJumpBufs.value }
+                case
+                { pattern[\buf][1] == \rand }
+                { buf = getRandSeqBufs.value }
 
-                    { pattern[\buf][1].isNil }
-                    { buf = getRandBuf.value }
+                { pattern[\buf][1] == \jump }
+                { buf = getJumpBufs.value }
 
-                    { pattern[\buf][1].isArray }
-                    { buf = Pseq(this.buf(pattern[\buf][0], pattern[\buf][1]), inf) }
+                { pattern[\buf][1].isNil }
+                { buf = getRandBuf.value }
 
-                    { buf = this.buf(pattern[\buf][0], pattern[\buf][1]) };
+                { pattern[\buf][1].isArray }
+                { buf = Pseq(this.buf(pattern[\buf][0], pattern[\buf][1]), inf) }
 
-                    if (pattern[\trim].notNil) {
-                        if (pattern[\trim] == \seq)
-                        { pattern[\trim] = (Pseed(Pdup(4, Pseq((0..10), inf)), Prand((0..3), 4) / 4)) };
-                        pattern[\beats] = pattern[\dur];
-                        pattern[\dur] = pattern[\dur] / 4;
-                        pattern[\start] = pattern[\trim];
-                    };
+                { buf = this.buf(pattern[\buf][0], pattern[\buf][1]) };
 
-                    if ([Buffer, Pseq].includes(buf.class))
-                    { pattern[\buf] = buf }
-                    { pattern[\amp] = 0 };
-                }
+                if (pattern[\trim].notNil) {
+                    if (pattern[\trim] == \seq)
+                    { pattern[\trim] = (Pseed(Pdup(4, Pseq((0..10), inf)), Prand((0..3), 4) / 4)) };
+                    pattern[\beats] = pattern[\dur];
+                    pattern[\dur] = pattern[\dur] / 4;
+                    pattern[\start] = pattern[\trim];
+                };
+
+                if ([Buffer, Pseq].includes(buf.class))
+                { pattern[\buf] = buf }
                 { pattern[\amp] = 0 };
-            };
+            }
+            { pattern[\amp] = 0 };
         };
 
-        ^patterns;
+        ^pattern;
     }
 }
 

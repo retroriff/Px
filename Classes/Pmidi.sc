@@ -36,7 +36,7 @@ TODO: MIDIOut instances
         midiClient[deviceName].latency = latency ?? 0.2;
     }
 
-    *prCreateMidiPatterns { |pattern|
+    *prCreateMidi { |pattern|
         var midiout = pattern[\midiout] ?? "default";
 
         var isMidiControl = {

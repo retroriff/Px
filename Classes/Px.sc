@@ -30,116 +30,27 @@ Px {
     }
 
     *new { | newPattern, quant, trace |
-        var patterns, pbind, pdef, ptpar, ptparList;
+        var patterns, pdef, ptparList;
 
-        var handleSoloPatterns = { |patterns|
-            var hasSolo = patterns any: { |pattern|
-                pattern['solo'] == true;
-            };
-
-            if (hasSolo) {
-                patterns = patterns select: { |pattern|
-                    pattern['solo'] == true
-                };
-            };
-
-            patterns;
-        };
-
-        var createPatternAmp = { |pattern|
-            var amp = pattern[\amp] ?? 1;
-
-            if (pattern[\beat].notNil) {
-                amp = this.prCreateRhythmBeat(amp, pattern);
-            };
-
-            if (pattern[\fill].notNil) {
-                amp = this.prCreateFillFromBeat(amp, pattern);
-            };
-
-            pattern[\dur] = this.prCreateBeatRest(pattern);
-
-            pattern[\amp] = amp;
-            pattern;
-        };
-
-        var humanize = { |pattern|
-            if (pattern[\human].notNil) {
-                var delay = pattern[\human] * 0.04;
-                pattern[\lag] = Pwhite(delay.neg, delay);
-            };
-
-            pattern;
-        };
-
-        var createPatternDur = { |pattern|
-            var dur = pattern[\dur];
-
-            if (dur.isNil or: (dur == 0))
-            { dur = Pseq([8], 1) };
-
-            if (dur.isArray) {
-                var containsString = dur any: { |item| item.isString };
-                dur = containsString.if { 1 } { Pseq(dur, inf) };
-            };
-
-            if (dur.isString)
-            { dur = 1 };
-
-            if (pattern[\euclid].notNil)
-            { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) * dur };
-
-            pattern[\dur] = dur;
-            humanize.(pattern);
-        };
-
-        var createPatternFade = { |fade, pbind|
-            var defaultFadeTime = 16;
-            var direction, fadeTime;
-
-            if (fade.isArray) {
-                direction = fade[0];
-                fadeTime = fade[1];
-            } {
-                direction = fade;
-                fadeTime = defaultFadeTime;
-            };
-
-            if (direction == \in)
-            { PfadeIn(pbind, fadeTime) }
-            { PfadeOut(pbind, fadeTime) };
-        };
-
-        var createPatternPan = { |pattern|
-            pattern[\pan] = switch (pattern[\pan].asSymbol)
-            { \rand } { Pwhite(-1.0, 1.0, inf) }
-            { \rotate } { Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf), startPos: 5) }
-            { pattern[\pan] };
-            pattern;
-        };
-
-        if (Ndef(\px).isPlaying.not) {
-            chorusPatterns = Dictionary.new;
-            last = Dictionary.new;
-        };
+        this.prInitializeDictionaries;
 
         if (newPattern.notNil)
         { last[newPattern[\id]] = newPattern };
 
-        patterns = handleSoloPatterns.(last.copy);
-        patterns = this.prCreateBufIns(patterns);
-        patterns = this.prCreateLoops(patterns);
+        patterns = this.prHandleSoloPatterns;
+        patterns = this.prCreateBufInstruments(patterns);
 
         patterns do: { |pattern|
             var pbind;
 
-            pattern = createPatternAmp.(pattern);
-            pattern = createPatternDur.(pattern);
-            pattern = createPatternPan.(pattern);
-            pattern = this.prGenerateDegrees(pattern);
-            pattern = this.prGenerateOctaves(pattern);
-            pattern = this.prCreateMidiPatterns(pattern);
-            pattern = this.prCreatePatternFx(pattern);
+            pattern = this.prCreateLoops(pattern);
+            pattern = this.prCreateAmp(pattern);
+            pattern = this.prCreateDur(pattern);
+            pattern = this.prCreatePan(pattern);
+            pattern = this.prCreateDegrees(pattern);
+            pattern = this.prCreateOctaves(pattern);
+            pattern = this.prCreateMidi(pattern);
+            pattern = this.prCreateFx(pattern);
 
             if (pattern[\amp].isArray)
             { pattern[\amp] = Pseq(pattern[\amp], inf) };
@@ -149,7 +60,7 @@ Px {
             { pbind = Pbind(*pattern.asPairs) };
 
             if (pattern[\fade].notNil)
-            { pbind = createPatternFade.(pattern[\fade], pbind) };
+            { pbind = this.prCreateFade(pattern[\fade], pbind) };
 
             if (trace == true)
             { pbind = pbind.trace };
@@ -172,9 +83,12 @@ Px {
     *prRemoveFinitePatternFromLast { |pattern|
         var hasFadeIn = pattern[\fade].isArray
         and: { pattern[\fade][0] == \in };
+
         var hasFadeOut = pattern[\fade].isArray
         and: { pattern[\fade][0] == \out };
+
         var hasRepeats = pattern[\repeats].notNil;
+
         var hasEmptyDur = pattern[\dur].isNil;
 
         case
@@ -191,6 +105,7 @@ Px {
         };
 
         last = Dictionary.newFrom(chorusPatterns);
+
         ^this.new;
     }
 
@@ -210,13 +125,13 @@ Px {
         if (name == \all) {
             Ndef(\x).proxyspace.free(fadeTime);
 
-            fork {
+            ^fork {
                 (fadeTime + 5).wait;
                 Ndef.clear;
             }
-        } {
-            Ndef(\px).free(fadeTime);
-        };
+        }
+
+        ^Ndef(\px).free(fadeTime);
     }
 
     *save {
@@ -246,6 +161,7 @@ Px {
         };
 
         TempoClock.default.tempo = tempo.clip(10, 300) / 60;
+
         ^this.loadSynthDefs;
     }
 
@@ -263,6 +179,106 @@ Px {
 
     *vol { |value, name|
         ^Ndef( name ?? \px).vol_(value);
+    }
+
+    *prCreateAmp { |pattern|
+        var amp = pattern[\amp] ?? 1;
+
+        if (pattern[\beat].notNil)
+        { amp = this.prCreateRhythmBeat(amp, pattern) };
+
+        if (pattern[\fill].notNil)
+        { amp = this.prCreateFillFromBeat(amp, pattern) };
+
+        pattern[\dur] = this.prCreateBeatRest(pattern);
+        pattern[\amp] = amp;
+
+        ^pattern;
+    }
+
+    *prCreateDur { |pattern|
+        var dur = pattern[\dur];
+
+        if (dur.isNil or: (dur == 0))
+        { dur = Pseq([8], 1) };
+
+        if (dur.isArray) {
+            var containsString = dur any: { |item| item.isString };
+            dur = containsString.if { 1 } { Pseq(dur, inf) };
+        };
+
+        if (dur.isString)
+        { dur = 1 };
+
+        if (pattern[\euclid].notNil)
+        { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) * dur };
+
+        pattern[\dur] = dur;
+
+        ^this.prHumanize(pattern);
+    }
+
+    *prCreateFade { |fade, pbind|
+        var defaultFadeTime = 16;
+        var direction, fadeTime;
+
+        if (fade.isArray) {
+            direction = fade[0];
+            fadeTime = fade[1];
+        } {
+            direction = fade;
+            fadeTime = defaultFadeTime;
+        };
+
+        if (direction == \in)
+        { ^PfadeIn(pbind, fadeTime) }
+        { ^PfadeOut(pbind, fadeTime) };
+    }
+
+    *prCreatePan { |pattern|
+        pattern[\pan] = switch (pattern[\pan].asSymbol)
+
+        { \rand }
+        { Pwhite(-1.0, 1.0, inf) }
+
+        { \rotate }
+        { Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf), startPos: 5) }
+
+        { pattern[\pan] };
+
+        ^pattern;
+    }
+
+    *prHandleSoloPatterns {
+        var patterns = last.copy;
+
+        var hasSolo = patterns any: { |pattern|
+            pattern['solo'] == true;
+        };
+
+        if (hasSolo) {
+            patterns = patterns select: { |pattern|
+                pattern['solo'] == true
+            };
+        };
+
+        ^patterns;
+    }
+
+    *prHumanize { |pattern|
+        if (pattern[\human].notNil) {
+            var delay = pattern[\human] * 0.04;
+            pattern[\lag] = Pwhite(delay.neg, delay);
+        };
+
+        ^pattern;
+    }
+
+    *prInitializeDictionaries {
+        if (Ndef(\px).isPlaying.not) {
+            chorusPatterns = Dictionary.new;
+            last = Dictionary.new;
+        };
     }
 
     *prPrint { |value|

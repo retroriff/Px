@@ -1,14 +1,6 @@
 /*
-TODO: Solo solution
-TODO: Fade out can't be done simultaneously in multiple patterns
-because prRemoveFinitePatternFromLast is removing them.
-To fix it we could disuse individual Pdefs instead of Ptpar.
-After doing it we must fix and probably simplify TR08.release.
-
 TODO: hasEmptyDur, solution to play single hits
 TODO: Bug when dur after beat 1 play: ["electro/zap", 0] dur: 0.25 beat: 1;
-TODO: Create global seed, so when we reevaluate patterns we don't delete the seed
-TODO: Replace Ptpar by Pbind with \timingOffset
 TODO: Make fill work with hundreth weighted beats
 */
 
@@ -32,9 +24,9 @@ Px {
     }
 
     *new { | newPattern, quant, trace |
-        var patterns, pbindef, pdef, ptparList, ndefList2;
+        var patterns;
 
-        this.prInitializeDictionaries;
+        this.prInitializeDictionaries(newPattern);
 
         if (newPattern.notNil)
         { last[newPattern[\id]] = newPattern };
@@ -43,6 +35,8 @@ Px {
         patterns = this.prCreateBufInstruments(patterns);
 
         patterns do: { |pattern|
+            var pbindef;
+
             pattern = this.prCreateLoops(pattern);
             pattern = this.prCreateAmp(pattern);
             pattern = this.prCreateDur(pattern);
@@ -51,9 +45,6 @@ Px {
             pattern = this.prCreateOctaves(pattern);
             pattern = this.prCreateMidi(pattern);
             pattern = this.prCreateFx(pattern);
-
-            if (pattern[\amp].isArray)
-            { pattern[\amp] = Pseq(pattern[\amp], inf) };
 
             if (this.prHasFX(pattern) == true)
             { pbindef = this.prCreatePbindFx(pattern) }
@@ -201,6 +192,9 @@ Px {
         pattern[\dur] = this.prCreateBeatRest(pattern);
         pattern[\amp] = amp;
 
+        if (pattern[\amp].isArray)
+        { pattern[\amp] = Pseq(pattern[\amp], inf) };
+
         ^pattern;
     }
 
@@ -265,8 +259,16 @@ Px {
         };
 
         if (hasSolo) {
+            var filteredIds;
+
             patterns = patterns select: { |pattern|
-                pattern['solo'] == true
+                pattern['solo'] == true;
+            };
+
+            filteredIds = patterns.collect { |pattern| pattern[\id] };
+
+            ndefList = ndefList.select { |key, value|
+                filteredIds.includes(key)
             };
         };
 

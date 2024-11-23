@@ -9,7 +9,7 @@
 
     *shuffle {
         this.prCreateNewSeeds;
-        this.new;
+        this.prReevaluate;
     }
 
     *prCreateNewSeeds {

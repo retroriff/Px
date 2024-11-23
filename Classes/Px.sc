@@ -10,10 +10,11 @@ Px {
     classvar <>lastFormatted;
     classvar <lastName;
     classvar <midiClient;
-    classvar <>patternState;
     classvar <>ndefList;
+    classvar <>patternState;
     classvar <samplesDict;
     classvar <seeds;
+    classvar <>soloList;
 
     *initClass {
         chorusPatterns = Dictionary.new;
@@ -21,17 +22,16 @@ Px {
         lastFormatted = Dictionary.new;
         ndefList = Dictionary.new;
         seeds = Dictionary.new;
+        soloList = Array.new;
     }
 
-    *new { | newPattern, quant, trace |
-        var patterns;
+    *new { |newPattern|
+        var patterns, playList;
 
         this.prInitializeDictionaries(newPattern);
+        this.prHandleSoloPattern(newPattern);
 
-        if (newPattern.notNil)
-        { last[newPattern[\id]] = newPattern };
-
-        patterns = this.prHandleSoloPatterns;
+        patterns = last.copy;
         patterns = this.prCreateBufInstruments(patterns);
 
         patterns do: { |pattern|
@@ -50,12 +50,7 @@ Px {
             { pbindef = this.prCreatePbindFx(pattern) }
             { pbindef = Pbind(*pattern.asPairs) };
 
-            if (pattern[\fade].notNil)
-            { pbindef = this.prCreateFade(pattern[\fade], pbindef) };
-
-            if (trace == true)
-            { pbindef = pbindef.trace };
-
+            pbindef = this.prCreateFade(pbindef, pattern[\fade]);
             pbindef = Pdef(pattern[\id], pbindef).quant_(4);
 
             if (ndefList[pattern[\id]].isNil)
@@ -65,12 +60,23 @@ Px {
         if (newPattern.notNil)
         { lastFormatted[newPattern[\id]] = patterns[newPattern[\id]]};
 
+        playList = this.prCreatePlayList;
+
         if (Ndef(\px).isPlaying)
-        { Ndef(\px).source = { Mix.new(ndefList.values) } }
-        { Ndef(\px, { Mix.new(ndefList.values) }).play };
+        { Ndef(\px).source = { Mix.new(playList.values) } }
+        { Ndef(\px, { Mix.new(playList.values) }).play };
 
         if (newPattern.notNil)
         { this.prRemoveFinitePatternFromLast(newPattern) };
+    }
+
+    *prCreatePlayList {
+        if (soloList.isEmpty)
+        { ^ndefList.copy };
+
+        ^ndefList.copy.select { |value, key|
+            soloList.includes(key)
+        };
     }
 
     *prRemoveFinitePatternFromLast { |pattern|
@@ -95,89 +101,6 @@ Px {
 
         { hasFadeIn }
         { last[pattern[\id]].removeAt(\fade) };
-    }
-
-    *chorus {
-        if (chorusPatterns.isNil) {
-            ^this.prPrint("💩 Chorus is empty. Please run \"save\"")
-        };
-
-        last = Dictionary.newFrom(chorusPatterns);
-
-        ^this.new;
-    }
-
-    *play { |name|
-        var newPattern;
-
-        if (name.notNil)
-        { newPattern = last[name] };
-
-        if (newPattern.isNil)
-        { newPattern = (i: \bd, id: \1, dur: 1) };
-
-        ^this.new(newPattern);
-    }
-
-    *release { |fadeTime = 10, name|
-        if (name == \all) {
-            Ndef(\x).proxyspace.free(fadeTime);
-
-            ^fork {
-                (fadeTime + 5).wait;
-                Ndef.clear;
-            }
-        }
-
-        ^Ndef(\px).free(fadeTime);
-    }
-
-    *save {
-        ^chorusPatterns = Dictionary.newFrom(last);
-    }
-
-    *stop { |id|
-        if (id.notNil) {
-            last.removeAt(id);
-            ndefList.removeAt(id);
-
-            if (last.size > 0)
-            { ^this.new };
-        };
-
-        ^Ndef(\px).free;
-    }
-
-    *synthDef { |synthDef|
-        if (synthDef.isNil)
-        { SynthDescLib.global.browse }
-        { ^SynthDescLib.global[synthDef] };
-    }
-
-    *tempo { |tempo|
-        if (tempo.isNil) {
-            ^this.prPrint("🕰️ Current tempo is" + (TempoClock.tempo * 60));
-        };
-
-        TempoClock.default.tempo = tempo.clip(10, 300) / 60;
-
-        ^this.loadSynthDefs;
-    }
-
-    *trace { |name|
-        if (name.isNil)
-        { this.prPrint("Please specify a pattern name to trace") }
-        { this.new(last[name], trace: true) };
-    }
-
-    *traceOff { |name|
-        if (name.isNil)
-        { ^this.prPrint("Please specify a pattern name to disable trace") }
-        { ^this.new(last[name]) };
-    }
-
-    *vol { |value, name|
-        ^Ndef( name ?? \px).vol_(value);
     }
 
     *prCreateAmp { |pattern|
@@ -220,9 +143,12 @@ Px {
         ^this.prHumanize(pattern);
     }
 
-    *prCreateFade { |fade, pbind|
+    *prCreateFade { |pbindef, fade|
         var defaultFadeTime = 16;
         var direction, fadeTime;
+
+        if (fade.isNil)
+        { ^pbindef };
 
         if (fade.isArray) {
             direction = fade[0];
@@ -233,8 +159,8 @@ Px {
         };
 
         if (direction == \in)
-        { ^PfadeIn(pbind, fadeTime) }
-        { ^PfadeOut(pbind, fadeTime) };
+        { ^PfadeIn(pbindef, fadeTime) }
+        { ^PfadeOut(pbindef, fadeTime) };
     }
 
     *prCreatePan { |pattern|
@@ -251,28 +177,12 @@ Px {
         ^pattern;
     }
 
-    *prHandleSoloPatterns {
-        var patterns = last.copy;
+    *prHandleSoloPattern { |pattern|
+        var hasSolo = pattern['solo'] == true;
 
-        var hasSolo = patterns any: { |pattern|
-            pattern['solo'] == true;
-        };
-
-        if (hasSolo) {
-            var filteredIds;
-
-            patterns = patterns select: { |pattern|
-                pattern['solo'] == true;
-            };
-
-            filteredIds = patterns.collect { |pattern| pattern[\id] };
-
-            ndefList = ndefList.select { |key, value|
-                filteredIds.includes(key)
-            };
-        };
-
-        ^patterns;
+        if (hasSolo)
+        { soloList.add(pattern[\id]) }
+        { soloList.remove(pattern[\id]) };
     }
 
     *prHumanize { |pattern|
@@ -284,12 +194,23 @@ Px {
         ^pattern;
     }
 
-    *prInitializeDictionaries {
+    *prInitializeDictionaries { |newPattern|
         if (Ndef(\px).isPlaying.not) {
             chorusPatterns = Dictionary.new;
             last = Dictionary.new;
             ndefList = Dictionary.new;
         };
+
+        if (newPattern.notNil)
+        { last[newPattern[\id]] = newPattern };
+    }
+
+    *prReevaluate { |patterns|
+        patterns = patterns ?? last;
+
+        ^patterns do: { |value, key|
+            this.new(value);
+        }
     }
 
     *prPrint { |value|

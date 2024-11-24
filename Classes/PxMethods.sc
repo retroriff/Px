@@ -50,11 +50,14 @@
 
         last.removeAt(id);
         ndefList.removeAt(id);
+        Pdef(id).source = nil;
         soloList.remove(id);
 
         if (last.size > 0) {
-            this.prReevaluate;
-            ^Ndef(id).free;
+            ^fork {
+                4.wait;
+                Ndef(id).free;
+            }
         } {
             ^Ndef(\px).free
         };

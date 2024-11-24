@@ -1,6 +1,6 @@
 /*
 TODO: hasEmptyDur, solution to play single hits
-TODO: Bug when dur after beat 1 play: ["electro/zap", 0] dur: 0.25 beat: 1;
+TODO: Refactor to improve the sound of solo feat
 TODO: Make fill work with hundreth weighted beats
 */
 

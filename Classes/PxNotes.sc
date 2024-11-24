@@ -4,7 +4,7 @@
             pattern[\root] = value;
         };
 
-        ^this.new;
+        ^this.prReevaluate;
     }
 
     *prCreateDegrees { |pattern, midiratio|

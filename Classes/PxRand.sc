@@ -4,7 +4,7 @@
             pattern[\seed] = value;
         };
 
-        ^this.new;
+        this.prReevaluate;
     }
 
     *shuffle {

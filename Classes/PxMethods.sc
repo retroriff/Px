@@ -4,7 +4,7 @@
             ^this.prPrint("💩 Chorus is empty. Please run \"save\"");
         };
 
-        // ^this.prReevaluate(chorusPatterns);
+        this.prReevaluate(chorusPatterns);
     }
 
     *play { |name|
@@ -41,7 +41,7 @@
     }
 
     *save {
-        ^chorusPatterns = last.copy;
+        chorusPatterns = last.copy;
     }
 
     *stop { |id|

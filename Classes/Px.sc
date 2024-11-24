@@ -26,48 +26,39 @@ Px {
     }
 
     *new { |newPattern|
-        var patterns, playList;
+        var pattern, pbindef, playList;
 
         this.prInitializeDictionaries(newPattern);
         this.prHandleSoloPattern(newPattern);
 
-        patterns = last.copy;
-        patterns = this.prCreateBufInstruments(patterns);
+        pattern = this.prCreateBufInstruments(newPattern);
+        pattern = this.prCreateLoops(pattern);
+        pattern = this.prCreateAmp(pattern);
+        pattern = this.prCreateDur(pattern);
+        pattern = this.prCreatePan(pattern);
+        pattern = this.prCreateDegrees(pattern);
+        pattern = this.prCreateOctaves(pattern);
+        pattern = this.prCreateMidi(pattern);
+        pattern = this.prCreateFx(pattern);
 
-        patterns do: { |pattern|
-            var pbindef;
+        if (this.prHasFX(pattern) == true)
+        { pbindef = this.prCreatePbindFx(pattern) }
+        { pbindef = Pbind(*pattern.asPairs) };
 
-            pattern = this.prCreateLoops(pattern);
-            pattern = this.prCreateAmp(pattern);
-            pattern = this.prCreateDur(pattern);
-            pattern = this.prCreatePan(pattern);
-            pattern = this.prCreateDegrees(pattern);
-            pattern = this.prCreateOctaves(pattern);
-            pattern = this.prCreateMidi(pattern);
-            pattern = this.prCreateFx(pattern);
+        pbindef = this.prCreateFade(pbindef, pattern[\fade]);
+        pbindef = Pdef(pattern[\id], pbindef).quant_(4);
 
-            if (this.prHasFX(pattern) == true)
-            { pbindef = this.prCreatePbindFx(pattern) }
-            { pbindef = Pbind(*pattern.asPairs) };
+        if (ndefList[pattern[\id]].isNil)
+        { ndefList.put(pattern[\id], Ndef(pattern[\id], pbindef)) };
 
-            pbindef = this.prCreateFade(pbindef, pattern[\fade]);
-            pbindef = Pdef(pattern[\id], pbindef).quant_(4);
-
-            if (ndefList[pattern[\id]].isNil)
-            { ndefList.put(pattern[\id], Ndef(pattern[\id], pbindef)) };
-        };
-
-        if (newPattern.notNil)
-        { lastFormatted[newPattern[\id]] = patterns[newPattern[\id]]};
-
+        lastFormatted[newPattern[\id]] = pattern;
         playList = this.prCreatePlayList;
 
         if (Ndef(\px).isPlaying)
         { Ndef(\px).source = { Mix.new(playList.values) } }
         { Ndef(\px, { Mix.new(playList.values) }).play };
 
-        if (newPattern.notNil)
-        { this.prRemoveFinitePatternFromLast(newPattern) };
+        this.prRemoveFinitePatternFromLast(newPattern);
     }
 
     *prCreatePlayList {
@@ -194,15 +185,14 @@ Px {
         ^pattern;
     }
 
-    *prInitializeDictionaries { |newPattern|
+    *prInitializeDictionaries { |pattern|
         if (Ndef(\px).isPlaying.not) {
             chorusPatterns = Dictionary.new;
             last = Dictionary.new;
             ndefList = Dictionary.new;
         };
 
-        if (newPattern.notNil)
-        { last[newPattern[\id]] = newPattern };
+        last[pattern[\id]] = pattern;
     }
 
     *prReevaluate { |patterns|

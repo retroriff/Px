@@ -55,22 +55,19 @@
         };
     }
 
-    *prCreateBufInstruments { |patterns|
-        patterns = patterns.collect { |pattern|
-            pattern[\play].notNil.if {
-                pattern = pattern ++ (i: \playbuf, buf: pattern[\play]);
-                pattern.removeAt(\play);
-            };
-
-            pattern[\loop].notNil.if {
-                pattern = pattern ++ (i: \lplay, buf: pattern[\loop]);
-                pattern.removeAt(\loop);
-            };
-
-            pattern ++ (fix: 1);
+    *prCreateBufInstruments { |pattern|
+        pattern[\play].notNil.if {
+            pattern = pattern ++ (i: \playbuf, buf: pattern[\play]);
+            pattern.removeAt(\play);
         };
 
-        ^patterns;
+        pattern[\loop].notNil.if {
+            pattern = pattern ++ (i: \lplay, buf: pattern[\loop]);
+            pattern.removeAt(\loop);
+        };
+
+        ^pattern ++ (fix: 1);
+
     }
 
     *prCreateLoops { |pattern|

@@ -1,9 +1,7 @@
 /*
-TODO: Nfx.clear from examples doesn't work
 TODO: Fix delay wthout params disabled instead of enabled
 TODO: Fix when Ndef is reevaluated, proxy FXs stop
 TODO: Fix error when it is started with ".hpf(1, \wave)"
-TODO: Fix Px.release disables FX before releasing
 */
 
 Nfx {
@@ -22,6 +20,7 @@ Nfx {
         effects = Dictionary.new;
         mixer = Dictionary.new;
         proxy = Dictionary.new;
+
         this.loadEffects;
     }
 
@@ -29,19 +28,23 @@ Nfx {
         proxyName = name ?? \px;
     }
 
-    *clear {
-        activeArgs = activeArgs.clear;
+    *blp { |mix = 0.4|
+        this.prAddEffect(\blp, mix);
+    }
 
-        activeEffects do: { |fx, i|
+    *clear {
+        var fx = activeEffects[proxyName];
+
+        if (fx.isArray and: { fx.isEmpty.not })
+        { this.prPrint("🌵 All effects have been disabled") };
+
+        fx do: { |fx, i|
             proxy[proxyName][i + 1] = nil;
         };
 
-        activeEffects = activeEffects.clear;
-        this.prPrint("🌵 All effects have been disabled");
-    }
-
-    *blp { |mix = 0.4|
-        this.prAddEffect(\blp, mix);
+        activeArgs.clear;
+        activeEffects.clear;
+        mixer.clear;
     }
 
     *delay { |mix = 0.4, delaytime = 8, decaytime = 2|

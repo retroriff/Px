@@ -1,5 +1,4 @@
 /*
-TODO: hasEmptyDur, solution to play single hits
 TODO: Refactor to improve the sound of solo feat
 TODO: Make fill work with hundreth weighted beats
 */
@@ -26,7 +25,7 @@ Px {
     }
 
     *new { |newPattern|
-        var pattern, pbindef, playList;
+        var pattern, pdef, playList;
 
         this.prInitializeDictionaries(newPattern);
         this.prHandleSoloPattern(newPattern);
@@ -41,57 +40,15 @@ Px {
         pattern = this.prCreateMidi(pattern);
         pattern = this.prCreateFx(pattern);
 
-        if (this.prHasFX(pattern) == true)
-        { pbindef = this.prCreatePbindFx(pattern) }
-        { pbindef = Pbind(*pattern.asPairs) };
-
-        pbindef = this.prCreateFade(pbindef, pattern[\fade]);
-        pbindef = Pdef(pattern[\id], pbindef).quant_(4);
-
-        if (ndefList[pattern[\id]].isNil)
-        { ndefList.put(pattern[\id], Ndef(pattern[\id], pbindef)) };
-
-        lastFormatted[newPattern[\id]] = pattern;
-        playList = this.prCreatePlayList;
+        pdef = this.prCreatePdef(pattern);
+        playList = this.prCreatePlayList(pattern[\id], pdef);
 
         if (Ndef(\px).isPlaying)
         { Ndef(\px).source = { Mix.new(playList.values) } }
         { Ndef(\px, { Mix.new(playList.values) }).play };
 
+        lastFormatted[newPattern[\id]] = pattern;
         this.prRemoveFinitePatternFromLast(newPattern);
-    }
-
-    *prCreatePlayList {
-        if (soloList.isEmpty)
-        { ^ndefList.copy };
-
-        ^ndefList.copy.select { |value, key|
-            soloList.includes(key)
-        };
-    }
-
-    *prRemoveFinitePatternFromLast { |pattern|
-        var hasFadeIn = pattern[\fade].isArray
-        and: { pattern[\fade][0] == \in };
-
-        var hasFadeOut = pattern[\fade].isArray
-        and: { pattern[\fade][0] == \out };
-
-        var hasRepeats = pattern[\repeats].notNil;
-
-        // TODO
-        // var hasEmptyDur = pattern[\dur].isNil;;
-        var hasEmptyDur = false;
-
-        case
-        { hasFadeOut or: hasRepeats or: hasEmptyDur }
-        {
-            last.removeAt(pattern[\id]);
-            ndefList.removeAt(pattern[\id]);
-        }
-
-        { hasFadeIn }
-        { last[pattern[\id]].removeAt(\fade) };
     }
 
     *prCreateAmp { |pattern|
@@ -168,6 +125,17 @@ Px {
         ^pattern;
     }
 
+    *prCreatePdef { |pattern|
+        var pbindef;
+
+        if (this.prHasFX(pattern) == true)
+        { pbindef = this.prCreatePbindFx(pattern) }
+        { pbindef = Pbind(*pattern.asPairs) };
+
+        pbindef = this.prCreateFade(pbindef, pattern[\fade]);
+        ^pbindef = Pdef(pattern[\id], pbindef).quant_(4);
+    }
+
     *prHandleSoloPattern { |pattern|
         var hasSolo = pattern['solo'] == true;
 
@@ -187,12 +155,29 @@ Px {
 
     *prInitializeDictionaries { |pattern|
         if (Ndef(\px).isPlaying.not) {
-            chorusPatterns = Dictionary.new;
-            last = Dictionary.new;
-            ndefList = Dictionary.new;
+            chorusPatterns.clear;
+            last.clear;
+            ndefList.clear;
         };
 
         last[pattern[\id]] = pattern;
+    }
+
+    *prCreatePlayList { |id, pdef|
+        if (ndefList[id].isNil)
+        { ndefList.put(id, Ndef(id, pdef)) };
+
+        if (soloList.isEmpty)
+        { ^ndefList.copy };
+
+        ^ndefList.copy.select { |value, key|
+            soloList.includes(key)
+        };
+    }
+
+    *prPrint { |value|
+        if (~isUnitTestRunning != true)
+        { value.postln };
     }
 
     *prReevaluate { |patterns|
@@ -203,8 +188,22 @@ Px {
         }
     }
 
-    *prPrint { |value|
-        if (~isUnitTestRunning != true)
-        { value.postln };
+    *prRemoveFinitePatternFromLast { |pattern|
+        var hasFadeIn = pattern[\fade].isArray
+        and: { pattern[\fade][0] == \in };
+        var hasFadeOut = pattern[\fade].isArray
+        and: { pattern[\fade][0] == \out };
+        var hasRepeats = pattern[\repeats].notNil;
+        var hasEmptyDur = pattern[\dur] == 0;
+
+        case
+        { hasFadeOut or: hasRepeats or: hasEmptyDur }
+        {
+            last.removeAt(pattern[\id]);
+            ndefList.removeAt(pattern[\id]);
+        }
+
+        { hasFadeIn }
+        { last[pattern[\id]].removeAt(\fade) };
     }
 }

@@ -71,6 +71,7 @@ Nfx {
     *lpf { |mix = 0.4, freq = 200|
         if (freq == \wave)
         { freq = Ndef(\lpf1, { SinOsc.kr(1/8).range(200, 400) } ) };
+
         this.prAddEffect(\lpf, mix, [freq]);
     }
 
@@ -248,7 +249,7 @@ Nfx {
         var wetIndex = (\wet ++ index).asSymbol;
 
         if (index.isNil)
-        { ^this.prPrint("🔴".scatArgs(("\\" ++ fx), "FX not found")) };
+        { ^this.prPrint("🔴".scatArgs(("\\" ++ fx), "FX to mix not found")) };
 
         if (mixer[proxyName].isNil)
         { mixer[proxyName] = Dictionary.new };

@@ -15,7 +15,7 @@ TR08 : Px {
         ^super.initClass;
     }
 
-    *new { | newPattern, quant, trace|
+    *new { | newPattern|
         var drumKit = Dictionary[
             \bd -> 36,
             \sn -> 38,
@@ -59,7 +59,7 @@ TR08 : Px {
         { addTR08Pairs.value }
         { addDrumMachinePlayBuf.value };
 
-        ^super.new(newPattern, quant, trace);
+        ^super.new(newPattern);
     }
 
     *init { |latency, drumMachine|
@@ -72,8 +72,8 @@ TR08 : Px {
         this.prCreatePresetsDict;
     }
 
-    *play {
-        ^super.play(\tr08);
+    *play { |fadeTime|
+        ^super.play(\tr08, fadeTime);
     }
 
     *preset { |name, number|

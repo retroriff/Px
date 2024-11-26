@@ -26,7 +26,7 @@ Ns.set(\chord, [0, 3, 5]);
 Ns.set(\degree, [0, 1, 2, 3].shuffle(71));
 
 // We can check what has been set:
-Ns.lastControls;
+Ns.last;
 
 // And stop it with a fade out
 Ns.release(5);

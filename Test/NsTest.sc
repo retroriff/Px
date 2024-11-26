@@ -43,7 +43,7 @@ NsTest : UnitTest {
         );
 
         this.assertEquals(
-            Ns.lastControls,
+            Ns.last,
             expectedResult,
             "👀 Controls are generated correctly",
         );

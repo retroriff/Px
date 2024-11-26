@@ -4,96 +4,43 @@ TODO: Add \root support;
 */
 
 Ns {
-    classvar defaultScale;
-    classvar <lastControls;
+    classvar <defaultEvent;
+    classvar <defaultScale;
+    classvar <last;
     classvar waveList;
 
     *initClass {
         defaultScale = \scriabin;
+        defaultEvent = (
+            amp: 1,
+            chord: [0],
+            degree: [0],
+            dur: [1],
+            env: 0,
+            octave: [0],
+            scale: defaultScale,
+            vcf: 1,
+            wave: \saw;
+        );
+        last = Event.new;
         waveList = [\pulse, \saw, \sine, \triangle];
     }
 
     *new { |pattern|
-        var createDefaults = {
-            var defaultPattern = (
-                amp: 1,
-                chord: [0],
-                degree: [0],
-                dur: [1],
-                env: 0,
-                octave: [0],
-                scale: defaultScale,
-                vcf: 1,
-                wave: \saw;
-            );
+        last = pattern;
+        pattern = this.prCreateDefaultArgs(pattern);
+        pattern[\degree] = this.prCalculateOctaves(pattern[\octave], pattern[\degree]);
 
-            defaultPattern.keys do: { |key|
-                pattern[key] = pattern[key] ?? defaultPattern[key];
-            };
-
-            lastControls = defaultPattern;
+        [\chord, \degree, \dur] do: { |key|
+            pattern.putAll(this.prSetArraySize(key, pattern[key]));
         };
 
-        var calculateOctaves = {
-            var degrees = pattern[\degree];
-            var octaves = pattern[\octave];
-            var maxLen = max(degrees.size, octaves.size);
-            var results = [];
-            var degIndex = 0;
-            var octIndex = 0;
+        pattern = this.prCreateEuclid(pattern);
 
-            while ({ results.size < maxLen }) {
-                var deg = degrees[degIndex];
-                var oct = octaves[octIndex].clip(-3, 3);
-                results = results.add(deg + (oct * 12));
-
-                degIndex = (degIndex + 1) % degrees.size;
-                octIndex = (octIndex + 1) % octaves.size;
-            };
-
-            pattern[\degree] = results;
-        };
-
-        var convertToArray = { |key|
-            if (pattern[key].isNumber)
-            { pattern[key] = [pattern[key]] };
-        };
-
-        var createEuclid = {
-            if (pattern[\euclid].notNil) {
-                pattern[\dur] = Bjorklund2(*pattern[\euclid]) * pattern[\dur][0]
-            };
-        };
-
-        var setArraySize = { |key|
-            var keySizeName = (key ++ "Size").asSymbol;
-            pattern.putAll([keySizeName, pattern[key].size]);
-        };
-
-        var setDefaultControls = {
-            var keys = [
-                \amp,
-                \chord,
-                \chordSize,
-                \degree,
-                \degreeSize,
-                \dur,
-                \durSize,
-                \env,
-                \vcf
-            ];
-
-            keys do: { |key| this.prSetControl(key, pattern[key]) };
-        };
-
-        createDefaults.value;
-        [\chord, \degree, \dur, \octave] do: { |key| convertToArray.(key) };
-        calculateOctaves.value;
-        [\chord, \degree, \dur] do: { |key| setArraySize.(key) };
-        createEuclid.value;
         this.prSetScaleControl(pattern[\scale]);
         this.prSetWaveControl(pattern[\wave]);
-        setDefaultControls.value;
+        this.prSetDefaultControls(pattern);
+
         Ndef(\ns).play;
     }
 
@@ -104,9 +51,8 @@ Ns {
         file.fullPath.load;
     }
 
-    *play { |name|
-        name = name ?? \ns;
-        Ndef(name).play;
+    *play { |fadeTime|
+        Ndef(\ns).play(fadeTime: fadeTime);
     }
 
     *release { |fadeTime = 10, name|
@@ -115,7 +61,20 @@ Ns {
     }
 
     *set { |key, value|
+        last.putAll([key, value]);
+
         case
+        { key == \degree }
+        { value = this.prCalculateOctaves(octaves: last[\octave], degrees: value) }
+
+        { key == \octave } {
+            var octavesArray;
+            key = \degree;
+            value = this.prCalculateOctaves(octaves: value, degrees: last[\degree]);
+            octavesArray = this.prSetArraySize(key, value);
+            this.prSetControl(octavesArray[0], octavesArray[1]);
+        }
+
         { key == \scale }
         { ^this.prSetScaleControl(value) }
 
@@ -130,9 +89,89 @@ Ns {
         Ndef(name).stop;
     }
 
+    *prCalculateOctaves { |octaves, degrees|
+        var degreesArray = this.prConvertToArray(degrees);
+        var octavesArray = this.prConvertToArray(octaves);
+        var maxLen = max(degreesArray.size, octavesArray.size);
+        var results = Array.new;
+        var degIndex = 0;
+        var octIndex = 0;
+
+        while ({ results.size < maxLen }) {
+            var deg = degreesArray[degIndex];
+            var oct = octavesArray[octIndex].clip(-2, 2);
+
+            results = results.add(deg + (oct * 12));
+
+            if (oct == -0)
+            { oct = 0 };
+
+            degIndex = (degIndex + 1) % degreesArray.size;
+            octIndex = (octIndex + 1) % octavesArray.size;
+        };
+
+        ^results;
+    }
+
+    *prCreateDefaultArgs { |event|
+        defaultEvent.keys do: { |key|
+            event[key] = event[key] ?? defaultEvent[key];
+        };
+
+        [\chord, \dur] do: { |key|
+            event[key] = this.prConvertToArray(event[key]);
+        };
+
+        ^event;
+    }
+
+    *prCreateEuclid { |pattern|
+        if (pattern[\euclid].notNil) {
+            pattern[\dur] = Bjorklund2(*pattern[\euclid]) * pattern[\dur][0]
+        };
+
+        ^pattern;
+    }
+
+    *prConvertToArray { |key|
+        if (key.isNumber)
+        { key = [key] };
+
+        ^key;
+    }
+
+    *prSetArrayName { |key|
+        ^(key ++ "Size").asSymbol;
+    }
+
+    *prSetArraySize { |key, value|
+        ^[this.prSetArrayName(key), value.size];
+    }
+
     *prSetControl { |key, value|
-        this.prUpdateLastControls(key, value);
+        this.prUpdateLast(key, value);
+
         Ndef(\ns).set(key, value);
+    }
+
+    *prSetDefaultControls { |pattern|
+        var keys = [
+            \amp,
+            \chord,
+            \chordSize,
+            \degree,
+            \degreeSize,
+            \dur,
+            \durSize,
+            \env,
+            \vcf
+        ];
+
+        pattern.keys.postln;
+
+        keys do: { |key|
+            this.prSetControl(key, pattern[key]);
+        };
     }
 
     *prSetScaleControl { |value|
@@ -142,7 +181,8 @@ Ns {
         { value = defaultScale };
 
         buffer = Buffer.loadCollection(Server.default, Scale.at(value));
-        this.prUpdateLastControls(\scale, value);
+        this.prUpdateLast(\scale, value);
+
         Ndef(\ns).set(\scale, buffer);
     }
 
@@ -157,7 +197,7 @@ Ns {
         };
     }
 
-    *prUpdateLastControls { |key, value|
-        lastControls.putAll([key, value]);
+    *prUpdateLast { |key, value|
+        last.putAll([key, value]);
     }
 }

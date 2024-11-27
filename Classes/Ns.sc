@@ -4,12 +4,14 @@ TODO: Add \root support;
 */
 
 Ns {
+    classvar <arrayKeys;
     classvar <defaultEvent;
     classvar <defaultScale;
-    classvar <last;
-    classvar waveList;
+    classvar <>last;
+    classvar <waveList;
 
     *initClass {
+        arrayKeys = [\chord, \degree, \dur, \octave];
         defaultScale = \scriabin;
         defaultEvent = (
             amp: 1,
@@ -27,19 +29,11 @@ Ns {
     }
 
     *new { |pattern|
-        last = pattern;
         pattern = this.prCreateDefaultArgs(pattern);
-        pattern[\degree] = this.prCalculateOctaves(pattern[\octave], pattern[\degree]);
 
-        [\chord, \degree, \dur] do: { |key|
-            pattern.putAll(this.prSetArraySize(key, pattern[key]));
+        pattern.keys do: { |key|
+            this.set(key);
         };
-
-        pattern = this.prCreateEuclid(pattern);
-
-        this.prSetScaleControl(pattern[\scale]);
-        this.prSetWaveControl(pattern[\wave]);
-        this.prSetDefaultControls(pattern);
 
         Ndef(\ns).play;
     }
@@ -61,27 +55,32 @@ Ns {
     }
 
     *set { |key, value|
+        var arraySizePair = Array.new;
+        var setPair = [key, value];
+
         last.putAll([key, value]);
+
+        value = this.prConvertToArray(key, value);
 
         case
         { key == \degree }
-        { value = this.prCalculateOctaves(octaves: last[\octave], degrees: value) }
+        { setPair = this.prGenerateDegree(degree: value, octave: last[\octave]) }
 
-        { key == \octave } {
-            var octavesArray;
-            key = \degree;
-            value = this.prCalculateOctaves(octaves: value, degrees: last[\degree]);
-            octavesArray = this.prSetArraySize(key, value);
-            this.prSetControl(octavesArray[0], octavesArray[1]);
-        }
+        { key == \euclid }
+        { setPair = this.prGenerateEuclid(value) }
+
+        { key == \octave }
+        { setPair = this.prGenerateDegree(degree: last[\degree], octave: value) }
 
         { key == \scale }
-        { ^this.prSetScaleControl(value) }
+        { setPair = this.prGenerateScale(value) }
 
         { key == \wave }
-        { ^this.prSetWaveControl(value) };
+        { setPair = this.prGenerateWave(value) };
 
-        ^this.prSetControl(key, value);
+        arraySizePair = this.prGenerateArraySize(key, value);
+
+        ^this.prSetControl(setPair ++ arraySizePair);
     }
 
     *stop { |name|
@@ -89,28 +88,26 @@ Ns {
         Ndef(name).stop;
     }
 
-    *prCalculateOctaves { |octaves, degrees|
-        var degreesArray = this.prConvertToArray(degrees);
-        var octavesArray = this.prConvertToArray(octaves);
-        var maxLen = max(degreesArray.size, octavesArray.size);
-        var results = Array.new;
+    *prGenerateDegree { |degree, octave|
+        var maxLen = max(degree.size, octave.size);
+        var result = Array.new;
         var degIndex = 0;
         var octIndex = 0;
 
-        while ({ results.size < maxLen }) {
-            var deg = degreesArray[degIndex];
-            var oct = octavesArray[octIndex].clip(-2, 2);
+        while ({ result.size < maxLen }) {
+            var deg = degree[degIndex];
+            var oct = octave[octIndex].clip(-2, 2);
 
-            results = results.add(deg + (oct * 12));
+            result = result.add(deg + (oct * 12));
 
             if (oct == -0)
             { oct = 0 };
 
-            degIndex = (degIndex + 1) % degreesArray.size;
-            octIndex = (octIndex + 1) % octavesArray.size;
+            degIndex = (degIndex + 1) % degree.size;
+            octIndex = (octIndex + 1) % octave.size;
         };
 
-        ^results;
+        ^[\degree, result];
     }
 
     *prCreateDefaultArgs { |event|
@@ -118,34 +115,30 @@ Ns {
             event[key] = event[key] ?? defaultEvent[key];
         };
 
-        [\chord, \dur] do: { |key|
-            event[key] = this.prConvertToArray(event[key]);
-        };
-
         ^event;
     }
 
-    *prCreateEuclid { |pattern|
-        if (pattern[\euclid].notNil) {
-            pattern[\dur] = Bjorklund2(*pattern[\euclid]) * pattern[\dur][0]
-        };
+    *prGenerateEuclid { |value|
+        var dur = Bjorklund2(*value) * last[\dur][0];
 
-        ^pattern;
+        ^[\dur, dur];
     }
 
-    *prConvertToArray { |key|
-        if (key.isNumber)
-        { key = [key] };
+    *prConvertToArray { |key, value|
+        var shouldBeArray = arrayKeys.includes(key);
 
-        ^key;
+        if (shouldBeArray and: value.isNumber)
+        { value = [value] };
+
+        ^value;
     }
 
-    *prSetArrayName { |key|
+    *prGenerateArrayName { |key|
         ^(key ++ "Size").asSymbol;
     }
 
-    *prSetArraySize { |key, value|
-        ^[this.prSetArrayName(key), value.size];
+    *prGenerateArraySize { |key, value|
+        ^[this.prGenerateArrayName(key), value.size];
     }
 
     *prSetControl { |key, value|
@@ -154,47 +147,30 @@ Ns {
         Ndef(\ns).set(key, value);
     }
 
-    *prSetDefaultControls { |pattern|
-        var keys = [
-            \amp,
-            \chord,
-            \chordSize,
-            \degree,
-            \degreeSize,
-            \dur,
-            \durSize,
-            \env,
-            \vcf
-        ];
-
-        pattern.keys.postln;
-
-        keys do: { |key|
-            this.prSetControl(key, pattern[key]);
-        };
-    }
-
-    *prSetScaleControl { |value|
+    *prGenerateScale { |value|
         var buffer;
 
         if (value == \default)
         { value = defaultScale };
 
         buffer = Buffer.loadCollection(Server.default, Scale.at(value));
-        this.prUpdateLast(\scale, value);
 
-        Ndef(\ns).set(\scale, buffer);
+        ^[\scale, buffer];
     }
 
-    *prSetWaveControl { |patternWave|
+    *prGenerateWave { |value|
+        var pairs = Array.new;
+
         waveList do: { |wave|
-            var value = 0;
+            var waveValue = 0;
 
-            if (patternWave == wave)
-            { value = 1 };
+            if (value == waveValue)
+            { waveValue = 1 };
 
-            this.prSetControl(wave, value);
+            pairs ++ [wave, waveValue];
         };
+
+        ^pairs;
     }
 
     *prUpdateLast { |key, value|

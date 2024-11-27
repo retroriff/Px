@@ -1,6 +1,5 @@
 (
-a = Ndef(\ns);
-a[0] = {
+Ndef(\ns, {
 	var deg, degreeFix, env, freq, sig = 0, test, trig, vcf;
     var dur = \dur.kr(0 ! 16);
     var durSize = \durSize.kr(16);
@@ -35,7 +34,8 @@ a[0] = {
 
     // Filters
     vcf = MoogFF.ar(sig, MouseX.kr(1000, 5000));
-    sig = Select.ar(\vcf.kr(1) > 0, [sig, vcf]);
+    sig = Select.ar(\vcf.kr(1) > 0, [sig * -9.dbamp, vcf]);
+
     Splay.ar(sig * \amp.kr(1));
-};
+});
 )

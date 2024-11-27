@@ -1,7 +1,3 @@
-/*
-TODO: Add \root support;
-*/
-
 Ns {
     classvar <defaultEvent;
     classvar <defaultScale;
@@ -17,6 +13,7 @@ Ns {
             dur: [1],
             env: 0,
             octave: [0],
+            root: 0,
             scale: defaultScale,
             vcf: 1,
             wave: \saw;
@@ -37,7 +34,7 @@ Ns {
     }
 
     *loadSynth {
-        var path = "../SynthDefs/NdefNs.scd";
+        var path = "../SynthDefs/Ns.scd";
         var file = PathName((path).resolveRelative);
         File.readAllString(file.fullPath);
         file.fullPath.load;
@@ -62,14 +59,24 @@ Ns {
         setPair = [key, value];
 
         case
-        { key == \degree }
-        { setPair = this.prGenerateDegree(degree: value, octave: last[\octave]) }
+        { key == \degree } {
+            var octave = this.prConvertToArray(\octave, last[\octave]);
+            setPair = this.prGenerateDegree(value, octave, last[\root]);
+        }
 
         { key == \euclid }
         { setPair = this.prGenerateEuclid(value) }
 
-        { key == \octave }
-        { setPair = this.prGenerateDegree(degree: last[\degree], octave: value) }
+        { key == \octave } {
+            var degree = this.prConvertToArray(\degree, last[\degree]);
+            setPair = this.prGenerateDegree(degree, value, last[\root]);
+        }
+
+        { key == \root } {
+            var degree = this.prConvertToArray(\degree, last[\degree]);
+            var octave = this.prConvertToArray(\octave, last[\octave]);
+            setPair = this.prGenerateDegree(degree, octave, value);
+        }
 
         { key == \scale }
         { setPair = this.prGenerateScale(value) }
@@ -87,7 +94,7 @@ Ns {
         Ndef(name).stop;
     }
 
-    *prGenerateDegree { |degree, octave|
+    *prGenerateDegree { |degree, octave, root|
         var maxLen = max(degree.size, octave.size);
         var result = Array.new;
         var degIndex = 0;
@@ -105,7 +112,7 @@ Ns {
             octIndex = (octIndex + 1) % octave.size;
         };
 
-        ^[\degree, result];
+        ^[\degree, result + root.clip(-12, 12)];
     }
 
     *prCreateDefaultArgs { |event|

@@ -1,17 +1,14 @@
 /*
-TODO: Fix Ns.set(\euclid, [3, 5]);
 TODO: Add \root support;
 */
 
 Ns {
-    classvar <arrayKeys;
     classvar <defaultEvent;
     classvar <defaultScale;
     classvar <>last;
     classvar <waveList;
 
     *initClass {
-        arrayKeys = [\chord, \degree, \dur, \octave];
         defaultScale = \scriabin;
         defaultEvent = (
             amp: 1,
@@ -30,9 +27,10 @@ Ns {
 
     *new { |pattern|
         pattern = this.prCreateDefaultArgs(pattern);
+        last = pattern.copy;
 
-        pattern.keys do: { |key|
-            this.set(key);
+        pattern.keysValuesDo { |key, value|
+            this.set(key, value);
         };
 
         Ndef(\ns).play;
@@ -46,6 +44,7 @@ Ns {
     }
 
     *play { |fadeTime|
+        Ns(last);
         Ndef(\ns).play(fadeTime: fadeTime);
     }
 
@@ -56,11 +55,11 @@ Ns {
 
     *set { |key, value|
         var arraySizePair = Array.new;
-        var setPair = [key, value];
+        var setPair;
 
         last.putAll([key, value]);
-
         value = this.prConvertToArray(key, value);
+        setPair = [key, value];
 
         case
         { key == \degree }
@@ -78,7 +77,7 @@ Ns {
         { key == \wave }
         { setPair = this.prGenerateWave(value) };
 
-        arraySizePair = this.prGenerateArraySize(key, value);
+        arraySizePair = this.prGenerateArraySize(setPair[0], setPair[1]);
 
         ^this.prSetControl(setPair ++ arraySizePair);
     }
@@ -99,7 +98,6 @@ Ns {
             var oct = octave[octIndex].clip(-2, 2);
 
             result = result.add(deg + (oct * 12));
-
             if (oct == -0)
             { oct = 0 };
 
@@ -119,15 +117,14 @@ Ns {
     }
 
     *prGenerateEuclid { |value|
-        var dur = Bjorklund2(*value) * last[\dur][0];
+        var dur = this.prConvertToArray(\dur, last[\dur]);
+        var euclid = Bjorklund2(*value) * dur[0];
 
-        ^[\dur, dur];
+        ^[\dur, euclid];
     }
 
     *prConvertToArray { |key, value|
-        var shouldBeArray = arrayKeys.includes(key);
-
-        if (shouldBeArray and: value.isNumber)
+        if (this.prShouldBeArray(key) and: value.isNumber)
         { value = [value] };
 
         ^value;
@@ -138,13 +135,16 @@ Ns {
     }
 
     *prGenerateArraySize { |key, value|
-        ^[this.prGenerateArrayName(key), value.size];
+        var pairs = Array.new;
+
+        if (this.prShouldBeArray(key))
+        { pairs = [this.prGenerateArrayName(key), value.size] };
+
+        ^pairs;
     }
 
-    *prSetControl { |key, value|
-        this.prUpdateLast(key, value);
-
-        Ndef(\ns).set(key, value);
+    *prSetControl { |pairs|
+        Ndef(\ns).set(*pairs);
     }
 
     *prGenerateScale { |value|
@@ -164,13 +164,19 @@ Ns {
         waveList do: { |wave|
             var waveValue = 0;
 
-            if (value == waveValue)
+            if (value == wave)
             { waveValue = 1 };
 
-            pairs ++ [wave, waveValue];
+            pairs = pairs ++ [wave, waveValue];
         };
 
         ^pairs;
+    }
+
+    *prShouldBeArray { |key|
+        var arrayKeys = [\chord, \degree, \dur, \octave];
+
+        ^arrayKeys.includes(key);
     }
 
     *prUpdateLast { |key, value|

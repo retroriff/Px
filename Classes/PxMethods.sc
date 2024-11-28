@@ -20,7 +20,7 @@
     }
 
     *release { |fadeTime = 10, name|
-        if (name == \all) {
+        if ([name, fadeTime].includes(\all)) {
             Ndef(\x).proxyspace.free(fadeTime);
 
             ^fork {

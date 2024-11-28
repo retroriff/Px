@@ -20,7 +20,12 @@
     }
 
     *release { |fadeTime = 10, name|
-        if ([name, fadeTime].includes(\all)) {
+        var anyParam = [name, fadeTime];
+
+        if (anyParam.includes(\all)) {
+            if (fadeTime == \all)
+            { fadeTime = 10 };
+
             Ndef(\x).proxyspace.free(fadeTime);
 
             ^fork {

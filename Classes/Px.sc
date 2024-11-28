@@ -1,4 +1,7 @@
 /*
+TODO: Rename classes to Px, Fx, Sx, Dx?
+TODO: Rename Ns pattern references to event?
+TODO: Rename name references to id?
 TODO: Refactor to improve the sound of solo feat
 TODO: Make fill work with hundreth weighted beats
 */

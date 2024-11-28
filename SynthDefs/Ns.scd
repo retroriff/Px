@@ -27,6 +27,8 @@ Ndef(\ns, {
     sig = sig + (Saw.ar(freq, mul: 1.5) * \saw.kr(1));
     sig = sig + (SinOsc.ar(freq, mul: 0.8) * \sine.kr(0));
     sig = sig + (LFTri.ar(freq) * \triangle.kr(0));
+    // Increase dbamp on sine wave
+    sig = Select.ar(\sine.kr(0) > 0, [sig, sig * 5.dbamp]);
 
     // Envelopes
     env = Env.perc(0.005, 0.5).ar(gate: trig) * 1.6;

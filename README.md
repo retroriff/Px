@@ -203,9 +203,11 @@ Ns(
 )
 ```
 
-The synth must be previously loaded with `Ns.loadSynth`;
+The synth must be previously loaded with `Ns.loadSynth`.
 
-**Tip**: The shuffle array method provides the capability to specify a random seed for the scramble method.
+We can update args independently: `Ns.set(\amp, 0.5, lag: 0)`
+
+**Tip**: The `shuffle` array method provides the capability to specify a random seed for the scramble method.
 
 ## 📡 OSC Communication
 

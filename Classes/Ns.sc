@@ -86,12 +86,20 @@ Ns {
 
         arraySizePair = this.prGenerateArraySize(setPair[0], setPair[1]);
 
-        ^this.prSetControl(setPair ++ [\lag, lag] ++ arraySizePair);
+        ^this.prCreateQuantizedSet(setPair ++ [\lag, lag] ++ arraySizePair);
     }
 
-    *stop { |name|
-        name = name ?? \ns;
-        Ndef(name).stop;
+    *stop { |fadeTime|
+        Ndef(\ns).stop(fadeTime);
+    }
+
+    *prCreateQuantizedSet { |pairs|
+        var clock = TempoClock.default;
+        var nextBeat = clock.nextTimeOnGrid(4);
+
+        clock.schedAbs(nextBeat, {
+            Ndef(\ns).set(*pairs);
+        });
     }
 
     *prGenerateDegree { |degree, octave, root|
@@ -148,10 +156,6 @@ Ns {
         { pairs = [this.prGenerateArrayName(key), value.size] };
 
         ^pairs;
-    }
-
-    *prSetControl { |pairs|
-        Ndef(\ns).set(*pairs);
     }
 
     *prGenerateScale { |value|

@@ -50,7 +50,7 @@ Ns {
         Ndef(name).free(fadeTime);
     }
 
-    *set { |key, value|
+    *set { |key, value, lag|
         var arraySizePair = Array.new;
         var setPair;
 
@@ -86,7 +86,7 @@ Ns {
 
         arraySizePair = this.prGenerateArraySize(setPair[0], setPair[1]);
 
-        ^this.prSetControl(setPair ++ arraySizePair);
+        ^this.prSetControl(setPair ++ [\lag, lag] ++ arraySizePair);
     }
 
     *stop { |name|

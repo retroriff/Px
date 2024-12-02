@@ -142,8 +142,17 @@ Px {
         var hasSolo = pattern['solo'] == true;
 
         var resumeNdef = { |key|
-            if (Ndef(key).paused)
-            { Ndef(key).resume };
+            if (Ndef(key).isPlaying.not)
+            { Ndef(key).play };
+        };
+
+        var quantizedPause = { |key|
+            var clock = TempoClock.default;
+            var nextBeat = clock.nextTimeOnGrid(4);
+
+            clock.schedAbs(nextBeat, {
+                Ndef(key).end(0.1);
+            });
         };
 
         if (hasSolo) {
@@ -153,7 +162,7 @@ Px {
             ndefList.keys do: { |key|
                 if (soloList.includes(key))
                 { resumeNdef.(key) }
-                { Ndef(key).pause };
+                { quantizedPause.(key) };
             };
         } {
             if (soloMode == false)
@@ -164,7 +173,7 @@ Px {
             ndefList.keys do: { |key|
                 if (soloList.includes(key) or: soloList.isEmpty)
                 { resumeNdef.(key) }
-                { Ndef(key).pause };
+                { quantizedPause.(key) };
             };
 
             if (soloList.isEmpty)

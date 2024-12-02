@@ -142,43 +142,32 @@ Px {
         var hasSolo = pattern['solo'] == true;
 
         var resumeNdef = { |key|
-            if (Ndef(key).isPlaying.not)
-            { Ndef(key).play };
+            if (Ndef(key).paused)
+            { Ndef(key).resume };
         };
 
-        var quantizedPause = { |key|
-            var clock = TempoClock.default;
-            var nextBeat = clock.nextTimeOnGrid(4);
-
-            clock.schedAbs(nextBeat, {
-                Ndef(key).end(0.1);
-            });
+        var pauseOrResumeNdefs = {
+            ndefList.keys do: { |key|
+                if (soloList.includes(key) or: soloList.isEmpty)
+                { resumeNdef.(key) }
+                { Ndef(key).pause };
+            }
         };
 
         if (hasSolo) {
             soloList = soloList.add(pattern[\id]);
             soloMode = true;
-
-            ndefList.keys do: { |key|
-                if (soloList.includes(key))
-                { resumeNdef.(key) }
-                { quantizedPause.(key) };
-            };
         } {
             if (soloMode == false)
             { ^nil };
 
-            soloList.remove(pattern[\id]);
-
-            ndefList.keys do: { |key|
-                if (soloList.includes(key) or: soloList.isEmpty)
-                { resumeNdef.(key) }
-                { quantizedPause.(key) };
-            };
-
             if (soloList.isEmpty)
             { soloMode = false };
-        }
+
+            soloList.remove(pattern[\id]);
+        };
+
+        ^pauseOrResumeNdefs.value;
     }
 
     *prHumanize { |pattern|

@@ -12,18 +12,18 @@
 // Filter them all together with global FX:
 Px reverb: 0.5;
 
-// FX also can be loaded with the Nfx class:
-Nfx(\px).reverb(1, 1, 1);
-Nfx(\px).reverb(Nil);
-Nfx(\px).reverb(0.5).hpf(0.5);
-Nfx(\px).hpf(1, \wave);
+// FX also can be loaded with the Fx class:
+Fx(\px).reverb(1, 1, 1);
+Fx(\px).reverb(Nil);
+Fx(\px).reverb(0.5).hpf(0.5);
+Fx(\px).hpf(1, \wave);
 
 // And kill'em all 🤘🏼:
-Nfx.clear
+Fx.clear
 
-// Nfx can be used with any Ndef:
+// Fx can be used with any Ndef:
 Ndef(\x, { SinOsc.ar([200, 201]) }).play;
-Nfx(\x).reverb(1, 1, 1);
+Fx(\x).reverb(1, 1, 1);
 
 // Global FX also can load a VST plugin:
 (
@@ -33,14 +33,14 @@ Nfx(\x).reverb(1, 1, 1);
 Px.vst(0.4, "ValhallaFreqEcho");
 )
 
-// And we can control it using the Nfx class:
-Nfx.vstController.set(1, 0.9);
-Nfx.vstController.editor;
-Nfx.vst(0.6);
+// And we can control it using the Fx class:
+Fx.vstController.set(1, 0.9);
+Fx.vstController.editor;
+Fx.vst(0.6);
 
 // Save and load presets:
-Nfx.vstReadProgram(\mdosc);
-Nfx.vstWriteProgram;
+Fx.vstReadProgram(\mdosc);
+Fx.vstWriteProgram;
 
 // Stop it:
 Px.stop;

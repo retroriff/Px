@@ -1,6 +1,6 @@
 PxTestAll {
     *run {
-        NfxTest.run;
+        FxTest.run;
         NsTest.run;
         PxArrayTest.run;
         PxEventTest.run;

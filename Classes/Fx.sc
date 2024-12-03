@@ -4,7 +4,7 @@ TODO: Fix when Ndef is reevaluated, proxy FXs stop
 TODO: Fix error when it is started with ".hpf(1, \wave)"
 */
 
-Nfx {
+Fx {
     classvar <activeArgs;
     classvar <>activeEffects;
     classvar <effects;
@@ -176,8 +176,8 @@ Nfx {
         );
 
         this.prPrint("✨ Enabled".scatArgs("\\vst", plugin));
-        this.prPrint("👉 Open VST Editor: Nfx.vstController.editor;");
-        this.prPrint("👉 Set VST parameter: Nfx.vstController.set(1, 1);");
+        this.prPrint("👉 Open VST Editor: Fx.vstController.editor;");
+        this.prPrint("👉 Set VST parameter: Fx.vstController.set(1, 1);");
     }
 
     *prDisableFx { |fx, mix|

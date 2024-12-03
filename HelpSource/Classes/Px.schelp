@@ -28,9 +28,9 @@ Ndef(\px, { Mix(c) });
 // Pbindef Ndef can be controlled independently:
 Ndef(\sn).release(10);
 
-// Nfx can apply FX to \px and to each item:
-Nfx(\px).reverb(Nil)
-Nfx(\sn).reverb(0.5)
+// Fx can apply FX to \px and to each item:
+Fx(\px).reverb(Nil)
+Fx(\sn).reverb(0.5)
 
 // We can use Pdef utilities:
 Pdef.gui

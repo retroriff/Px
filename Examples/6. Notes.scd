@@ -13,4 +13,4 @@ Px.shuffle;
 
 // Create arpegios:
 1 i: \rhodes dur: 1 legato: 4 amp: 0.5 octave: 3 degree: \rand scale: \minor length: 3 arp: 1;
-Nfx(\px).gverb(0.2).hpf(0.2);
+Fx(\px).gverb(0.2).hpf(0.2);

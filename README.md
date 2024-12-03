@@ -15,7 +15,7 @@ Additional code examples can be found [here](/Examples/).
 **📖 Table of Contents**
 
 1. ⚡️ [Px: A Pattern Shortcuts Generator](#%EF%B8%8F-px-a-pattern-shortcuts-generator)
-2. ✨ [Nfx: A Nodeproxy Effects Handler](#-nfx-a-nodeproxy-effects-handler)
+2. ✨ [Fx: A Nodeproxy Effects Handler](#-fx-a-nodeproxy-effects-handler)
 3. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
 4. 🛢️ [Drum Machines](#%EF%B8%8F-drum-machines)
 5. 🔥 [Ns: A Sequenced Synth](#-ns-a-sequenced-synth)
@@ -93,7 +93,7 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ### FX class methods
 
-Px has the same FX methods than Nfx, but it is helpful as a shortcut.
+Px has the same FX methods than Fx, but it is helpful as a shortcut.
 
 | Name     | Arguments                                                   | Description                           |
 | -------- | ----------------------------------------------------------- | ------------------------------------- |
@@ -113,17 +113,17 @@ The following array shortcuts will be automacally converted to patterns:
 | -------------------- | ------------------------------------- | ------------------ | ------------------------------------------------------------------------------ |
 | `[\lin, 0, 1, 8, 1]` | `Pseg([0.01, 1, 1], [5, 1], \linear)` | amp, ctf, env, res | Linear (`\lin`) or exponential (`\exp`), start, end, repeats? (omitted is inf) |
 
-## ✨ Nfx: A Nodeproxy Effects Handler
+## ✨ Fx: A Nodeproxy Effects Handler
 
-The Nfx class facilitates the addition of effects to the Px set classes, as well as to any other Ndef.
+The Fx class facilitates the addition of effects to the Px set classes, as well as to any other Ndef.
 
 To enable loading or saving of VST presets, initialize the class with the path to the presets folder:
 
 ```js
-Nfx.setPresetsPath(<path>);
+Fx.setPresetsPath(<path>);
 ```
 
-### Nfx class methods
+### Fx class methods
 
 It offers the same [class methods as Px](#px-class-methods), with the following additions:
 
@@ -133,9 +133,9 @@ It offers the same [class methods as Px](#px-class-methods), with the following 
 - `vstReadProgram` (preset: string): Loads a VST preset from the default presets folder
 - `vstWriteProgram` (preset: string): Write a VST preset to the default presets folder
 
-To open the VST plugin editor, use `Nfx.vstController.editor`
+To open the VST plugin editor, use `Fx.vstController.editor`
 
-Additionally, we can set parameter automations with `Nfx.vstController.set(1, 1)`
+Additionally, we can set parameter automations with `Fx.vstController.set(1, 1)`
 
 ## 💥 Notes Handler with MIDI Support
 
@@ -281,7 +281,7 @@ PxTestAll.run
 PxArrayTest.run
 PxEventTest.run
 PxTest.run
-NfxTest.run
+FxTest.run
 NsTest.run
 
 // Disables passing tests verbosity

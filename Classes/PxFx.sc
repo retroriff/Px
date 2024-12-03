@@ -1,18 +1,18 @@
 + Px {
     *blp { |mix = 0.4|
-        Nfx(\px).blp(mix);
+        Fx(\px).blp(mix);
     }
 
     *delay { |mix, delaytime = 8, decaytime = 2|
-        Nfx(\px).delay(mix, delaytime, decaytime);
+        Fx(\px).delay(mix, delaytime, decaytime);
     }
 
     *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
-        Nfx(\px).gverb(mix, roomsize, revtime);
+        Fx(\px).gverb(mix, roomsize, revtime);
     }
 
     *hpf { |mix = 1, freq = 1200|
-        Nfx(\px).hpf(mix, freq);
+        Fx(\px).hpf(mix, freq);
     }
 
     *lpf { |mix, args|
@@ -20,11 +20,11 @@
     }
 
     *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
-        Nfx(\px).reverb(mix, room, damp);
+        Fx(\px).reverb(mix, room, damp);
     }
 
     *vst { |mix = 1, plugin|
-        Nfx(\px).vst(mix, plugin);
+        Fx(\px).vst(mix, plugin);
     }
 
     *wah { |mix, args|

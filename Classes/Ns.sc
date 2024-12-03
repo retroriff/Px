@@ -45,48 +45,55 @@ Ns {
         Ndef(\ns).play(fadeTime: fadeTime);
     }
 
+    *qset { |key, value, lag|
+        this.set(key: key, value: value, lag: lag, quant: true);
+    }
+
     *release { |fadeTime = 10, name|
         name = name ?? \ns;
         Ndef(name).free(fadeTime);
     }
 
-    *set { |key, value, lag|
+    *set { |key, value, lag, quant|
         var arraySizePair = Array.new;
-        var setPair;
+        var pairs;
 
         last.putAll([key, value]);
         value = this.prConvertToArray(key, value);
-        setPair = [key, value];
+        pairs = [key, value];
 
         case
         { key == \degree } {
             var octave = this.prConvertToArray(\octave, last[\octave]);
-            setPair = this.prGenerateDegree(value, octave, last[\root]);
+            pairs = this.prGenerateDegree(value, octave, last[\root]);
         }
 
         { key == \euclid }
-        { setPair = this.prGenerateEuclid(value) }
+        { pairs = this.prGenerateEuclid(value) }
 
         { key == \octave } {
             var degree = this.prConvertToArray(\degree, last[\degree]);
-            setPair = this.prGenerateDegree(degree, value, last[\root]);
+            pairs = this.prGenerateDegree(degree, value, last[\root]);
         }
 
         { key == \root } {
             var degree = this.prConvertToArray(\degree, last[\degree]);
             var octave = this.prConvertToArray(\octave, last[\octave]);
-            setPair = this.prGenerateDegree(degree, octave, value);
+            pairs = this.prGenerateDegree(degree, octave, value);
         }
 
         { key == \scale }
-        { setPair = this.prGenerateScale(value) }
+        { pairs = this.prGenerateScale(value) }
 
         { key == \wave }
-        { setPair = this.prGenerateWave(value) };
+        { pairs = this.prGenerateWave(value) };
 
-        arraySizePair = this.prGenerateArraySize(setPair[0], setPair[1]);
+        arraySizePair = this.prGenerateArraySize(pairs[0], pairs[1]);
+        pairs = pairs ++ [\lag, lag] ++ arraySizePair;
 
-        ^this.prCreateQuantizedSet(setPair ++ [\lag, lag] ++ arraySizePair);
+        if (quant.isNil)
+        { ^this.prSet(pairs) }
+        { ^this.prCreateQuantizedSet(pairs) };
     }
 
     *stop { |fadeTime|
@@ -98,7 +105,7 @@ Ns {
         var nextBeat = clock.nextTimeOnGrid(4);
 
         clock.schedAbs(nextBeat, {
-            Ndef(\ns).set(*pairs);
+            this.prSet(pairs);
         });
     }
 
@@ -182,6 +189,10 @@ Ns {
         };
 
         ^pairs;
+    }
+
+    *prSet { |pairs|
+        Ndef(\ns).set(*pairs);
     }
 
     *prShouldBeArray { |key|

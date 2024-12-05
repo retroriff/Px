@@ -18,7 +18,7 @@ Additional code examples can be found [here](/Examples/).
 2. ✨ [Fx: A Nodeproxy Effects Handler](#-fx-a-nodeproxy-effects-handler)
 3. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
 4. 🛢️ [Drum Machines](#%EF%B8%8F-drum-machines)
-5. 🔥 [Ns: A Sequenced Synth](#-ns-a-sequenced-synth)
+5. 🔥 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
 6. 📡 [OSC Communication](#-osc-communication)
 7. 🎚️ [Crossfader](#%EF%B8%8F-crossfader)
 8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#%EF%B8%8F-tr08-a-roland-tr-08-midi-controller)
@@ -179,13 +179,13 @@ We can simplify the usage of drum machine using shortcodes. The available drum m
 \707 i: \all
 ```
 
-## 🔥 Ns: A Sequenced Synth
+## 🔥 Sx: A Sequenced Synth
 
-A class designed for controlling a synthesizer equipped with a built-in sequencer. Unlike the Play class, Ns is limited to playing only a predefined synthesizer with integrated sequencers. Below is an example demonstrating the arguments it accepts:
+A class designed for controlling a synthesizer equipped with a built-in sequencer. Unlike the Play class, Sx is limited to playing only a predefined synthesizer with integrated sequencers. Below is an example demonstrating the arguments it accepts:
 
 ```js
 (
-Ns(
+Sx(
     (
         amp: 1,
         chord: [0, 2, 4],
@@ -203,9 +203,9 @@ Ns(
 )
 ```
 
-The synth must be previously loaded with `Ns.loadSynth`.
+The synth must be previously loaded with `Sx.loadSynth`.
 
-We can update args independently: `Ns.set(\amp, 0.5, lag: 0)`
+We can update args independently: `Sx.set(\amp, 0.5, lag: 0)`
 
 **Tip**: The `shuffle` array method provides the capability to specify a random seed for the scramble method.
 
@@ -282,7 +282,7 @@ PxArrayTest.run
 PxEventTest.run
 PxTest.run
 FxTest.run
-NsTest.run
+SxTest.run
 
 // Disables passing tests verbosity
 UnitTest.reportPasses = false

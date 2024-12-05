@@ -1,4 +1,4 @@
-Ns {
+Sx {
     classvar <defaultEvent;
     classvar <defaultScale;
     classvar <>last;
@@ -30,18 +30,18 @@ Ns {
             this.set(key, value);
         };
 
-        Ndef(\ns).play(fadeTime: fadeTime);
+        Ndef(\sx).play(fadeTime: fadeTime);
     }
 
     *loadSynth {
-        var path = "../SynthDefs/Ns.scd";
+        var path = "../SynthDefs/Sx.scd";
         var file = PathName((path).resolveRelative);
         File.readAllString(file.fullPath);
         file.fullPath.load;
     }
 
     *play { |fadeTime|
-        Ndef(\ns).play;
+        Ndef(\sx).play;
         this.new(last ?? defaultEvent, fadeTime);
     }
 
@@ -50,7 +50,7 @@ Ns {
     }
 
     *release { |fadeTime = 10, name|
-        name = name ?? \ns;
+        name = name ?? \sx;
         Ndef(name).free(fadeTime);
     }
 
@@ -97,11 +97,11 @@ Ns {
     }
 
     *stop { |fadeTime|
-        Ndef(\ns).stop(fadeTime);
+        Ndef(\sx).stop(fadeTime);
     }
 
     *vol { |value|
-        ^Ndef(\ns).vol_(value);
+        ^Ndef(\sx).vol_(value);
     }
 
     *prCreateQuantizedSet { |pairs|
@@ -196,7 +196,7 @@ Ns {
     }
 
     *prSet { |pairs|
-        Ndef(\ns).set(*pairs);
+        Ndef(\sx).set(*pairs);
     }
 
     *prShouldBeArray { |key|

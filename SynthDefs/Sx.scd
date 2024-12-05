@@ -1,5 +1,5 @@
 (
-Ndef(\ns, {
+Ndef(\sx, {
 	var deg, degreeFix, env, freq, sig = 0, trig, vcf;
     var dur = \dur.kr(0 ! 16);
     var durSize = \durSize.kr(16);

@@ -1,8 +1,8 @@
-NsTest : UnitTest {
+SxTest : UnitTest {
     var expectedResult;
 
     setUp {
-        Ns(
+        Sx(
             (
                 amp: 0.5,
                 chord: [0, 1, 2],
@@ -19,7 +19,7 @@ NsTest : UnitTest {
     }
 
     tearDown {
-        Ndef(\ns).free;
+        Ndef(\sx).free;
     }
 
     test_controls {
@@ -43,7 +43,7 @@ NsTest : UnitTest {
         );
 
         this.assertEquals(
-            Ns.last,
+            Sx.last,
             expectedResult,
             "👀 Controls are generated correctly",
         );
@@ -51,7 +51,7 @@ NsTest : UnitTest {
 
     test_ndef_isPlaying {
         this.assertEquals(
-            Ndef(\ns).isPlaying,
+            Ndef(\sx).isPlaying,
             true,
             "👀 Synth is playing"
         );
@@ -77,7 +77,7 @@ NsTest : UnitTest {
 
         parameters.keys do: { |key|
             this.assertEquals(
-                Ndef(\ns).get(key),
+                Ndef(\sx).get(key),
                 parameters[key],
                 "👀 Ndef(\\" ++ key ++ ") has correct value"
             );
@@ -85,20 +85,20 @@ NsTest : UnitTest {
     }
 
     test_release {
-        Ns.release;
+        Sx.release;
 
         this.assertEquals(
-            Ndef(\ns).isPlaying,
+            Ndef(\sx).isPlaying,
             false,
             "👀 Synth is released by 'release' method"
         );
     }
 
     test_set {
-        Ns.set(\wave, \sine);
+        Sx.set(\wave, \sine);
 
         this.assertEquals(
-            Ndef(\ns).get(\sine),
+            Ndef(\sx).get(\sine),
             1,
             "👀 Synth receives 'set' method"
         );

@@ -1,7 +1,7 @@
 PxTestAll {
     *run {
         FxTest.run;
-        NsTest.run;
+        SxTest.run;
         PxArrayTest.run;
         PxEventTest.run;
         PxOscTest.run;

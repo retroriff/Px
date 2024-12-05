@@ -1,6 +1,5 @@
 /*
 TODO: Rename classes to Px, Fx, Sx, Dx?
-TODO: Rename Ns pattern references to event?
 TODO: Rename name references to id?
 TODO: Refactor to improve the sound of solo feat
 TODO: Make fill work with hundreth weighted beats
@@ -46,9 +45,10 @@ Px {
         pdef = this.prCreatePdef(pattern);
         playList = this.prCreatePlayList(pattern[\id], pdef);
 
-        if (Ndef(\px).isPlaying)
-        { Ndef(\px).source = { Mix.new(playList.values) } }
-        { Ndef(\px, { Mix.new(playList.values) }).quant_(4).play };
+        if (Ndef(\px).isPlaying.not)
+        { Ndef(\px).quant_(4).play };
+
+        Ndef(\px)[0] = { Mix.new(playList.values) };
 
         lastFormatted[newPattern[\id]] = pattern;
         this.prRemoveFinitePatternFromLast(newPattern);

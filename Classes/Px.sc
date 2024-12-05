@@ -1,11 +1,11 @@
 /*
 TODO: Rename name references to id?
-TODO: Refactor to improve the sound of solo feat
 TODO: Make fill work with hundreth weighted beats
 */
 
 Px {
     classvar <>chorusPatterns;
+    classvar <soloMode;
     classvar <>last;
     classvar <>lastFormatted;
     classvar <lastName;
@@ -23,6 +23,7 @@ Px {
         ndefList = Dictionary.new;
         seeds = Dictionary.new;
         soloList = Array.new;
+        soloMode = false;
     }
 
     *new { |newPattern|
@@ -141,9 +142,33 @@ Px {
     *prHandleSoloPattern { |pattern|
         var hasSolo = pattern['solo'] == true;
 
-        if (hasSolo)
-        { soloList.add(pattern[\id]) }
-        { soloList.remove(pattern[\id]) };
+        var resumeNdef = { |key|
+            if (Ndef(key).paused)
+            { Ndef(key).resume };
+        };
+
+        var pauseOrResumeNdefs = {
+            ndefList.keys do: { |key|
+                if (soloList.includes(key) or: soloList.isEmpty)
+                { resumeNdef.(key) }
+                { Ndef(key).pause };
+            }
+        };
+
+        if (hasSolo) {
+            soloList = soloList.add(pattern[\id]);
+            soloMode = true;
+        } {
+            if (soloMode == false)
+            { ^nil };
+
+            if (soloList.isEmpty)
+            { soloMode = false };
+
+            soloList.remove(pattern[\id]);
+        };
+
+        ^pauseOrResumeNdefs.value;
     }
 
     *prHumanize { |pattern|
@@ -167,14 +192,17 @@ Px {
 
     *prCreatePlayList { |id, pdef|
         if (ndefList[id].isNil)
-        { ndefList.put(id, Ndef(id, pdef)) };
+        { ndefList.put(id, Ndef(id, pdef).quant_(4)) };
 
+        ^ndefList.copy;
+
+        /*
         if (soloList.isEmpty)
-        { ^ndefList.copy };
+        { ^ndefList.copy };*/
 
-        ^ndefList.copy.select { |value, key|
-            soloList.includes(key)
-        };
+        /*        ^ndefList.copy.select { |value, key|
+        soloList.includes(key)
+        };*/
     }
 
     *prPrint { |value|

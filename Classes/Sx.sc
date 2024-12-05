@@ -23,7 +23,7 @@ Sx {
     }
 
     *new { |event, fadeTime|
-        event = this.prCreateDefaultArgs(event);
+        event = this.prCreateDefaultArgs(event ?? Event.new);
         last = event.copy;
 
         event.keysValuesDo { |key, value|
@@ -41,8 +41,7 @@ Sx {
     }
 
     *play { |fadeTime|
-        Ndef(\sx).play;
-        this.new(last ?? defaultEvent, fadeTime);
+        this.new(fadeTime: fadeTime);
     }
 
     *qset { |key, value, lag|

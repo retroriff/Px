@@ -7,16 +7,13 @@
         this.prReevaluate(chorusPatterns);
     }
 
-    *play { |name|
-        var newPattern;
+    *clear {
+        this.initClass;
+        Ndef(\px).clear;
+    }
 
-        if (name.notNil)
-        { newPattern = last[name] };
-
-        if (newPattern.isNil)
-        { newPattern = (i: \bd, id: \1, dur: 1) };
-
-        ^this.new(newPattern);
+    *play { |fadeTime|
+        Ndef(\px).play(fadeTime: fadeTime);
     }
 
     *release { |fadeTime = 10, name|

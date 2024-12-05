@@ -48,7 +48,7 @@ Px {
 
         if (Ndef(\px).isPlaying)
         { Ndef(\px).source = { Mix.new(playList.values) } }
-        { Ndef(\px, { Mix.new(playList.values) }).play };
+        { Ndef(\px, { Mix.new(playList.values) }).quant_(4).play };
 
         lastFormatted[newPattern[\id]] = pattern;
         this.prRemoveFinitePatternFromLast(newPattern);

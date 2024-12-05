@@ -22,15 +22,15 @@ Ns {
         waveList = [\pulse, \saw, \sine, \triangle];
     }
 
-    *new { |pattern|
-        pattern = this.prCreateDefaultArgs(pattern);
-        last = pattern.copy;
+    *new { |event, fadeTime|
+        event = this.prCreateDefaultArgs(event);
+        last = event.copy;
 
-        pattern.keysValuesDo { |key, value|
+        event.keysValuesDo { |key, value|
             this.set(key, value);
         };
 
-        Ndef(\ns).play;
+        Ndef(\ns).play(fadeTime: fadeTime);
     }
 
     *loadSynth {
@@ -41,8 +41,8 @@ Ns {
     }
 
     *play { |fadeTime|
-        Ns(last);
-        Ndef(\ns).play(fadeTime: fadeTime);
+        Ndef(\ns).play;
+        this.new(last ?? defaultEvent, fadeTime);
     }
 
     *qset { |key, value, lag|
@@ -98,6 +98,10 @@ Ns {
 
     *stop { |fadeTime|
         Ndef(\ns).stop(fadeTime);
+    }
+
+    *vol { |value|
+        ^Ndef(\ns).vol_(value);
     }
 
     *prCreateQuantizedSet { |pairs|

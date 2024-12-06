@@ -24,11 +24,6 @@
             { fadeTime = 10 };
 
             Ndef(\x).proxyspace.free(fadeTime);
-
-            ^fork {
-                (fadeTime + 5).wait;
-                Ndef.clear;
-            }
         };
 
         Ndef(\px).free(fadeTime);

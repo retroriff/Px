@@ -48,9 +48,8 @@ Sx {
         this.set(key: key, value: value, lag: lag, quant: true);
     }
 
-    *release { |fadeTime = 10, name|
-        name = name ?? \sx;
-        Ndef(name).free(fadeTime);
+    *release { |fadeTime = 10|
+        Ndef(\sx).free(fadeTime);
     }
 
     *set { |key, value, lag, quant|

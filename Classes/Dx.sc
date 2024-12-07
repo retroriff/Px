@@ -1,5 +1,4 @@
 /*
-TODO: Fix release
 TODO: Normalize sound
 TODO: Use device should stop the previous one
 TODO: All devices should have the same instruments or avoid error?
@@ -33,8 +32,13 @@ Dx : Px {
         this.prCreatePresetsDict;
     }
 
+    *play {  |fadeTime = 10|
+        this.prFadeDrums(\in, fadeTime);
+    }
+
     *use { |newDevice|
         var drumMachines = [606, 707, 808, 909];
+
         if (drumMachines.includes(newDevice))
         { drumMachine = newDevice };
     }
@@ -84,22 +88,8 @@ Dx : Px {
         }
     }
 
-    *release { |time = 10|
-        var fade = [\out, time.clip(0.1, time)];
-
-        last do: { |pattern|
-            if (pattern['drumMachine'] == drumMachine) {
-                pattern.putAll([\fade, fade, \out, time]);
-            };
-        };
-
-        super.new;
-
-        last do: { |pattern|
-            if (pattern['drumMachine'] == drumMachine) {
-                this.prRemoveFinitePatternFromLast(pattern);
-            };
-        };
+    *release { |fadeTime = 10|
+        this.prFadeDrums(\out, fadeTime);
     }
 
     *stop {
@@ -117,6 +107,17 @@ Dx : Px {
             var fileName = file.fileNameWithoutExtension.asSymbol;
             var filePath = File.readAllString(file.fullPath);
             presetsDict.put(fileName, PresetsFromYAML(filePath.parseYAML))
+        };
+    }
+
+    *prFadeDrums { |direction, fadeTime|
+        var fade = [direction, fadeTime.clip(0.1, fadeTime)];
+
+        last do: { |pattern|
+            if (pattern['drumMachine'] == drumMachine) {
+                pattern.putAll([\fade, fade, direction, fadeTime]);
+                super.new(pattern);
+            };
         };
     }
 }

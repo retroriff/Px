@@ -195,14 +195,6 @@ Px {
         { ndefList.put(id, Ndef(id, pdef).quant_(4)) };
 
         ^ndefList.copy;
-
-        /*
-        if (soloList.isEmpty)
-        { ^ndefList.copy };*/
-
-        /*        ^ndefList.copy.select { |value, key|
-        soloList.includes(key)
-        };*/
     }
 
     *prPrint { |value|
@@ -227,13 +219,15 @@ Px {
         var hasEmptyDur = pattern[\dur] == 0;
 
         case
-        { hasFadeOut or: hasRepeats or: hasEmptyDur }
-        {
+        { hasFadeIn }
+        { last[pattern[\id]].removeAt(\fade) }
+
+        { hasFadeOut }
+        { last.removeAt(pattern[\id]) }
+
+        { hasRepeats or: hasEmptyDur } {
             last.removeAt(pattern[\id]);
             ndefList.removeAt(pattern[\id]);
-        }
-
-        { hasFadeIn }
-        { last[pattern[\id]].removeAt(\fade) };
+        };
     }
 }

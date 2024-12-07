@@ -31,6 +31,21 @@
 
 \909 i: \all
 
+// Dx allows to play presets:
+Dx.preset(\electro, 2);
+
+// If we edit the YAML presets file, we can reload them:
+Dx.loadPresets;
+
+// The default drum machine is 808, but we can change it:
+Dx use: 909;
+
+// Methods to stop it:
+Dx.release;
+Dx.stop;
+\808 i: \all;
+
+// TB-303 example:
 (
 1 i: \303 dur: 0.25 amp: 0.9 octave: [\beat, 5] seed: 200 ctf: 0.1 env: 0.9 res: 0.4;
 2 i: \303 dur: 0.25 amp: 0.6 octave: [\beat, 5] seed: 200 degree: [0, 1, 5, 3] scale: \scriabin;

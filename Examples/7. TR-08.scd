@@ -8,18 +8,20 @@ TR08((i: \bd, dur: 1));
 // Let's sync the device with SC setting up a different latency:
 (
 TR08.init(0.195);
-808 i: \bd dur: 1;
+/* TODO: 8808 i: \bd dur: 1; */
 1 i: \bd dur: 1;
 )
 
-// Now we can start to play with our TR-08:
+// TODO: Now we can start to play with our TR-08:
+/*
 (
-808 i: \bd dur: 1;
-808 i: \rs dur: 0.25 beat: 1 weight: 0.4;
-808 i: \sn dur: 0.25 fill: 1 weight: 0.42;
-808 i: \ch dur: 0.25 beat: 1 weight: 0.82;
-808 i: \ma dur: 0.25 fill: 1 weight: 0.82;
+8808 i: \bd dur: 1;
+8808 i: \rs dur: 0.25 beat: 1 weight: 0.4;
+8808 i: \sn dur: 0.25 fill: 1 weight: 0.42;
+8808 i: \ch dur: 0.25 beat: 1 weight: 0.82;
+8808 i: \ma dur: 0.25 fill: 1 weight: 0.82;
 )
+*/
 
 // Or play a preset:
 TR08.preset(\electro);

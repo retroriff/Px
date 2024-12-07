@@ -258,7 +258,7 @@
         Px.patternState = newPattern;
 
         if (this.prHasDrumMachine)
-        { ^TR08(newPattern.putAll([\drumMachine, this])) }
+        { ^Dx(newPattern.putAll([\drumMachine, this])) }
         { ^Px(newPattern) };
     }
 

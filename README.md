@@ -16,9 +16,9 @@ Additional code examples can be found [here](/Examples/).
 
 1. ⚡️ [Px: A Pattern Shortcuts Generator](#%EF%B8%8F-px-a-pattern-shortcuts-generator)
 2. ✨ [Fx: A Nodeproxy Effects Handler](#-fx-a-nodeproxy-effects-handler)
-3. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
-4. 🛢️ [Drum Machines](#%EF%B8%8F-drum-machines)
-5. 🔥 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
+3. 🛢️ [Dx: Drum Machines](#%EF%B8%8F-drum-machines)
+4. 🌊 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
+5. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
 6. 📡 [OSC Communication](#-osc-communication)
 7. 🎚️ [Crossfader](#%EF%B8%8F-crossfader)
 8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#%EF%B8%8F-tr08-a-roland-tr-08-midi-controller)
@@ -179,7 +179,18 @@ We can simplify the usage of drum machine using shortcodes. The available drum m
 \707 i: \all
 ```
 
-## 🔥 Sx: A Sequenced Synth
+With `Dx` class we can use presets:
+
+### Dx class methods
+
+| Name          | Arguments                      | Description                      |
+| ------------- | ------------------------------ | -------------------------------- |
+| `loadPresets` | None                           | Reloads presets from YAML files  |
+| `preset`      | name?: string \| index: number | Plays a [preset](/Presets/yaml/) |
+| `release`     | None                           | Release with fadeTime            |
+| `stop`        | None                           | Same as `\808 i: \all`           |
+
+## 🌊 Sx: A Sequenced Synth
 
 A class designed for controlling a synthesizer equipped with a built-in sequencer. Unlike the Play class, Sx is limited to playing only a predefined synthesizer with integrated sequencers. Below is an example demonstrating the arguments it accepts:
 

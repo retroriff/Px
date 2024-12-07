@@ -4,19 +4,14 @@ TODO: Unit tests
 */
 
 TR08 : Px {
+    classvar <drumKit;
     classvar hasLoadedPresets;
-    classvar <lastPreset;
+    classvar <>lastPreset;
     classvar <presetsDict;
     classvar <presetPatterns;
 
     *initClass {
-        lastPreset = Array.new;
-        presetsDict = Dictionary.new;
-        ^super.initClass;
-    }
-
-    *new { | newPattern|
-        var drumKit = Dictionary[
+        drumKit = Dictionary[
             \bd -> 36,
             \sn -> 38,
             \lc -> 64,
@@ -34,30 +29,18 @@ TR08 : Px {
             \oh -> 46,
             \ch -> 42,
         ];
+        lastPreset = Array.new;
+        presetsDict = Dictionary.new;
 
-        var isTR08Detected = MIDIClient.destinations.detect({ |endpoint| endpoint.name == "TR-08" }) !== nil;
+        ^super.initClass;
+    }
 
-        var initializeMIDIDevice = {
-            if (MIDIClient.initialized == false or: { midiClient.notNil and: { midiClient["TR-08"].isNil }})
-            { this.init(0.195, newPattern[\drumMachine]) };
-        };
+    *new { | newPattern|
+        this.prInitializeMIDIDevice(newPattern);
 
-        var addTR08Pairs = {
-            newPattern.putAll([\chan: 0]);
-            newPattern.putAll([\midinote: drumKit[newPattern[\i]]]);
-            newPattern.putAll([\midiout, "TR-08"]);
-        };
-
-        var addDrumMachinePlayBuf = {
-            var folder = newPattern[\drumMachine].asString.catArgs("/", newPattern[\i].asString);
-            newPattern.putAll([\play: [folder, 0]]);
-        };
-
-        initializeMIDIDevice.value;
-
-        if (isTR08Detected.value == true)
-        { addTR08Pairs.value }
-        { addDrumMachinePlayBuf.value };
+        if (this.prIsTR08Detected.value == true)
+        { newPattern = this.prAddTR08Pairs(newPattern) }
+        { newPattern = this.prAddDrumMachinePlayBuf(newPattern) };
 
         ^super.new(newPattern);
     }
@@ -141,11 +124,36 @@ TR08 : Px {
         ^\808.i(\all);
     }
 
+    *prAddDrumMachinePlayBuf { |pattern|
+        var folder = pattern[\drumMachine].asString.catArgs("/", pattern[\i].asString);
+        pattern.putAll([\play: [folder, 0]]);
+        ^pattern;
+    }
+
+    *prAddTR08Pairs { |pattern|
+        var midinote = drumKit[pattern[\i].asSymbol];
+        pattern.putAll([\chan, 0]);
+        pattern.putAll([\midinote, midinote]);
+        pattern.putAll([\midiout, "TR-08"]);
+        ^pattern;
+    }
+
     *prCreatePresetsDict {
         PathName(("../Presets/yaml/").resolveRelative).filesDo{ |file|
             var fileName = file.fileNameWithoutExtension.asSymbol;
             var filePath = File.readAllString(file.fullPath);
             presetsDict.put(fileName, PresetsFromYAML(filePath.parseYAML))
         };
+    }
+
+    *prInitializeMIDIDevice { |pattern|
+        if (MIDIClient.initialized == false or: { midiClient.notNil and: { midiClient["TR-08"].isNil }})
+        { this.init(0.195, pattern[\drumMachine]) };
+    }
+
+    *prIsTR08Detected {
+        ^MIDIClient.destinations.detect({ |endpoint|
+            endpoint.name == "TR-08"
+        }) !== nil;
     }
 }

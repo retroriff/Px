@@ -45,10 +45,10 @@ Dx : Px {
         drumMachine = newDrumMachine;
 
         last do: { |pattern, i|
-            if (pattern[\dx] == true)
-            { pattern[\drumMachine] = newDrumMachine };
-
-            this.new(pattern);
+            if (pattern[\dx] == true) {
+                pattern[\drumMachine] = newDrumMachine;
+                this.new(pattern);
+            };
         }
     }
 
@@ -72,7 +72,7 @@ Dx : Px {
     }
 
     *stop {
-        ^\808.i(\all);
+        ^drumMachine.asSymbol.i(\all);
     }
 
     *prAddDrumMachinePlayBuf { |pattern|

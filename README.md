@@ -181,6 +181,10 @@ We can simplify the usage of drum machine using shortcodes. The available drum m
 
 With `Dx` class we can use presets:
 
+```
+Dx.preset(\electro, 1);
+```
+
 ### Dx class methods
 
 | Name          | Arguments                      | Description                      |

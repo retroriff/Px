@@ -33,6 +33,10 @@ Sx {
         Ndef(\sx).play(fadeTime: fadeTime);
     }
 
+    *clear {
+        this.initClass;
+    }
+
     *loadSynth {
         var path = "../SynthDefs/Sx.scd";
         var file = PathName((path).resolveRelative);
@@ -41,7 +45,7 @@ Sx {
     }
 
     *play { |fadeTime|
-        this.new(fadeTime: fadeTime);
+        Ndef(\sx).play(fadeTime: fadeTime);
     }
 
     *qset { |key, value, lag|

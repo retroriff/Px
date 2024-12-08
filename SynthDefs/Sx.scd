@@ -11,7 +11,7 @@ Ndef(\sx, {
     // Sequencer
     dur = Dser(dur, durSize);
     trig = Dseq([dur], inf) / TempoClock.tempo;
-    trig = TDuty.ar(trig, 0, 1);
+    trig = TDuty.ar(trig);
 
     // Avoids to start with initial 256 degree items
     degreeFix = degree.collect { |item| item.abs };

@@ -1,3 +1,8 @@
+/*
+TODO: Refactor Ndef(\sx) so it does not consume resorces when it it initialized.
+It can be tested adding "poll" to any trigger.
+A solution could be to convert to SynthDef.
+*/
 Sx {
     classvar <defaultEvent;
     classvar <defaultScale;
@@ -66,16 +71,18 @@ Sx {
 
         case
         { key == \degree } {
-            var octave = this.prConvertToArray(\octave, last[\octave]);
-            pairs = this.prGenerateDegree(value, octave, last[\root]);
+            var octave = last[\octave] ?? defaultEvent[\octave];
+            octave = this.prConvertToArray(\octave, octave);
+            pairs = this.prGenerateDegree(value, octave);
         }
 
         { key == \euclid }
         { pairs = this.prGenerateEuclid(value) }
 
         { key == \octave } {
-            var degree = this.prConvertToArray(\degree, last[\degree]);
-            pairs = this.prGenerateDegree(degree, value, last[\root]);
+            var degree = last[\degree] ?? defaultEvent[\degree];
+            degree = this.prConvertToArray(\degree, degree);
+            pairs = this.prGenerateDegree(degree, value);
         }
 
         { key == \root } {
@@ -91,7 +98,7 @@ Sx {
         { pairs = this.prGenerateWave(value) };
 
         arraySizePair = this.prGenerateArraySize(pairs[0], pairs[1]);
-        pairs = pairs ++ [\lag, lag] ++ arraySizePair;
+        pairs = pairs ++ [\lag, lag ?? 0] ++ arraySizePair;
 
         if (quant.isNil)
         { ^this.prSet(pairs) }
@@ -120,6 +127,7 @@ Sx {
         var result = Array.new;
         var degIndex = 0;
         var octIndex = 0;
+        var dur = last[\dur] ?? defaultEvent[\dur];
 
         while ({ result.size < maxLen }) {
             var deg = degree[degIndex];
@@ -133,7 +141,8 @@ Sx {
             octIndex = (octIndex + 1) % octave.size;
         };
 
-        ^[\degree, result + root.clip(-12, 12)];
+        root = root ?? last[\root] ?? defaultEvent[\root];
+        ^[\degree, result + root.clip(-12, 12), \dur, dur];
     }
 
     *prCreateDefaultArgs { |event|

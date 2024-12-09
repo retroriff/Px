@@ -7,6 +7,7 @@ Sx {
     classvar <defaultEvent;
     classvar <defaultScale;
     classvar <>last;
+    classvar synth;
     classvar <waveList;
 
     *initClass {
@@ -35,7 +36,13 @@ Sx {
             this.set(key, value);
         };
 
-        Ndef(\sx).play(fadeTime: fadeTime);
+        if (Ndef(\sx).isPlaying.not)
+        { this.play(fadeTime) };
+
+        // Ndef(\sx).play(fadeTime: fadeTime);
+/*        Ndef(\sx, {
+            In.ar(~sxBus, 2);
+        }).play(fadeTime: fadeTime);*/
     }
 
     *clear {
@@ -50,7 +57,8 @@ Sx {
     }
 
     *play { |fadeTime|
-        Ndef(\sx).play(fadeTime: fadeTime);
+        synth = Synth(\sx);
+        Ndef(\sx, { In.ar(~sxBus, 2) }).play(fadeTime: fadeTime);
     }
 
     *qset { |key, value, lag|
@@ -207,7 +215,7 @@ Sx {
     }
 
     *prSet { |pairs|
-        Ndef(\sx).set(*pairs);
+        synth.set(*pairs);
     }
 
     *prShouldBeArray { |key|

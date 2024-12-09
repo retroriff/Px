@@ -1,5 +1,7 @@
 (
-Ndef(\sx, {
+~sxBus = Bus.audio(s, 2);
+
+SynthDef(\sx, {
 	var deg, degreeFix, env, freq, sig = 0, trig, vcf;
     var dur = \dur.kr(0 ! 16);
     var durSize = \durSize.kr(16);
@@ -18,7 +20,7 @@ Ndef(\sx, {
     degreeSize = Select.kr(degreeFix.sum > 0, [1, degreeSize]);
 
     // Frequency
-    deg = Dser(degree, degreeSize);
+    deg = Dser(degree.poll, degreeSize);
     deg = Demand.ar(trig, 0, Dseq([deg], inf));
     freq = (DegreeToKey.ar(scale, deg + \chord.kr([0, 0, 0, 0])) + 48).midicps;
 	freq = freq * { Rand(-0.1, 0.1).midiratio }.dup(4);
@@ -38,6 +40,8 @@ Ndef(\sx, {
     vcf = MoogFF.ar(sig, MouseX.kr(1000, 5000));
     sig = Select.ar(\vcf.kr(1) > 0, [sig * -9.dbamp, vcf]);
 
-    Splay.ar(sig * \amp.kr(1));
-});
+    sig = Splay.ar(sig * \amp.kr(1));
+
+    Out.ar(~sxBus, sig);
+}).add;
 )

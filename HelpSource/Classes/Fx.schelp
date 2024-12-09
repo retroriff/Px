@@ -14,11 +14,10 @@ Fx.setPresetsPath(<path>);
 
 ClassMethods::
 
-method:: vstController.editor
+method:: vstController
 Opens the VST editor for the given VST plugin.
 
-
-examples:
+Examples:
 
 code::
 Fx.vstController.editor;

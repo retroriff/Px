@@ -48,13 +48,6 @@
         });
     }
 
-
-    *loadSynthDefs {
-        PathName(("../SynthDefs/").resolveRelative).filesDo{ |file|
-            file.fullPath.load;
-        };
-    }
-
     *prCreateBufInstruments { |pattern|
         pattern[\play].notNil.if {
             pattern = pattern ++ (i: \playbuf, buf: pattern[\play]);

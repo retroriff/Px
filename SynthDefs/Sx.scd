@@ -3,16 +3,19 @@
 
 SynthDef(\sx, {
 	var deg, degreeFix, env, freq, sig = 0, trig, vcf;
-    var dur = \dur.kr(0 ! 16);
-    var durSize = \durSize.kr(16);
+
     var degree = \degree.kr(0 ! 256);
     var degreeSize = \degreeSize.kr(256);
-    var scale = \scale.kr(Buffer.loadCollection(s, Scale.at(\scriabin)));
+    var dur = \dur.kr(0 ! 16);
+    var durSize = \durSize.kr(16);
     var lag = \lag.kr(0).clip(0, 5);
+    var scale = \scale.kr(Buffer.loadCollection(s, Scale.at(\scriabin)));
+    var tempo = \tempo.kr(0);
 
     // Sequencer
     dur = Dser(dur, durSize);
-    trig = Dseq([dur], inf) / TempoClock.tempo;
+    tempo = Select.kr(tempo > 0, [TempoClock.default.tempo, tempo]);
+    trig = Dseq([dur], inf) / tempo;
     trig = TDuty.ar(trig);
 
     // Avoids to start with initial 256 degree items
@@ -20,7 +23,7 @@ SynthDef(\sx, {
     degreeSize = Select.kr(degreeFix.sum > 0, [1, degreeSize]);
 
     // Frequency
-    deg = Dser(degree.poll, degreeSize);
+    deg = Dser(degree, degreeSize);
     deg = Demand.ar(trig, 0, Dseq([deg], inf));
     freq = (DegreeToKey.ar(scale, deg + \chord.kr([0, 0, 0, 0])) + 48).midicps;
 	freq = freq * { Rand(-0.1, 0.1).midiratio }.dup(4);

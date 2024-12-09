@@ -12,6 +12,12 @@
         Ndef(\px).clear;
     }
 
+    *loadSynthDefs {
+        PathName(("../SynthDefs/").resolveRelative).filesDo{ |file|
+            file.fullPath.load;
+        };
+    }
+
     *play { |fadeTime|
         Ndef(\px).play(fadeTime: fadeTime);
     }
@@ -72,7 +78,9 @@
             ^this.prPrint("🕰️ Current tempo is" + (TempoClock.tempo * 60));
         };
 
-        TempoClock.default.tempo = tempo.clip(10, 300) / 60;
+        tempo = tempo.clip(10, 300) / 60;
+        TempoClock.default.tempo = tempo;
+        Sx.tempo(tempo);
 
         ^this.loadSynthDefs;
     }

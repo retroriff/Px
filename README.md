@@ -24,10 +24,23 @@ Additional code examples can be found [here](/Examples/).
 8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#%EF%B8%8F-tr08-a-roland-tr-08-midi-controller)
 9. ✅ [Unit Tests](#-unit-tests)
 
-**🛠️ Dependencies**:
+## 🛠️ Installation
 
-- [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) (PbindFx)
-- [VSTPlugin](https://github.com/Spacechild1/vstplugin)
+1. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for PbindFx)
+2. To play audio files, set the samples folder by running:
+
+```
+Px.loadSamples(<SAMPLES_FOLDER_PATH>);
+```
+
+**VST Plugins:**
+
+1. Install the [VSTPlugin](https://github.com/Spacechild1/vstplugin) extension
+2. Set the presets folder by running:
+
+```
+Fx.setPresetsPath("../VST/presets/".resolveRelative);
+```
 
 ## ⚡️ Px: A Pattern Shortcuts Generator
 

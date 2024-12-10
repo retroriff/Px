@@ -27,10 +27,11 @@ Additional code examples can be found [here](/Examples/).
 ## 🛠️ Installation
 
 1. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for PbindFx)
-2. To play audio files, set the samples folder by running:
+2. Load SynthDefs and audio files by running:
 
 ```
-Px.loadSamples(<SAMPLES_FOLDER_PATH>);
+Px.loadSynthDefs;
+Px.loadSamples(<YOUR_SAMPLES_FOLDER_PATH>);
 ```
 
 **VST Plugins:**

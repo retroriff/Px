@@ -1,7 +1,7 @@
 (
 SynthDef(\lplay, {
-    |amp = 0.5, atk = 0.01, beats = 0, buf = 0, decay = 0.3, dur = 4, gate = 1,
-    out = 0, pan = 0, rel = 1, rate = 1, start = 0, sus = 1, tempo|
+    |amp = 1, atk = 0.01, beats = 0, buf = 0, decay = 0.3, dur = 4, gate = 1,
+    out = 0, pan = 0, rel = 0.05, rate = 1, start = 0, sus = 1, tempo|
 
     var env, sig;
     var frames = BufFrames.kr(buf);
@@ -18,8 +18,24 @@ SynthDef(\lplay, {
     dur = Select.kr((dur < beats), [1, dur/beats]);
     sus = (BufDur.kr(buf) * dur / rate.abs) * sus;
 
-    sig = Mix.ar(PlayBuf.ar(2, buf, rate, 1, startPos, 0, doneAction: 2));
-    env = EnvGen.ar(Env.linen(atk, sus, rel), gate, doneAction: 2);
-    Out.ar(out, Pan2.ar(sig * env * amp, pan));
+    env = EnvGen.ar(
+        Env.linen(atk, sus, rel),
+        gate,
+        doneAction: 2
+    );
+
+    sig = Mix.ar(
+        PlayBuf.ar(
+            numChannels: 2,
+            bufnum: buf,
+            rate: rate,
+            startPos: startPos,
+            doneAction: 2,
+    ));
+
+    sig = (sig * env) * amp;
+    sig = Pan2.ar(sig, pan);
+
+    Out.ar(out, sig);
 }).add;
 )

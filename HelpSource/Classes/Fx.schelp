@@ -1,0 +1,25 @@
+class:: Fx
+summary:: A Nodeproxy Effects Handler
+categories:: Live-Coding>NodeProxy
+related:: Classes/Nodeproxy, Classes/NodeProxy roles
+
+description::
+The `Fx` class facilitates the addition of effects to the Px set classes, as well as to any other Ndef.
+
+To enable loading or saving of VST presets, initialize the class with the path to the presets folder:
+
+code::
+Fx.setPresetsPath(<path>);
+::
+
+ClassMethods::
+
+method:: vstController
+Opens the VST editor for the given VST plugin.
+
+Examples:
+
+code::
+Fx.vstController.editor;
+::
+

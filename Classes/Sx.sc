@@ -1,12 +1,8 @@
-/*
-TODO: Refactor Ndef(\sx) so it does not consume resorces when it it initialized.
-It can be tested adding "poll" to any trigger.
-A solution could be to convert to SynthDef.
-*/
 Sx {
     classvar <defaultEvent;
     classvar <defaultScale;
     classvar <>last;
+    classvar synth;
     classvar <waveList;
 
     *initClass {
@@ -31,11 +27,11 @@ Sx {
         event = this.prCreateDefaultArgs(event ?? Event.new);
         last = event.copy;
 
+        this.play(fadeTime);
+
         event.keysValuesDo { |key, value|
             this.set(key, value);
         };
-
-        Ndef(\sx).play(fadeTime: fadeTime);
     }
 
     *clear {
@@ -50,7 +46,11 @@ Sx {
     }
 
     *play { |fadeTime|
-        Ndef(\sx).play(fadeTime: fadeTime);
+        if (Ndef(\sx).isPlaying.not) {
+            synth = Synth(\sx);
+        };
+
+        Ndef(\sx, { In.ar(~sxBus, 2) }).play(fadeTime: fadeTime);
     }
 
     *qset { |key, value, lag|
@@ -58,7 +58,13 @@ Sx {
     }
 
     *release { |fadeTime = 10|
+        fadeTime.postln;
         Ndef(\sx).free(fadeTime);
+
+        ^fork {
+            (fadeTime * 2).wait;
+            synth.free;
+        }
     }
 
     *set { |key, value, lag, quant|
@@ -97,8 +103,8 @@ Sx {
         { key == \wave }
         { pairs = this.prGenerateWave(value) };
 
-        arraySizePair = this.prGenerateArraySize(pairs[0], pairs[1]);
-        pairs = pairs ++ [\lag, lag ?? 0] ++ arraySizePair;
+        pairs = pairs ++ this.prGenerateArraySize(pairs[0], pairs[1]);
+        pairs = pairs ++ [\lag, lag ?? 0];
 
         if (quant.isNil)
         { ^this.prSet(pairs) }
@@ -107,6 +113,11 @@ Sx {
 
     *stop { |fadeTime|
         Ndef(\sx).stop(fadeTime);
+    }
+
+    *tempo { |tempo|
+        if (synth.notNil)
+        { synth.set(\tempo, tempo) };
     }
 
     *vol { |value|
@@ -207,7 +218,7 @@ Sx {
     }
 
     *prSet { |pairs|
-        Ndef(\sx).set(*pairs);
+        synth.set(*pairs);
     }
 
     *prShouldBeArray { |key|

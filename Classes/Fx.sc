@@ -88,7 +88,7 @@ Fx {
         this.prAddEffect(\reverb, mix, [room, damp]);
     }
 
-    *setPresetsPath { |path|
+    *setVstPresetsPath { |path|
         presetsPath = path;
     }
 

@@ -26,7 +26,7 @@ Additional code examples can be found [here](/Examples/).
 
 ## 🛠️ Installation
 
-1. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for PbindFx)
+1. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for `PbindFx`)
 2. Load SynthDefs and audio files by running:
 
 ```
@@ -37,10 +37,10 @@ Px.loadSamples(<YOUR_SAMPLES_FOLDER_PATH>);
 **VST Plugins:**
 
 1. Install the [VSTPlugin](https://github.com/Spacechild1/vstplugin) extension
-2. Set the presets folder by running:
+2. Set a presets folder by running:
 
 ```
-Fx.setPresetsPath("../VST/presets/".resolveRelative);
+Fx.setVstPresetsPath("../VST/presets/".resolveRelative);
 ```
 
 ## ⚡️ Px: A Pattern Shortcuts Generator
@@ -134,7 +134,7 @@ The Fx class facilitates the addition of effects to the Px set classes, as well 
 To enable loading or saving of VST presets, initialize the class with the path to the presets folder:
 
 ```js
-Fx.setPresetsPath(<path>);
+Fx.setVstPresetsPath(<path>);
 ```
 
 ### Fx class methods

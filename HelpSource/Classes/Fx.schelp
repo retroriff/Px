@@ -1,25 +1,64 @@
 class:: Fx
 summary:: A Nodeproxy Effects Handler
 categories:: Live-Coding>NodeProxy
-related:: Classes/Nodeproxy, Classes/NodeProxy roles
+related:: Classes/Nodeproxy, Reference/NodeProxy_roles
 
 description::
-The `Fx` class facilitates the addition of effects to the Px set classes, as well as to any other Ndef.
+The Fx class facilitates the addition of effects to the link::Classes/Px:: set classes, as well as to any other Ndef.
 
-To enable loading or saving of VST presets, initialize the class with the path to the presets folder:
+These are the available effects:
+- delay
+- gverb
+- hpf
+- lpf
+- pan
+- reverb
+- vst
 
-code::
-Fx.setPresetsPath(<path>);
-::
+This  strong::vstController:: classVar is a shortcut for link::Classes/VSTPluginNodeProxyController::, so we can add its same methods.
 
 ClassMethods::
 
-method:: vstController
-Opens the VST editor for the given VST plugin.
+METHOD:: setVstPresetsPath
+Used to define the directory where VST plugin presets are stored.
 
-Examples:
+argument:: path
+An absolute path
+
+METHOD:: vst
+Load a VST plugin and use it as a Nodeproxy filter:
+
+argument:: mix
+The dry/wet mix of the effect, ranging from `0` (completely dry) to `1` (completely wet).
+
+argument:: plugin
+The name of the VST plugin to load.
+
+METHOD:: vstReadProgram
+Loads a VST preset from the default presets folder
+
+argument:: preset
+Preset name as a symbol
+
+
+Examples::
 
 code::
+// Load all presets
+Fx.setVstPresetsPath("../VST/presets/".resolveRelative);
+
+// Load a VST plugin
+Fx(\test).vst(0.3, "ValhallaFreqEcho");
+
+// Set plugin parameters.
+Fx.vstController.set(1, 0.1);
+
+// Set a preset
+Fx(\test).vstReadProgram(\mdosc);
+
+// Save a preset
+Fx(\test).vstWriteProgram(\mdosc2);
+
+// Opens the VST editor for the given VST plugin.
 Fx.vstController.editor;
 ::
-

@@ -1,19 +1,22 @@
 class:: Fx
 summary:: A Nodeproxy Effects Handler
-categories:: Live-Coding>NodeProxy
+categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/Nodeproxy, Reference/NodeProxy_roles
 
 description::
 The Fx class facilitates the addition of effects to the link::Classes/Px:: set classes, as well as to any other Ndef.
 
 These are the available effects:
-- delay
-- gverb
-- hpf
-- lpf
-- pan
-- reverb
-- vst
+
+code::
+Fx(\test).delay(mix: 0.3, delaytime: 8, decaytime: 2);
+Fx(\test).gverb(mix: 0.4, roomsize: 200, revtime: 5);
+Fx(\test).hpf(mix: 0.3, freq: \wave);
+Fx(\test).lpf(mix: 0.3, freq: \wave);
+Fx(\test).pan(pos: 0);
+Fx(\test).reverb(mix: 0.3, room: 0.7, damp: 0.7);
+Fx(\test).vst(mix: 0.3, plugin: "ValhallaFreqEcho");
+::
 
 This  strong::vstController:: classVar is a shortcut for link::Classes/VSTPluginNodeProxyController::, so we can add its same methods.
 

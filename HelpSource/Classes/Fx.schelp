@@ -18,9 +18,13 @@ Fx(\test).reverb(mix: 0.3, room: 0.7, damp: 0.7);
 Fx(\test).vst(mix: 0.3, plugin: "ValhallaFreqEcho");
 ::
 
-This  strong::vstController:: classVar is a shortcut for link::Classes/VSTPluginNodeProxyController::, so we can add its same methods.
-
 ClassMethods::
+
+METHOD:: clear
+Clear all active effects and reset all FX dictionaries.
+
+METHOD:: loadEffects
+Read FX files. It reloads the FX after editing them.
 
 METHOD:: setVstPresetsPath
 Used to define the directory where VST plugin presets are stored.
@@ -43,6 +47,8 @@ Loads a VST preset from the default presets folder
 argument:: preset
 Preset name as a symbol
 
+subsection:: VST plugins
+The  strong::vstController:: classVar is a shortcut for link::Classes/VSTPluginNodeProxyController::, so we can add its same methods.
 
 Examples::
 

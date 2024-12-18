@@ -64,7 +64,7 @@
     }
 
     *prCreateLoops { |pattern|
-        if (pattern[\buf].notNil) {
+        if (pattern[\buf].notNil and: { pattern[\buf].class != Buffer }) {
             var filesCount = this.buf(pattern[\buf][0]).size;
 
             if (filesCount > 0 and: { pattern[\buf].isArray }) {

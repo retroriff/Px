@@ -22,12 +22,13 @@
         Ndef(\px).play(fadeTime: fadeTime);
     }
 
-    *release { |fadeTime = 10, name|
+    *release { |time, name|
         var anyParam = [name, fadeTime];
+        var fadeTime = time ?? 10;
 
         if (anyParam.includes(\all)) {
             if (fadeTime == \all)
-            { fadeTime = 10 };
+            { fadeTime = fadeTime };
 
             Ndef(\x).proxyspace.free(fadeTime);
         };

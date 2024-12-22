@@ -54,7 +54,7 @@ TR08 : Dx {
     }
 
     *prAddTR08Pairs { |pattern|
-        var midinote = drumKit[pattern[\i].asSymbol];
+        var midinote = drumKit[pattern[\instrument].asSymbol];
         pattern.putAll([\chan, 0]);
         pattern.putAll([\midinote, midinote]);
         pattern.putAll([\midiout, "TR-08"]);

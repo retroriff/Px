@@ -76,7 +76,7 @@ Dx : Px {
     }
 
     *prAddDrumMachinePlayBuf { |pattern|
-        var folder = pattern[\drumMachine].asString.catArgs("/", pattern[\i].asString);
+        var folder = pattern[\drumMachine].asString.catArgs("/", pattern[\instrument].asString);
         pattern.putAll([\play: [folder, 0]]);
         ^pattern;
     }
@@ -97,7 +97,7 @@ Dx : Px {
         if (preset.notNil) {
             preset[\preset].do { |pattern|
                 var amp = Pseq(pattern[\list].clip(0, 1), inf);
-                patterns = patterns.add((i: pattern[\i], amp: amp, dur: 1/4));
+                patterns = patterns.add((instrument: pattern[\instrument], amp: amp, dur: 1/4));
             };
         };
 

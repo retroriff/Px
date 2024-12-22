@@ -206,11 +206,11 @@
 
     prGenerateDrumMachineId { |ins|
         var findExistingPatternForIns = Px.last.detect({ |pattern|
-            pattern[\drumMachine] == this and: (pattern[\i] == ins);
+            pattern[\drumMachine] == this and: (pattern[\instrument] == ins);
         });
 
         var drumMachinesPatternsExcludingIns = Px.last.select({ |pattern|
-            pattern[\drumMachine] == this and: (pattern[\i] != ins)
+            pattern[\drumMachine] == this and: (pattern[\instrument] != ins)
         });
 
         var getMaximumId = drumMachinesPatternsExcludingIns
@@ -245,10 +245,10 @@
 
     prPlay { |i, play, loop|
         var newPattern = (
-            i: i,
             id: this.createId(i),
+            instrument: i,
+            loop: loop,
             play: play,
-            loop: loop
         );
 
         this.prPlayClass(newPattern);

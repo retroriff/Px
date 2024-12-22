@@ -53,7 +53,7 @@ TODO: MIDIOut instances
                 \midicmd: pattern[\midicmd] ?? \noteOn,
                 \midiout: midiClient[midiout],
                 \chan, pattern[\chan] ?? 0,
-                \ins: \midi
+                \instrument: \midi
             ]);
         };
 

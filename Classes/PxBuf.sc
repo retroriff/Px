@@ -50,12 +50,12 @@
 
     *prCreateBufInstruments { |pattern|
         pattern[\play].notNil.if {
-            pattern = pattern ++ (i: \playbuf, buf: pattern[\play]);
+            pattern = pattern ++ (instrument: \playbuf, buf: pattern[\play]);
             pattern.removeAt(\play);
         };
 
         pattern[\loop].notNil.if {
-            pattern = pattern ++ (i: \lplay, buf: pattern[\loop]);
+            pattern = pattern ++ (instrument: \lplay, buf: pattern[\loop]);
             pattern.removeAt(\loop);
         };
 
@@ -106,7 +106,7 @@
                     this.buf(pattern[\buf][0], (this.buf(pattern[\buf][0]).size).rand);
                 };
 
-                if (pattern[\i] == \lplay) {
+                if (pattern[\instrument] == \lplay) {
                     var sampleLength = pattern[\buf][0].split($-);
                     if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
                     { pattern[\dur] = pattern[\dur] ?? sampleLength[1].asInteger };
@@ -135,6 +135,7 @@
                 if (pattern[\trim].notNil) {
                     if (pattern[\trim] == \seq)
                     { pattern[\trim] = (Pseed(Pdup(4, Pseq((0..10), inf)), Prand((0..3), 4) / 4)) };
+
                     pattern[\beats] = pattern[\dur];
                     pattern[\dur] = pattern[\dur] / 4;
                     pattern[\start] = pattern[\trim];

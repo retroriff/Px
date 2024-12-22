@@ -86,11 +86,11 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ### Instrument methods
 
-| Name   | Arguments                                        | Description                     |
-| ------ | ------------------------------------------------ | ------------------------------- |
-| `i`    | name: string                                     | Plays a Synthdef. Same as `ins` |
-| `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer      |
-| `play` | [folder: string, file: number \| array \| \rand] | Plays a buffer                  |
+| Name   | Arguments                                        | Description                            |
+| ------ | ------------------------------------------------ | -------------------------------------- |
+| `i`    | name: string                                     | Plays a Synthdef. Same as `instrument` |
+| `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer             |
+| `play` | [folder: string, file: number \| array \| \rand] | Plays a buffer                         |
 
 ### Px class methods
 

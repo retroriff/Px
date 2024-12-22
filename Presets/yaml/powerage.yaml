@@ -1,15 +1,15 @@
 presets:
   # name: 'Catchot, "Powerage"'
   - preset:
-      - i: bd
+      - instrument: bd
         list: [1, 0, 3, 0, 0, 0, 0, 0]
-      - i: sn
+      - instrument: sn
         list: [0, 0, 0, 0, 5, 0, 0, 8]
-      - i: ch
+      - instrument: ch
         list: [0, 0, 0, 0, 0, 6, 0, 0]
-      - i: rs
+      - instrument: rs
         list: [0, 0, 3, 4, 5, 0, 7, 8]
-      - i: cy
+      - instrument: cy
         list:
           [
             0,

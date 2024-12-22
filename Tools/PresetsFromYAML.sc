@@ -21,14 +21,16 @@ PresetsFromYAML {
         { yaml.isKindOf(Dictionary) }
         {
             var event = Event.new;
+
             yaml.pairsDo { |key, value|
                 event.put(key.asSymbol, this.new(value));
             };
+
             if (event[\presets].isNil)
             { ^event }
-            { ^event[\presets] }
+            { ^event[\presets] };
         }
 
-        { ^yaml }
+        { ^yaml };
     }
 }

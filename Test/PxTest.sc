@@ -232,7 +232,7 @@ PxTest : UnitTest {
         );
 
         this.assertEquals(
-            expectedResult[\i],
+            expectedResult[\instrument],
             \lplay,
             "👀 SynthDef is \\lplay",
         );
@@ -248,7 +248,7 @@ PxTest : UnitTest {
         );
 
         this.assertEquals(
-            expectedResult[\i],
+            expectedResult[\instrument],
             \playbuf,
             "👀 SynthDef is \\playbuf",
         );

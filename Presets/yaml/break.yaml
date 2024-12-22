@@ -1,35 +1,35 @@
 presets:
   - name: 'Orange Krush, "Action"'
     preset:
-      - i: bd
+      - instrument: bd
         list: [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0]
-      - i: sn
+      - instrument: sn
         list: [0, 0, 0, 0, 5, 0, 0, 8, 0, 0, 0, 0, 13, 0, 0, 0]
-      - i: ma
+      - instrument: ma
         list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-      - i: ch
+      - instrument: ch
         list: [1, 0, 3, 0, 5, 0, 0, 8, 9, 10, 11, 0, 13, 0, 0, 0]
   # name: 'Catchot, "Break 1"'
   - preset:
-      - i: bd
+      - instrument: bd
         list: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 15, 0]
-      - i: sn
+      - instrument: sn
         list: [0, 0, 0, 0, 5, 0, 0, 8, 0, 0, 0, 0, 13, 0, 0, 0]
-      - i: cy
+      - instrument: cy
         list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-      - i: ch
+      - instrument: ch
         list: [1, 0, 3, 0, 5, 0, 0, 8, 9, 10, 11, 0, 13, 0, 0, 0]
   # name: 'Catchot, "Break 1, Part 2"'
   - preset:
-      - i: ma
+      - instrument: ma
         list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-      - i: ch
+      - instrument: ch
         list: [1, 0, 3, 0, 5, 0, 0, 8, 9, 10, 11, 0, 13, 0, 0, 0]
   # name: 'Catchot, "Break 1, Part 3"'
   - preset:
-      - i: ma
+      - instrument: ma
         list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-      - i: ch
+      - instrument: ch
         list: [1, 0, 3, 0, 5, 0, 0, 8, 9, 10, 11, 0, 13, 0, 0, 0]
-      - i: cp
+      - instrument: cp
         list: [0, 0, 0, 0, 5, 0, 0, 0]

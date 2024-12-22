@@ -1,13 +1,13 @@
 // Ndefs
 
-a = Ndef(\bd, Pbindef(\bd, \i, \lplay, \buf, ~buf.("mt-8", 0), \dur, 8, \amp, 0.4));
-b = Ndef(\sn, Pbindef(\sn, \i, \playbuf, \buf, ~buf.("fm", 17), \dur, 16, \amp, 1));
+a = Ndef(\bd, Pbindef(\bd, \instrument, \lplay, \buf, ~buf.("mt-8", 0), \dur, 8, \amp, 0.4));
+b = Ndef(\sn, Pbindef(\sn, \instrument, \playbuf, \buf, ~buf.("fm", 17), \dur, 16, \amp, 1));
 c = Dictionary.newFrom([\sn, b]);
 
 Ndef(\px, { Mix(c) }).quant_(4).play;
 
 // Reevaluations can be executed with Pbindef:
-Pbindef(\bd, \i, \lplay, \buf, ~buf.("mt-8", 0), \dur, 16, \amp, 0.4);
+Pbindef(\bd, \instrument, \lplay, \buf, ~buf.("mt-8", 0), \dur, 16, \amp, 0.4);
 
 // And additions or removals are reevaluated from \px:
 c.removeAt(\sn);
@@ -25,7 +25,7 @@ Pdef.gui
 a = [\a, \b]
 a.add(\c)
 
-Ndef(\px, Pbindef(\bd, \i, \playbuf, \buf, ~buf.("fm", 17), \dur, 16, \amp, 1)).play
+Ndef(\px, Pbindef(\bd, \instrument, \playbuf, \buf, ~buf.("fm", 17), \dur, 16, \amp, 1)).play
 13 play: ["fm", 17] dur: 16 amp: 1;
 
 

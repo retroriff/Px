@@ -26,6 +26,13 @@
         ^seed;
     }
 
+    *prGetNumericSeed { |seed|
+        if (seed.isInteger.not)
+        { seed = seed.ascii.join.asInteger };
+
+        ^seed;
+    }
+
     *prGetPatternSeed { |pattern|
         var id = pattern[\id].asSymbol;
 
@@ -39,7 +46,7 @@
             seeds.add(id -> seed);
             ^seeds[id];
         } {
-            ^pattern[\seed];
+            ^this.prGetNumericSeed(pattern[\seed]);
         };
     }
 }

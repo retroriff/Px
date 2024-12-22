@@ -26,8 +26,11 @@ Additional code examples can be found [here](/Examples/).
 
 ## 🛠️ Installation
 
-1. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for `PbindFx`)
-2. Load SynthDefs and audio files by running:
+## 🛠️ Installation
+
+1. Download and add the project to the SuperCollider extensions folder (`Platform.userExtensionDir`).
+2. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for `PbindFx`)
+3. Load SynthDefs and audio files by running:
 
 ```
 Px.loadSynthDefs;

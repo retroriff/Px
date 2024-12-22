@@ -72,17 +72,22 @@
 
                 var getJumpBufs = {
                     var minLength = 1, mixLength = pattern[\dur], steps = 16;
+
                     var mixBuf = {
                         var initialBuf = (this.buf(pattern[\buf][0]).size).rand;
                         var buf = Array.fill(minLength, initialBuf);
                         var rest = (steps - minLength) / minLength;
+
                         thisThread.randSeed = this.prGetPatternSeed(pattern);
+
                         rest.do({
                             var newBuf = (this.buf(pattern[\buf][0]).size).rand;
                             buf = buf ++ Array.fill(minLength, newBuf);
                         });
+
                         buf;
                     };
+
                     pattern[\dur] = mixLength / steps;
                     pattern[\beats] = mixLength;
                     pattern[\start] = Pseq((0..steps - 1) / steps, inf);

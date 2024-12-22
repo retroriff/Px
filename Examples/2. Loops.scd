@@ -45,5 +45,5 @@ Px.shuffle;
 2 play: ["fm"] degree: \rand length: 3 beat: 1 dur: 0.25 amp: 0.5;
 Px.reverb(0.2).delay(0.2).blp;
 
-// That's all for now
+// That's all
 Px.stop;

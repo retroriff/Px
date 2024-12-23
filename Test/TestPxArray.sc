@@ -1,4 +1,4 @@
-PxArrayTest : UnitTest {
+TestPxArray : UnitTest {
     var expectedResult, result;
 
     test_shuffle {

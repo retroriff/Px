@@ -1,4 +1,4 @@
-PxTest : UnitTest {
+TestPx : UnitTest {
     var expectedResult;
 
     setUp {

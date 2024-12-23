@@ -1,4 +1,4 @@
-FxTest : PxTest {
+TestFx : TestPx {
     tearDown {
         Fx.mixer = Dictionary.new;
         ^super.tearDown;

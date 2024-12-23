@@ -1,4 +1,4 @@
-PxEventTest : UnitTest {
+TestPxEvent : UnitTest {
     var expectedResult;
     var result;
 

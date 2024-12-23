@@ -1,4 +1,4 @@
-PxTestAll {
+TestAll {
     *run {
         FxTest.run;
         SxTest.run;

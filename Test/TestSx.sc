@@ -1,4 +1,4 @@
-SxTest : UnitTest {
+TestSx : UnitTest {
     var expectedResult;
 
     setUp {

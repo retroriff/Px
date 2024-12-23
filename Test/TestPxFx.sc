@@ -4,7 +4,7 @@ TODO: Unit tests
 🔴 FX event methods
 */
 
-TestPxFx : PxTest {
+TestPxFx : TestPx {
     test_fx {
         Px((i: \bd, id: \1).reverb.hpf);
 

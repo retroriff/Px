@@ -1,4 +1,4 @@
-TestPxOsc : PxTest {
+TestPxOsc : TestPx {
     test_listen {
         Px.listen;
 

@@ -26,8 +26,6 @@ Additional code examples can be found [here](/Examples/).
 
 ## 🛠️ Installation
 
-## 🛠️ Installation
-
 1. Download and add the project to the SuperCollider extensions folder (`Platform.userExtensionDir`).
 2. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for `PbindFx`)
 3. Load SynthDefs and audio files by running:
@@ -307,14 +305,14 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 
 ```js
 // Runs all tests
-PxTestAll.run
+TestAll.run
 
 // Individual tests:
-PxArrayTest.run
-PxEventTest.run
-PxTest.run
-FxTest.run
-SxTest.run
+TestPxArray.run
+TestPxEvent.run
+TestPx.run
+TestFx.run
+TestSx.run
 
 // Disables passing tests verbosity
 UnitTest.reportPasses = false

@@ -27,6 +27,28 @@
         this.prUpdatePattern(pairs);
     }
 
+    doesNotUnderstand { |selector, args|
+        var parentEventsKeys = Event.parentEvents.keys.collect { |key| Event.parentEvents[key].keys.asArray };
+        var partialEventsKeys = Event.partialEvents.keys.collect { |key| Event.partialEvents[key].keys.asArray };
+        var allEventKeys = parentEventsKeys ++ partialEventsKeys;
+        var loopKeys = SynthDescLib.global[\lplay].controlNames.asSet;
+        var playbufKeys = SynthDescLib.global[\playbuf].controlNames.asSet;
+        var synthDefControlNames = (loopKeys ++ playbufKeys);
+
+        Px.last.do { |event|
+            if (event[\instrument].notNil and: (event[\play].isNil) and: (event[\loop].isNil)) {
+                var instrumentControlNames = SynthDescLib.global[event[\instrument]].controlNames;
+                synthDefControlNames = synthDefControlNames ++ instrumentControlNames;
+            };
+        };
+
+        allEventKeys = (allEventKeys ++ synthDefControlNames).asArray.flat ++ \finish;
+
+        if (allEventKeys.includes(selector))
+        { this.prUpdatePattern([selector, args]) }
+        { ("🔴 Method not understood:" + selector).postln };
+    }
+
     dur { |value|
         this.prUpdatePattern([\dur, value]);
     }
@@ -74,10 +96,6 @@
         this.prFade(\out, value);
     }
 
-    pan { |value|
-        this.prUpdatePattern([\pan, value]);
-    }
-
     play { |value|
         this.prPlay(play: value);
     }
@@ -104,11 +122,7 @@
         this.prUpdatePattern([\weight, value.clip(0, 1)]);
     }
 
-    // 303 SynthDef methods
-    atk { |value|
-        this.prUpdatePattern([\atk, value]);
-    }
-
+    // 303 SynthDef methods with arrays to be patterns
     ctf { |value|
         var pairs = this.prCreatePatternFromArray(\ctf, value);
         this.prUpdatePattern(pairs);
@@ -119,10 +133,6 @@
         this.prUpdatePattern(pairs);
     }
 
-    rel { |value|
-        this.prUpdatePattern([\rel, value]);
-    }
-
     res { |value|
         var pairs = this.prCreatePatternFromArray(\res, value);
         this.prUpdatePattern(pairs);
@@ -130,10 +140,6 @@
 
     set {
         Px.patternState = Px.last[this.asSymbol];
-    }
-
-    wave { |value|
-        this.prUpdatePattern([\wave, value]);
     }
 
     // Functions
@@ -230,6 +236,7 @@
 
     prHasDrumMachine {
         var drumMachines = [606, 707, 808, 909];
+
         ^drumMachines.includes(this);
     }
 

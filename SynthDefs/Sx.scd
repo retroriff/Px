@@ -3,7 +3,6 @@
 
 SynthDef(\sx, {
 	var deg, degreeFix, env, freq, sig = 0, trig, vcf;
-
     var degree = \degree.kr(0 ! 256);
     var degreeSize = \degreeSize.kr(256);
     var dur = \dur.kr(0 ! 16);
@@ -44,7 +43,6 @@ SynthDef(\sx, {
     sig = Select.ar(\vcf.kr(1) > 0, [sig * -9.dbamp, vcf]);
 
     sig = Splay.ar(sig * \amp.kr(1));
-
     Out.ar(~sxBus, sig);
 }).add;
 )

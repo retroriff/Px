@@ -1,33 +1,5 @@
 + Symbol {
-    // Prevent methods to generate errors when a Px is stopped through a symbol
-    a {}
-    amp {}
-    args {}
-    beat {}
-    delay {}
-    dur {}
-    euclid {}
-    fill {}
-    hpf {}
-    human {}
-    ins {}
-    lpf {}
-    off {}
-    pan {}
-    rest {}
-    reverb {}
-    rotate {}
-    seed {}
-    solo {}
-    wah {}
-    weight {}
-    // Synth
-    atk {}
-    ctf {}
-    env {}
-    rel {}
-    res {}
-    wave {}
+    doesNotUnderstand {}
 
     fadeTo { |b|
         ^Crossfader(this, b);

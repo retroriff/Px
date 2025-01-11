@@ -23,8 +23,8 @@
     }
 
     *release { |time, name|
-        var anyParam = [name, fadeTime];
-        var fadeTime = time ?? 10;
+        var anyParam = [name, time];
+        var fadeTime = time.isInteger.if(time, 10);
 
         if (anyParam.includes(\all)) {
             if (fadeTime == \all)

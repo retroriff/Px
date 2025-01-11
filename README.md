@@ -93,6 +93,7 @@ The superclass that generates the patterns from an array of events with a simpli
 ### Px class methods
 
 - `chorus`: Plays a saved chorus.
+- `mixer`: Opens `NdefMixer` always on top.
 - `play`: It is only needed when it has been stopped.
 - `release` (time: nil | number): Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.
 - `root`: Sets a global root note to all patterns.

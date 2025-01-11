@@ -18,6 +18,10 @@
         };
     }
 
+    *mixer {
+        NdefMixer(Server.default).parent.alwaysOnTop_(true);
+    }
+
     *play { |fadeTime|
         Ndef(\px).play(fadeTime: fadeTime);
     }

@@ -19,7 +19,16 @@
     }
 
     *mixer {
-        NdefMixer(Server.default).parent.alwaysOnTop_(true);
+        var x, y;
+
+        ~mixer = NdefMixer(Server.default);
+        ~mixer.parent.alwaysOnTop_(true);
+        ~mixer.switchSize(0);
+
+        x = Window.screenBounds.width - ~mixer.sizes.small.x;
+        y = Window.screenBounds.height - ~mixer.sizes.small.y;
+
+        ~mixer.moveTo(x, y);
     }
 
     *play { |fadeTime|

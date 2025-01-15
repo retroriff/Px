@@ -55,7 +55,7 @@
         };
 
         pattern[\loop].notNil.if {
-            pattern = pattern ++ (instrument: \lplay, buf: pattern[\loop]);
+            pattern = pattern ++ (instrument: \loop, buf: pattern[\loop]);
             pattern.removeAt(\loop);
         };
 
@@ -106,7 +106,7 @@
                     this.buf(pattern[\buf][0], (this.buf(pattern[\buf][0]).size).rand);
                 };
 
-                if (pattern[\instrument] == \lplay) {
+                if (pattern[\instrument] == \loop) {
                     var sampleLength = pattern[\buf][0].split($-);
                     if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
                     { pattern[\dur] = pattern[\dur] ?? sampleLength[1].asInteger };

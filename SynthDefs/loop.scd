@@ -1,5 +1,5 @@
 (
-SynthDef(\lplay, {
+SynthDef(\loop, {
     |amp = 1, atk = 0.01, beats = 0, buf = 0, decay = 0.3, dur = 4, gate = 1,
     out = 0, pan = 0, rel = 0.05, rate = 1, start = 0, sus = 1, tempo|
 

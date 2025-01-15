@@ -233,8 +233,8 @@ TestPx : UnitTest {
 
         this.assertEquals(
             expectedResult[\instrument],
-            \lplay,
-            "👀 SynthDef is \\lplay",
+            \loop,
+            "👀 SynthDef is \\loop",
         );
     }
 

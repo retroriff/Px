@@ -13,13 +13,13 @@ that defines a sequence of musical events. We can control multiple sound sources
 by mixing them, adjusting individual parameters, and applying effects globally or independently.
 
 code::
-a = Ndef(\bd, Pbindef(\bd, \instrument, \lplay, \buf, ~buf.("mt-8", 0), \dur, 8, \amp, 0.4));
+a = Ndef(\bd, Pbindef(\bd, \instrument, \loop, \buf, ~buf.("mt-8", 0), \dur, 8, \amp, 0.4));
 b = Ndef(\sn, Pbindef(\sn, \instrument, \sn, \dur, 2, \timingOffset, 1, \amp, 1.3));
 c = Dictionary.newFrom([\bd, a, \sn, b]);
 Ndef(\px, { Mix(c) }).quant_(4).play;
 
 // Reevaluations can be executed with Pbindef:
-Pbindef(\bd, \instrument, \lplay, \buf, ~buf.("mt-8", 0), \dur, 16, \amp, 0.4);
+Pbindef(\bd, \instrument, \loop, \buf, ~buf.("mt-8", 0), \dur, 16, \amp, 0.4);
 
 // And additions or removals are reevaluated from \px:
 c.removeAt(\sn);

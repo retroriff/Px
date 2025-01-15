@@ -31,7 +31,7 @@
         var parentEventsKeys = Event.parentEvents.keys.collect { |key| Event.parentEvents[key].keys.asArray };
         var partialEventsKeys = Event.partialEvents.keys.collect { |key| Event.partialEvents[key].keys.asArray };
         var allEventKeys = parentEventsKeys ++ partialEventsKeys;
-        var loopKeys = SynthDescLib.global[\lplay].controlNames.asSet;
+        var loopKeys = SynthDescLib.global[\loop].controlNames.asSet;
         var playbufKeys = SynthDescLib.global[\playbuf].controlNames.asSet;
         var synthDefControlNames = (loopKeys ++ playbufKeys);
 

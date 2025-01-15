@@ -26,7 +26,7 @@ Additional code examples can be found [here](/Examples/).
 
 ## 🛠️ Installation
 
-1. Download and add the project to the SuperCollider extensions folder (`Platform.userExtensionDir`).
+1. Install `Quarks.install("https://github.com/retroriff/sc-px");` and recompile.
 2. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for `PbindFx`)
 3. Load SynthDefs and audio files by running:
 
@@ -93,7 +93,7 @@ The superclass that generates the patterns from an array of events with a simpli
 ### Px class methods
 
 - `chorus`: Plays a saved chorus.
-- `mixer`: Opens `NdefMixer` always on top.
+- `mixer`: Opens an `NdefMixer` instance, always on top, and assigns it to the `~mixer` variable.
 - `play`: It is only needed when it has been stopped.
 - `release` (time: nil | number): Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.
 - `root`: Sets a global root note to all patterns.

@@ -93,7 +93,9 @@
     }
 
     out { |value|
-        this.prFade(\out, value);
+        if (value.class == Bus)
+        { this.prUpdatePattern([\out, value]) }
+        { this.prFade(\out, value) };
     }
 
     play { |value|
@@ -270,9 +272,14 @@
     }
 
     prUpdatePattern { |pairs|
-        var pattern = Px.patternState;
+        var patternState = Px.patternState;
+        var pattern = Px.last[this.asSymbol];
+        var isMidi;
 
-        if (pattern.notNil) {
+        if (pattern.notNil and: (pattern[\chan].notNil))
+        { isMidi = true };
+
+        if (patternState.notNil or: (isMidi)) {
             this.prPlayClass(pattern.putAll(pairs));
         }
     }

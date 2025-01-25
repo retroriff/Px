@@ -1,4 +1,16 @@
-// Ndefs
+// Test effects
+(
+~delaybus = Bus.audio(s, 2);
+
+Ndef(\delay, {
+    var in = In.ar(~delaybus) ! 2;
+    var sig = FreeVerb.ar(in, mix: 0.6, room: 0.7, damp: 0.7);
+    sig;
+}).play;
+
+Pbindef(\a, \instrument, \playbuf, \buf, ~buf.("707/bd", 0), \out, ~delaybus).play;
+)
+
 
 a = Ndef(\bd, Pbindef(\bd, \instrument, \loop, \buf, ~buf.("mt-8", 0), \dur, 8, \amp, 0.4));
 b = Ndef(\sn, Pbindef(\sn, \instrument, \playbuf, \buf, ~buf.("fm", 17), \dur, 16, \amp, 1));

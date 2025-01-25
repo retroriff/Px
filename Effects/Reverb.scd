@@ -4,7 +4,7 @@ Dictionary[
         \filterIn -> { |in|
             FreeVerb.ar(
                 in,
-                mix: 1,
+                mix: 0.6,
                 room: \reverb1.kr(room),
                 damp: \reverb2.kr(damp)
             );

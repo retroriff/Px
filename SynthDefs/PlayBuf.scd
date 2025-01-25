@@ -8,7 +8,6 @@ SynthDef(\playbuf, {
     isRewind = (rate < 0);
     frames = BufFrames.kr(buf);
     startPos = abs((frames * isRewind) - (frames * start)) - (2 * isRewind);
-
     rate = BufRateScale.ir(buf) * rate;
 
     sus = (BufDur.kr(buf) * sus);

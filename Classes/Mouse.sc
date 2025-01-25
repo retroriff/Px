@@ -49,7 +49,7 @@ Mouse {
     *y { ^this.pos.y }
 
     *xuni { ^(pos.x / screenSize.x) }
-    *yuni { ^(pos.y / screenSize.y) }
+    *yuni { ^(1 - (pos.y / screenSize.y)) }
 
     *new { |name, action, xspec, yspec|
         var res;
@@ -65,10 +65,12 @@ Mouse {
 
         ^super.newCopyArgs(name, action, xspec, yspec).init.prAdd;
     }
+
     init {
         xspec !? { xspec = xspec.asSpec };
         yspec !? { yspec = yspec.asSpec };
     }
+
     prAdd { all.put(this.name, this) }
 
     free { action = nil; all.removeAt(name) }
@@ -78,8 +80,9 @@ Mouse {
         xspec !? { xval = xspec.map(xval) };
         ^xval
     }
+
     yval {
-        var yval = Mouse.xuni;
+        var yval = Mouse.yuni;
         yspec !? { yval = yspec.map(yval) };
         ^yval
     }
@@ -89,5 +92,6 @@ Mouse {
     }
 
     storeArgs { ^[name] }
+
     printOn { |str| this.storeOn(str) }
 }

@@ -272,15 +272,9 @@
     }
 
     prUpdatePattern { |pairs|
-        var patternState = Px.patternState;
-        var pattern = Px.last[this.asSymbol];
-        var isMidi;
+        var pattern = Px.patternState;
 
-        if (pattern.notNil and: (pattern[\chan].notNil))
-        { isMidi = true };
-
-        if (patternState.notNil or: (isMidi)) {
-            this.prPlayClass(pattern.putAll(pairs));
-        }
+        if (pattern.notNil)
+        { ^this.prPlayClass(pattern.putAll(pairs)) };
     }
 }

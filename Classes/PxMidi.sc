@@ -53,7 +53,7 @@ TODO: MIDIOut instances
                 \midicmd: pattern[\midicmd] ?? \noteOn,
                 \midiout: midiClient[midiout],
                 \chan, pattern[\chan] ?? 0,
-                \instrument: \midi
+                \instrument: \midi,
             ]);
         };
 
@@ -87,7 +87,7 @@ TODO: MIDIOut instances
         if (midiControlEvent.notNil)
         { newPattern = newPattern.putPairs(midiControlEvent) };
 
-        Px(newPattern);
+        this.prPlayClass(newPattern);
     }
 
     control { |value|

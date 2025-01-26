@@ -7,6 +7,9 @@ Px.initMidi(0.1);
 // But initMidi method can be omitted when we send our MIDI output to port 0:
 1 chan: 0 dur: 1 octave: 4 degree: \rand scale: \phrygian length: 3;
 
+// Velocity is controlled by \amp
+1 chan: 0 dur: 1 octave: 4 degree: \rand scale: \phrygian length: 3 amp: 0.5;
+
 // We can send controller messages. The identifier number must be sequential:
 2 control: [0, 0];
 2 control: [1, 0.2];

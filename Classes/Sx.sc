@@ -6,6 +6,7 @@ Sx {
     classvar <waveList;
 
     *initClass {
+        CmdPeriod.add { Sx.clear };
         defaultScale = \scriabin;
         defaultEvent = (
             amp: 1,

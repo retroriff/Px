@@ -17,6 +17,7 @@ Px {
     classvar <>soloList;
 
     *initClass {
+        CmdPeriod.add { Px.clear };
         chorusPatterns = Dictionary.new;
         last = Dictionary.new;
         lastFormatted = Dictionary.new;

@@ -114,8 +114,8 @@ TODO: MIDIOut instances
 
     hold { |value|
         if (value == 1)
-        { ^this.prUpdatePattern([\hasGate, false] ++ this.prSendSingleMessage) }
-        { ^this.prUpdatePattern([\midicmd, \noteOff]) };
+        { this.prUpdatePattern([\hasGate, false] ++ this.prSendSingleMessage) }
+        { this.prUpdatePattern([\midicmd, \noteOff]) };
     }
 
     note { |value|
@@ -123,7 +123,7 @@ TODO: MIDIOut instances
     }
 
     panic {
-        ^this.prUpdatePattern([\midicmd, \allNotesOff] ++ this.prSendSingleMessage);
+        this.prUpdatePattern([\midicmd, \allNotesOff] ++ this.prSendSingleMessage);
     }
 
     prConvertToMidiValue { |value|
@@ -165,7 +165,10 @@ TODO: MIDIOut instances
 }
 
 + Symbol {
-    chan {}
+    chan {
+        Px.stop(this.asSymbol);
+    }
+
     control {}
     hold {}
     note {}

@@ -92,31 +92,7 @@
         if (value.isKindOf(Pattern))
         { pattern = value };
 
-        ^this.prUpdatePattern([\degree, pattern ?? value]);
-    }
-
-    detune { |value|
-        ^this.prUpdatePattern([\detune, value]);
-    }
-
-    legato { |value|
-        ^this.prUpdatePattern([\legato, value]);
-    }
-
-    length { |value|
-        ^this.prUpdatePattern([\length, value]);
-    }
-
-    octave { |value|
-        ^this.prUpdatePattern([\octave, value]);
-    }
-
-    root { |value|
-        ^this.prUpdatePattern([\root, value]);
-    }
-
-    scale { |value|
-        ^this.prUpdatePattern([\scale, value]);
+        this.prUpdatePattern([\degree, pattern ?? value]);
     }
 
     sus { |value|
@@ -127,11 +103,5 @@
 + Symbol {
     arp {}
     degree {}
-    detune {}
-    legato {}
-    length {}
-    octave {}
-    root {}
-    scale {}
     sus {}
 }

@@ -154,11 +154,11 @@
 
 + Number {
     r { |args|
-        ^this.prUpdatePattern([\rate, this.prCreatePatternKey(args)]);
+        this.prUpdatePattern([\rate, this.prCreatePatternKey(args)]);
     }
 
     start { |value|
-        ^this.prUpdatePattern([\start, value]);
+        this.prUpdatePattern([\start, value]);
     }
 
     trim { |startPosition|
@@ -171,7 +171,7 @@
 
         { startPosition = startPosition.clip(0, 0.75) };
 
-        ^this.prUpdatePattern([\trim, startPosition]);
+        this.prUpdatePattern([\trim, startPosition]);
     }
 }
 

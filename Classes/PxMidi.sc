@@ -84,6 +84,8 @@ TODO: MIDIOut instances
             id: id,
         );
 
+        "debug".postln;
+
         if (midiControlEvent.notNil)
         { newPattern = newPattern.putPairs(midiControlEvent) };
 

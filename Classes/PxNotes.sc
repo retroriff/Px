@@ -95,8 +95,12 @@
         this.prUpdatePattern([\degree, pattern ?? value]);
     }
 
+    scale { |value|
+        this.prUpdatePattern([\scale, value.asSymbol]);
+    }
+
     sus { |value|
-        ^this.prUpdatePattern([\sus, value]);
+        this.prUpdatePattern([\sus, value]);
     }
 }
 

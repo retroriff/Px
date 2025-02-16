@@ -28,7 +28,7 @@ TODO: MIDIOut instances
         deviceName = deviceName ?? "default";
 
         if (midiClient.isNil) {
-            midiClient = Dictionary[deviceName -> midiOut ]
+            midiClient = Dictionary[deviceName -> midiOut]
         } {
             midiClient.add(deviceName -> midiOut);
         };
@@ -37,16 +37,23 @@ TODO: MIDIOut instances
     }
 
     *prCreateMidi { |pattern|
-        var midiout = pattern[\midiout] ?? "default";
+        var midiout, isMidiControl, addMidiTypes, isMidi;
+        
+        isMidi = if (pattern[\chan].notNil) { true };
 
-        var isMidiControl = {
+        if (isMidi != true)
+        { ^pattern };
+
+        midiout = pattern[\midiout] ?? "default";
+
+        isMidiControl = {
             if (pattern[\hasGate] == false or: { pattern[\midicmd] == \noteOff })
             { true }
         };
 
-        var addMidiTypes = {
-            if (MIDIClient.initialized == false)
-            { this.initMidi };
+        addMidiTypes = {
+            if (midiClient.isNil)
+            { this.initMidi; };
 
             pattern.putAll([
                 \type: \midi,
@@ -57,8 +64,6 @@ TODO: MIDIOut instances
             ]);
         };
 
-        var isMidi = if (pattern[\chan].notNil) { true };
-
         if (isMidi == true)
         { pattern = addMidiTypes.value };
 
@@ -67,7 +72,6 @@ TODO: MIDIOut instances
 
         ^pattern;
     }
-
 
     *prDetectDevice { |name|
         ^MIDIClient.destinations.detect({ |endpoint|

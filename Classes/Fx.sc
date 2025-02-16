@@ -119,7 +119,7 @@ Fx {
     }
 
     *prAddEffect { |fx, mix, args|
-        var hasFx;
+        var hasFx = false;
 
         if (activeEffects[proxyName].isNil)
         { activeEffects[proxyName] = Array.new };

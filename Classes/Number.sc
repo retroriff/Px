@@ -34,6 +34,7 @@
         var loopKeys = SynthDescLib.global[\loop].controlNames.asSet;
         var playbufKeys = SynthDescLib.global[\playbuf].controlNames.asSet;
         var synthDefControlNames = (loopKeys ++ playbufKeys);
+        var customMethods = [\finish, \length, \name];
 
         Px.last.do { |event|
             if (event[\instrument].notNil and: (event[\play].isNil) and: (event[\loop].isNil)) {
@@ -42,7 +43,7 @@
             };
         };
 
-        allEventKeys = (allEventKeys ++ synthDefControlNames).asArray.flat ++ \finish;
+        allEventKeys = (allEventKeys ++ synthDefControlNames).asArray.flat ++ customMethods;
 
         if (allEventKeys.includes(selector))
         { this.prUpdatePattern([selector, args]) }

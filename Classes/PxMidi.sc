@@ -53,7 +53,7 @@ TODO: MIDIOut instances
 
         addMidiTypes = {
             if (midiClient.isNil)
-            { this.initMidi; };
+            { this.initMidi };
 
             pattern.putAll([
                 \type: \midi,
@@ -87,8 +87,6 @@ TODO: MIDIOut instances
             chan: value,
             id: id,
         );
-
-        "debug".postln;
 
         if (midiControlEvent.notNil)
         { newPattern = newPattern.putPairs(midiControlEvent) };

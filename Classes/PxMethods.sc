@@ -72,8 +72,13 @@
     }
 
     *stop { |id|
-        if (id.isNil)
-        { ^Ndef(\px).free };
+        if (id.isNil) {
+            Pdef.all do: { |item|
+                Pdef(item.key).source = nil;
+            };
+
+            ^Ndef(\px).free
+        };
 
         last.removeAt(id);
         ndefList.removeAt(id);

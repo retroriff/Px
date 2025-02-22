@@ -116,6 +116,20 @@
         this.prUpdatePattern([\seed, value]);
     }
 
+    set { |setId|
+        var id = this.asSymbol;
+
+        if (this.prHasDrumMachine) {
+            var pattern = Px.last.detect { |pattern|
+                pattern['drumMachine'] == 808 and: (pattern['instrument'] == setId)
+            };
+
+            id = pattern[\id];
+        };
+
+        Px.patternState = Px.last[id];
+    }
+
     solo { |value|
         var isSolo = value != 0;
         this.prUpdatePattern([\solo, isSolo]);
@@ -139,10 +153,6 @@
     res { |value|
         var pairs = this.prCreatePatternFromArray(\res, value);
         this.prUpdatePattern(pairs);
-    }
-
-    set {
-        Px.patternState = Px.last[this.asSymbol];
     }
 
     // Functions

@@ -1,6 +1,5 @@
 /*
 TODO: Rename name references to id?
-TODO: Make fill work with hundreth weighted beats
 */
 
 Px {
@@ -17,7 +16,7 @@ Px {
     classvar <>soloList;
 
     *initClass {
-        CmdPeriod.add { Px.clear };
+        // CmdPeriod.add { Px.clear };
         chorusPatterns = Dictionary.new;
         last = Dictionary.new;
         lastFormatted = Dictionary.new;

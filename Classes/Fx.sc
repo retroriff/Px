@@ -140,10 +140,10 @@ Fx {
     };
 
     if (mix.isNil or: (mix == Nil)) {
-      ^this.prDisableFx(fx, mix);
+      ^this.prDisableFx(fx);
     };
 
-    this.prSetMixerValue(fx, mix);
+    this.prSetMixerValue(fx, mix.clip(0, 1));
   }
 
   *prActivateEffect { |args, fx|
@@ -181,7 +181,7 @@ Fx {
     this.prPrint("👉 Set VST parameter: Fx.vstController.set(1, 1);");
   }
 
-  *prDisableFx { |fx, mix|
+  *prDisableFx { |fx|
     var index = this.prGetIndex(fx);
     var wetIndex = (\wet ++ index).asSymbol;
 

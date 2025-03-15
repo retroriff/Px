@@ -1,52 +1,56 @@
 + Symbol {
-    doesNotUnderstand {}
+  doesNotUnderstand {}
 
-    fadeTo { |b|
-        ^Crossfader(this, b);
-    }
+  fadeTo { |b|
+    ^Crossfader(this, b);
+  }
 
-    i { |value|
-        var number = this.asInteger;
-        var id = number.createId(value);
+  i { |value|
+    var number = this.asInteger;
+    var id = number.createId(value);
 
-        if (this.prHasDrumMachine and: (value == \all))
-        { this.prStopDrumMachineInstruments }
-        { Px.stop(id) };
-    }
+    if (this.prHasDrumMachine and: (value == \all))
+    { this.prStopDrumMachineInstruments }
+    { Px.stop(id) };
+  }
 
-    in { |fadeTime|
-        ^FadeIn(this, fadeTime);
-    }
+  in { |fadeTime|
+    ^FadeIn(this, fadeTime);
+  }
 
-    loop { |value|
-        Px.stop(this);
-    }
+  loop { |value|
+    Px.stop(this);
+  }
 
-    play { |value|
-        if (value.isNil)
-        { ^Ndef(this).play }
-        { Px.stop(this) };
-    }
+  play { |value|
+    if (value.isNil)
+    { ^Ndef(this).play }
+    { Px.stop(this) };
+  }
 
-    out { |fadeTime|
-        ^FadeOut(this, fadeTime);
-    }
+  out { |fadeTime|
+    ^FadeOut(this, fadeTime);
+  }
 
-    stop {
-        ^Px.stop(this);
-    }
+  set { |key, value|
+    Ndef(this).set(key, value);
+  }
 
-    prHasDrumMachine {
-        var drumMachines = [\606, \707, \808, \909];
-        ^drumMachines.includes(this);
-    }
+  stop {
+    ^Px.stop(this);
+  }
 
-    prStopDrumMachineInstruments {
-        var patterns = Px.last.copy;
+  prHasDrumMachine {
+    var drumMachines = [\606, \707, \808, \909];
+    ^drumMachines.includes(this);
+  }
 
-        patterns.do({ |pattern|
-            if (pattern[\drumMachine] == this.asInteger)
-            { Px.stop(pattern[\id]) };
-        });
-    }
+  prStopDrumMachineInstruments {
+    var patterns = Px.last.copy;
+
+    patterns.do({ |pattern|
+      if (pattern[\drumMachine] == this.asInteger)
+      { Px.stop(pattern[\id]) };
+    });
+  }
 }

@@ -115,9 +115,19 @@
       ^this.prPrint("🕰️ Current tempo is" + (TempoClock.tempo * 60));
     };
 
-    tempo = tempo.clip(10, 300) / 60;
+    tempo = tempo.clip(1, 300) / 60;
     TempoClock.default.tempo = tempo;
     Sx.tempo(tempo);
+    ~updateSingleLetterTempoVariable.(tempo);
+
+    Ndef.all do: { |ndefs|
+      ndefs do: { |ndef|
+        var isPxNdef = ndef.key != \px and: (Px.last.keys.includes(ndef.key));
+
+        if (isPxNdef == false and: (ndef.key != \x))
+        { ndef.rebuild }
+      }
+    };
 
     ^this.loadSynthDefs;
   }

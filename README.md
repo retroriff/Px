@@ -248,6 +248,8 @@ Px also has methods to handle a OSC listener, useful for applications where remo
 
 - `listenOff`: It frees the OSCdef instance and disconnects all network addresses, ensuring that no further messages are received or processed.
 
+- `oscTest`: Sends a test message.
+
 ## 🎚️ Crossfader
 
 Straightforward crossfader utility classes that smoothly transitions audio from source A to source B over an optional specified duration (default is 20 seconds):

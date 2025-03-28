@@ -9,7 +9,7 @@
 Px.shuffle
 
 // And make it groove with beats, weights and seeds:
-2 play: ["fm", \rand] dur: 0.25 beat: 1 weight: 0.66 seed: 619 delay: 0.2 reverb: 0.2;
+2 play: ["fm", \rand] dur: 0.25 beat: 0.66 seed: 619 delay: 0.2 reverb: 0.2;
 
 // We can also play random loops:
 \2 play: 1;
@@ -42,7 +42,7 @@ Px.shuffle;
 1 loop: ["mt-2", 0] dur: 4;
 
 // We can play the buffer's rate with degree notes:
-2 play: ["fm"] degree: \rand length: 3 beat: 1 dur: 0.25 amp: 0.5;
+2 play: ["fm"] degree: \rand length: 3 beat: 0.7 dur: 0.25 amp: 0.5;
 Px.reverb(0.2).delay(0.2).blp;
 
 // That's all

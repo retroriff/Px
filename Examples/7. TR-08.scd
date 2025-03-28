@@ -16,10 +16,10 @@ TR08.init(0.195);
 /*
 (
 8808 i: \bd dur: 1;
-8808 i: \rs dur: 0.25 beat: 1 weight: 0.4;
-8808 i: \sn dur: 0.25 fill: 1 weight: 0.42;
-8808 i: \ch dur: 0.25 beat: 1 weight: 0.82;
-8808 i: \ma dur: 0.25 fill: 1 weight: 0.82;
+8808 i: \rs dur: 0.25 beat: 0.4;
+8808 i: \sn dur: 0.25 fill: 0.42;
+8808 i: \ch dur: 0.25 beat: 0.82;
+8808 i: \ma dur: 0.25 fill: 0.82;
 )
 */
 

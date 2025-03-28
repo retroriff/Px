@@ -101,7 +101,7 @@ TestPx : UnitTest {
     }
 
     test_shuffle {
-        1 i: \bd beat: 1;
+        1 i: \bd beat: 0.7;
         Px.shuffle;
 
         this.assert(
@@ -156,7 +156,7 @@ TestPx : UnitTest {
     }
 
     test_beat {
-        1 i: \bd dur: 1 beat: 1;
+        1 i: \bd dur: 1 beat: 0.7;
 
         this.assertEquals(
             Px.lastFormatted[\1][\amp].class,
@@ -176,7 +176,7 @@ TestPx : UnitTest {
     }
 
     test_fill {
-        1 i: \bd dur: 1 beat: 1;
+        1 i: \bd dur: 1 beat: 0.7;
         2 i: \sn fill: 1;
 
         Px.last[\2][\totalBeats];

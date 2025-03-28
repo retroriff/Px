@@ -18,9 +18,10 @@
     }
 
 
-    *loadSamples { |samplesPath|
+    *loadSamples { |path|
         samplesDict = Dictionary.new;
-        samplesDict.add(\foldernames -> PathName(samplesPath).entries);
+        samplesDict.add(\foldernames -> PathName(path).entries);
+        samplesPath = path;
 
         for (0, samplesDict[\foldernames].size - 1, { |i|
             var folder = samplesDict[\foldernames][i];

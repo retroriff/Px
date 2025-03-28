@@ -26,7 +26,7 @@ TestPxEvent : UnitTest {
 
     test_beat {
         result = (i: \bd).beat(76, 4, [0, 1, 0, 1]);
-        expectedResult = (i: \bd, \beat: true, \beatSet: [0, 1, 0, 1], \rest: 4, \seed: 76);
+        expectedResult = (i: \bd, \beat: 0.7, \beatSet: [0, 1, 0, 1], \rest: 4, \seed: 76);
 
         this.assertEquals(
             result,
@@ -58,8 +58,8 @@ TestPxEvent : UnitTest {
     }
 
     test_fill {
-        result = (i: \bd).fill(4);
-        expectedResult = (i: \bd, \fill: true, \rest: 4);
+        result = (i: \bd).fill(0.4);
+        expectedResult = (i: \bd, \fill: 0.4, \rest: 4);
 
         this.assertEquals(
             result,

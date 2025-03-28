@@ -1,4 +1,7 @@
 /*
+TODO: Any param should have a beat function.
+      Maybe \beat or [0.3, 0.5].beat(16)
+      Already created Number.prCreateBeat
 TODO: Fix 707 set: \cp amp: 0.5;
 TODO: Rename name references to id?
 */
@@ -13,6 +16,7 @@ Px {
     classvar <>ndefList;
     classvar <>patternState;
     classvar <samplesDict;
+    classvar <samplesPath;
     classvar <seeds;
     classvar <>soloList;
 

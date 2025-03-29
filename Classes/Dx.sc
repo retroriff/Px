@@ -1,5 +1,4 @@
 /*
-TODO: prGetInstrumentFolders to verify that when we use a different device the folder exist
 TODO: Normalize sound (909)
 TODO: All devices should have the same instruments or avoid error?
 TODO: Intro / Fill in
@@ -21,7 +20,6 @@ Dx : Px {
     instrumentFolders = Dictionary.new;
     lastPreset = Array.new;
     this.prCreatePresetsDict;
-    this.prGetInstrumentFolders;
 
     ^super.initClass;
   }
@@ -44,15 +42,18 @@ Dx : Px {
   *preset { |name, number|
     var newPreset = [name, number];
 
+    if (instrumentFolders.isEmpty)
+    { this.prGetInstrumentFolders };
+
     if (newPreset != lastPreset or: (hasLoadedPresets == true)) {
       this.prCreatePatternFromPreset(name, number);
     };
 
     presetPatterns do: { |pattern, i|
-      // Returns 600, 700, 800 or 900
-      var hundred = drumMachine - (drumMachine % 10);
-      var id = hundred * 100 + i;
-      this.new(pattern.copy.putAll([\id, id, \drumMachine, drumMachine, \dx, true]));
+      var id = this.prCreateId(i);
+
+      if (this.prHasInstrument(pattern[\instrument]) == true)
+      { this.new(pattern.copy.putAll([\id, id, \drumMachine, drumMachine, \dx, true])) }
     }
   }
 
@@ -70,12 +71,22 @@ Dx : Px {
     if (drumMachines.includes(newDrumMachine).not)
     { ^this.prPrint("🔴 Drum machine not found") };
 
+    if (currentDrumMachine == newDrumMachine)
+    { ^this.prPrint("🟢 Drum machine already selected") };
+
     drumMachine = newDrumMachine;
 
-    last do: { |pattern, i|
+    last.copy do: { |pattern, i|
       if (pattern[\dx] == true) {
-        pattern[\drumMachine] = newDrumMachine;
-        this.new(pattern);
+        Px.stop(pattern[\id]);
+
+        if (this.prHasInstrument(pattern[\instrument]) == true) {
+          var lastTwoDigits = pattern[\id] % 10;
+          pattern[\id] = this.prCreateId(lastTwoDigits);
+
+          pattern[\drumMachine] = newDrumMachine;
+          this.new(pattern);
+        }
       };
     }
   }
@@ -84,6 +95,13 @@ Dx : Px {
     var folder = pattern[\drumMachine].asString.catArgs("/", pattern[\instrument].asString);
     pattern.putAll([\play: [folder, 0]]);
     ^pattern;
+  }
+
+  *prCreateId { |i|
+    // Returns 600, 700, 800 or 900
+    var hundred = drumMachine - (drumMachine % 10);
+
+    ^hundred * 100 + i;
   }
 
   *prCreatePatternFromPreset { |name, number|
@@ -114,20 +132,6 @@ Dx : Px {
     presetPatterns = patterns;
   }
 
-  *prGetInstrumentFolders {
-    if (samplesPath.notNil) {
-      drumMachines do: { |folder|
-        var folderPath = PathName(samplesPath ++ folder);
-        var subFolders = folderPath.entries.collect { |entry|
-          if (entry.isFolder)
-          { entry.folderName };
-        };
-        instrumentFolders[folder] = subFolders;
-        super.prPrint(subFolders);
-      };
-    }
-  }
-
   *prCreatePresetsDict {
     presetsDict = Dictionary.new;
 
@@ -136,6 +140,19 @@ Dx : Px {
       var filePath = File.readAllString(file.fullPath);
       presetsDict.put(fileName, PresetsFromYAML(filePath.parseYAML))
     };
+  }
+
+  *prGetInstrumentFolders {
+    if (samplesPath.notNil) {
+      drumMachines do: { |folder|
+        var folderPath = PathName(samplesPath ++ folder);
+        var subFolders = folderPath.entries.collect { |entry|
+          if (entry.isFolder)
+          { entry.folderName.asSymbol };
+        };
+        instrumentFolders[folder] = subFolders;
+      };
+    }
   }
 
   *prFadeDrums { |direction, fadeTime|
@@ -147,5 +164,9 @@ Dx : Px {
         super.new(pattern);
       };
     };
+  }
+
+  *prHasInstrument { |instrument|
+    ^instrumentFolders[drumMachine].includes(instrument.asSymbol);
   }
 }

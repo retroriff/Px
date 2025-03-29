@@ -1,7 +1,7 @@
 + Px {
     *buf { |folder, file|
         if (samplesDict[folder].size == 0) {
-            this.prPrint("🔴 Folder doesn't exist or empty");
+            this.prPrint("🔴 Folder doesn't exist or empty:" + folder);
             ^samplesDict[folder].size;
         };
 

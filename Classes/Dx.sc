@@ -1,4 +1,5 @@
 /*
+TODO: Solo method. Example: Dx.solo(\bd)
 TODO: Normalize sound (909)
 TODO: All devices should have the same instruments or avoid error?
 TODO: Intro / Fill in

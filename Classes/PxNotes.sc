@@ -35,7 +35,7 @@
         };
 
         if (pattern[\scale].notNil and: (pattern[\scale].isArray.not))
-        { pattern[\scale] = Scale.at(pattern[\scale]).semitones };
+        { pattern[\scale] = Scale.at(pattern[\scale].asSymbol).semitones };
 
         if (pattern[\degree].isNil)
         { ^pattern };

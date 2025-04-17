@@ -75,7 +75,7 @@
   }
 
   i { |value|
-    this.prPlay(i: value);
+    this.prPlay(i: value.asSymbol);
   }
 
   in { |value|
@@ -120,7 +120,7 @@
   set { |setId|
     var id = this.asSymbol;
 
-    if (this.prHasDrumMachine) {
+    if (this.prHasDrumMachine and: { setId != true }) {
       var pattern = Px.last.detect { |pattern|
         pattern['drumMachine'] == 808 and: (pattern['instrument'] == setId)
       };

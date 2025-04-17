@@ -3,7 +3,7 @@ Crossfader {
     classvar stepSize;
 
     *initClass {
-        defaultFadeTime = 30;
+        defaultFadeTime = 16;
     }
 
     *new { |a, b, fadeDuration|

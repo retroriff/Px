@@ -5,6 +5,10 @@
     ^Crossfader(this, b);
   }
 
+  get { |key|
+    Ndef(this).get(key);
+  }
+
   i { |value|
     var number = this.asInteger;
     var id = number.createId(value);
@@ -32,12 +36,25 @@
     ^FadeOut(this, fadeTime);
   }
 
+  qset { |key, value|
+    var clock = TempoClock.default;
+    var nextBeat = clock.nextTimeOnGrid(4);
+
+    clock.schedAbs(nextBeat, {
+      Ndef(this).set(key, value);
+    });
+  }
+
+  rebuild {
+    Ndef(this).rebuild;
+  }
+
   set { |key, value|
     Ndef(this).set(key, value);
   }
 
-  stop {
-    ^Px.stop(this);
+  stop { |fadeTime|
+    Ndef(this).stop(fadeTime);
   }
 
   prHasDrumMachine {

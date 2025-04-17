@@ -61,6 +61,7 @@
     };
 
     Ndef(\px).free(fadeTime);
+    Px.last = Dictionary.new;
 
     fork {
       (fadeTime * 2).wait;

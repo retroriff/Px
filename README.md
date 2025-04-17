@@ -250,26 +250,33 @@ Px also has methods to handle a OSC listener, useful for applications where remo
 
 - `oscTest`: Sends a test message.
 
-## 🎚️ Crossfader
+## 🎚️ Mixer
 
 Straightforward crossfader utility classes that smoothly transitions audio from source A to source B over an optional specified duration (default is 20 seconds):
 
 ```js
-Crossfader(\a, \b, 10);
-FadeIn(\a, 10);
-FadeOut(\a, 10);
+Crossfader(\a, \b, 16);
+FadeIn(\a, 16);
+FadeOut(\a, 16);
 ```
 
 They can be used directly with symbols methods and binary operator syntax:
 
 ```js
 \a.in
-\a in: 10
+\a in: 16
 \a.out
-\a out: 10
+\a out: 16
 \a fadeTo: \b
 \a.play
 \a.stop
+```
+
+And we can set synth controls:
+
+```
+\a.set(\amp, 1); // non-quantified set
+\a.qset(\amp, 1); // quantified set
 ```
 
 ## 🎛️ TR08: A Roland TR-08 MIDI Controller

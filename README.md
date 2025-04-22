@@ -267,7 +267,8 @@ They can be used directly with symbols methods and binary operator syntax:
 \a in: 16
 \a.out
 \a out: 16
-\a fadeTo: \b
+\a.to(\b)
+\a to: \b
 \a.play
 \a.stop
 ```

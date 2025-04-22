@@ -1,8 +1,14 @@
 + Symbol {
+  clear {
+    Ndef(this).clear;
+  }
+
   doesNotUnderstand {}
 
-  fadeTo { |b|
-    ^Crossfader(this, b);
+
+
+  free {
+    Ndef(this).free;
   }
 
   get { |key|
@@ -19,7 +25,7 @@
   }
 
   in { |fadeTime|
-    ^FadeIn(this, fadeTime);
+    FadeIn(this, fadeTime);
   }
 
   loop { |value|
@@ -33,7 +39,7 @@
   }
 
   out { |fadeTime|
-    ^FadeOut(this, fadeTime);
+    FadeOut(this, fadeTime);
   }
 
   qset { |key, value|
@@ -55,6 +61,10 @@
 
   stop { |fadeTime|
     Ndef(this).stop(fadeTime);
+  }
+
+  to { |b|
+    Crossfader(this, b);
   }
 
   prHasDrumMachine {

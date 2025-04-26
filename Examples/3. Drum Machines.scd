@@ -34,6 +34,9 @@
 // Dx allows to play presets:
 Dx.preset(\electro, 2);
 
+// Also with an amp argument:
+Dx.preset(\electro, 2, 0.5);
+
 // If we edit the YAML presets file, we can reload them:
 Dx.loadPresets;
 

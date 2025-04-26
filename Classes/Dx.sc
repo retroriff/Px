@@ -40,21 +40,25 @@ Dx : Px {
     this.prFadeDrums(\in, fadeTime);
   }
 
-  *preset { |name, number|
-    var newPreset = [name, number];
+  *preset { |name, number, amp|
+    var newPreset = [name, number, amp];
 
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
 
     if (newPreset != lastPreset or: (hasLoadedPresets == true)) {
-      this.prCreatePatternFromPreset(name, number);
+      this.prCreatePatternFromPreset(name, number, amp);
     };
 
     presetPatterns do: { |pattern, i|
       var id = this.prCreateId(i);
 
       if (this.prHasInstrument(pattern[\instrument]) == true)
-      { this.new(pattern.copy.putAll([\id, id, \drumMachine, drumMachine, \dx, true])) }
+      { this.new(pattern.copy.putAll([
+        \id, id,
+        \drumMachine, drumMachine,
+        \dx, true,
+      ])) }
     }
   }
 
@@ -105,7 +109,7 @@ Dx : Px {
     ^hundred * 100 + i;
   }
 
-  *prCreatePatternFromPreset { |name, number|
+  *prCreatePatternFromPreset { |name, number, amp|
     var presetNumber, preset;
     var patterns = Array.new;
     var presetGroup = presetsDict[name ?? \electro];
@@ -120,8 +124,14 @@ Dx : Px {
 
     if (preset.notNil) {
       preset[\preset].do { |pattern|
-        var amp = Pseq(pattern[\list].clip(0, 1), inf);
-        patterns = patterns.add((instrument: pattern[\instrument], amp: amp, dur: 1/4));
+        var ampSeq = Pseq(pattern[\list].clip(0, amp ?? 1), inf);
+        patterns = patterns.add(
+          (
+            instrument: pattern[\instrument],
+            amp: ampSeq,
+            dur: 1/4
+          )
+        );
       };
     };
 

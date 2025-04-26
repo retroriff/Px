@@ -203,12 +203,12 @@ Dx.preset(\electro, 1);
 
 ### Dx class methods
 
-| Name          | Arguments                      | Description                      |
-| ------------- | ------------------------------ | -------------------------------- |
-| `loadPresets` | None                           | Reloads presets from YAML files  |
-| `preset`      | name?: string \| index: number | Plays a [preset](/Presets/yaml/) |
-| `release`     | None                           | Release with fadeTime            |
-| `stop`        | None                           | Same as `\808 i: \all`           |
+| Name          | Arguments                                         | Description                      |
+| ------------- | ------------------------------------------------- | -------------------------------- |
+| `loadPresets` | None                                              | Reloads presets from YAML files  |
+| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/) |
+| `release`     | None                                              | Release with fadeTime            |
+| `stop`        | None                                              | Same as `\808 i: \all`           |
 
 ## 🌊 Sx: A Sequenced Synth
 

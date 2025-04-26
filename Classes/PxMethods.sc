@@ -111,7 +111,7 @@
     { ^SynthDescLib.global[synthDef] };
   }
 
-  *tempo { |tempo|
+  *tempo { |tempo, withNdef|
     if (tempo.isNil) {
       ^this.prPrint("🕰️ Current tempo is" + (TempoClock.tempo * 60));
     };
@@ -121,12 +121,14 @@
     Sx.tempo(tempo);
     ~updateSingleLetterTempoVariable.(tempo);
 
-    Ndef.all do: { |ndefs|
-      ndefs do: { |ndef|
-        var isPxNdef = ndef.key != \px and: (Px.last.keys.includes(ndef.key));
+    if (withNdef == true) {
+      Ndef.all do: { |ndefs|
+        ndefs do: { |ndef|
+          var isPxNdef = ndef.key != \px and: (Px.last.keys.includes(ndef.key));
 
-        if (isPxNdef == false and: (ndef.key != \x))
-        { ndef.rebuild }
+          if (isPxNdef == false and: (ndef.key != \x))
+          { ndef.rebuild }
+        }
       }
     };
 

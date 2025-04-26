@@ -31,12 +31,20 @@ Dx : Px {
     ^super.new(newPattern);
   }
 
+  *in { |fadeTime = 16|
+    this.prFadeDrums(\in, fadeTime);
+  }
+
   *loadPresets {
     hasLoadedPresets = true;
     this.prCreatePresetsDict;
   }
 
-  *play {  |fadeTime = 10|
+  *out { |fadeTime = 16|
+    this.prFadeDrums(\out, fadeTime);
+  }
+
+  *play { |fadeTime = 16|
     this.prFadeDrums(\in, fadeTime);
   }
 

@@ -36,12 +36,58 @@ Fx(\sn).reverb(0.5)
 Pdef.gui
 ::
 
+subsection::MIDI
+
+This is how we can play a MIDI instrument in channel 1 (chan: 0) with velocity 127 (amp: 1):
+
+code::
+1 chan: 0 dur: 1 octave: 4 degree: 5 amp: 1;
+
+// It is equivalent to:
+MIDIClient.init;
+o = MIDIOut.new(0);
+
+Pbind(
+  \type, \midi,
+  \chan, 0,
+  \midicmd, \noteOn,
+  \midiout, o,
+  \dur, 1,
+  \octave, 4,
+  \degree, 5,
+);
+::
+
+We also can send control messages to the previous pattern.
+
+code::
+// Send control to id 1
+2 control: [1, 1];
+
+// Same as:
+Pbind(
+  \type, \midi,
+  \midiout, o,
+  \midicmd, \control,
+  \chan, 1,
+  \ctlNum, 1,
+  \control, 127,
+);
+::
+
+This is how we can individually map a control:
+code::
+MIDIClient.init;
+o = MIDIOut.new(0);
+o.control(0, 1, 127); // Channel 1, controller 1, value 127
+::
+
 ClassMethods::
 
 method:: new
 Creates a new instance of the Px class.
-argument:: patterns
-An array of patterns to build and control.
+argument:: newPattern
+The pattern event to build and control.
 argument:: name
 A string representing the name of the Pdef instance.
 argument:: trace
@@ -52,7 +98,7 @@ Opens a GUI interface for controlling and visualizing the patterns.
 
 method:: release
 Releases the patterns with a fade-out effect.
-argument:: fadeTime
+argument:: time
 The duration of the fade-out effect in seconds.
 argument:: name
 The name of the `Px` instance to release.

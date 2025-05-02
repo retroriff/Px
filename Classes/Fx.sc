@@ -51,6 +51,10 @@ Fx {
     this.prAddEffect(\delay, mix, [delaytime, decaytime]);
   }
 
+  *flanger { |mix = 0.4|
+    this.prAddEffect(\flanger, mix);
+  }
+  
   *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
     this.prAddEffect(\gverb, mix, [roomsize, revtime]);
   }
@@ -99,15 +103,33 @@ Fx {
 
   *vstReadProgram { |preset|
     var index = this.prGetIndex(\vst);
-    var path;
+    var path, presetName;
 
     if (index.isNil) {
       ^"🔴 VST is not enabled";
     };
 
-    path = presetsPath ++ this.prGetVstPluginName ++ "/" ++ preset ++ ".fxp";
+    if (preset.isInteger) {
+      var folder = PathName.new(presetsPath ++ this.prGetVstPluginName ++ "/");
+
+      var files = folder.entries select: { |file|
+        file.extension == "fxp";
+      };
+
+      if (preset >= files.size) {
+        ^("Available presets for" + this.prGetVstPluginName ++ ": %")
+        .format(files.size - 1);
+      };
+
+      path = files[preset].fullPath;
+      presetName = files[preset].fileNameWithoutExtension;
+    } {
+      path = presetsPath ++ this.prGetVstPluginName ++ "/" ++ preset ++ ".fxp";
+      presetName = preset;
+    };
+
     vstController.readProgram(path);
-    this.prPrint("🔥 Loaded".scatArgs(("\\" ++ preset), "preset"));
+    this.prPrint("🔥 Loaded preset:" + presetName);
   }
 
   *vstWriteProgram { |preset|

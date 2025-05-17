@@ -54,7 +54,7 @@ Fx {
   *flanger { |mix = 0.4|
     this.prAddEffect(\flanger, mix);
   }
-  
+
   *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
     this.prAddEffect(\gverb, mix, [roomsize, revtime]);
   }
@@ -101,7 +101,7 @@ Fx {
     this.prAddEffect(\vst, mix, [plugin ?? defaultPlugin]);
   }
 
-  *vstReadProgram { |preset|
+  *vstReadProgram { |preset = 0|
     var index = this.prGetIndex(\vst);
     var path, presetName;
 
@@ -130,6 +130,12 @@ Fx {
 
     vstController.readProgram(path);
     this.prPrint("🔥 Loaded preset:" + presetName);
+  }
+
+  // Animatron
+  *vstSet { |param, value|
+    ~animatronNetAddr.sendMsg("/sc/vst", value);
+    vstController.set(param, value);
   }
 
   *vstWriteProgram { |preset|

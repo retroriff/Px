@@ -5,9 +5,8 @@
 
   doesNotUnderstand {}
 
-
-
   free {
+    ~animatronNetAddr.sendMsg("/sc/stop", this, 0);
     Ndef(this).free;
   }
 
@@ -33,9 +32,13 @@
   }
 
   play { |value|
-    if (value.isNil)
-    { ^Ndef(this).play }
-    { Px.stop(this) };
+    if (value.isNil) {
+      ~animatronNetAddr.sendMsg("/sc/start", this, 0);
+
+      ^Ndef(this).play
+    } {
+      Px.stop(this)
+    };
   }
 
   out { |fadeTime|
@@ -60,6 +63,7 @@
   }
 
   stop { |fadeTime|
+    ~animatronNetAddr.sendMsg("/sc/stop", this, fadeTime ?? 0);
     Ndef(this).stop(fadeTime);
   }
 

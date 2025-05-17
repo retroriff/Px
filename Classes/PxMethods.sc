@@ -52,6 +52,8 @@
     if (anyParam.includes(\all)) {
       var tdefs = Tdef.all.select { |t| t.isPlaying }.keys;
 
+      ~animatronNetAddr.sendMsg("/sc/hush", fadeTime);
+
       tdefs do: { |key| Tdef(key).stop };
 
       if (fadeTime == \all)
@@ -61,13 +63,18 @@
     };
 
     Ndef(\px).free(fadeTime);
-    Px.last = Dictionary.new;
+    last = Dictionary.new;
+    lastFormatted = Dictionary.new;
 
     fork {
       (fadeTime * 2).wait;
 
       ndefList.keys do: { |key|
         Ndef(key).free(fadeTime);
+      };
+
+      Pdef.all do: { |item|
+        Pdef(item.key).source = nil;
       };
 
       if (anyParam.includes(\all)) {

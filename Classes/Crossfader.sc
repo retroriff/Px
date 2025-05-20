@@ -20,7 +20,7 @@ Crossfader {
   *fadeOut { |name, fadeTime|
     var seconds = fadeTime ?? defaultFadeTime;
     ~animatronNetAddr.sendMsg("/sc/stop", name, seconds);
-    Ndef(name).free(seconds);
+    Ndef(name).stop(seconds);
   }
 }
 

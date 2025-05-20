@@ -35,9 +35,9 @@
     if (value.isNil) {
       ~animatronNetAddr.sendMsg("/sc/start", this, 0);
 
-      ^Ndef(this).play
+      ^Ndef(this).play(fadeTime: 0);
     } {
-      Px.stop(this)
+      Px.stop(this);
     };
   }
 
@@ -64,7 +64,7 @@
 
   stop { |fadeTime|
     ~animatronNetAddr.sendMsg("/sc/stop", this, fadeTime ?? 0);
-    Ndef(this).stop(fadeTime);
+    Ndef(this).stop(fadeTime ?? 0);
   }
 
   to { |b|

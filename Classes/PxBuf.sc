@@ -18,7 +18,7 @@
   }
 
 
-  *loadSamples { |pathsArray|
+  *loadSamples { |path|
     var addFileToDictionary = { |folderName, files|
       var audioFiles = files.select { |file|
         file.extension.toLower == "wav" or: { file.extension.toLower == "aiff" }
@@ -28,33 +28,32 @@
       };
     };
 
+    var samplesFolder = PathName(path.standardizePath);
+    var folders = samplesFolder.entries;
+
     samplesDict = Dictionary.new;
+    samplesPath = path;
 
-    pathsArray.do { |path|
-      var root = PathName(path.standardizePath);
-      var folders = root.entries;
+    if (File.exists(samplesFolder.fullPath)) {
+      for (0, folders.size - 1, { |i|
+        var folder = folders[i];
+        var hasFiles = folder.files.size;
 
-      if (File.exists(root.fullPath)) {
-        for (0, folders.size - 1, { |i|
-          var folder = folders[i];
-          var hasFiles = folder.files.size;
-
-          if (hasFiles > 0) {
-            addFileToDictionary.(folder.folderName, folder.files);
-          } {
-            folder.entries.do { |entry|
-              var entryHasFiles = entry.files.size;
-              if (entryHasFiles > 0) {
-                var subFolderName = folder.folderName ++ "/" ++ entry.folderName;
-                addFileToDictionary.(subFolderName, entry.files);
-              }
-            };
-          }
-        });
-      } {
-        ("Path does not exist: " ++ path).warn;
-      }
-    };
+        if (hasFiles > 0) {
+          addFileToDictionary.(folder.folderName, folder.files);
+        } {
+          folder.entries.do { |entry|
+            var entryHasFiles = entry.files.size;
+            if (entryHasFiles > 0) {
+              var subFolderName = folder.folderName ++ "/" ++ entry.folderName;
+              addFileToDictionary.(subFolderName, entry.files);
+            }
+          };
+        }
+      });
+    } {
+      ("Path does not exist: " ++ path).warn;
+    }
   }
 
   *prCreateBufInstruments { |pattern|

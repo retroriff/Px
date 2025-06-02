@@ -98,6 +98,7 @@ Fx {
 
   *vst { |mix = 1, plugin|
     var defaultPlugin = "ValhallaFreqEcho";
+
     this.prAddEffect(\vst, mix, [plugin ?? defaultPlugin]);
   }
 
@@ -156,7 +157,7 @@ Fx {
     hasFx = activeEffects[proxyName].includes(fx);
 
     if (hasFx == false and: (mix != Nil)) {
-      this.prActivateEffect(args, fx);
+      this.prActivateEffect(args, fx, mix);
     };
 
     if (args != activeArgs[proxyName][fx] and: (mix != Nil)) {
@@ -174,7 +175,7 @@ Fx {
     this.prSetMixerValue(fx, mix.clip(0, 1));
   }
 
-  *prActivateEffect { |args, fx|
+  *prActivateEffect { |args, fx, mix|
     var index;
     proxy[proxyName] = Ndef(proxyName);
     activeEffects[proxyName] = activeEffects[proxyName].add(fx);
@@ -187,7 +188,7 @@ Fx {
       { activeArgs[proxyName] = Dictionary.new };
 
       activeArgs[proxyName].add(fx -> args);
-      this.prPrint("✨ Enabled".scatArgs(("\\" ++ fx)));
+      this.prPrint("✨ Enabled" + "\\" ++ fx + "with mix:" + mix);
     };
   }
 
@@ -204,9 +205,8 @@ Fx {
       editor: true
     );
 
-    this.prPrint("✨ Enabled".scatArgs("\\vst", plugin));
     this.prPrint("👉 Open VST Editor: Fx.vstController.editor;");
-    this.prPrint("👉 Set VST parameter: Fx.vstController.set(1, 1);");
+    this.prPrint("👉 Set VST parameter: Fx.vstSet(1, 1);");
   }
 
   *prDisableFx { |fx|

@@ -14,10 +14,12 @@ Dx : Px {
   classvar <>lastPreset;
   classvar <presetsDict;
   classvar <presetPatterns;
+  classvar <>drumMachinesPath;
 
   *initClass {
     drumMachine = 808;
-    drumMachines = [606, 707, 808, 909];
+    drumMachines = [606, 707, 808, 909, \RolandTR808];
+
     instrumentFolders = Dictionary.new;
     lastPreset = Array.new;
     this.prCreatePresetsDict;
@@ -49,7 +51,7 @@ Dx : Px {
   }
 
   *preset { |name, number, amp|
-    var newPreset = [name, number, amp];
+    var newPreset = [name.asSymbol, number, amp];
 
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
@@ -60,13 +62,15 @@ Dx : Px {
 
     presetPatterns do: { |pattern, i|
       var id = this.prCreateId(i);
-
-      if (this.prHasInstrument(pattern[\instrument]) == true)
-      { this.new(pattern.copy.putAll([
-        \id, id,
-        \drumMachine, drumMachine,
-        \dx, true,
-      ])) }
+      ("instrument" + pattern[\instrument]).postln;
+      this.prHasInstrument(pattern[\instrument]).postln;
+      if (this.prHasInstrument(pattern[\instrument]) == true) {
+        this.new(pattern.copy.putAll([
+          \id, id,
+          \drumMachine, drumMachine,
+          \dx, true,
+        ]));
+      }
     }
   }
 
@@ -98,6 +102,7 @@ Dx : Px {
           pattern[\id] = this.prCreateId(lastTwoDigits);
 
           pattern[\drumMachine] = newDrumMachine;
+          pattern.postln;
           this.new(pattern);
         }
       };
@@ -105,14 +110,22 @@ Dx : Px {
   }
 
   *prAddDrumMachinePlayBuf { |pattern|
-    var folder = pattern[\drumMachine].asString.catArgs("/", pattern[\instrument].asString);
+    var patternDrumMachine = pattern[\drumMachine].asString;
+    var subfolder = patternDrumMachine.toLower ++ "-" ++ pattern[\instrument].asString;
+    var folder = (patternDrumMachine ++ "/" ++ subfolder);
     pattern.putAll([\play: [folder, 0]]);
     ^pattern;
   }
 
   *prCreateId { |i|
-    // Returns 600, 700, 800 or 900
-    var hundred = drumMachine - (drumMachine % 10);
+    var hundred;
+
+    if (drumMachine.isInteger) {
+      // Returns 600, 700, 800 or 900
+      hundred = drumMachine - (drumMachine % 10);
+    } {
+      hundred = 100;
+    };
 
     ^hundred * 100 + i;
   }
@@ -162,10 +175,11 @@ Dx : Px {
   }
 
   *prGetInstrumentFolders {
-    if (samplesPath.notNil) {
+    if (drumMachinesPath.notNil) {
       drumMachines do: { |folder|
-        var folderPath = PathName(samplesPath ++ folder);
-        var subFolders = folderPath.entries.collect { |entry|
+        var folderPath, subFolders;
+        folderPath = PathName(drumMachinesPath ++ folder);
+        subFolders = folderPath.entries.collect { |entry|
           if (entry.isFolder)
           { entry.folderName.asSymbol };
         };
@@ -185,7 +199,11 @@ Dx : Px {
     };
   }
 
-  *prHasInstrument { |instrument|
-    ^instrumentFolders[drumMachine].includes(instrument.asSymbol);
-  }
+*prHasInstrument { |instrument|
+    var folders = instrumentFolders[drumMachine];
+    var symbol = instrument.asSymbol;
+    ^folders.any { |folder|
+        folder.asString.endsWith("-" ++ symbol.asString)
+    };
+}
 }

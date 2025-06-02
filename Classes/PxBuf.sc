@@ -18,17 +18,21 @@
   }
 
 
-  *loadSamples { |pathsArray|
+  *loadSamples { |pxPath, additionalPathsArray|
     var addFileToDictionary = { |folderName, files|
       var audioFiles = files.select { |file|
         file.extension.toLower == "wav" or: { file.extension.toLower == "aiff" }
       };
+
       samplesDict[folderName] = audioFiles.collect { |file|
         Buffer.read(Server.default, file.fullPath)
       };
     };
 
+    var pathsArray = [pxPath] ++ additionalPathsArray;
+
     samplesDict = Dictionary.new;
+    samplesPath = pxPath;
 
     pathsArray.do { |path|
       var root = PathName(path.standardizePath);
@@ -59,7 +63,13 @@
 
   *prCreateBufInstruments { |pattern|
     pattern[\play].notNil.if {
-      pattern = pattern ++ (instrument: \playbuf, buf: pattern[\play]);
+      var playBuf;
+
+      if (pattern[\drumMachine].isNil)
+      { playBuf = \playbuf }
+      { playBuf = \playbufMono };
+
+      pattern = pattern ++ (instrument: playBuf, buf: pattern[\play]);
       pattern.removeAt(\play);
     };
 

@@ -1,4 +1,7 @@
 /*
+TODO: Tidal Drum Machines. Fix overdubbed patterns 707 i: "cp:9" dur: 2 off: 1;
+TODO: Tidal Drum Machines. Create Drum Selector GUI;
+
 TODO: Solo method. Example: Dx.solo(\bd)
 TODO: Normalize sound (909)
 TODO: All devices should have the same instruments or avoid error?
@@ -18,7 +21,7 @@ Dx : Px {
 
   *initClass {
     drumMachine = 808;
-    drumMachines = [606, 707, 808, 909, \RolandTR808];
+    drumMachines = [606, 707, 808, 909];
 
     instrumentFolders = Dictionary.new;
     lastPreset = Array.new;
@@ -62,8 +65,7 @@ Dx : Px {
 
     presetPatterns do: { |pattern, i|
       var id = this.prCreateId(i);
-      ("instrument" + pattern[\instrument]).postln;
-      this.prHasInstrument(pattern[\instrument]).postln;
+
       if (this.prHasInstrument(pattern[\instrument]) == true) {
         this.new(pattern.copy.putAll([
           \id, id,
@@ -102,7 +104,6 @@ Dx : Px {
           pattern[\id] = this.prCreateId(lastTwoDigits);
 
           pattern[\drumMachine] = newDrumMachine;
-          pattern.postln;
           this.new(pattern);
         }
       };
@@ -110,10 +111,18 @@ Dx : Px {
   }
 
   *prAddDrumMachinePlayBuf { |pattern|
+    var folder, sample, subfolder;
     var patternDrumMachine = pattern[\drumMachine].asString;
-    var subfolder = patternDrumMachine.toLower ++ "-" ++ pattern[\instrument].asString;
-    var folder = (patternDrumMachine ++ "/" ++ subfolder);
-    pattern.putAll([\play: [folder, 0]]);
+
+    if (drumMachines.includes(patternDrumMachine.asInteger)) {
+      patternDrumMachine = "RolandTR" ++ patternDrumMachine;
+    };
+
+    subfolder = patternDrumMachine.toLower ++ "-" ++ pattern[\instrument].asString;
+    folder = (patternDrumMachine ++ "/" ++ subfolder);
+    sample = this.prExtractIndexFromName(folder);
+
+    pattern.putAll([\play: sample]);
     ^pattern;
   }
 
@@ -178,13 +187,26 @@ Dx : Px {
     if (drumMachinesPath.notNil) {
       drumMachines do: { |folder|
         var folderPath, subFolders;
+
         folderPath = PathName(drumMachinesPath ++ folder);
+
         subFolders = folderPath.entries.collect { |entry|
           if (entry.isFolder)
           { entry.folderName.asSymbol };
         };
+
         instrumentFolders[folder] = subFolders;
       };
+    }
+  }
+
+  *prExtractIndexFromName { |folder|
+    var parts = folder.asString.split($:);
+
+    if (folder.size > 1) {
+      ^[parts[0], parts[1].asInteger];
+    } {
+      ^[parts[0], 0];
     }
   }
 
@@ -199,11 +221,12 @@ Dx : Px {
     };
   }
 
-*prHasInstrument { |instrument|
+  *prHasInstrument { |instrument|
     var folders = instrumentFolders[drumMachine];
     var symbol = instrument.asSymbol;
+
     ^folders.any { |folder|
-        folder.asString.endsWith("-" ++ symbol.asString)
+      folder.asString.endsWith("-" ++ symbol.asString)
     };
-}
+  }
 }

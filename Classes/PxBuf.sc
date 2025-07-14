@@ -18,7 +18,7 @@
   }
 
 
-  *loadSamples { |path|
+  *loadSamples { |path, additionalPathsArray|
     var addFileToDictionary = { |folderName, files|
       var audioFiles = files.select { |file|
         file.extension.toLower == "wav" or: { file.extension.toLower == "aiff" }

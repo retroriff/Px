@@ -48,6 +48,7 @@
           } {
             folder.entries.do { |entry|
               var entryHasFiles = entry.files.size;
+
               if (entryHasFiles > 0) {
                 var subFolderName = folder.folderName ++ "/" ++ entry.folderName;
                 addFileToDictionary.(subFolderName, entry.files);

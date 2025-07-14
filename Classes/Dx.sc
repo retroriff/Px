@@ -9,6 +9,7 @@ TODO: Unit tests
 Dx : Px {
   classvar <>drumMachine;
   classvar <>drumMachines;
+  classvar <>drumMachinesPath;
   classvar hasLoadedPresets;
   classvar <instrumentFolders;
   classvar <>lastPreset;

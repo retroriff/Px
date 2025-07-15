@@ -29,8 +29,10 @@
       };
     };
 
-    var pathsArray = [pxPath, drumMachinesPath];
+    var pathsArray;
 
+    drumMachinesPath = Quarks.folder +/+ "tidal-drum-machines/machines/";
+    pathsArray = [pxPath, drumMachinesPath];
     samplesDict = Dictionary.new;
     samplesPath = pxPath;
 
@@ -57,7 +59,7 @@
           }
         });
       } {
-        this.prPrint("🔴 Path does not exist: " ++ path);
+        this.prPrint("🔴 Path does not exist: " ++ root.fullPath);
       }
     };
   }

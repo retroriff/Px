@@ -158,8 +158,10 @@
 
   // Functions
   createId { |ins|
-    if (this.prShouldGenerateDrumMachineId(ins)) {
-      ^this.prGenerateDrumMachineId(ins);
+    var instrumentWithoutSufix = this.prRemoveSufix(ins);
+
+    if (this.prShouldGenerateDrumMachineId(instrumentWithoutSufix)) {
+      ^this.prGenerateDrumMachineId(instrumentWithoutSufix);
     }
 
     ^this.asSymbol;
@@ -199,6 +201,17 @@
   prRemoveBeatSetWhenSet {
     var id = Px.patternState[\id];
     Px.last[id].removeAt(\beatSet);
+  }
+
+
+  prRemoveSufix { |name|
+    var parts = name.asString.split($:);
+
+    if (parts.size > 1) {
+        ^parts[0];
+    }
+
+    ^name;
   }
 
   prCreatePseg { |key, value|
@@ -256,6 +269,16 @@
     { ^generateNewDrumMachineId.value.asSymbol }
     { ^findExistingPatternForIns[\id] };
   }
+  
+  prExtractSufix { |value|
+    var parts = value.asString.split($:);
+
+    if (parts.size > 1) {
+        ^parts[1];
+    }
+    
+    ^nil;
+  }
 
   prHasDrumMachine {
     var drumMachines = [606, 707, 808, 909];
@@ -274,12 +297,17 @@
   }
 
   prPlay { |i, play, loop|
+    var instrumentWithoutSufix = this.prRemoveSufix(i);
+
     var newPattern = (
       id: this.createId(i),
-      instrument: i,
+      instrument: instrumentWithoutSufix,
       loop: loop,
       play: play,
     );
+
+    if (i.asString != instrumentWithoutSufix.asString and: { this.prExtractSufix(i).notNil})
+    { newPattern.putAll([\file, this.prExtractSufix(i)]) };
 
     this.prPlayClass(newPattern);
   }

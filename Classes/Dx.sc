@@ -1,5 +1,5 @@
 /*
-TODO: Tidal Drum Machines. Fix overdubbed patterns 707 i: "cp:9" dur: 2 off: 1;
+TODO: Tidal Drum Machines. Use pattern[\file] to load samples from the folder and clean up previous implementation.
 TODO: Tidal Drum Machines. Create Drum Selector GUI;
 
 TODO: Solo method. Example: Dx.solo(\bd)

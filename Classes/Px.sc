@@ -8,6 +8,7 @@ TODO: Rename name references to id?
 
 Px {
     classvar <>chorusPatterns;
+    classvar <drumMachinesPath;
     classvar <>last;
     classvar <>lastFormatted;
     classvar <lastName;
@@ -23,6 +24,7 @@ Px {
     *initClass {
         // CmdPeriod.add { Px.clear };
         chorusPatterns = Dictionary.new;
+        drumMachinesPath = Quarks.folder ++ "tidal-drum-machines/machines/";
         last = Dictionary.new;
         lastFormatted = Dictionary.new;
         ndefList = Dictionary.new;

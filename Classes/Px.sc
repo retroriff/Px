@@ -24,7 +24,6 @@ Px {
     *initClass {
         // CmdPeriod.add { Px.clear };
         chorusPatterns = Dictionary.new;
-        drumMachinesPath = Quarks.folder ++ "tidal-drum-machines/machines/";
         last = Dictionary.new;
         lastFormatted = Dictionary.new;
         ndefList = Dictionary.new;

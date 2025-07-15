@@ -18,7 +18,7 @@
   }
 
 
-  *loadSamples { |pxPath, additionalPathsArray|
+  *loadSamples { |pxPath|
     var addFileToDictionary = { |folderName, files|
       var audioFiles = files.select { |file|
         file.extension.toLower == "wav" or: { file.extension.toLower == "aiff" }
@@ -29,7 +29,7 @@
       };
     };
 
-    var pathsArray = [pxPath] ++ additionalPathsArray;
+    var pathsArray = [pxPath, drumMachinesPath];
 
     samplesDict = Dictionary.new;
     samplesPath = pxPath;
@@ -57,7 +57,7 @@
           }
         });
       } {
-        ("Path does not exist: " ++ path).warn;
+        this.prPrint("🔴 Path does not exist: " ++ path);
       }
     };
   }
@@ -66,11 +66,7 @@
     pattern[\play].notNil.if {
       var playBuf;
 
-      if (pattern[\drumMachine].isNil)
-      { playBuf = \playbuf }
-      { playBuf = \playbufMono };
-
-      pattern = pattern ++ (instrument: playBuf, buf: pattern[\play]);
+      pattern = pattern ++ (instrument: \playbuf, buf: pattern[\play]);
       pattern.removeAt(\play);
     };
 

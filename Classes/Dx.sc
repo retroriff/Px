@@ -17,7 +17,6 @@ Dx : Px {
   classvar <>lastPreset;
   classvar <presetsDict;
   classvar <presetPatterns;
-  classvar <>drumMachinesPath;
 
   *initClass {
     drumMachine = 808;
@@ -203,11 +202,11 @@ Dx : Px {
   *prExtractIndexFromName { |folder|
     var parts = folder.asString.split($:);
 
-    if (folder.size > 1) {
-      ^[parts[0], parts[1].asInteger];
-    } {
-      ^[parts[0], 0];
+    if (parts.size > 1) {
+        ^[parts[0], parts[1].asInteger];
     }
+    
+    ^[parts[0], 0];
   }
 
   *prFadeDrums { |direction, fadeTime|

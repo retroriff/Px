@@ -28,7 +28,8 @@ Additional code examples can be found [here](/Examples/).
 
 1. Install `Quarks.install("https://github.com/retroriff/sc-px");` and recompile.
 2. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for `PbindFx`)
-3. Load SynthDefs and audio files by running:
+3. Install [Tidal Drum Machines](https://github.com/geikha/tidal-drum-machines)
+4. Load SynthDefs and audio files by running:
 
 ```
 Px.loadSynthDefs;

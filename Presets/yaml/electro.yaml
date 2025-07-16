@@ -9,7 +9,7 @@ presets:
         list: [1, 0, 0, 4, 0, 0, 7, 0, 0, 0, 11, 0, 0, 14, 0, 0]
       - instrument: oh
         list: [0, 0, 3, 0, 0, 6, 0, 0, 9, 0, 0, 12, 0, 0, 15, 0]
-      - instrument: ch
+      - instrument: hh
         list: [1, 2, 3, 4, 5, 0, 7, 0, 9, 10, 0, 12, 13, 0, 15, 16]
   # name: 'Catchot, "Electro 2/2"'
   - preset:
@@ -25,7 +25,7 @@ presets:
         list: [0, 0, 3, 0, 0, 6, 0, 0, 0, 10, 0, 12, 0, 0, 15, 0]
       - instrument: oh
         list: [0, 0, 3, 0, 0, 6, 0, 0, 9, 0, 0, 12, 0, 0, 15, 0]
-      - instrument: ch
+      - instrument: hh
         list: [1, 2, 3, 4, 5, 0, 7, 0, 9, 10, 0, 12, 13, 0, 15, 16]
   - name: 'Afrika Bambaataa, "Planet Rock"'
     preset:
@@ -37,7 +37,7 @@ presets:
         list: [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0]
       - instrument: cl
         list: [1, 0, 3, 0, 5, 0, 7, 8, 0, 10, 0, 12, 13, 0, 15, 16]
-      - instrument: ch
+      - instrument: hh
         list: [1, 0, 3, 4, 5, 0, 7, 8, 9, 0, 11, 12, 13, 14, 15, 16]
   - name: 'Cybotron, "Clear"'
     preset:
@@ -77,13 +77,13 @@ presets:
             0,
             0,
           ]
-      - instrument: sn
+      - instrument: sd
         list: [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0]
       - instrument: cp
         list: [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0]
       - instrument: oh
         list: [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0]
-      - instrument: ch
+      - instrument: hh
         list: [1, 2, 3, 4, 0, 0, 0, 0, 9, 10, 11, 12, 0, 0, 0, 0]
   - name: 'Egyptian Lover, "Egypt, Egypt"'
     preset:
@@ -123,9 +123,9 @@ presets:
             31,
             0,
           ]
-      - instrument: sn
+      - instrument: sd
         list: [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0]
       - instrument: ma
         list: [1, 0, 3, 0, 5, 6, 7, 0, 9, 0, 11, 12, 0, 14, 15, 0]
-      - instrument: ch
+      - instrument: hh
         list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 14, 15, 16]

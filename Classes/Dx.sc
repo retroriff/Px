@@ -87,9 +87,6 @@ Dx : Px {
   *use { |newDrumMachine|
     var currentDrumMachine = drumMachine;
 
-    if (drumMachines.includes(newDrumMachine).not)
-    { ^this.prPrint("🔴 Drum machine not found") };
-
     if (currentDrumMachine == newDrumMachine)
     { ^this.prPrint("🟢 Drum machine already selected") };
 
@@ -121,7 +118,6 @@ Dx : Px {
 
     subfolder = patternDrumMachine.toLower ++ "-" ++ pattern[\instrument].asString;
     folder = (patternDrumMachine ++ "/" ++ subfolder);
-
     pattern.putAll([\play: [folder, file]]);
     ^pattern;
   }
@@ -185,7 +181,12 @@ Dx : Px {
 
   *prGetInstrumentFolders {
     if (drumMachinesPath.notNil) {
-      drumMachines do: { |folder|
+      var drumMachinesPathName = PathName.new(drumMachinesPath.standardizePath);
+      var drumMachinesFolders = drumMachinesPathName.entries
+        .select { |entry| entry.isFolder }
+        .collect { |entry| entry.folderName };
+
+      drumMachinesFolders do: { |folder|
         var folderPath, subFolders;
 
         folderPath = PathName(drumMachinesPath ++ folder);
@@ -197,7 +198,7 @@ Dx : Px {
 
         instrumentFolders[folder] = subFolders;
       };
-    }
+    };
   }
 
   *prFadeDrums { |direction, fadeTime|
@@ -212,11 +213,13 @@ Dx : Px {
   }
 
   *prHasInstrument { |instrument|
-    var folders = instrumentFolders[drumMachine];
-    var symbol = instrument.asSymbol;
+    var drumMachineName = drumMachine;
 
-    ^folders.any { |folder|
-      folder.asString.endsWith("-" ++ symbol.asString)
+    if (drumMachines.includes(drumMachine))
+    { drumMachineName = "RolandTR" ++ drumMachineName };
+
+    ^instrumentFolders[drumMachineName].any { |folder|
+      folder.asString.endsWith("-" ++ instrument.asString)
     };
   }
 }

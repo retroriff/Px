@@ -192,26 +192,18 @@
     ^pairs;
   }
 
-  prPreventNonZeroExponential { |curve, value|
-    if (curve == \exp and: (value == 0))
-    { ^0.01 }
-    { ^value };
-  }
+  prCreateArrayFromSample { |sample|
+    if (sample.isString) {
+      var parts = sample.asString.split($:);
+        
+      if (parts.size > 1) {
+        ^[parts[0], parts[1].asInteger];
+      }
 
-  prRemoveBeatSetWhenSet {
-    var id = Px.patternState[\id];
-    Px.last[id].removeAt(\beatSet);
-  }
-
-
-  prRemoveSufix { |name|
-    var parts = name.asString.split($:);
-
-    if (parts.size > 1) {
-        ^parts[0];
-    }
-
-    ^name;
+      ^[parts[0], 0];
+    };
+     
+    ^sample;
   }
 
   prCreatePseg { |key, value|
@@ -302,8 +294,8 @@
     var newPattern = (
       id: this.createId(i),
       instrument: instrumentWithoutSufix,
-      loop: loop,
-      play: play,
+      loop: this.prCreateArrayFromSample(loop),
+      play: this.prCreateArrayFromSample(play),
     );
 
     if (i.asString != instrumentWithoutSufix.asString and: { this.prExtractSufix(i).notNil})
@@ -318,6 +310,28 @@
     if (this.prHasDrumMachine)
     { ^Dx(newPattern.putAll([\drumMachine, this])) }
     { ^Px(newPattern) };
+  }
+
+    prPreventNonZeroExponential { |curve, value|
+    if (curve == \exp and: (value == 0))
+    { ^0.01 }
+    { ^value };
+  }
+
+  prRemoveBeatSetWhenSet {
+    var id = Px.patternState[\id];
+    Px.last[id].removeAt(\beatSet);
+  }
+
+
+  prRemoveSufix { |name|
+    var parts = name.asString.split($:);
+
+    if (parts.size > 1) {
+        ^parts[0];
+    }
+
+    ^name;
   }
 
   prUpdatePattern { |pairs|

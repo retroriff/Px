@@ -1,5 +1,6 @@
 /*
 TODO: Tidal Drum Machines. Use pattern[\file] to load samples from the folder and clean up previous implementation.
+TODO: Use any bank of drum machine samples.
 TODO: Tidal Drum Machines. Create Drum Selector GUI;
 
 TODO: Solo method. Example: Dx.solo(\bd)
@@ -112,6 +113,7 @@ Dx : Px {
   *prAddDrumMachinePlayBuf { |pattern|
     var folder, sample, subfolder;
     var patternDrumMachine = pattern[\drumMachine].asString;
+    var file = pattern[\file] ?? 0;
 
     if (drumMachines.includes(patternDrumMachine.asInteger)) {
       patternDrumMachine = "RolandTR" ++ patternDrumMachine;
@@ -119,9 +121,8 @@ Dx : Px {
 
     subfolder = patternDrumMachine.toLower ++ "-" ++ pattern[\instrument].asString;
     folder = (patternDrumMachine ++ "/" ++ subfolder);
-    sample = this.prExtractIndexFromName(folder);
 
-    pattern.putAll([\play: sample]);
+    pattern.putAll([\play: [folder, file]]);
     ^pattern;
   }
 
@@ -197,16 +198,6 @@ Dx : Px {
         instrumentFolders[folder] = subFolders;
       };
     }
-  }
-
-  *prExtractIndexFromName { |folder|
-    var parts = folder.asString.split($:);
-
-    if (parts.size > 1) {
-        ^[parts[0], parts[1].asInteger];
-    }
-    
-    ^[parts[0], 0];
   }
 
   *prFadeDrums { |direction, fadeTime|

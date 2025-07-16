@@ -66,9 +66,12 @@
 
   *prCreateBufInstruments { |pattern|
     pattern[\play].notNil.if {
-      var playBuf;
+      var folder = pattern[\play][0];
+      var file = pattern[\play][1];
+      var numChannels = Px.samplesDict[folder][file].numChannels;
+      var playBuf = (numChannels == 1).if(\playbufMono, \playbuf);
 
-      pattern = pattern ++ (instrument: \playbuf, buf: pattern[\play]);
+      pattern = pattern ++ (instrument: playBuf, buf: pattern[\play]);
       pattern.removeAt(\play);
     };
 

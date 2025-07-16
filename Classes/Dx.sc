@@ -1,5 +1,4 @@
 /*
-TODO: Tidal Drum Machines. Use pattern[\file] to load samples from the folder and clean up previous implementation.
 TODO: Use any bank of drum machine samples.
 TODO: Tidal Drum Machines. Create Drum Selector GUI;
 

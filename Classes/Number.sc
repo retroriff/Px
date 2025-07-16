@@ -274,7 +274,7 @@
     var parts = value.asString.split($:);
 
     if (parts.size > 1) {
-        ^parts[1];
+        ^parts[1].asInteger;
     }
     
     ^nil;

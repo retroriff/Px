@@ -20,7 +20,7 @@ Dx : Px {
 
   *initClass {
     drumMachine = 808;
-    drumMachines = [606, 707, 808, 909];
+    drumMachines = [505, 606, 626, 707, 727, 808, 909];
 
     instrumentFolders = Dictionary.new;
     lastPreset = Array.new;

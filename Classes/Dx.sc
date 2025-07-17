@@ -1,5 +1,5 @@
 /*
-TODO: Use any bank of drum machine samples.
+TODO: Fix 1 play: ["fm", \rand] dur: 0.25 beat: 0.7 seed: 12 amp: 0.6;
 TODO: Tidal Drum Machines. Create Drum Selector GUI;
 
 TODO: Solo method. Example: Dx.solo(\bd)

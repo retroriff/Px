@@ -8,7 +8,6 @@ TODO: Rename name references to id?
 
 Px {
     classvar <>chorusPatterns;
-    classvar <soloMode;
     classvar <>last;
     classvar <>lastFormatted;
     classvar <lastName;
@@ -19,6 +18,7 @@ Px {
     classvar <samplesPath;
     classvar <seeds;
     classvar <>soloList;
+    classvar <soloMode;
 
     *initClass {
         // CmdPeriod.add { Px.clear };

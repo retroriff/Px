@@ -312,7 +312,7 @@
     { ^Px(newPattern) };
   }
 
-    prPreventNonZeroExponential { |curve, value|
+  prPreventNonZeroExponential { |curve, value|
     if (curve == \exp and: (value == 0))
     { ^0.01 }
     { ^value };

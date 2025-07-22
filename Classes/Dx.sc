@@ -100,6 +100,8 @@ Dx : Px {
 
           pattern[\drumMachine] = newDrumMachine;
           this.new(pattern);
+        } {
+          last[pattern[\id]] = pattern;
         }
       };
     }

@@ -18,8 +18,8 @@ Px {
     classvar <samplesDict;
     classvar <samplesPath;
     classvar <seeds;
-    classvar <soloMode;
     classvar <>soloList;
+    classvar <soloMode;
 
     *initClass {
         // CmdPeriod.add { Px.clear };

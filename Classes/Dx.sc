@@ -102,6 +102,8 @@ Dx : Px {
 
           pattern[\drumMachine] = newDrumMachine;
           this.new(pattern);
+        } {
+          last[pattern[\id]] = pattern;
         }
       };
     }
@@ -111,10 +113,6 @@ Dx : Px {
     var folder, sample, subfolder;
     var patternDrumMachine = pattern[\drumMachine].asString;
     var file = pattern[\file] ?? 0;
-
-    if (drumMachines.includes(patternDrumMachine.asInteger)) {
-      patternDrumMachine = "RolandTR" ++ patternDrumMachine;
-    };
 
     subfolder = patternDrumMachine.toLower ++ "-" ++ pattern[\instrument].asString;
     folder = (patternDrumMachine ++ "/" ++ subfolder);
@@ -213,13 +211,9 @@ Dx : Px {
   }
 
   *prHasInstrument { |instrument|
-    var drumMachineName = drumMachine;
-
-    if (drumMachines.includes(drumMachine))
-    { drumMachineName = "RolandTR" ++ drumMachineName };
-
-    ^instrumentFolders[drumMachineName].any { |folder|
+    ^instrumentFolders[drumMachine.asString].any { |folder|
       folder.asString.endsWith("-" ++ instrument.asString)
+      or: { folder.asString == instrument.asString }
     };
   }
 }

@@ -94,7 +94,15 @@ Dx : Px {
 
     last.copy do: { |pattern, i|
       if (pattern[\dx] == true) {
-        Px.stop(pattern[\id]);
+        // Px.stop has a fork that kills the Ndefs
+        var stopPattern = { |id|
+          last.removeAt(id);
+          ndefList.removeAt(id);
+          Pdef(id).source = nil;
+          soloList.remove(id);
+        };
+
+        stopPattern.(pattern[\id]);
 
         if (this.prHasInstrument(pattern[\instrument]) == true) {
           var lastTwoDigits = pattern[\id] % 10;

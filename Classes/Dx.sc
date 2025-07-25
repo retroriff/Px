@@ -1,6 +1,8 @@
 /*
+TODO: Normalize 505, 626, 727
+TODO: Dx.vol(0.5) should change the volume of all patterns
+TODO: Normalize hh, ma...
 TODO: Tidal Drum Machines. Create Drum Selector GUI;
-
 TODO: Solo method. Example: Dx.solo(\bd)
 TODO: Normalize sound (909)
 TODO: All devices should have the same instruments or avoid error?
@@ -146,7 +148,7 @@ Dx : Px {
 
     if (preset.notNil) {
       preset[\preset].do { |pattern|
-        var ampSeq = Pseq(pattern[\list].clip(0, amp ?? 1), inf);
+        var ampSeq = Pseq(pattern[\list].clip(0, amp ?? 0.6), inf);
         patterns = patterns.add(
           (
             instrument: pattern[\instrument],

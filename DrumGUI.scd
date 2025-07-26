@@ -1,19 +1,44 @@
 (
-var drumMachines, ampLabel, ampKnob;
-var w = Window("Dancing To The Drum Machine", Rect(100, 100, 380, 400));
-var machinePath = Quarks.folder +/+ "tidal-drum-machines/machines/";
-var folders = PathName(machinePath).folders.collect(_.folderName);
+var drumMachines, folders, machinePath;
+var firstCol, secondCol, thirdCol, mainView, row;
+var ampKnob, delayKnob, reverbKnob;
+var w = Window("Dancing To The Drum Machine", Rect(left: 0, top: 0, width: 420, height: 350));
 
-// 🥁 Drum Machines List
+mainView = CompositeView(w, w.view.bounds);
+mainView.decorator = FlowLayout(mainView.bounds);
+mainView.decorator.gap = 0@0;
+mainView.background = Color(0.46045410633087, 0.64358153343201, 0.82325148582458);
+
+// Row container for both columns
+row = CompositeView(mainView, 500@340);
+row.decorator = FlowLayout(row.bounds);
+row.decorator.gap = 10@10;
+
+// Three columns inside the row
+firstCol = CompositeView(row, 200@320);
+firstCol.decorator = FlowLayout(firstCol.bounds);
+
+secondCol = CompositeView(row, 90@320);
+secondCol.decorator = FlowLayout(secondCol.bounds);
+
+thirdCol = CompositeView(row, 100@320);
+thirdCol.decorator = FlowLayout(thirdCol.bounds);
+
+// Labels
+StaticText(firstCol, 200@20).align_(\center).string_("Drum Machines");
+StaticText(secondCol, 80@20).align_(\center).string_("Amp");
+StaticText(thirdCol, 80@20).align_(\center).string_("");
+
+// Drum machine list
+machinePath = Quarks.folder +/+ "tidal-drum-machines/machines/";
+folders = PathName(machinePath).folders.collect(_.folderName);
+
+// 🥁 Drum machine list
 drumMachines = EZListView(
-  parentView: w,
-  bounds: Rect(10, 10, 200, 370),
-  label: "Select Machine",
+  parentView: firstCol,
+  bounds: 200@300,
+  globalAction: { |ez| Dx.use(folders[ez.value]) },
   items: folders,
-  globalAction: { |ez, val|
-    var index = ez.value;
-    Dx.use(folders[index]);
-  },
   initVal: folders[0],
   initAction: false
 );
@@ -25,20 +50,6 @@ if (Dx.drumMachine.notNil) {
   folders[0]; // clears selection
 };
 
-// 📶 Amp Knob
-ampLabel = StaticText(w, Rect(310, 0, 50, 40))
-.align_(\center)
-.string_("Amp");
-
-ampKnob = Knob(w, Rect(310, 35, 50, 50))
-.mode_(\round)
-.value_(0.5)
-.action_({ |v, x, y, m|
-  var amp = v.value;
-  "Amp: %".format(amp).postln;
-  Dx.vol(amp);
-});
-
 // 🎲 Random selection function
 ~chooseRandomMachine = {
   var randomIndex = folders.size.rand;
@@ -46,16 +57,45 @@ ampKnob = Knob(w, Rect(310, 35, 50, 50))
   drumMachines.value = randomIndex;
 };
 
+// Right column = make a vertical container
+
+// 📶 Amp Knob
+ampKnob = Knob(secondCol, 80@80)
+.mode_(\round)
+.value_(0.5)
+.action_({ |v| Dx.vol(v.value) });
+
+StaticText(secondCol, 80@20).align_(\center).string_("Delay");
+
+delayKnob = Knob(secondCol, 80@80)
+.mode_(\round)
+.value_(0.5)
+.action_({ |v| Fx(\px).delay(v.value) });
+
+StaticText(secondCol, 80@20).align_(\center).string_("Reverb");
+
+reverbKnob = Knob(secondCol, 80@80)
+.mode_(\round)
+.value_(0.5)
+.action_({ |v| Fx(\px).reverb(v.value) });
+
 // 🔀 Random button
-Button(w, Rect(310, 100, 50, 30))
+Button(thirdCol, 80@145)
 .states_([["Random", Color.white, Color.blue(0.27)]])
 .action_({
-  ~chooseRandomMachine.();
+  var randomIndex = folders.size.rand;
+  Dx.use(folders[randomIndex]);
+  drumMachines.value = randomIndex;
 });
+
+Button(thirdCol, 80@145)
+.states_([["Stop", Color.white, Color.red(0.8)]])
+.action_({ Px.stop; });
 
 w.front;
 )
 
+~chooseRandomMachine.()
 Dx.drumMachine
 Dx.preset(\break, 1);
 Dx.use("505");

@@ -1,7 +1,8 @@
 /*
+TODO: Function per a folders.detectIndex { |x| x == Dx.drumMachine.asString }
+TODO: Document Dx.gui and Dx.shuffle, Dx.delay and Dx.reverb, Dx.vol
+TODO: Remove postln if preset doesn't change
 TODO: Normalize 505, 626, 727
-TODO: Dx.vol(0.5) should change the volume of all patterns
-TODO: Tidal Drum Machines. Create Drum Selector GUI;
 TODO: Solo method. Example: Dx.solo(\bd)
 TODO: Normalize sound (909)
 TODO: Intro / Fill in
@@ -11,6 +12,7 @@ Dx : Px {
   classvar <>drumMachine;
   classvar <>drumMachines;
   classvar <>dxAmp;
+  classvar <fx;
   classvar hasLoadedPresets;
   classvar <instrumentFolders;
   classvar <>lastPreset;
@@ -22,6 +24,7 @@ Dx : Px {
     drumMachines = [505, 606, 626, 707, 727, 808, 909];
     dxAmp = 0.6;
 
+    fx = Dictionary.new;
     instrumentFolders = Dictionary.new;
     lastPreset = Array.new;
     this.prCreatePresetsDict;
@@ -33,6 +36,11 @@ Dx : Px {
     newPattern = this.prAddDrumMachinePlayBuf(newPattern);
 
     ^super.new(newPattern);
+  }
+
+  *delay { |value = 0.3|
+    fx.put(\delay, value);
+    this.preset(lastPreset[0], lastPreset[1], dxAmp);
   }
 
   *in { |fadeTime = 16|
@@ -66,7 +74,9 @@ Dx : Px {
       var id = this.prCreateId(i);
 
       if (this.prHasInstrument(pattern[\instrument]) == true) {
-        this.new(pattern.copy.putAll([
+        var newPattern = this.prAddFxToPattern(pattern);
+
+        this.new(newPattern.putAll([
           \id, id,
           \drumMachine, drumMachine,
           \dx, true,
@@ -77,6 +87,11 @@ Dx : Px {
 
   *release { |fadeTime = 10|
     this.prFadeDrums(\out, fadeTime);
+  }
+
+  *reverb { |value = 0.3|
+    fx.put(\reverb, value);
+    this.preset(lastPreset[0], lastPreset[1], dxAmp);
   }
 
   *stop {
@@ -132,6 +147,24 @@ Dx : Px {
     subfolder = patternDrumMachine.toLower ++ "-" ++ pattern[\instrument].asString;
     folder = (patternDrumMachine ++ "/" ++ subfolder);
     pattern.putAll([\play: [folder, file]]);
+    ^pattern;
+  }
+
+  *prAddFxToPattern { |pattern|
+    var allFx = Array.new;
+
+    if (fx.notNil and: { fx.size > 0 }) {
+      fx keysValuesDo: { |key, value|
+        if ([0, Nil].includes(value))
+        { fx.removeAt(key) }
+        { allFx = allFx ++ [[\fx, key, \mix, value]]; };
+      };
+
+      if (allFx.size > 0) {
+        pattern.put(\fx, allFx);
+      };
+    };
+    
     ^pattern;
   }
 

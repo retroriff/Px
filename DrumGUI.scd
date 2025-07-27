@@ -1,13 +1,14 @@
 (
 var drumMachines, folders, machinePath;
 var firstCol, secondCol, thirdCol, mainView, row;
-var ampKnob, delayKnob, reverbKnob;
-var w = Window("Dancing To The Drum Machine", Rect(left: 0, top: 0, width: 420, height: 350));
+var lastActionTime = 0.0;
+
+var w = Window("🛢️ Dancing To The Drum Machine", Rect(left: 0, top: 0, width: 420, height: 350));
+w.background = Color(0.46045410633087, 0.64358153343201, 0.82325148582458);
 
 mainView = CompositeView(w, w.view.bounds);
 mainView.decorator = FlowLayout(mainView.bounds);
 mainView.decorator.gap = 0@0;
-mainView.background = Color(0.46045410633087, 0.64358153343201, 0.82325148582458);
 
 // Row container for both columns
 row = CompositeView(mainView, 500@340);
@@ -60,24 +61,24 @@ if (Dx.drumMachine.notNil) {
 // Right column = make a vertical container
 
 // 📶 Amp Knob
-ampKnob = Knob(secondCol, 80@80)
-.mode_(\round)
-.value_(0.5)
-.action_({ |v| Dx.vol(v.value) });
+Knob(secondCol, 80@80)
+.mode_(\vert)
+.value_(Dx.vol)
+.mouseUpAction_({ |v| Dx.vol(v.value) });
 
 StaticText(secondCol, 80@20).align_(\center).string_("Delay");
 
-delayKnob = Knob(secondCol, 80@80)
-.mode_(\round)
-.value_(0.5)
-.action_({ |v| Fx(\px).delay(v.value) });
+Knob(secondCol, 80@80)
+.mode_(\vert)
+.value_(Dx.fx[\delay])
+.mouseUpAction_({ |v| Dx.delay(v.value) });
 
 StaticText(secondCol, 80@20).align_(\center).string_("Reverb");
 
-reverbKnob = Knob(secondCol, 80@80)
-.mode_(\round)
-.value_(0.5)
-.action_({ |v| Fx(\px).reverb(v.value) });
+Knob(secondCol, 80@80)
+.mode_(\vert)
+.value_(Dx.fx[\reverb])
+.mouseUpAction_({ |v| Dx.reverb(v.value) });
 
 // 🔀 Random button
 Button(thirdCol, 80@145)
@@ -95,9 +96,22 @@ Button(thirdCol, 80@145)
 w.front;
 )
 
+707 i: \bd dur: 1 delay: 0.2
+Dx.drumMachine
+Dx.gui
+Px.last
+a = Dictionary.new
+a.removeAt(\a)
+Fx.clear
 ~chooseRandomMachine.()
 Dx.drumMachine
-Dx.preset(\break, 1);
+Dx.preset(\powerage, 1);
+Dx.shuffle
+Dx.delay(0)
+Dx.reverb(1)
+Px.last
+Dx.fx
+Dx.vol(0.5)
 Dx.use("505");
 Dx.use("707");
 Dx.use("AkaiLinn");

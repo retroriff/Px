@@ -1,18 +1,16 @@
 /*
 TODO: Normalize 505, 626, 727
 TODO: Dx.vol(0.5) should change the volume of all patterns
-TODO: Normalize hh, ma...
 TODO: Tidal Drum Machines. Create Drum Selector GUI;
 TODO: Solo method. Example: Dx.solo(\bd)
 TODO: Normalize sound (909)
-TODO: All devices should have the same instruments or avoid error?
 TODO: Intro / Fill in
-TODO: Unit tests
 */
 
 Dx : Px {
   classvar <>drumMachine;
   classvar <>drumMachines;
+  classvar <>dxAmp;
   classvar hasLoadedPresets;
   classvar <instrumentFolders;
   classvar <>lastPreset;
@@ -22,6 +20,7 @@ Dx : Px {
   *initClass {
     drumMachine = 808;
     drumMachines = [505, 606, 626, 707, 727, 808, 909];
+    dxAmp = 0.6;
 
     instrumentFolders = Dictionary.new;
     lastPreset = Array.new;
@@ -117,6 +116,14 @@ Dx : Px {
     }
   }
 
+  *vol { |amp|
+    if (amp.isNil)
+    { ^dxAmp };
+    
+    dxAmp = amp;
+    this.preset(lastPreset[0], lastPreset[1], amp);
+  }
+
   *prAddDrumMachinePlayBuf { |pattern|
     var folder, sample, subfolder;
     var patternDrumMachine = pattern[\drumMachine].asString;
@@ -156,7 +163,7 @@ Dx : Px {
 
     if (preset.notNil) {
       preset[\preset].do { |pattern|
-        var ampSeq = Pseq(pattern[\list].clip(0, amp ?? 0.6), inf);
+        var ampSeq = Pseq(pattern[\list].clip(0, amp ?? dxAmp), inf);
         patterns = patterns.add(
           (
             instrument: pattern[\instrument],

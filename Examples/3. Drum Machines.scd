@@ -1,4 +1,4 @@
-// We have 4 available drum machines: 606, 707, 808, 909:
+// We have 5 available drum machines: 505, 606, 707, 808 and 909:
 (
 707 i: \bd dur: 1;
 707 i: \sn dur: 2 off: 1;

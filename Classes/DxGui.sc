@@ -1,9 +1,8 @@
 + Dx {
   *gui {
     var drumMachinesList;
-    var folders = PathName(drumMachinesPath).folders.collect(_.folderName);
+    var folders = this.prGetDrumMachinesFolders;
     var firstCol, secondCol, thirdCol, mainView, row;
-    var ampKnob, delayKnob, lastActionTime = 0.0, reverbKnob;
 
     var w = Window("🛢️ Dancing To The Drum Machine", Rect(left: 0, top: 0, width: 420, height: 350));
     w.background = Color(0.46045410633087, 0.64358153343201, 0.82325148582458);
@@ -12,7 +11,7 @@
     mainView.decorator = FlowLayout(mainView.bounds);
     mainView.decorator.gap = 0@0;
 
-    // Row container for both columns
+    // Row container for the columns
     row = CompositeView(mainView, 500@340);
     row.decorator = FlowLayout(row.bounds);
     row.decorator.gap = 10@10;
@@ -42,33 +41,30 @@
       initAction: false
     );
 
+    // Set the initial value of the drum machine list
     if (Dx.drumMachine.notNil) {
-      var idx = folders.detectIndex { |x| x == Dx.drumMachine.asString };
-
+      var idx = this.prGetDrumMachinesListIndex(folders);
+      
       if (idx.notNil)
       { drumMachinesList.value = idx };
-    } {
-      folders[0]; // clears selection
     };
 
-    // Right column
-
     // 📶 Amp Knob
-    ampKnob = Knob(secondCol, 80@80)
+    Knob(secondCol, 80@80)
     .mode_(\vert)
     .value_(Dx.vol)
     .mouseUpAction_({ |v| Dx.vol(v.value) });
 
+    // ✨ Delay Knob
     StaticText(secondCol, 80@20).align_(\center).string_("Delay");
-
-    delayKnob = Knob(secondCol, 80@80)
+    Knob(secondCol, 80@80)
     .mode_(\vert)
     .value_(Dx.fx[\delay])
     .mouseUpAction_({ |v| Dx.delay(v.value) });
 
+    // ✨ Reverb Knob
     StaticText(secondCol, 80@20).align_(\center).string_("Reverb");
-
-    reverbKnob = Knob(secondCol, 80@80)
+    Knob(secondCol, 80@80)
     .mode_(\vert)
     .value_(Dx.fx[\reverb])
     .mouseUpAction_({ |v| Dx.reverb(v.value) });
@@ -79,10 +75,11 @@
     .action_({
       var idx;
       this.shuffle;
-      idx = folders.detectIndex { |x| x == Dx.drumMachine.asString };
+      idx = this.prGetDrumMachinesListIndex(folders);
       drumMachinesList.value = idx;
     });
 
+    // 🔴 Stop button
     Button(thirdCol, 80@145)
     .states_([["Stop", Color.white, Color.red(0.8)]])
     .action_({ Px.stop; });
@@ -91,9 +88,17 @@
   }
 
   *shuffle {
-    var folders = PathName(drumMachinesPath).folders.collect(_.folderName);
+    var folders = this.prGetDrumMachinesFolders;
     var randomIndex = folders.size.rand;
     
     Dx.use(folders[randomIndex]);
+  }
+
+  *prGetDrumMachinesFolders {
+    ^PathName(drumMachinesPath).folders.collect(_.folderName);
+  }
+
+  *prGetDrumMachinesListIndex { |folders|
+    ^folders.detectIndex { |x| x == Dx.drumMachine.asString };
   }
 }

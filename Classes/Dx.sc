@@ -1,5 +1,4 @@
 /*
-TODO: Function per a folders.detectIndex { |x| x == Dx.drumMachine.asString }
 TODO: Document Dx.gui and Dx.shuffle, Dx.delay and Dx.reverb, Dx.vol
 TODO: Remove postln if preset doesn't change
 TODO: Normalize 505, 626, 727

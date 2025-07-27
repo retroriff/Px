@@ -1,7 +1,6 @@
 (
 var drumMachines, folders, machinePath;
 var firstCol, secondCol, thirdCol, mainView, row;
-var lastActionTime = 0.0;
 
 var w = Window("🛢️ Dancing To The Drum Machine", Rect(left: 0, top: 0, width: 420, height: 350));
 w.background = Color(0.46045410633087, 0.64358153343201, 0.82325148582458);
@@ -44,12 +43,6 @@ drumMachines = EZListView(
   initAction: false
 );
 
-if (Dx.drumMachine.notNil) {
-  var idx = folders.detectIndex { |x| x == Dx.drumMachine.asString };
-  if (idx.notNil) { idx.postln; drumMachines.value = idx };
-} {
-  folders[0]; // clears selection
-};
 
 // 🎲 Random selection function
 ~chooseRandomMachine = {

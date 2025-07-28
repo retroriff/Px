@@ -43,6 +43,15 @@ Dx.loadPresets;
 // The default drum machine is 808, but we can change it:
 Dx use: 909;
 
+// Launch a GUI to control the drum machine:
+Dx.gui;
+
+// Preset controls:
+Dx.delay(0.5);
+Dx.reverb(0.5);
+Dx.shuffle;
+Dx.vol(0.2);
+
 // Methods to stop it:
 Dx.release;
 Dx.stop;

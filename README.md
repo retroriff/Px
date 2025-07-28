@@ -192,7 +192,7 @@ We can simplify the usage of drum machine using shortcodes. The available drum m
 
 ```js
 707 i: \bd dur: 1;
-707 i: \sn dur: 2 off: 1;
+707 i: \sd dur: 2 off: 1;
 
 // Stop all
 \707 i: \all
@@ -206,12 +206,17 @@ Dx.preset(\electro, 1);
 
 ### Dx class methods
 
-| Name          | Arguments                                         | Description                      |
-| ------------- | ------------------------------------------------- | -------------------------------- |
-| `loadPresets` | None                                              | Reloads presets from YAML files  |
-| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/) |
-| `release`     | None                                              | Release with fadeTime            |
-| `stop`        | None                                              | Same as `\808 i: \all`           |
+| Name          | Arguments                                         | Description                           |
+| ------------- | ------------------------------------------------- | ------------------------------------- |
+| `delay`       | mix?: range 0..1 \|                               | Adds delay FX to the preset patterns  |
+| `gui`         | None                                              | Opens a drum machine bank GUI         |
+| `loadPresets` | None                                              | Reloads presets from YAML files       |
+| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/)      |
+| `release`     | None                                              | Releases with fadeTime                |
+| `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns |
+| `shuffle`     | None                                              | Shuffles the drum machines bank       |
+| `stop`        | None                                              | Same as `\808 i: \all`                |
+| `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns   |
 
 ## 🌊 Sx: A Sequenced Synth
 
@@ -303,7 +308,7 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `\cp`  | Hand**C**la**P**    | 39           |
 | `\cb`  | **C**ow**B**ell     | 56           |
 | `\cy`  | **C**ymbal          | 49           |
-| `\hh`  | **O**pen**H**ihat   | 46           |
+| `\hh`  | Open**H**i**h**at   | 46           |
 | `\ch`  | **C**losed**H**ihat | 42           |
 
 ### TR08 class methods

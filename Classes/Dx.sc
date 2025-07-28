@@ -1,5 +1,4 @@
 /*
-TODO: Document Dx.gui and Dx.shuffle, Dx.delay and Dx.reverb, Dx.vol
 TODO: Remove postln if preset doesn't change
 TODO: Normalize 505, 626, 727
 TODO: Solo method. Example: Dx.solo(\bd)
@@ -135,7 +134,9 @@ Dx : Px {
     { ^dxAmp };
     
     dxAmp = amp;
-    this.preset(lastPreset[0], lastPreset[1], amp);
+
+    if (lastPreset.notEmpty)
+    { this.preset(lastPreset[0], lastPreset[1], amp) };
   }
 
   *prAddDrumMachinePlayBuf { |pattern|

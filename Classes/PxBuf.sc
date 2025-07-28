@@ -18,47 +18,65 @@
   }
 
 
-  *loadSamples { |path, additionalPathsArray|
+  *loadSamples { |pxPath|
     var addFileToDictionary = { |folderName, files|
       var audioFiles = files.select { |file|
         file.extension.toLower == "wav" or: { file.extension.toLower == "aiff" }
       };
+
       samplesDict[folderName] = audioFiles.collect { |file|
         Buffer.read(Server.default, file.fullPath)
       };
     };
 
-    var samplesFolder = PathName(path.standardizePath);
-    var folders = samplesFolder.entries;
+    var pathsArray;
 
+    drumMachinesPath = Quarks.folder +/+ "tidal-drum-machines/machines/";
+    pathsArray = [pxPath, drumMachinesPath];
     samplesDict = Dictionary.new;
-    samplesPath = path;
+    samplesPath = pxPath;
 
-    if (File.exists(samplesFolder.fullPath)) {
-      for (0, folders.size - 1, { |i|
-        var folder = folders[i];
-        var hasFiles = folder.files.size;
+    pathsArray.do { |path|
+      var root = PathName(path.standardizePath);
+      var folders = root.entries;
 
-        if (hasFiles > 0) {
-          addFileToDictionary.(folder.folderName, folder.files);
-        } {
-          folder.entries.do { |entry|
-            var entryHasFiles = entry.files.size;
-            if (entryHasFiles > 0) {
-              var subFolderName = folder.folderName ++ "/" ++ entry.folderName;
-              addFileToDictionary.(subFolderName, entry.files);
-            }
-          };
-        }
-      });
-    } {
-      ("Path does not exist: " ++ path).warn;
-    }
+      if (File.exists(root.fullPath)) {
+        for (0, folders.size - 1, { |i|
+          var folder = folders[i];
+          var hasFiles = folder.files.size;
+
+          if (hasFiles > 0) {
+            addFileToDictionary.(folder.folderName, folder.files);
+          } {
+            folder.entries.do { |entry|
+              var entryHasFiles = entry.files.size;
+
+              if (entryHasFiles > 0) {
+                var subFolderName = folder.folderName ++ "/" ++ entry.folderName;
+                addFileToDictionary.(subFolderName, entry.files);
+              }
+            };
+          }
+        });
+      } {
+        this.prPrint("🔴 Path does not exist: " ++ root.fullPath);
+      }
+    };
   }
 
   *prCreateBufInstruments { |pattern|
     pattern[\play].notNil.if {
-      pattern = pattern ++ (instrument: \playbuf, buf: pattern[\play]);
+      var numChannels = 2;
+      var playBuf = \playbuf;
+      var folder = pattern[\play][0];
+      var file = pattern[\play][1];
+
+      if (file.isInteger) {
+        numChannels = Px.samplesDict[folder][file].numChannels;
+        playBuf = (numChannels == 1).if(\playbufMono, \playbuf);
+      };
+
+      pattern = pattern ++ (instrument: playBuf, buf: pattern[\play]);
       pattern.removeAt(\play);
     };
 
@@ -67,7 +85,7 @@
       pattern.removeAt(\loop);
     };
 
-    ^pattern ++ (fix: 1);
+    ^pattern;
 
   }
 

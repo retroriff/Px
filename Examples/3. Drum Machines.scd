@@ -1,4 +1,4 @@
-// We have 4 available drum machines: 606, 707, 808, 909:
+// We have 5 available drum machines: 505, 606, 707, 808 and 909:
 (
 707 i: \bd dur: 1;
 707 i: \sn dur: 2 off: 1;
@@ -42,6 +42,15 @@ Dx.loadPresets;
 
 // The default drum machine is 808, but we can change it:
 Dx use: 909;
+
+// Launch a GUI to control the drum machine:
+Dx.gui;
+
+// Preset controls:
+Dx.delay(0.5);
+Dx.reverb(0.5);
+Dx.shuffle;
+Dx.vol(0.2);
 
 // Methods to stop it:
 Dx.release;

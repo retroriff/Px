@@ -8,6 +8,7 @@ TODO: Rename name references to id?
 
 Px {
     classvar <>chorusPatterns;
+    classvar <drumMachinesPath;
     classvar <>last;
     classvar <>lastFormatted;
     classvar <lastName;

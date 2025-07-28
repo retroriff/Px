@@ -8,7 +8,7 @@ TR08 : Dx {
     *initClass {
         drumKit = Dictionary[
             \bd -> 36,
-            \sn -> 38,
+            \sd -> 38,
             \lc -> 64,
             \lt -> 43,
             \mc -> 63,
@@ -22,7 +22,7 @@ TR08 : Dx {
             \cb -> 56,
             \cy -> 49,
             \oh -> 46,
-            \ch -> 42,
+            \hh -> 42,
         ];
     }
 

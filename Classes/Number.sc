@@ -158,8 +158,10 @@
 
   // Functions
   createId { |ins|
-    if (this.prShouldGenerateDrumMachineId(ins)) {
-      ^this.prGenerateDrumMachineId(ins);
+    var instrumentWithoutSufix = this.prRemoveSufix(ins);
+
+    if (this.prShouldGenerateDrumMachineId(instrumentWithoutSufix)) {
+      ^this.prGenerateDrumMachineId(instrumentWithoutSufix);
     }
 
     ^this.asSymbol;
@@ -190,15 +192,18 @@
     ^pairs;
   }
 
-  prPreventNonZeroExponential { |curve, value|
-    if (curve == \exp and: (value == 0))
-    { ^0.01 }
-    { ^value };
-  }
+  prCreateArrayFromSample { |sample|
+    if (sample.isString) {
+      var parts = sample.asString.split($:);
+        
+      if (parts.size > 1) {
+        ^[parts[0], parts[1].asInteger];
+      }
 
-  prRemoveBeatSetWhenSet {
-    var id = Px.patternState[\id];
-    Px.last[id].removeAt(\beatSet);
+      ^[parts[0], 0];
+    };
+     
+    ^sample;
   }
 
   prCreatePseg { |key, value|
@@ -256,9 +261,19 @@
     { ^generateNewDrumMachineId.value.asSymbol }
     { ^findExistingPatternForIns[\id] };
   }
+  
+  prExtractSufix { |value|
+    var parts = value.asString.split($:);
+
+    if (parts.size > 1) {
+        ^parts[1].asInteger;
+    }
+    
+    ^nil;
+  }
 
   prHasDrumMachine {
-    var drumMachines = [606, 707, 808, 909];
+    var drumMachines = [505, 606, 707, 808, 909];
 
     ^drumMachines.includes(this);
   }
@@ -274,12 +289,17 @@
   }
 
   prPlay { |i, play, loop|
+    var instrumentWithoutSufix = this.prRemoveSufix(i);
+
     var newPattern = (
       id: this.createId(i),
-      instrument: i,
-      loop: loop,
-      play: play,
+      instrument: instrumentWithoutSufix,
+      loop: this.prCreateArrayFromSample(loop),
+      play: this.prCreateArrayFromSample(play),
     );
+
+    if (i.asString != instrumentWithoutSufix.asString and: { this.prExtractSufix(i).notNil})
+    { newPattern.putAll([\file, this.prExtractSufix(i)]) };
 
     this.prPlayClass(newPattern);
   }
@@ -290,6 +310,28 @@
     if (this.prHasDrumMachine)
     { ^Dx(newPattern.putAll([\drumMachine, this])) }
     { ^Px(newPattern) };
+  }
+
+  prPreventNonZeroExponential { |curve, value|
+    if (curve == \exp and: (value == 0))
+    { ^0.01 }
+    { ^value };
+  }
+
+  prRemoveBeatSetWhenSet {
+    var id = Px.patternState[\id];
+    Px.last[id].removeAt(\beatSet);
+  }
+
+
+  prRemoveSufix { |name|
+    var parts = name.asString.split($:);
+
+    if (parts.size > 1) {
+        ^parts[0];
+    }
+
+    ^name;
   }
 
   prUpdatePattern { |pairs|

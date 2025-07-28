@@ -28,7 +28,8 @@ Additional code examples can be found [here](/Examples/).
 
 1. Install `Quarks.install("https://github.com/retroriff/sc-px");` and recompile.
 2. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for `PbindFx`)
-3. Load SynthDefs and audio files by running:
+3. Install [Tidal Drum Machines](https://github.com/geikha/tidal-drum-machines)
+4. Load SynthDefs and audio files by running:
 
 ```
 Px.loadSynthDefs;
@@ -84,11 +85,13 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ### Instrument methods
 
-| Name   | Arguments                                        | Description                            |
-| ------ | ------------------------------------------------ | -------------------------------------- |
-| `i`    | name: string                                     | Plays a Synthdef. Same as `instrument` |
-| `loop` | [folder: string, file: number \| \jump \| \rand] | Plays a loop from a buffer             |
-| `play` | [folder: string, file: number \| array \| \rand] | Plays a buffer                         |
+| Name   | Arguments                                          | Description                            |
+| ------ | -------------------------------------------------- | -------------------------------------- |
+| `i`    | name: string                                       | Plays a Synthdef. Same as `instrument` |
+| `loop` | [folder: string, file: number \| \jump \| \rand]\* | Plays a loop from a buffer             |
+| `play` | [folder: string, file: number \| array \| \rand]\* | Plays a buffer                         |
+
+`*` The array can be replaced by a string shortcut: `"folder:index"`.
 
 ### Px class methods
 
@@ -185,11 +188,11 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 
 ## 🛢️ Drum Machines
 
-We can simplify the usage of drum machine using shortcodes. The available drum machines are 606, 707, 808 and 909. Here's an example:
+We can simplify the usage of drum machine using shortcodes. The available drum machines are 505, 606, 707, 808 and 909. Here's an example:
 
 ```js
 707 i: \bd dur: 1;
-707 i: \sn dur: 2 off: 1;
+707 i: \sd dur: 2 off: 1;
 
 // Stop all
 \707 i: \all
@@ -203,12 +206,17 @@ Dx.preset(\electro, 1);
 
 ### Dx class methods
 
-| Name          | Arguments                                         | Description                      |
-| ------------- | ------------------------------------------------- | -------------------------------- |
-| `loadPresets` | None                                              | Reloads presets from YAML files  |
-| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/) |
-| `release`     | None                                              | Release with fadeTime            |
-| `stop`        | None                                              | Same as `\808 i: \all`           |
+| Name          | Arguments                                         | Description                           |
+| ------------- | ------------------------------------------------- | ------------------------------------- |
+| `delay`       | mix?: range 0..1 \|                               | Adds delay FX to the preset patterns  |
+| `gui`         | None                                              | Opens a drum machine bank GUI         |
+| `loadPresets` | None                                              | Reloads presets from YAML files       |
+| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/)      |
+| `release`     | None                                              | Releases with fadeTime                |
+| `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns |
+| `shuffle`     | None                                              | Shuffles the drum machines bank       |
+| `stop`        | None                                              | Same as `\808 i: \all`                |
+| `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns   |
 
 ## 🌊 Sx: A Sequenced Synth
 
@@ -287,7 +295,7 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | Symbol | Instrument          | MIDI Control |
 | ------ | ------------------- | ------------ |
 | `\bd`  | **B**ass**D**rum    | 36           |
-| `\sn`  | **S**nare**D**rum   | 38           |
+| `\sd`  | **S**nare**D**rum   | 38           |
 | `\lc`  | **L**ow**C**onga    | 64           |
 | `\lt`  | **L**ow**T**om      | 43           |
 | `\mc`  | **M**id**C**onga    | 63           |
@@ -300,7 +308,7 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `\cp`  | Hand**C**la**P**    | 39           |
 | `\cb`  | **C**ow**B**ell     | 56           |
 | `\cy`  | **C**ymbal          | 49           |
-| `\oh`  | **O**pen**H**ihat   | 46           |
+| `\hh`  | Open**H**i**h**at   | 46           |
 | `\ch`  | **C**losed**H**ihat | 42           |
 
 ### TR08 class methods

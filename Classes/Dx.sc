@@ -1,6 +1,5 @@
 /*
-TODO: Remove postln if preset doesn't change
-TODO: Normalize 505, 626, 727
+TODO: Normalize 626, 727
 TODO: Solo method. Example: Dx.solo(\bd)
 TODO: Normalize sound (909)
 TODO: Intro / Fill in
@@ -65,7 +64,7 @@ Dx : Px {
     { this.prGetInstrumentFolders };
 
     if (newPreset != lastPreset or: (hasLoadedPresets == true)) {
-      this.prCreatePatternFromPreset(name, number, amp);
+      this.prCreatePatternFromPreset(newPreset);
     };
 
     presetPatterns do: { |pattern, i|
@@ -181,22 +180,29 @@ Dx : Px {
     ^hundred * 100 + i;
   }
 
-  *prCreatePatternFromPreset { |name, number, amp|
-    var presetNumber, preset;
-    var patterns = Array.new;
-    var presetGroup = presetsDict[name ?? \electro];
+  *prCreatePatternFromPreset { |newPreset|
+    var newName = newPreset[0] ?? \electro;
+    var newNumber = newPreset[1] ?? 1;
+    var newAmp = newPreset[2] ?? dxAmp;
 
-    number = number ?? 1;
-    presetNumber = number.clip(1, presetGroup.size) - 1;
+    var patterns = Array.new;
+    var presetNumber, preset;
+    var presetGroup = presetsDict[newName];
+
+    var hasNewName = newName != lastPreset[0];
+    var hasNewNumber = newNumber != lastPreset[1];
+    var hasNewPreset = hasNewName == true or: { hasNewNumber == true };
+
+    presetNumber = newNumber.clip(1, presetGroup.size) - 1;
     preset = presetGroup[presetNumber];
 
-    if (number > presetGroup.size) {
+    if (newNumber > presetGroup.size) {
       super.prPrint("🧩 This set has".scatArgs(presetGroup.size, "presets"));
     };
 
     if (preset.notNil) {
       preset[\preset].do { |pattern|
-        var ampSeq = Pseq(pattern[\list].clip(0, amp ?? dxAmp), inf);
+        var ampSeq = Pseq(pattern[\list].clip(0, newAmp), inf);
         patterns = patterns.add(
           (
             instrument: pattern[\instrument],
@@ -207,11 +213,12 @@ Dx : Px {
       };
     };
 
-    if (preset[\name].notNil)
+    if (preset[\name].notNil and: { hasNewPreset == true })
     { super.prPrint("🎧 Preset:".scatArgs(preset[\name])) };
 
+    dxAmp = newAmp;
     hasLoadedPresets = false;
-    lastPreset = [name, number];
+    lastPreset = [newName, newNumber, newAmp];
     presetPatterns = patterns;
   }
 

@@ -13,6 +13,7 @@ Px {
     classvar <>lastFormatted;
     classvar <lastName;
     classvar <midiClient;
+    classvar <midiOut;
     classvar <>ndefList;
     classvar <>patternState;
     classvar <samplesDict;

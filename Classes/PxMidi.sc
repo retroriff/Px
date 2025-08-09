@@ -6,8 +6,6 @@ TODO: MIDIOut instances
 
 + Px {
   *initMidi { | latency, deviceName, portName |
-    var midiOut;
-
     MIDIClient.init(verbose: false);
 
     if (deviceName.notNil and: (this.prDetectDevice(deviceName) == false)) {
@@ -34,6 +32,7 @@ TODO: MIDIOut instances
       midiClient.add(deviceName -> midiOut);
     };
 
+    CmdPeriod.add { this.prStopMidiOut };
     midiClient[deviceName].latency = latency ?? 0.2;
   }
 
@@ -78,6 +77,18 @@ TODO: MIDIOut instances
     ^MIDIClient.destinations.detect({ |endpoint|
       endpoint.name == name;
     }) !== nil;
+  }
+
+  *prStopMidiOut {
+    var chans = last.collect { |value| value[\chan] }.reject(_.isNil);
+
+    if (chans.isEmpty.not) {
+      chans do: { |chan|
+        (0..127) do: { |note|
+          Px.midiOut.noteOff(chan, note);
+        };
+      };
+    }
   }
 }
 

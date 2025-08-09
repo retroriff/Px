@@ -85,7 +85,7 @@
       pattern.removeAt(\loop);
     };
 
-    ^pattern;
+    ^pattern ++ (fix: 1);
 
   }
 

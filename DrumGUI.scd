@@ -2,8 +2,15 @@
 var drumMachines, folders, machinePath;
 var firstCol, secondCol, thirdCol, mainView, row;
 
-var w = Window("🛢️ Dancing To The Drum Machine", Rect(left: 0, top: 0, width: 420, height: 350));
-w.background = Color(0.46045410633087, 0.64358153343201, 0.82325148582458);
+var w = Window(
+  name: "🛢️ Dancing To The Drum Machine",
+  bounds: Rect(left: 0, top: 0, width: 420, height: 350)
+).front.alwaysOnTop_(true)
+.background_(Color(
+  red: 0.46045410633087,
+  green: 0.64358153343201,
+  alpha: 0.82325148582458)
+);
 
 mainView = CompositeView(w, w.view.bounds);
 mainView.decorator = FlowLayout(mainView.bounds);

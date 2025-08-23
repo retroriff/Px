@@ -3,9 +3,24 @@
     var drumMachinesList;
     var folders = this.prGetDrumMachinesFolders;
     var firstCol, secondCol, thirdCol, mainView, row;
+    var width = 420, height = 350;
 
-    var w = Window("🛢️ Dancing To The Drum Machine", Rect(left: 0, top: 0, width: 420, height: 350));
-    w.background = Color(0.46045410633087, 0.64358153343201, 0.82325148582458);
+    var w = Window(
+      name: "🛢️ Dancing To The Drum Machine",
+      bounds: Rect(
+        left: Window.screenBounds.width - width,
+        top: Window.screenBounds.height - height,
+        width: width,
+        height: height
+      )
+    )
+    .alwaysOnTop_(true)
+    .background_(Color(
+      red: 0.46,
+      green: 0.64,
+      blue: 0.82)
+    )
+    .front;
 
     mainView = CompositeView(w, w.view.bounds);
     mainView.decorator = FlowLayout(mainView.bounds);
@@ -44,7 +59,7 @@
     // Set the initial value of the drum machine list
     if (Dx.drumMachine.notNil) {
       var idx = this.prGetDrumMachinesListIndex(folders);
-      
+
       if (idx.notNil)
       { drumMachinesList.value = idx };
     };
@@ -90,7 +105,7 @@
   *shuffle {
     var folders = this.prGetDrumMachinesFolders;
     var randomIndex = folders.size.rand;
-    
+
     Dx.use(folders[randomIndex]);
   }
 

@@ -6,6 +6,10 @@ TODO: MIDIOut instances
 
 + Px {
   *initMidi { | latency, deviceName, portName |
+    // Ableton Live > Preferences > Audio > Output Latency
+    var abletonLiveOutputLatency = 26.3;
+    var abletonLiveLatencyMs = Server.default.latency - (abletonLiveOutputLatency / 1000);
+
     MIDIClient.init(verbose: false);
 
     if (deviceName.notNil and: (this.prDetectDevice(deviceName) == false)) {
@@ -33,7 +37,7 @@ TODO: MIDIOut instances
     };
 
     CmdPeriod.add { this.prStopMidiOut };
-    midiClient[deviceName].latency = latency ?? 0.2;
+    midiClient[deviceName].latency = latency ?? abletonLiveLatencyMs;
   }
 
   *prCreateMidi { |pattern|

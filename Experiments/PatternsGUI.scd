@@ -1,11 +1,13 @@
 (
 var gridGap = 5, itemWidth = 68, newSlider, padding = 10, sliders;
 var patterns = Px.last;
+var patternsFormatted = Px.lastFormatted;
 var windowWidth = patterns.size * (itemWidth + gridGap) + (padding * 2) + 5;
 
 var getAmp = { |amp|
   if (amp.class == Pseq) {
-    amp.list.maxItem;
+    amp = amp.list.reject { |x| x.isKindOf(Rest) };
+    amp.maxItem;
   } {
     amp;
   }
@@ -26,6 +28,7 @@ var w = Window(
   bounds: Rect(
     left: 0,
     top: Window.screenBounds.height,
+
     width: windowWidth,
     height: 350
   )
@@ -44,10 +47,9 @@ var inner = CompositeView(w, w.view.bounds.insetBy(padding, padding));
 inner.decorator = FlowLayout(inner.bounds);
 inner.decorator.gap = 5@5;
 
-windowWidth.postln;
-patterns.size.postln;
 sliders = patterns.keys.asSortedList collect: { |key|
   var pattern = patterns[key];
+  var patternFormatted = patternsFormatted[key];
   var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
   var play = pattern[\play] !? { pattern[\play][0] };
   var label = pattern[\name] ?? pattern[\instrument] ?? chan ?? play ?? key;
@@ -55,14 +57,26 @@ sliders = patterns.keys.asSortedList collect: { |key|
   var slider = EZSlider(
     inner,
     itemWidth@320,
-    label: truncateText.(label),
+    controlSpec: ControlSpec(0.0, 1.0, \lin, 0.01),
+    label: truncateText.(pattern[\id].asString + label),
     layout: \vert,
-    initVal: getAmp.(pattern[\amp]);
-  )
+    initVal: getAmp.(patternFormatted[\amp]);
+  );
+
+  slider
   .labelView
-  .mouseDownAction_({ label.postln })
   .align_(\center)
-  .background_(Color.rand);
+  .background_(Color.rand)
+  .mouseDownAction_({
+    (pattern[\id].asString + pattern.asString).postln
+  });
+
+  slider
+  .sliderView
+  .mouseUpAction_({
+    patterns[key][\id].asInteger.postln;
+    patterns[key][\id].asInteger.set(1).amp(slider.value);
+  });
 };
 
 newSlider = VLayoutView(inner, Rect(10,10,100,100)).background_(Color.rand);

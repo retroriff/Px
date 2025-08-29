@@ -68,7 +68,7 @@ Dx : Px {
     };
 
     presetPatterns do: { |pattern, i|
-      var id = this.prCreateId(i);
+      var id = this.prCreateId(i).asSymbol;
 
       if (this.prHasInstrument(pattern[\instrument]) == true) {
         var newPattern = this.prAddFxToPattern(pattern);

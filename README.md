@@ -97,8 +97,9 @@ The superclass that generates the patterns from an array of events with a simpli
 
 - `chorus`: Plays a saved chorus.
 - `mixer`: Opens an `NdefMixer` instance, always on top, and assigns it to the `~mixer` variable.
-- `play`: It is only needed when it has been stopped.
+- `pause` (id: symbol): Pauses a specific pattern.
 - `release` (time: nil | number): Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.
+- `resume` (id: symbol): Resumes a paused pattern.
 - `root`: Sets a global root note to all patterns.
 - `save`: Saves a chorus.
 - `seed`: Sets a global seed for all patterns.

@@ -41,6 +41,10 @@
     ~mixer.moveTo(x, y);
   }
 
+  *pause { |id|
+    Ndef(id).pause;
+  }
+
   *play { |fadeTime|
     Ndef(\px).play(fadeTime: fadeTime);
   }
@@ -83,6 +87,10 @@
     }
   }
 
+  *resume { |id|
+    Ndef(id).resume;
+  }
+  
   *save {
     chorusPatterns = last.copy;
   }

@@ -1,8 +1,13 @@
 (
-var gridGap = 5, itemWidth = 68, newSlider, padding = 10, sliders;
+var gridGap = 5, itemWidth = 68, padding = 10;
 var patterns = Px.last;
 var patternsFormatted = Px.lastFormatted;
-var windowWidth = patterns.size * (itemWidth + gridGap) + (padding * 2) + 5;
+
+var windowWidth = {
+  if (patterns.size > 0)
+  { patterns.size * (itemWidth + gridGap) + (padding * 2) + 5 }
+  { 400 }
+};
 
 var getAmp = { |amp|
   if (amp.class == Pseq) {
@@ -23,15 +28,9 @@ var truncateText = { |text|
   text;
 };
 
-var w = Window(
-  name: "Px",
-  bounds: Rect(
-    left: 0,
-    top: Window.screenBounds.height,
-
-    width: windowWidth,
-    height: 375
-  )
+var window = Window(
+  "🪩 Px",
+  Rect(0, Window.screenBounds.height, windowWidth.value, 400)
 )
 .alwaysOnTop_(true)
 .background_(
@@ -43,84 +42,55 @@ var w = Window(
 )
 .front;
 
-var inner = CompositeView(
-  parent: w,
-  bounds: w.view.bounds.insetBy(padding, padding)
-);
-inner.decorator = FlowLayout(inner.bounds);
-inner.decorator.gap = 5@5;
+var firstRow = HLayout();
 
-patterns.keys.asSortedList collect: { |key|
+var sliders = patterns.keys.asSortedList collect: { |key|
   var pattern = patterns[key];
   var patternFormatted = patternsFormatted[key];
   var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
   var play = pattern[\play] !? { pattern[\play][0] };
   var label = pattern[\name] ?? pattern[\instrument] ?? chan ?? play ?? key;
+  var amp = getAmp.(patternFormatted[\amp]);
 
-  var track = VLayoutView(inner, Rect(0, 0, itemWidth, 360));
+  var staticTextColor = {
+    if (pattern[\drumMachine].notNil)
+    { Color.new255(245, 245, 155) }
+    { Color.rand }
+  };
 
-  var slider = EZSlider(
-    track,
-    itemWidth@320,
-    controlSpec: ControlSpec(0.0, 1.0, \lin, 0.01),
-    label: truncateText.(pattern[\id].asString + label),
-    layout: \vert,
-    initVal: getAmp.(patternFormatted[\amp]);
-  );
-
-  slider
-  .labelView
+  var staticText = StaticText()
   .align_(\center)
-  .background_(Color.rand)
+  .background_(staticTextColor.value)
   .mouseDownAction_({
     (pattern[\id].asString + pattern.asString).postln
-  });
+  })
+  .string_(truncateText.(pattern[\id].asString + label));
 
-  slider
-  .sliderView
+  var slider = Slider()
   .mouseUpAction_({
     pattern[\id].asInteger.set(1).amp(slider.value);
-  });
+  })
+  .value_(amp);
 
-  track.decorator = FlowLayout(inner.bounds);
-  track.decorator.gap = 50@05;
+  var numberBox = NumberBox()
+  .value_(amp);
 
-  Button(
-    track,
-    Rect(0, 100, 68, 28),
-  )
+  var button = Button()
   .states_([
     ["play", Color.black, Color.green],
     ["stop", Color.black, Color.grey]
   ])
-  .action_({ arg butt;
-    butt.string.postln;
+  .action_({ |btn|
+    if (btn.value == 0)
+    { Px.resume(pattern[\id]) }
+    { Px.pause(pattern[\id]) };
   });
+
+  VLayout(staticText, slider, numberBox, button);
 };
 
-// newSlider = VLayoutView(inner, Rect(10,10,100,100)).background_(Color.rand);
-//
-// Button(
-//   newSlider,
-//   68@28,
-// )
-// .string_(truncateText.("marimba"))
-// .action_({ arg butt;
-//   butt.string.postln;
-// });
-// Button(
-//   newSlider,
-//   68@28,
-// )
-// .string_(truncateText.("xilofon"))
-// .action_({ arg butt;
-//   butt.string.postln;
-// });
-
-w;
+if (sliders.size > 0)
+{ sliders do: { |slider| firstRow.add(slider)} }
+{ firstRow.add(StaticText().string_("🔴 Px is not running").align_(\center)) };
+window.layout_(firstRow);
 )
-
-a = 1
-
-Px.last[\1]
-Px.last[10001][\amp].list.maxItem

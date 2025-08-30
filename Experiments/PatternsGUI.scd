@@ -1,21 +1,26 @@
 (
-var gridGap = 5, itemWidth = 68, padding = 10;
+var gridGap = 5, itemWidth = 68, padding = 10, windowHeight = 350;
 var patterns = Px.last;
 var patternsFormatted = Px.lastFormatted;
 
 var windowWidth = {
   if (patterns.size > 0)
   { patterns.size * (itemWidth + gridGap) + (padding * 2) + 5 }
-  { 400 }
+  { windowHeight }
 };
 
 var getAmp = { |amp|
-  if (amp.class == Pseq) {
+  case
+  { amp.isKindOf(Pwhite) }
+  {  amp.hi }
+
+  { amp.isKindOf(Pattern) }
+  {
     amp = amp.list.reject { |x| x.isKindOf(Rest) };
     amp.maxItem;
-  } {
-    amp;
   }
+
+  { amp }
 };
 
 var truncateText = { |text|
@@ -29,56 +34,87 @@ var truncateText = { |text|
 };
 
 var window = Window(
-  "🪩 Px",
-  Rect(0, Window.screenBounds.height, windowWidth.value, 400)
+  "🪩 The music was new, black polished chrome, and came over the summer, like liquid night.",
+  Rect(0, Window.screenBounds.height, windowWidth.value, windowHeight)
 )
 .alwaysOnTop_(true)
 .background_(
   Color.new255(
-    red: 117,
-    green: 163,
-    blue: 209
+    red: 24,
+    green: 24,
+    blue: 24
   )
 )
 .front;
 
+
 var firstRow = HLayout();
 
-var sliders = patterns.keys.asSortedList collect: { |key|
+var sliders;
+
+var drumMachinePatterns = patterns.select { |pattern| pattern[\drumMachine].notNil }.keys.asSortedList;
+var nonDrumMachinePatterns =  patterns.select { |pattern| pattern[\drumMachine].isNil }.keys.asSortedList;
+var sortedKeys = drumMachinePatterns ++ nonDrumMachinePatterns;
+
+sliders = sortedKeys collect: { |key|
   var pattern = patterns[key];
   var patternFormatted = patternsFormatted[key];
   var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
   var play = pattern[\play] !? { pattern[\play][0] };
-  var label = pattern[\name] ?? pattern[\instrument] ?? chan ?? play ?? key;
+  var loop = pattern[\loop] !? { pattern[\loop][0] };
+  var patternLabel = pattern[\name] ?? pattern[\instrument] ?? chan ?? play ?? loop ?? key;
   var amp = getAmp.(patternFormatted[\amp]);
+  var backgroundColor = Color.new255(26, 29, 34);
+  var button, numberBox, slider, staticText;
+
+  var label = {
+    if (pattern[\drumMachine].notNil)
+    { "🛢️" + patternLabel }
+    { truncateText.(pattern[\id].asString + patternLabel) };
+  };
 
   var staticTextColor = {
     if (pattern[\drumMachine].notNil)
-    { Color.new255(245, 245, 155) }
+    { Color.new255(255, 255, 122) }
     { Color.rand }
   };
 
-  var staticText = StaticText()
+  // StaticText
+  staticText = StaticText()
   .align_(\center)
   .background_(staticTextColor.value)
   .mouseDownAction_({
     (pattern[\id].asString + pattern.asString).postln
   })
-  .string_(truncateText.(pattern[\id].asString + label));
+  .string_(label.value);
 
-  var slider = Slider()
+  // NumberBox
+  numberBox = NumberBox()
+  .action_({
+    pattern[\id].asInteger.set(1).amp(numberBox.value);
+    slider.value_(numberBox.value);
+  })
+  .backColor_(backgroundColor)
+  .clipHi_(1)
+  .clipLo_(0)
+  .scroll_step_(0.01)
+  .normalColor_(Color.white)
+  .value_(amp);
+
+  // Slider
+  slider = Slider()
+  .backColor_(backgroundColor)
   .mouseUpAction_({
     pattern[\id].asInteger.set(1).amp(slider.value);
+    numberBox.value_(slider.value);
   })
   .value_(amp);
 
-  var numberBox = NumberBox()
-  .value_(amp);
-
-  var button = Button()
+  // Button
+  button = Button()
   .states_([
-    ["play", Color.black, Color.green],
-    ["stop", Color.black, Color.grey]
+    ["🟢", Color.white, Color.new255(32, 42, 55)],
+    ["⬜️", Color.grey, Color.new255(32, 42, 55)]
   ])
   .action_({ |btn|
     if (btn.value == 0)

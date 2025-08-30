@@ -1,16 +1,13 @@
 (
 var drumMachines, folders, machinePath;
-var firstCol, secondCol, thirdCol, mainView, row;
+var firstCol, secondCol, thirdCol, mainView, row, knob, knobColor;
+var linkColor = Color.new255(31, 41, 55);
 
 var w = Window(
   name: "🛢️ Dancing To The Drum Machine",
   bounds: Rect(left: 0, top: 0, width: 420, height: 350)
 ).front.alwaysOnTop_(true)
-.background_(Color(
-  red: 0.46045410633087,
-  green: 0.64358153343201,
-  alpha: 0.82325148582458)
-);
+.background_(Color.new255(26, 29, 34));
 
 mainView = CompositeView(w, w.view.bounds);
 mainView.decorator = FlowLayout(mainView.bounds);
@@ -32,9 +29,9 @@ thirdCol = CompositeView(row, 100@320);
 thirdCol.decorator = FlowLayout(thirdCol.bounds);
 
 // Labels
-StaticText(firstCol, 200@20).align_(\center).string_("Drum Machines");
-StaticText(secondCol, 80@20).align_(\center).string_("Amp");
-StaticText(thirdCol, 80@20).align_(\center).string_("");
+StaticText(firstCol, 200@20).align_(\center).string_("Drum Machines").stringColor_(Color.white);
+StaticText(secondCol, 80@20).align_(\center).string_("Amp").stringColor_(Color.white);
+StaticText(thirdCol, 80@20).align_(\center).string_("").stringColor_(Color.white);
 
 // Drum machine list
 machinePath = Quarks.folder +/+ "tidal-drum-machines/machines/";
@@ -48,8 +45,10 @@ drumMachines = EZListView(
   items: folders,
   initVal: folders[0],
   initAction: false
-);
-
+)
+.listView
+.background_(linkColor)
+.stringColor_(Color.white);
 
 // 🎲 Random selection function
 ~chooseRandomMachine = {
@@ -61,61 +60,68 @@ drumMachines = EZListView(
 // Right column = make a vertical container
 
 // 📶 Amp Knob
-Knob(secondCol, 80@80)
+knob = Knob(secondCol, 80@80)
 .mode_(\vert)
 .value_(Dx.vol)
 .mouseUpAction_({ |v| Dx.vol(v.value) });
+knobColor = knob.color;
+knobColor[1] = Color.cyan;
+knob.color = knobColor;
 
-StaticText(secondCol, 80@20).align_(\center).string_("Delay");
+StaticText(secondCol, 80@20)
+.align_(\center)
+.string_("Delay")
+.stringColor_(Color.white);
 
-Knob(secondCol, 80@80)
+knob = Knob(secondCol, 80@80)
 .mode_(\vert)
 .value_(Dx.fx[\delay])
 .mouseUpAction_({ |v| Dx.delay(v.value) });
+knobColor = knob.color;
+knobColor[1] = Color.cyan;
+knob.color = knobColor;
 
-StaticText(secondCol, 80@20).align_(\center).string_("Reverb");
+StaticText(secondCol, 80@20)
+.align_(\center)
+.string_("Reverb")
+.stringColor_(Color.white);
 
-Knob(secondCol, 80@80)
+knob = Knob(secondCol, 80@80)
 .mode_(\vert)
 .value_(Dx.fx[\reverb])
 .mouseUpAction_({ |v| Dx.reverb(v.value) });
+knobColor = knob.color;
+knobColor[1] = Color.cyan;
+knob.color = knobColor;
 
 // 🔀 Random button
 Button(thirdCol, 80@145)
-.states_([["Random", Color.white, Color.blue(0.27)]])
+.states_([["Random", Color.white, linkColor]])
 .action_({
   var randomIndex = folders.size.rand;
   Dx.use(folders[randomIndex]);
   drumMachines.value = randomIndex;
+})
+.mouseDownAction_({ |butt|
+  butt.states = [["Random", Color.black, Color.cyan]];
+  butt.refresh;
+})
+.mouseUpAction_({ |butt|
+  butt.states = [["Random", Color.white, linkColor]];
+  butt.refresh;
 });
 
 Button(thirdCol, 80@145)
 .states_([["Stop", Color.white, Color.red(0.8)]])
-.action_({ Px.stop; });
+.action_({ Px.stop; })
+.mouseDownAction_({ |butt|
+  butt.states = [["Stop", Color.black, Color.cyan]];
+  butt.refresh;
+})
+.mouseUpAction_({ |butt|
+  butt.states = [["Stop", Color.white, Color.red(0.8)]];
+  butt.refresh;
+});
 
 w.front;
 )
-
-707 i: \bd dur: 1 delay: 0.2
-Dx.drumMachine
-Dx.gui
-Px.last
-a = Dictionary.new
-a.removeAt(\a)
-Fx.clear
-~chooseRandomMachine.()
-Dx.drumMachine
-Dx.preset(\powerage, 1);
-Dx.shuffle
-Dx.delay(0)
-Dx.reverb(1)
-Px.last
-Dx.fx
-Dx.vol(0.5)
-Dx.use("505");
-Dx.use("707");
-Dx.use("AkaiLinn");
-Dx.use("27");
-Dx.vol(1)
-Dx.use(909);
-Dx.use(707);

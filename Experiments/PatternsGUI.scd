@@ -1,3 +1,8 @@
+/*
+TODO: Update Pseq amp with Slider
+TODO: Refresh Window
+*/
+
 (
 var gridGap = 5, itemWidth = 68, padding = 10, windowHeight = 350;
 var patterns = Px.last;
@@ -33,7 +38,10 @@ var truncateText = { |text|
   text;
 };
 
-var window = Window(
+var firstRow = HLayout();
+var sliders, drumMachinePatterns, nonDrumMachinePatterns, sortedKeys;
+
+~pxGui = Window(
   "🪩 The music was new, black polished chrome, and came over the summer, like liquid night.",
   Rect(0, Window.screenBounds.height, windowWidth.value, windowHeight)
 )
@@ -47,14 +55,9 @@ var window = Window(
 )
 .front;
 
-
-var firstRow = HLayout();
-
-var sliders;
-
-var drumMachinePatterns = patterns.select { |pattern| pattern[\drumMachine].notNil }.keys.asSortedList;
-var nonDrumMachinePatterns =  patterns.select { |pattern| pattern[\drumMachine].isNil }.keys.asSortedList;
-var sortedKeys = drumMachinePatterns ++ nonDrumMachinePatterns;
+drumMachinePatterns = patterns.select { |pattern| pattern[\drumMachine].notNil }.keys.asSortedList;
+nonDrumMachinePatterns =  patterns.select { |pattern| pattern[\drumMachine].isNil }.keys.asSortedList;
+sortedKeys = drumMachinePatterns ++ nonDrumMachinePatterns;
 
 sliders = sortedKeys collect: { |key|
   var pattern = patterns[key];
@@ -127,6 +130,11 @@ sliders = sortedKeys collect: { |key|
 
 if (sliders.size > 0)
 { sliders do: { |slider| firstRow.add(slider)} }
-{ firstRow.add(StaticText().string_("🔴 Px is not running").align_(\center)) };
-window.layout_(firstRow);
+{ firstRow.add(
+  StaticText()
+  .align_(\center)
+  .string_("🔴 Px is not running")
+  .stringColor_(Color.white)
+) };
+~pxGui.layout_(firstRow);
 )

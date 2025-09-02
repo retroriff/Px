@@ -82,7 +82,7 @@
       };
 
       if (anyParam.includes(\all)) {
-        this.prPrint("💀 Hush");
+        this.prPrint("💀 Killed by Death");
       };
     }
   }

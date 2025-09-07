@@ -1,4 +1,6 @@
 /*
+TODO: From Dx.preset(\break, 2) to Dx.preset(\break, 3) the patterns persist
+TODO: Dx.stop doesn't work anymore since the Tidal drum machines
 TODO: Normalize 626, 727
 TODO: Solo method. Example: Dx.solo(\bd)
 TODO: Normalize sound (909)
@@ -202,11 +204,14 @@ Dx : Px {
 
     if (preset.notNil) {
       preset[\preset].do { |pattern|
-        var ampSeq = Pseq(pattern[\list].clip(0, newAmp), inf);
+        var beats = pattern[\list].clip(0, newAmp);
+
         patterns = patterns.add(
           (
             instrument: pattern[\instrument],
-            amp: ampSeq,
+            amp: newAmp,
+            beat: true,
+            beatSet: beats,
             dur: 1/4
           )
         );

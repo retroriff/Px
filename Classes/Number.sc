@@ -21,7 +21,7 @@
     { pairs = [\beat, true, \weight, value] };
 
     if (value.isArray)
-    { pairs.addAll([\beatSet, value]) }
+    { pairs = [\beat, true, \beatSet, value] }
     { this.prRemoveBeatSetWhenSet };
 
     this.prUpdatePattern(pairs);

@@ -29,6 +29,10 @@
 909 i: \oh dur: 0.25 fill: 0.2 amp: 0.5;
 )
 
+// This is how we can update a drum machine:
+909 set: \bd dur: 0.5;
+
+// We can stop them all at once:
 \909 i: \all
 
 // Dx allows to play presets:

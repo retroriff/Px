@@ -1,5 +1,4 @@
 /*
-TODO: From Dx.preset(\break, 2) to Dx.preset(\break, 3) the patterns persist
 TODO: Dx.stop doesn't work anymore since the Tidal drum machines
 TODO: Normalize 626, 727
 TODO: Solo method. Example: Dx.solo(\bd)
@@ -105,18 +104,10 @@ Dx : Px {
 
     drumMachine = newDrumMachine;
 
+    this.prStopPreset;
+
     last.copy do: { |pattern, i|
       if (pattern[\dx] == true) {
-        // Px.stop has a fork that kills the Ndefs
-        var stopPattern = { |id|
-          last.removeAt(id);
-          ndefList.removeAt(id);
-          Pdef(id).source = nil;
-          soloList.remove(id);
-        };
-
-        stopPattern.(pattern[\id]);
-
         if (this.prHasInstrument(pattern[\instrument]) == true) {
           var lastTwoDigits = pattern[\id] % 10;
           pattern[\id] = this.prCreateId(lastTwoDigits);
@@ -202,6 +193,10 @@ Dx : Px {
       super.prPrint("🧩 This set has".scatArgs(presetGroup.size, "presets"));
     };
 
+    if (lastPreset.notNil) {
+      this.prStopPreset;
+    };
+
     if (preset.notNil) {
       preset[\preset].do { |pattern|
         var beats = pattern[\list].clip(0, newAmp);
@@ -274,6 +269,22 @@ Dx : Px {
     ^instrumentFolders[drumMachine.asString].any { |folder|
       folder.asString.endsWith("-" ++ instrument.asString)
       or: { folder.asString == instrument.asString }
+    };
+  }
+
+  *prStopPreset {
+    // Px.stop has a fork that kills the Ndefs
+    var stopPattern = { |id|
+      last.removeAt(id);
+      ndefList.removeAt(id);
+      Pdef(id).source = nil;
+      soloList.remove(id);
+    };
+
+    last.copy do: { |pattern, i|
+      if (pattern[\dx] == true) {
+        stopPattern.(pattern[\id]);
+      }
     };
   }
 }

@@ -24,10 +24,9 @@
 
     *prCreateBeatSet { |amp, pattern|
         var list = pattern[\beatSet].collect { |step|
-            if (step >= 1)
-            { step = amp };
-
-            step;
+            if (step > 0)
+            { amp }
+            { step};
         };
 
         ^Pseq(list, inf);

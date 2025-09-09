@@ -121,9 +121,15 @@
     var id = this.asSymbol;
 
     if (this.prHasDrumMachine and: { setId != true }) {
-      var pattern = Px.last.detect { |pattern|
-        pattern['drumMachine'] == 808 and: (pattern['instrument'] == setId)
+      var drumMachinePattern = Px.last.detect { |pattern|
+        pattern['drumMachine'].notNil and: (pattern['instrument'] == setId)
       };
+
+      var dxPresetPattern = Px.last.detect { |pattern|
+        pattern['id'] == this.asSymbol
+      };
+
+      var pattern = drumMachinePattern ?? dxPresetPattern;
 
       id = pattern[\id];
     };
@@ -274,8 +280,11 @@
 
   prHasDrumMachine {
     var drumMachines = [505, 606, 626, 707, 727, 808, 909];
+    var isDxPreset = Px.last.any { |pattern|
+      pattern[\drumMachine].notNil and: (pattern[\id] == this)
+    };
 
-    ^drumMachines.includes(this);
+    ^drumMachines.includes(this) or: (isDxPreset == true);
   }
 
   prFade { |direction, time|
@@ -305,7 +314,15 @@
   }
 
   prPlayClass { |newPattern|
+    var drumMachinePattern = Px.last.detect { |pattern|
+      pattern['id'] == this.asSymbol and: (pattern['drumMachine'].notNil)
+    };
+    
     Px.patternState = newPattern;
+
+    if (drumMachinePattern.notNil) {
+      ^Dx(newPattern.putAll([\drumMachine, drumMachinePattern[\drumMachine]]))
+    };
 
     if (this.prHasDrumMachine)
     { ^Dx(newPattern.putAll([\drumMachine, this])) }
@@ -322,7 +339,6 @@
     var id = Px.patternState[\id];
     Px.last[id].removeAt(\beatSet);
   }
-
 
   prRemoveSufix { |name|
     var parts = name.asString.split($:);

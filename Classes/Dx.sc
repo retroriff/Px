@@ -98,6 +98,7 @@ Dx : Px {
 
   *use { |newDrumMachine|
     var currentDrumMachine = drumMachine;
+    var lastPatterns = Px.last.copy;
 
     if (currentDrumMachine == newDrumMachine)
     { ^this.prPrint("🟢 Drum machine already selected") };
@@ -106,7 +107,7 @@ Dx : Px {
 
     this.prStopPreset;
 
-    last.copy do: { |pattern, i|
+    lastPatterns do: { |pattern, i|
       if (pattern[\dx] == true) {
         if (this.prHasInstrument(pattern[\instrument]) == true) {
           var lastTwoDigits = pattern[\id] % 10;

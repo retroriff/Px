@@ -1,6 +1,4 @@
 /*
-TODO: Dx.stop doesn't work anymore since the Tidal drum machines
-TODO: Normalize 626, 727
 TODO: Solo method. Example: Dx.solo(\bd)
 TODO: Normalize sound (909)
 TODO: Intro / Fill in
@@ -93,7 +91,7 @@ Dx : Px {
   }
 
   *stop {
-    ^drumMachine.asSymbol.i(\all);
+    ^this.prStopPreset;
   }
 
   *use { |newDrumMachine|

@@ -1,7 +1,3 @@
-/*
-TODO: Update Pseq amp with Slider
-*/
-
 (
 var windowHeight = 350;
 
@@ -58,8 +54,12 @@ var truncateText = { |text|
   var patterns = Px.last;
   var patternsFormatted = Px.lastFormatted;
 
-  var drumMachinePatterns = patterns.select { |pattern| pattern[\drumMachine].notNil }.keys.asSortedList;
-  var nonDrumMachinePatterns =  patterns.select { |pattern| pattern[\drumMachine].isNil }.keys.asSortedList;
+  var drumMachinePatterns = patterns.select { |pattern|
+    pattern[\drumMachine].notNil
+  }.keys.asSortedList;
+  var nonDrumMachinePatterns =  patterns.select { |pattern|
+    pattern[\drumMachine].isNil
+  }.keys.asSortedList;
   var sortedKeys = drumMachinePatterns ++ nonDrumMachinePatterns;
 
   sortedKeys collect: { |key|

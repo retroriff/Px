@@ -111,16 +111,16 @@ Button(thirdCol, 80@145)
   butt.refresh;
 });
 
+// 🔴 Stop button
 Button(thirdCol, 80@145)
-.states_([["Stop", Color.white, Color.red(0.8)]])
-.action_({ Px.stop; })
-.mouseDownAction_({ |butt|
-  butt.states = [["Stop", Color.black, Color.cyan]];
-  butt.refresh;
-})
-.mouseUpAction_({ |butt|
-  butt.states = [["Stop", Color.white, Color.red(0.8)]];
-  butt.refresh;
+.states_([
+  ["Stop", Color.white, Color.red(0.8)],
+  ["Play", Color.white, Color.new255(0, 193, 137)],
+])
+.action_({ |butt|
+  if (butt.value == 0)
+  { Dx.preset(Dx.lastPreset[0], Dx.lastPreset[1]) }
+  { Dx.stop };
 });
 
 w.front;

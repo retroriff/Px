@@ -21,6 +21,9 @@ Px {
     classvar <seeds;
     classvar <>soloList;
     classvar <soloMode;
+    classvar <>window;
+    classvar <windowWidth;
+    classvar <windowHeight;
 
     *initClass {
         // CmdPeriod.add { Px.clear };
@@ -31,6 +34,8 @@ Px {
         seeds = Dictionary.new;
         soloList = Array.new;
         soloMode = false;
+        windowWidth = 68;
+        windowHeight = 350;
     }
 
     *new { |newPattern|

@@ -12,16 +12,6 @@
     Ndef(\px).clear;
   }
 
-  *gui {
-    var gui = Ndef(\x).proxyspace.gui;
-    var width = gui.parent.bounds.width;
-    var height = gui.parent.bounds.height;
-    var x = (Window.screenBounds.width - width);
-    var y = Window.screenBounds.height;
-    gui.parent.bounds = [x, y, width, height];
-    gui.parent.alwaysOnTop_(true);
-  }
-
   *loadSynthDefs {
     PathName(("../SynthDefs/").resolveRelative).filesDo{ |file|
       file.fullPath.load;
@@ -37,7 +27,6 @@
 
     x = Window.screenBounds.width - ~mixer.sizes.small.x;
     y = Window.screenBounds.height - ~mixer.sizes.small.y;
-
     ~mixer.moveTo(x, y);
   }
 

@@ -59,6 +59,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `dur`    | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
 | `euclid` | [hits: number, total: number]                     | Generates an Euclidian rhythm                                                                                                                                                                |
 | `fill`   | weight: range 0..1                                | Fills the rests gap of its previous sequential pattern                                                                                                                                       |
+| `gui`    | 1 (open) \| 0 (close)                             | Open or refresh a patterns gui window. A 0 value closes the window. pattern                                                                                                                  |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
 | `in`     | seconds: integer                                  | Fades in the pattern. Same as `fade: \in` "in")                                                                                                                                              |
 | `off`    | beats: integer                                    | Offset value                                                                                                                                                                                 |
@@ -96,6 +97,7 @@ The superclass that generates the patterns from an array of events with a simpli
 ### Px class methods
 
 - `chorus`: Plays a saved chorus.
+- `gui`: Opens or refresh a gui window with pattern sliders.
 - `mixer`: Opens an `NdefMixer` instance, always on top, and assigns it to the `~mixer` variable.
 - `pause` (id: symbol): Pauses a specific pattern.
 - `release` (time: nil | number): Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.

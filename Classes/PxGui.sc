@@ -1,5 +1,9 @@
 + Px {
   *gui {
+    if (window.notNil) {
+      ^this.prUpdateGui;
+    };
+
     window = Window(
       "🪩 The music was new, black polished chrome, and came over the summer, like liquid night.",
       Rect(0, Window.screenBounds.height, this.prGenerateWindowWidth, windowHeight)
@@ -18,21 +22,6 @@
     this.prGenerateLayout;
   }
 
-  *updateGui {
-    var bounds;
-
-    if (window.isNil or: { window.visible != true }) {
-      ^this.prPrint("🔴 Window is closed");
-    };
-
-    bounds = window.bounds;
-    window.view.removeAll;
-    this.prGenerateLayout;
-
-    bounds.width = this.prGenerateWindowWidth;
-    window.bounds = bounds;
-  }
-
   *prGenerateLayout {
     var layout = HLayout();
     var sliders = this.prGenerateSliders;
@@ -46,7 +35,7 @@
     
     if (sliders.size > 0)
     { sliders do: { |slider| layout.add(slider); } }
-    { layout.add(emptyPatternsText); };
+    { layout.add(emptyPatternsText.value); };
 
     window.layout_(layout);
   }
@@ -62,7 +51,7 @@
       pattern[\drumMachine].isNil
     }.keys.asSortedList;
     var sortedKeys = drumMachinePatterns ++ nonDrumMachinePatterns;
-    
+
     ^sortedKeys collect: { |key|
       var pattern = patterns[key];
       var patternFormatted = patternsFormatted[key];
@@ -158,5 +147,20 @@
     };
 
     ^text;
+  }
+
+  *prUpdateGui {
+    var bounds;
+
+    if (window.isNil or: { window.visible != true }) {
+      ^this.prPrint("🔴 Window is closed");
+    };
+
+    bounds = window.bounds;
+    window.view.removeAll;
+    this.prGenerateLayout;
+
+    bounds.width = this.prGenerateWindowWidth;
+    window.bounds = bounds;
   }
 }

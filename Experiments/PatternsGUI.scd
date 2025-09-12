@@ -47,7 +47,7 @@ var truncateText = { |text|
   )
 )
 .front
-.onClose_({ Px.pxGui = nil });
+.onClose_({ Px.window = nil });
 
 ~sliderStaticTextColor = Color.rand;
 

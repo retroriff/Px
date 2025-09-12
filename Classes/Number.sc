@@ -69,6 +69,12 @@
     this.prUpdatePattern(pairs);
   }
 
+  gui { |value|
+    if (value == 0)
+    { Px.window.close }
+    { Px.gui };
+  }
+
   human { |delay|
     delay = delay ?? 0.1;
     this.prUpdatePattern([\human, delay.clip(0, 1)]);

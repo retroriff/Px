@@ -54,6 +54,20 @@ TODO: MIDIOut instances
       or: { pattern[\midicmd] == \noteOff }
       or: { pattern[\midicmd] == \control })
     { isMidiControl = true };
+    
+    if (pattern[\hasGate] == false) {
+      var stopHoldedNotes = {
+        if (midiHoldedNotes[pattern[\id]].notNil) {
+          var holdedPattern, holdedPairs;
+          holdedPattern = midiHoldedNotes[pattern[\id]];
+          holdedPattern.putAll([\dur, Pseq([1], 1), \midicmd, \noteOff]);
+          Pbind(*holdedPattern.asPairs).play(quant: 4);
+          };
+      };
+
+      stopHoldedNotes.();
+      midiHoldedNotes[pattern[\id]] = pattern;
+    };
 
     addMidiTypes = {
       if (midiClient.isNil)

@@ -20,6 +20,11 @@
     .onClose_({ Px.window = nil });
 
     this.prGenerateLayout;
+
+    CmdPeriod.add {
+      if (Px.window.notNil)
+      { Px.window.close };
+    }
   }
 
   *prGenerateLayout {

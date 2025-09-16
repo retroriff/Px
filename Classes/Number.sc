@@ -70,9 +70,13 @@
   }
 
   gui { |value|
-    if (value == 0)
-    { Px.window.close }
-    { Px.gui };
+    if (value != 0) {
+      Px.gui
+    } {
+      if (Px.window.notNil) {
+        Px.window.close
+      }
+    }
   }
 
   human { |delay|

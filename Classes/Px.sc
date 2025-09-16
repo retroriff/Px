@@ -13,6 +13,7 @@ Px {
     classvar <>lastFormatted;
     classvar <lastName;
     classvar <midiClient;
+    classvar <>midiHoldedNotes;
     classvar <midiOut;
     classvar <>ndefList;
     classvar <>patternState;
@@ -30,6 +31,7 @@ Px {
         chorusPatterns = Dictionary.new;
         last = Dictionary.new;
         lastFormatted = Dictionary.new;
+        midiHoldedNotes = Dictionary.new;
         ndefList = Dictionary.new;
         seeds = Dictionary.new;
         soloList = Array.new;

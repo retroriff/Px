@@ -90,6 +90,7 @@
         Pdef(item.key).source = nil;
       };
 
+      ndefList = Dictionary.new;
       ^Ndef(\px).free
     };
 

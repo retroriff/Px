@@ -59,7 +59,6 @@ Sx {
     }
 
     *release { |fadeTime = 10|
-        fadeTime.postln;
         Ndef(\sx).free(fadeTime);
 
         ^fork {

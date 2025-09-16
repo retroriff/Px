@@ -14,6 +14,16 @@
     Ndef(this).get(key);
   }
 
+  gui { |value|
+    if (value != 0) {
+      Px.gui
+    } {
+      if (Px.window.notNil) {
+        Px.window.close
+      }
+    }
+  }
+
   i { |value|
     var number = this.asInteger;
     var id = number.createId(value);

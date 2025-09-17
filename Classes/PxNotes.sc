@@ -50,6 +50,7 @@
             if (midiratio == true)
             { degrees = degrees.midiratio };
 
+            pattern[\degreeRaw] = degrees;
             pattern[\degree] = Pseq(degreesWithVariations.(degrees), length);
         };
 

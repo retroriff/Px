@@ -37,7 +37,7 @@
       .string_("🔴 Px is not running")
       .stringColor_(Color.white);
     };
-    
+
     if (sliders.size > 0)
     { sliders do: { |slider| layout.add(slider); } }
     { layout.add(emptyPatternsText.value); };
@@ -80,6 +80,11 @@
         { Color.rand }
       };
 
+      var slideAction = { |value|
+        pattern[\id].asInteger.set(1).amp(value);
+        numberBox.value_(value);
+      };
+
       // StaticText
       staticText = StaticText()
       .align_(\center)
@@ -104,10 +109,12 @@
 
       // Slider
       slider = Slider()
+      .action_({
+        slideAction.(slider.value);
+      })
       .backColor_(backgroundColor)
       .mouseUpAction_({
-        pattern[\id].asInteger.set(1).amp(slider.value);
-        numberBox.value_(slider.value);
+        slideAction.(slider.value);
       })
       .value_(amp);
 

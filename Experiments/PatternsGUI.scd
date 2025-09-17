@@ -110,6 +110,10 @@ var truncateText = { |text|
 
     // Slider
     slider = Slider()
+    .action_({
+      pattern[\id].asInteger.set(1).amp(slider.value);
+      numberBox.value_(slider.value);
+    })
     .backColor_(backgroundColor)
     .mouseUpAction_({
       pattern[\id].asInteger.set(1).amp(slider.value);

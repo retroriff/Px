@@ -56,13 +56,21 @@ TODO: MIDIOut instances
     { isMidiControl = true };
     
     if (pattern[\hasGate] == false) {
+      var hasSameNotes = { |holdedPattern|
+        [\degreeRaw, \midinote, \octave, \root, \scale] every: { |key|
+            holdedPattern[key] == pattern[key]
+        }
+      };
+
       var stopHoldedNotes = {
         if (midiHoldedNotes[pattern[\id]].notNil) {
-          var holdedPattern, holdedPairs;
-          holdedPattern = midiHoldedNotes[pattern[\id]];
-          holdedPattern.putAll([\dur, Pseq([1], 1), \midicmd, \noteOff]);
-          Pbind(*holdedPattern.asPairs).play(quant: 4);
+          var holdedPattern = midiHoldedNotes[pattern[\id]];
+
+          if (hasSameNotes.(holdedPattern) == false) {
+            holdedPattern.putAll([\dur, Pseq([1], 1), \midicmd, \noteOff]);
+            Pbind(*holdedPattern.asPairs).play(quant: 4);
           };
+        };
       };
 
       stopHoldedNotes.();
@@ -81,6 +89,7 @@ TODO: MIDIOut instances
         \instrument: \midi,
       ]);
     };
+
 
     if (isMidi == true)
     { pattern = addMidiTypes.value };

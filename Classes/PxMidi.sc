@@ -36,8 +36,20 @@ TODO: MIDIOut instances
       midiClient.add(deviceName -> midiOut);
     };
 
-    CmdPeriod.add { this.prStopMidiOut };
+    CmdPeriod.add { this.panic };
     midiClient[deviceName].latency = latency ?? abletonLiveLatencyMs;
+  }
+
+  *panic {
+    var chans = last.collect { |value| value[\chan] }.reject(_.isNil);
+
+    if (chans.isEmpty.not) {
+      chans do: { |chan|
+        (0..127) do: { |note|
+          Px.midiOut.noteOff(chan, note);
+        };
+      };
+    }
   }
 
   *prCreateMidi { |pattern|
@@ -104,18 +116,6 @@ TODO: MIDIOut instances
     ^MIDIClient.destinations.detect({ |endpoint|
       endpoint.name == name;
     }) !== nil;
-  }
-
-  *prStopMidiOut {
-    var chans = last.collect { |value| value[\chan] }.reject(_.isNil);
-
-    if (chans.isEmpty.not) {
-      chans do: { |chan|
-        (0..127) do: { |note|
-          Px.midiOut.noteOff(chan, note);
-        };
-      };
-    }
   }
 }
 

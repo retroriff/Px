@@ -84,9 +84,11 @@
     chorusPatterns = last.copy;
   }
 
-  *solo { |soloIds|
-    if (soloIds.isArray == false)
-    { soloIds = [soloIds.asSymbol] };
+  *solo { |soloIds, id2, id3|
+    if (soloIds.isArray == false) {º
+      soloIds = [soloIds, id2, id3];
+      soloIds = soloIds.reject(_.isNil).collect(_.asSymbol);
+    };
 
     soloIds = soloIds.collect { |id| id.asSymbol };
 

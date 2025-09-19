@@ -27,8 +27,9 @@ Px.shuffle
 // And hold 0 to relased a holded note:
 1 chan: 1 octave: 8 degree: \rand scale: \minor length: 1 hold: 0;
 
-// Send a "panic" message to kill all notes on the channel pattern:
+// Send a "panic" message to kill all notes or a specific channel:
 1 chan: 1 octave: 8 degree: [\rand, \minor, 1] panic: 1;
+Px.panic;
 
 // Pmidi can create more MIDIOut instances:
 Px.initMidi(deviceName: "TR-08");

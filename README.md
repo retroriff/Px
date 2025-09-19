@@ -179,6 +179,7 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 #### MIDI methods
 
 - `Pmidi.init`: Initializes the MIDIClient. Latency can be passed as argument.
+- `Px.panic`: Silences all active notes across channels.
 
 #### MIDI event methods
 

@@ -19,7 +19,7 @@ Px.initMidi(0.1);
 2 control: [1, [\rand, 0, 0.1]];
 2 control: [1, [\wrand, 0, 0.2, 0.3]];
 
-// Use hold and to keep a key press:
+// Use hold and to keep a key pressed:
 1 chan: 0 dur: 1 octave: 4 degree: \rand scale: \phrygian length: 3 seed: 345;
 2 chan: 1 octave: 8 degree: \rand scale: \minor length: 1 hold: 1;
 Px.shuffle

@@ -53,6 +53,10 @@
       { fadeTime = fadeTime };
 
       Ndef(\x).proxyspace.free(fadeTime);
+
+      if (midiOut.notNil) {
+        Px.panic;
+      };
     };
 
     Ndef(\px).free(fadeTime);
@@ -94,6 +98,10 @@
 
     last do: { |event|
       if (soloIds.includes(event[\id]) == false) {
+        if (event[\hasGate] == false) {
+          this.prChannelNoteOff(event[\chan]);
+        };
+
         Px.stop(event[\id]);
       }
     };

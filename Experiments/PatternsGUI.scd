@@ -1,5 +1,5 @@
 (
-var windowHeight = 350;
+var windowHeight = 350.min(Window.screenBounds.height / 4);
 
 var getAmp = { |amp|
   case

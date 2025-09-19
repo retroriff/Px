@@ -88,9 +88,9 @@
     chorusPatterns = last.copy;
   }
 
-  *solo { |soloIds, id2, id3|
-    if (soloIds.isArray == false) {º
-      soloIds = [soloIds, id2, id3];
+  *solo { |soloIds, id2, id3, id4, id5|
+    if (soloIds.isArray == false) {
+      soloIds = [soloIds, id2, id3, id4, id5];
       soloIds = soloIds.reject(_.isNil).collect(_.asSymbol);
     };
 
@@ -117,6 +117,7 @@
       ^Ndef(\px).free
     };
 
+    id = id.asSymbol;
     last.removeAt(id);
     ndefList.removeAt(id);
     Pdef(id).source = nil;

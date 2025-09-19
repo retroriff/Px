@@ -33,7 +33,7 @@ Px {
     ndefList = Dictionary.new;
     seeds = Dictionary.new;
     windowWidth = 68;
-    windowHeight = 350;
+    windowHeight = 350.min(Window.screenBounds.height / 4);
   }
 
   *new { |newPattern|

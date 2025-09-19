@@ -45,11 +45,15 @@ TODO: MIDIOut instances
 
     if (chans.isEmpty.not) {
       chans do: { |chan|
-        (0..127) do: { |note|
-          Px.midiOut.noteOff(chan, note);
-        };
+        this.prChannelNoteOff(chan);
       };
     }
+  }
+
+  *prChannelNoteOff { |chan|
+    (0..127) do: { |note|
+      Px.midiOut.noteOff(chan, note);
+    };
   }
 
   *prCreateMidi { |pattern|

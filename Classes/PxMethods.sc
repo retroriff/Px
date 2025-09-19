@@ -118,6 +118,11 @@
     };
 
     id = id.asSymbol;
+
+    if (last[id][\hasGate] == false) {
+      this.prChannelNoteOff(last[id][\chan]);
+    };
+
     last.removeAt(id);
     ndefList.removeAt(id);
     Pdef(id).source = nil;

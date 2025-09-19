@@ -277,7 +277,6 @@ Dx : Px {
       last.removeAt(id);
       ndefList.removeAt(id);
       Pdef(id).source = nil;
-      soloList.remove(id);
     };
 
     last.copy do: { |pattern, i|

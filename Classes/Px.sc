@@ -20,8 +20,6 @@ Px {
     classvar <samplesDict;
     classvar <samplesPath;
     classvar <seeds;
-    classvar <>soloList;
-    classvar <soloMode;
     classvar <>window;
     classvar <windowWidth;
     classvar <windowHeight;
@@ -34,8 +32,6 @@ Px {
         midiHoldedNotes = Dictionary.new;
         ndefList = Dictionary.new;
         seeds = Dictionary.new;
-        soloList = Array.new;
-        soloMode = false;
         windowWidth = 68;
         windowHeight = 350;
     }
@@ -156,33 +152,9 @@ Px {
     *prHandleSoloPattern { |pattern|
         var hasSolo = pattern['solo'] == true;
 
-        var resumeNdef = { |key|
-            if (Ndef(key).paused)
-            { Ndef(key).resume };
-        };
-
-        var pauseOrResumeNdefs = {
-            ndefList.keys do: { |key|
-                if (soloList.includes(key) or: soloList.isEmpty)
-                { resumeNdef.(key) }
-                { Ndef(key).pause };
-            }
-        };
-
         if (hasSolo) {
-            soloList = soloList.add(pattern[\id]);
-            soloMode = true;
-        } {
-            if (soloMode == false)
-            { ^nil };
-
-            if (soloList.isEmpty)
-            { soloMode = false };
-
-            soloList.remove(pattern[\id]);
+            ^this.solo(pattern['id']);
         };
-
-        ^pauseOrResumeNdefs.value;
     }
 
     *prHumanize { |pattern|

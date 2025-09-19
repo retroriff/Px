@@ -96,7 +96,7 @@
 
     soloIds = soloIds.collect { |id| id.asSymbol };
 
-    last do: { |event|
+    last.copy do: { |event|
       if (soloIds.includes(event[\id]) == false) {
         if (event[\hasGate] == false) {
           this.prChannelNoteOff(event[\chan]);

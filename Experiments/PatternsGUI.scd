@@ -129,8 +129,8 @@ var truncateText = { |text|
     ])
     .action_({ |btn|
       if (btn.value == 0)
-      { Px.resume(pattern[\id]) }
-      { Px.pause(pattern[\id]) };
+      { Px.new(pattern) }
+      { Px.stop(pattern[\id]) };
     });
 
     VLayout(staticText, slider, numberBox, button);

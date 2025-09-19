@@ -84,6 +84,19 @@
     chorusPatterns = last.copy;
   }
 
+  *solo { |soloIds|
+    if (soloIds.isArray == false)
+    { soloIds = [soloIds.asSymbol] };
+
+    soloIds = soloIds.collect { |id| id.asSymbol };
+
+    last do: { |event|
+      if (soloIds.includes(event[\id]) == false) {
+        Px.stop(event[\id]);
+      }
+    };
+  }
+
   *stop { |id|
     if (id.isNil) {
       Pdef.all do: { |item|
@@ -97,7 +110,6 @@
     last.removeAt(id);
     ndefList.removeAt(id);
     Pdef(id).source = nil;
-    soloList.remove(id);
 
     if (last.size > 0) {
       ^fork {

@@ -9,15 +9,18 @@
 
   *shuffle { |id|
     if (id.isNil) {
-      seeds.order do: { |id|
-        this.prCreateNewSeeds(id)
-      }
-    } {
-      if (last.keys.includes(id.asSymbol))
-      { this.prCreateNewSeeds(id.asSymbol) };
+      seeds.order do: { |seedId|
+        this.prCreateNewSeeds(seedId)
+      };
+      ^this.prReevaluate;
     };
 
-    this.prReevaluate;
+    id = id.asSymbol;
+
+    if (last.keys.includes(id)) {
+      this.prCreateNewSeeds(id)
+      ^this.prReevaluate([last[id]]);
+    }
   }
 
   *prCreateNewSeeds { |id|

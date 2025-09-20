@@ -1,6 +1,4 @@
 /*
-TODO: Solo method. Example: Dx.solo(\bd)
-TODO: Normalize sound (909)
 TODO: Intro / Fill in
 */
 
@@ -90,6 +88,29 @@ Dx : Px {
     this.preset(lastPreset[0], lastPreset[1], dxAmp);
   }
 
+  *solo { |instruments, ins2, ins3, ins4, ins5|
+    var soloIds;
+
+    if (instruments.isArray == false) {
+      instruments = [instruments, ins2, ins3, ins4, ins5];
+      instruments = instruments.reject(_.isNil).collect(_.asSymbol);
+    };
+
+    soloIds = last.asArray
+    .select { |pattern|
+      pattern[\dx] == true
+      and: (instruments.includes(pattern[\instrument].asSymbol))
+    }
+    .collect { |pattern| pattern[\id] };
+
+    last.copy do: { |pattern|
+      if (soloIds.includes(pattern[\id]) == false
+        and: { pattern[\dx] == true }) {
+        Px.stop(pattern[\id]);
+      }
+    };
+  }
+
   *stop {
     ^this.prStopPreset;
   }
@@ -123,7 +144,7 @@ Dx : Px {
   *vol { |amp|
     if (amp.isNil)
     { ^dxAmp };
-    
+
     dxAmp = amp;
 
     if (lastPreset.notEmpty)
@@ -155,7 +176,7 @@ Dx : Px {
         pattern.put(\fx, allFx);
       };
     };
-    
+
     ^pattern;
   }
 
@@ -235,8 +256,8 @@ Dx : Px {
     if (drumMachinesPath.notNil) {
       var drumMachinesPathName = PathName.new(drumMachinesPath.standardizePath);
       var drumMachinesFolders = drumMachinesPathName.entries
-        .select { |entry| entry.isFolder }
-        .collect { |entry| entry.folderName };
+      .select { |entry| entry.isFolder }
+      .collect { |entry| entry.folderName };
 
       drumMachinesFolders do: { |folder|
         var folderPath, subFolders;

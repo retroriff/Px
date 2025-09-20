@@ -7,17 +7,23 @@
         this.prReevaluate;
     }
 
-    *shuffle {
-        this.prCreateNewSeeds;
+    *shuffle { |id|
+        if (id.isNil) {
+            seeds.order do: { |id|
+                this.prCreateNewSeeds(id)
+            }
+        } {
+            if (last.keys.includes(id.asSymbol))
+            { this.prCreateNewSeeds(id.asSymbol) };
+        };
+
         this.prReevaluate;
     }
 
-    *prCreateNewSeeds {
-        seeds.order do: { |id|
-            var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
-            this.prPrint("🎲 Shuffle:".scatArgs(id, "->", newSeed));
-            seeds[id] = newSeed;
-        };
+    *prCreateNewSeeds { |id|
+        var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
+        this.prPrint("🎲 Shuffle:".scatArgs(id, "->", newSeed));
+        seeds[id] = newSeed;
     }
 
     *prGenerateRandNumber { |id|

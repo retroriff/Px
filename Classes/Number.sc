@@ -211,14 +211,14 @@
   prCreateArrayFromSample { |sample|
     if (sample.isString) {
       var parts = sample.asString.split($:);
-        
+
       if (parts.size > 1) {
         ^[parts[0], parts[1].asInteger];
       }
 
       ^[parts[0], 0];
     };
-     
+
     ^sample;
   }
 
@@ -277,14 +277,14 @@
     { ^generateNewDrumMachineId.value.asSymbol }
     { ^findExistingPatternForIns[\id] };
   }
-  
+
   prExtractSufix { |value|
     var parts = value.asString.split($:);
 
     if (parts.size > 1) {
-        ^parts[1].asInteger;
+      ^parts[1].asInteger;
     }
-    
+
     ^nil;
   }
 
@@ -327,7 +327,7 @@
     var drumMachinePattern = Px.last.detect { |pattern|
       pattern['id'] == this.asSymbol and: (pattern['drumMachine'].notNil)
     };
-    
+
     Px.patternState = newPattern;
 
     if (drumMachinePattern.notNil) {
@@ -354,7 +354,7 @@
     var parts = name.asString.split($:);
 
     if (parts.size > 1) {
-        ^parts[0];
+      ^parts[0];
     }
 
     ^name;

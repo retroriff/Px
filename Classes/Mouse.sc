@@ -1,97 +1,97 @@
 // https://github.com/supercollider/supercollider/issues/2236
 
 Mouse {
-    classvar <all, <task, <screenSize, pos, <prevPos;
-    var <name, <>action, <>xspec, <>yspec;
+  classvar <all, <task, <screenSize, pos, <prevPos;
+  var <name, <>action, <>xspec, <>yspec;
 
-    *initClass {
-        all = ();
-        screenSize = Window.screenBounds.extent;
-    }
+  *initClass {
+    all = ();
+    screenSize = Window.screenBounds.extent;
+  }
 
-    *pos {
-        if (task.isPlaying) { ^pos };
-        ^pos = QtGUI.cursorPosition;
-    }
+  *pos {
+    if (task.isPlaying) { ^pos };
+    ^pos = QtGUI.cursorPosition;
+  }
 
-    *initTask {
-        task ?? {
+  *initTask {
+    task ?? {
 
-            task = SkipJack({
-                pos = QtGUI.cursorPosition;
-                if (pos != prevPos) {
-                    this.doActions;
-                };
-                prevPos = pos;
-            }, 0.02, false, "Mouse", AppClock)
-        }
-    }
-
-    *doActions {
-        all.do { |mouse|
-            try {
-                mouse.doAction
-            } {
-                "%.action failed.\n".postf(mouse)
-            }
-        }
-    }
-
-    *free {
-        task.stop;
-        task = nil;
-    }
-
-    *start { this.initTask; task.play }
-    *stop { task.stop }
-
-    *x { ^this.pos.x }
-    *y { ^this.pos.y }
-
-    *xuni { ^(pos.x / screenSize.x) }
-    *yuni { ^(1 - (pos.y / screenSize.y)) }
-
-    *new { |name, action, xspec, yspec|
-        var res;
-        this.initTask; // lazy init task here
-
-        res = all[name];
-        if (res.notNil) {
-            action !? { res.action = action };
-            xspec !? { res.xspec = xspec.asSpec };
-            yspec !? { res.yspec = yspec.asSpec };
-            ^res
+      task = SkipJack({
+        pos = QtGUI.cursorPosition;
+        if (pos != prevPos) {
+          this.doActions;
         };
-
-        ^super.newCopyArgs(name, action, xspec, yspec).init.prAdd;
+        prevPos = pos;
+      }, 0.02, false, "Mouse", AppClock)
     }
+  }
 
-    init {
-        xspec !? { xspec = xspec.asSpec };
-        yspec !? { yspec = yspec.asSpec };
+  *doActions {
+    all.do { |mouse|
+      try {
+        mouse.doAction
+      } {
+        "%.action failed.\n".postf(mouse)
+      }
     }
+  }
 
-    prAdd { all.put(this.name, this) }
+  *free {
+    task.stop;
+    task = nil;
+  }
 
-    free { action = nil; all.removeAt(name) }
+  *start { this.initTask; task.play }
+  *stop { task.stop }
 
-    xval {
-        var xval = Mouse.xuni;
-        xspec !? { xval = xspec.map(xval) };
-        ^xval
-    }
+  *x { ^this.pos.x }
+  *y { ^this.pos.y }
 
-    yval {
-        var yval = Mouse.yuni;
-        yspec !? { yval = yspec.map(yval) };
-        ^yval
-    }
+  *xuni { ^(pos.x / screenSize.x) }
+  *yuni { ^(1 - (pos.y / screenSize.y)) }
 
-    doAction {
-        action.value(this, this.xval, this.yval, Mouse.x, Mouse.y);
-    }
+  *new { |name, action, xspec, yspec|
+    var res;
+    this.initTask; // lazy init task here
 
-    storeArgs { ^[name] }
+    res = all[name];
+    if (res.notNil) {
+      action !? { res.action = action };
+      xspec !? { res.xspec = xspec.asSpec };
+      yspec !? { res.yspec = yspec.asSpec };
+      ^res
+    };
 
-    printOn { |str| this.storeOn(str) }
+    ^super.newCopyArgs(name, action, xspec, yspec).init.prAdd;
+  }
+
+  init {
+    xspec !? { xspec = xspec.asSpec };
+    yspec !? { yspec = yspec.asSpec };
+  }
+
+  prAdd { all.put(this.name, this) }
+
+  free { action = nil; all.removeAt(name) }
+
+  xval {
+    var xval = Mouse.xuni;
+    xspec !? { xval = xspec.map(xval) };
+    ^xval
+  }
+
+  yval {
+    var yval = Mouse.yuni;
+    yspec !? { yval = yspec.map(yval) };
+    ^yval
+  }
+
+  doAction {
+    action.value(this, this.xval, this.yval, Mouse.x, Mouse.y);
+  }
+
+  storeArgs { ^[name] }
+
+  printOn { |str| this.storeOn(str) }
 }

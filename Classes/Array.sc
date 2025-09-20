@@ -1,16 +1,16 @@
 + Array {
-    shuffle { |seed|
-        if (seed.isNil)
-        { thisThread.randSeed = this.prGenerateRandNumber }
-        { thisThread.randSeed = seed };
+  shuffle { |seed|
+    if (seed.isNil)
+    { thisThread.randSeed = this.prGenerateRandNumber }
+    { thisThread.randSeed = seed };
 
-        ^this.scramble;
-    }
+    ^this.scramble;
+  }
 
-    prGenerateRandNumber {
-        var seed = 1000.rand;
-        ("🎲 Seed".scatArgs("->", seed)).postln;
-        ^seed;
-    }
+  prGenerateRandNumber {
+    var seed = 1000.rand;
+    ("🎲 Seed".scatArgs("->", seed)).postln;
+    ^seed;
+  }
 }
 

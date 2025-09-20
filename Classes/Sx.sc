@@ -1,233 +1,233 @@
 Sx {
-    classvar <defaultEvent;
-    classvar <defaultScale;
-    classvar <>last;
-    classvar synth;
-    classvar <waveList;
+  classvar <defaultEvent;
+  classvar <defaultScale;
+  classvar <>last;
+  classvar synth;
+  classvar <waveList;
 
-    *initClass {
-        // CmdPeriod.add { Sx.clear };
-        defaultScale = \scriabin;
-        defaultEvent = (
-            amp: 1,
-            chord: [0],
-            degree: [0],
-            dur: [1],
-            env: 0,
-            octave: [0],
-            root: 0,
-            scale: defaultScale,
-            vcf: 1,
-            wave: \saw;
-        );
-        last = Event.new;
-        waveList = [\pulse, \saw, \sine, \triangle];
+  *initClass {
+    // CmdPeriod.add { Sx.clear };
+    defaultScale = \scriabin;
+    defaultEvent = (
+      amp: 1,
+      chord: [0],
+      degree: [0],
+      dur: [1],
+      env: 0,
+      octave: [0],
+      root: 0,
+      scale: defaultScale,
+      vcf: 1,
+      wave: \saw;
+    );
+    last = Event.new;
+    waveList = [\pulse, \saw, \sine, \triangle];
+  }
+
+  *new { |event, fadeTime|
+    event = this.prCreateDefaultArgs(event ?? Event.new);
+    last = event.copy;
+
+    this.play(fadeTime);
+
+    event.keysValuesDo { |key, value|
+      this.set(key, value);
+    };
+  }
+
+  *clear {
+    this.initClass;
+  }
+
+  *loadSynth {
+    var path = "../SynthDefs/Sx.scd";
+    var file = PathName((path).resolveRelative);
+    File.readAllString(file.fullPath);
+    file.fullPath.load;
+  }
+
+  *play { |fadeTime|
+    if (Ndef(\sx).isPlaying.not) {
+      synth = Synth(\sx);
+    };
+
+    Ndef(\sx, { In.ar(~sxBus, 2) }).play(fadeTime: fadeTime);
+  }
+
+  *qset { |key, value, lag|
+    this.set(key: key, value: value, lag: lag, quant: true);
+  }
+
+  *release { |fadeTime = 10|
+    Ndef(\sx).free(fadeTime);
+
+    ^fork {
+      (fadeTime * 2).wait;
+      synth.free;
+    }
+  }
+
+  *set { |key, value, lag, quant|
+    var arraySizePair = Array.new;
+    var pairs;
+
+    last.putAll([key, value]);
+    value = this.prConvertToArray(key, value);
+    pairs = [key, value];
+
+    case
+    { key == \degree } {
+      var octave = last[\octave] ?? defaultEvent[\octave];
+      octave = this.prConvertToArray(\octave, octave);
+      pairs = this.prGenerateDegree(value, octave);
     }
 
-    *new { |event, fadeTime|
-        event = this.prCreateDefaultArgs(event ?? Event.new);
-        last = event.copy;
+    { key == \euclid }
+    { pairs = this.prGenerateEuclid(value) }
 
-        this.play(fadeTime);
-
-        event.keysValuesDo { |key, value|
-            this.set(key, value);
-        };
+    { key == \octave } {
+      var degree = last[\degree] ?? defaultEvent[\degree];
+      degree = this.prConvertToArray(\degree, degree);
+      pairs = this.prGenerateDegree(degree, value);
     }
 
-    *clear {
-        this.initClass;
+    { key == \root } {
+      var degree = this.prConvertToArray(\degree, last[\degree]);
+      var octave = this.prConvertToArray(\octave, last[\octave]);
+      pairs = this.prGenerateDegree(degree, octave, value);
     }
 
-    *loadSynth {
-        var path = "../SynthDefs/Sx.scd";
-        var file = PathName((path).resolveRelative);
-        File.readAllString(file.fullPath);
-        file.fullPath.load;
-    }
+    { key == \scale }
+    { pairs = this.prGenerateScale(value) }
 
-    *play { |fadeTime|
-        if (Ndef(\sx).isPlaying.not) {
-            synth = Synth(\sx);
-        };
+    { key == \wave }
+    { pairs = this.prGenerateWave(value) };
 
-        Ndef(\sx, { In.ar(~sxBus, 2) }).play(fadeTime: fadeTime);
-    }
+    pairs = pairs ++ this.prGenerateArraySize(pairs[0], pairs[1]);
+    pairs = pairs ++ [\lag, lag ?? 0];
 
-    *qset { |key, value, lag|
-        this.set(key: key, value: value, lag: lag, quant: true);
-    }
+    if (quant.isNil)
+    { ^this.prSet(pairs) }
+    { ^this.prCreateQuantizedSet(pairs) };
+  }
 
-    *release { |fadeTime = 10|
-        Ndef(\sx).free(fadeTime);
+  *stop { |fadeTime|
+    Ndef(\sx).stop(fadeTime);
+  }
 
-        ^fork {
-            (fadeTime * 2).wait;
-            synth.free;
-        }
-    }
+  *tempo { |tempo|
+    if (synth.notNil)
+    { synth.set(\tempo, tempo) };
+  }
 
-    *set { |key, value, lag, quant|
-        var arraySizePair = Array.new;
-        var pairs;
+  *vol { |value|
+    ^Ndef(\sx).vol_(value);
+  }
 
-        last.putAll([key, value]);
-        value = this.prConvertToArray(key, value);
-        pairs = [key, value];
+  *prCreateQuantizedSet { |pairs|
+    var clock = TempoClock.default;
+    var nextBeat = clock.nextTimeOnGrid(4);
 
-        case
-        { key == \degree } {
-            var octave = last[\octave] ?? defaultEvent[\octave];
-            octave = this.prConvertToArray(\octave, octave);
-            pairs = this.prGenerateDegree(value, octave);
-        }
+    clock.schedAbs(nextBeat, {
+      this.prSet(pairs);
+    });
+  }
 
-        { key == \euclid }
-        { pairs = this.prGenerateEuclid(value) }
+  *prGenerateDegree { |degree, octave, root|
+    var maxLen = max(degree.size, octave.size);
+    var result = Array.new;
+    var degIndex = 0;
+    var octIndex = 0;
+    var dur = last[\dur] ?? defaultEvent[\dur];
 
-        { key == \octave } {
-            var degree = last[\degree] ?? defaultEvent[\degree];
-            degree = this.prConvertToArray(\degree, degree);
-            pairs = this.prGenerateDegree(degree, value);
-        }
+    while ({ result.size < maxLen }) {
+      var deg = degree[degIndex];
+      var oct = octave[octIndex].clip(-2, 2);
 
-        { key == \root } {
-            var degree = this.prConvertToArray(\degree, last[\degree]);
-            var octave = this.prConvertToArray(\octave, last[\octave]);
-            pairs = this.prGenerateDegree(degree, octave, value);
-        }
+      result = result.add(deg + (oct * 12));
+      if (oct == -0)
+      { oct = 0 };
 
-        { key == \scale }
-        { pairs = this.prGenerateScale(value) }
+      degIndex = (degIndex + 1) % degree.size;
+      octIndex = (octIndex + 1) % octave.size;
+    };
 
-        { key == \wave }
-        { pairs = this.prGenerateWave(value) };
+    root = root ?? last[\root] ?? defaultEvent[\root];
+    ^[\degree, result + root.clip(-12, 12), \dur, dur];
+  }
 
-        pairs = pairs ++ this.prGenerateArraySize(pairs[0], pairs[1]);
-        pairs = pairs ++ [\lag, lag ?? 0];
+  *prCreateDefaultArgs { |event|
+    defaultEvent.keys do: { |key|
+      event[key] = event[key] ?? defaultEvent[key];
+    };
 
-        if (quant.isNil)
-        { ^this.prSet(pairs) }
-        { ^this.prCreateQuantizedSet(pairs) };
-    }
+    ^event;
+  }
 
-    *stop { |fadeTime|
-        Ndef(\sx).stop(fadeTime);
-    }
+  *prGenerateEuclid { |value|
+    var dur = this.prConvertToArray(\dur, last[\dur]);
+    var euclid = Bjorklund2(*value) * dur[0];
 
-    *tempo { |tempo|
-        if (synth.notNil)
-        { synth.set(\tempo, tempo) };
-    }
+    ^[\dur, euclid];
+  }
 
-    *vol { |value|
-        ^Ndef(\sx).vol_(value);
-    }
+  *prConvertToArray { |key, value|
+    if (this.prShouldBeArray(key) and: value.isNumber)
+    { value = [value] };
 
-    *prCreateQuantizedSet { |pairs|
-        var clock = TempoClock.default;
-        var nextBeat = clock.nextTimeOnGrid(4);
+    ^value;
+  }
 
-        clock.schedAbs(nextBeat, {
-            this.prSet(pairs);
-        });
-    }
+  *prGenerateArrayName { |key|
+    ^(key ++ "Size").asSymbol;
+  }
 
-    *prGenerateDegree { |degree, octave, root|
-        var maxLen = max(degree.size, octave.size);
-        var result = Array.new;
-        var degIndex = 0;
-        var octIndex = 0;
-        var dur = last[\dur] ?? defaultEvent[\dur];
+  *prGenerateArraySize { |key, value|
+    var pairs = Array.new;
 
-        while ({ result.size < maxLen }) {
-            var deg = degree[degIndex];
-            var oct = octave[octIndex].clip(-2, 2);
+    if (this.prShouldBeArray(key))
+    { pairs = [this.prGenerateArrayName(key), value.size] };
 
-            result = result.add(deg + (oct * 12));
-            if (oct == -0)
-            { oct = 0 };
+    ^pairs;
+  }
 
-            degIndex = (degIndex + 1) % degree.size;
-            octIndex = (octIndex + 1) % octave.size;
-        };
+  *prGenerateScale { |value|
+    var buffer;
 
-        root = root ?? last[\root] ?? defaultEvent[\root];
-        ^[\degree, result + root.clip(-12, 12), \dur, dur];
-    }
+    if (value == \default)
+    { value = defaultScale };
 
-    *prCreateDefaultArgs { |event|
-        defaultEvent.keys do: { |key|
-            event[key] = event[key] ?? defaultEvent[key];
-        };
+    buffer = Buffer.loadCollection(Server.default, Scale.at(value));
 
-        ^event;
-    }
+    ^[\scale, buffer];
+  }
 
-    *prGenerateEuclid { |value|
-        var dur = this.prConvertToArray(\dur, last[\dur]);
-        var euclid = Bjorklund2(*value) * dur[0];
+  *prGenerateWave { |value|
+    var pairs = Array.new;
 
-        ^[\dur, euclid];
-    }
+    waveList do: { |wave|
+      var waveValue = 0;
 
-    *prConvertToArray { |key, value|
-        if (this.prShouldBeArray(key) and: value.isNumber)
-        { value = [value] };
+      if (value == wave)
+      { waveValue = 1 };
 
-        ^value;
-    }
+      pairs = pairs ++ [wave, waveValue];
+    };
 
-    *prGenerateArrayName { |key|
-        ^(key ++ "Size").asSymbol;
-    }
+    ^pairs;
+  }
 
-    *prGenerateArraySize { |key, value|
-        var pairs = Array.new;
+  *prSet { |pairs|
+    synth.set(*pairs);
+  }
 
-        if (this.prShouldBeArray(key))
-        { pairs = [this.prGenerateArrayName(key), value.size] };
+  *prShouldBeArray { |key|
+    var arrayKeys = [\chord, \degree, \dur, \octave];
 
-        ^pairs;
-    }
+    ^arrayKeys.includes(key);
+  }
 
-    *prGenerateScale { |value|
-        var buffer;
-
-        if (value == \default)
-        { value = defaultScale };
-
-        buffer = Buffer.loadCollection(Server.default, Scale.at(value));
-
-        ^[\scale, buffer];
-    }
-
-    *prGenerateWave { |value|
-        var pairs = Array.new;
-
-        waveList do: { |wave|
-            var waveValue = 0;
-
-            if (value == wave)
-            { waveValue = 1 };
-
-            pairs = pairs ++ [wave, waveValue];
-        };
-
-        ^pairs;
-    }
-
-    *prSet { |pairs|
-        synth.set(*pairs);
-    }
-
-    *prShouldBeArray { |key|
-        var arrayKeys = [\chord, \degree, \dur, \octave];
-
-        ^arrayKeys.includes(key);
-    }
-
-    *prUpdateLast { |key, value|
-        last.putAll([key, value]);
-    }
+  *prUpdateLast { |key, value|
+    last.putAll([key, value]);
+  }
 }

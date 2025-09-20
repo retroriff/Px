@@ -83,7 +83,7 @@
   *resume { |id|
     Ndef(id).resume;
   }
-  
+
   *save {
     chorusPatterns = last.copy;
   }

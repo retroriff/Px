@@ -70,11 +70,11 @@ TODO: MIDIOut instances
       or: { pattern[\midicmd] == \noteOff }
       or: { pattern[\midicmd] == \control })
     { isMidiControl = true };
-    
+
     if (pattern[\hasGate] == false) {
       var hasSameNotes = { |holdedPattern|
         [\degreeRaw, \midinote, \octave, \root, \scale] every: { |key|
-            holdedPattern[key] == pattern[key]
+          holdedPattern[key] == pattern[key]
         }
       };
 

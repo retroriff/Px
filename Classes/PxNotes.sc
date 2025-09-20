@@ -1,112 +1,112 @@
 + Px {
-    *root { |value|
-        last do: { |pattern|
-            pattern[\root] = value;
+  *root { |value|
+    last do: { |pattern|
+      pattern[\root] = value;
+    };
+
+    ^this.prReevaluate;
+  }
+
+  *prCreateDegrees { |pattern, midiratio|
+    var createRandomDegrees = {
+      var length, scale, scaleDegrees, randomDegrees;
+      length = pattern[\length] ?? 1;
+      scale = pattern[\scale] ?? \phrygian;
+
+      if (scale.isArray)
+      { scaleDegrees = scale }
+      { scaleDegrees = Scale.at(scale.asSymbol).degrees };
+
+      randomDegrees = Array.newClear(length);
+      thisThread.randSeed = this.prGetPatternSeed(pattern);
+      randomDegrees = length.collect { scaleDegrees.choose };
+    };
+
+    var degreesWithVariations = { |degrees, numOctaves = 1|
+      if (pattern[\arp].notNil) {
+        degrees = degrees.collect { |degree|
+          degree + (0..numOctaves).flat.collect { |oct| oct * 7 };
         };
 
-        ^this.prReevaluate;
-    }
+        degrees = degrees.as(Array).flat;
+      };
 
-    *prCreateDegrees { |pattern, midiratio|
-        var createRandomDegrees = {
-            var length, scale, scaleDegrees, randomDegrees;
-            length = pattern[\length] ?? 1;
-            scale = pattern[\scale] ?? \phrygian;
+      degrees;
+    };
 
-            if (scale.isArray)
-            { scaleDegrees = scale }
-            { scaleDegrees = Scale.at(scale.asSymbol).degrees };
+    if (pattern[\scale].notNil and: (pattern[\scale].isArray.not))
+    { pattern[\scale] = Scale.at(pattern[\scale].asSymbol).semitones };
 
-            randomDegrees = Array.newClear(length);
-            thisThread.randSeed = this.prGetPatternSeed(pattern);
-            randomDegrees = length.collect { scaleDegrees.choose };
-        };
+    if (pattern[\degree].isNil)
+    { ^pattern };
 
-        var degreesWithVariations = { |degrees, numOctaves = 1|
-            if (pattern[\arp].notNil) {
-                degrees = degrees.collect { |degree|
-                    degree + (0..numOctaves).flat.collect { |oct| oct * 7 };
-                };
+    if (pattern[\degree].isKindOf(Pattern).not) {
+      var degrees = pattern[\degree];
+      var length = pattern[\midiControl] ?? inf;
 
-                degrees = degrees.as(Array).flat;
-            };
+      if (degrees == \rand)
+      { degrees = createRandomDegrees.value };
 
-            degrees;
-        };
+      if (midiratio == true)
+      { degrees = degrees.midiratio };
 
-        if (pattern[\scale].notNil and: (pattern[\scale].isArray.not))
-        { pattern[\scale] = Scale.at(pattern[\scale].asSymbol).semitones };
+      pattern[\degreeRaw] = degrees;
+      pattern[\degree] = Pseq(degreesWithVariations.(degrees), length);
+    };
 
-        if (pattern[\degree].isNil)
-        { ^pattern };
+    ^pattern;
+  }
 
-        if (pattern[\degree].isKindOf(Pattern).not) {
-            var degrees = pattern[\degree];
-            var length = pattern[\midiControl] ?? inf;
+  *prCreateOctaves { |pattern|
+    var octave = pattern[\octave];
+    var isBeat = octave.isArray and: { octave[0] == \beat };
 
-            if (degrees == \rand)
-            { degrees = createRandomDegrees.value };
+    if (isBeat) {
+      var octaveBeat = this.prCreateBeat(
+        pattern,
+        defaultWeight: 0.3,
+        min: octave[1],
+        max: octave[1] + 1
+      );
 
-            if (midiratio == true)
-            { degrees = degrees.midiratio };
+      octave = octaveBeat;
+    };
 
-            pattern[\degreeRaw] = degrees;
-            pattern[\degree] = Pseq(degreesWithVariations.(degrees), length);
-        };
+    if (octave.isArray)
+    { pattern[\octave] = Pseq(octave, inf) };
 
-        ^pattern;
-    }
-
-    *prCreateOctaves { |pattern|
-        var octave = pattern[\octave];
-        var isBeat = octave.isArray and: { octave[0] == \beat };
-
-        if (isBeat) {
-            var octaveBeat = this.prCreateBeat(
-                pattern,
-                defaultWeight: 0.3,
-                min: octave[1],
-                max: octave[1] + 1
-            );
-
-            octave = octaveBeat;
-        };
-
-        if (octave.isArray)
-        { pattern[\octave] = Pseq(octave, inf) };
-
-        ^pattern;
-    }
+    ^pattern;
+  }
 }
 
 + Number {
-    arp { |value|
-        this.prUpdatePattern([\arp, value]);
-    }
+  arp { |value|
+    this.prUpdatePattern([\arp, value]);
+  }
 
-    degree { |value|
-        var pattern;
+  degree { |value|
+    var pattern;
 
-        if (value.isInteger)
-        { value = [value] };
+    if (value.isInteger)
+    { value = [value] };
 
-        if (value.isKindOf(Pattern))
-        { pattern = value };
+    if (value.isKindOf(Pattern))
+    { pattern = value };
 
-        this.prUpdatePattern([\degree, pattern ?? value]);
-    }
+    this.prUpdatePattern([\degree, pattern ?? value]);
+  }
 
-    scale { |value|
-        this.prUpdatePattern([\scale, value.asSymbol]);
-    }
+  scale { |value|
+    this.prUpdatePattern([\scale, value.asSymbol]);
+  }
 
-    sus { |value|
-        this.prUpdatePattern([\sus, value]);
-    }
+  sus { |value|
+    this.prUpdatePattern([\sus, value]);
+  }
 }
 
 + Symbol {
-    arp {}
-    degree {}
-    sus {}
+  arp {}
+  degree {}
+  sus {}
 }

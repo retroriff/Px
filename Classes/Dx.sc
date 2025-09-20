@@ -4,7 +4,6 @@ TODO: Intro / Fill in
 
 Dx : Px {
   classvar <>drumMachine;
-  classvar <>drumMachines;
   classvar <>dxAmp;
   classvar <fx;
   classvar hasLoadedPresets;
@@ -15,8 +14,7 @@ Dx : Px {
 
   *initClass {
     drumMachine = 808;
-    drumMachines = [505, 606, 626, 707, 727, 808, 909];
-    dxAmp = 0.6;
+    dxAmp = 0.5;
 
     fx = Dictionary.new;
     instrumentFolders = Dictionary.new;

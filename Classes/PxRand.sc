@@ -1,58 +1,58 @@
 + Px {
-    *seed { |value|
-        last do: { |pattern|
-            pattern[\seed] = value;
-        };
+  *seed { |value|
+    last do: { |pattern|
+      pattern[\seed] = value;
+    };
 
-        this.prReevaluate;
-    }
+    this.prReevaluate;
+  }
 
-    *shuffle { |id|
-        if (id.isNil) {
-            seeds.order do: { |id|
-                this.prCreateNewSeeds(id)
-            }
-        } {
-            if (last.keys.includes(id.asSymbol))
-            { this.prCreateNewSeeds(id.asSymbol) };
-        };
+  *shuffle { |id|
+    if (id.isNil) {
+      seeds.order do: { |id|
+        this.prCreateNewSeeds(id)
+      }
+    } {
+      if (last.keys.includes(id.asSymbol))
+      { this.prCreateNewSeeds(id.asSymbol) };
+    };
 
-        this.prReevaluate;
-    }
+    this.prReevaluate;
+  }
 
-    *prCreateNewSeeds { |id|
-        var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
-        this.prPrint("🎲 Shuffle:".scatArgs(id, "->", newSeed));
-        seeds[id] = newSeed;
-    }
+  *prCreateNewSeeds { |id|
+    var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
+    this.prPrint("🎲 Shuffle:".scatArgs(id, "->", newSeed));
+    seeds[id] = newSeed;
+  }
 
-    *prGenerateRandNumber { |id|
-        var seed = 1000.rand;
-        this.prPrint("🎲 Seed:".scatArgs(id, "->", seed));
-        ^seed;
-    }
+  *prGenerateRandNumber { |id|
+    var seed = 1000.rand;
+    this.prPrint("🎲 Seed:".scatArgs(id, "->", seed));
+    ^seed;
+  }
 
-    *prGetNumericSeed { |seed|
-        if (seed.isInteger.not)
-        { seed = seed.ascii.join.asInteger };
+  *prGetNumericSeed { |seed|
+    if (seed.isInteger.not)
+    { seed = seed.ascii.join.asInteger };
 
-        ^seed;
-    }
+    ^seed;
+  }
 
-    *prGetPatternSeed { |pattern|
-        var id = pattern[\id].asSymbol;
+  *prGetPatternSeed { |pattern|
+    var id = pattern[\id].asSymbol;
 
-        if (pattern[\seed].isNil) {
-            var seed;
+    if (pattern[\seed].isNil) {
+      var seed;
 
-            if (seeds[id].isNil)
-            { seed = this.prGenerateRandNumber(id) }
-            { seed = seeds[id] };
+      if (seeds[id].isNil)
+      { seed = this.prGenerateRandNumber(id) }
+      { seed = seeds[id] };
 
-            seeds.add(id -> seed);
-            ^seeds[id];
-        } {
-            ^this.prGetNumericSeed(pattern[\seed]);
-        };
-    }
+      seeds.add(id -> seed);
+      ^seeds[id];
+    } {
+      ^this.prGetNumericSeed(pattern[\seed]);
+    };
+  }
 }

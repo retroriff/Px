@@ -135,7 +135,6 @@
     } {
       ^Ndef(\px).free
     };
-
   }
 
   *synthDef { |synthDef|

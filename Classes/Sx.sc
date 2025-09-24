@@ -121,7 +121,12 @@ Sx {
   }
 
   *vol { |value|
-    ^Ndef(\sx).vol_(value);
+    if (value.isNil) {
+      var vol = Ndef(\sx).vol;
+      this.prPrint("Sx vol is" + vol);
+    } {
+      ^Ndef(\sx).vol_(value);
+    }
   }
 
   *prCreateQuantizedSet { |pairs|
@@ -215,6 +220,11 @@ Sx {
     };
 
     ^pairs;
+  }
+
+  *prPrint { |value|
+    if (~isUnitTestRunning != true)
+    { value.postln };
   }
 
   *prSet { |pairs|

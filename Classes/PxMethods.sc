@@ -107,8 +107,8 @@
     };
   }
 
-  *stop { |id|
-    if (id.isNil) {
+  *stop { |idArray|
+    if (idArray.isNil) {
       Pdef.all do: { |item|
         Pdef(item.key).source = nil;
       };
@@ -117,23 +117,34 @@
       ^Ndef(\px).free
     };
 
-    id = id.asSymbol;
+    if (idArray.isArray.not)
+    { idArray = [idArray] };
 
-    if (last[id][\hasGate] == false) {
-      this.prChannelNoteOff(last[id][\chan]);
+    idArray do: { |id|
+      id = id.asSymbol;
+      
+      if(last[id].notNil) {
+        if (last[id][\hasGate] == false) {
+          this.prChannelNoteOff(last[id][\chan]);
+        };
+
+        last.removeAt(id);
+        ndefList.removeAt(id);
+        Pdef(id).source = nil;
+      } {
+        this.prPrint("🔴 Pattern" + id + "does not exist");
+      };
     };
 
-    last.removeAt(id);
-    ndefList.removeAt(id);
-    Pdef(id).source = nil;
-
-    if (last.size > 0) {
-      ^fork {
-        4.wait;
-        Ndef(id).free;
-      }
-    } {
-      ^Ndef(\px).free
+    idArray.do { |id|
+      if (last.size > 0) {
+        ^fork {
+          4.wait;
+          Ndef(id).free;
+        }
+      } {
+        ^Ndef(\px).free
+      };
     };
   }
 

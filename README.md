@@ -106,7 +106,7 @@ The superclass that generates the patterns from an array of events with a simpli
 - `save`: Saves a chorus.
 - `seed`: Sets a global seed for all patterns.
 - `shuffle`: Generates new random seeds.
-- `stop`: Stops the Pdef.
+- `stop`: Stops all patterns. It can stop specific patterns if a single id or an array of ids is provided.
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
 - `tempo` (bpm: nil | number): Sets the tempo if bpm is given; returns current tempo if nil.
 - `trace`: Prints out the results of the streams for debugging purposes.

@@ -1,4 +1,5 @@
 /*
+TODO: Bug when a holded note with same note is reevaluated
 TODO: Channel + 1 to match receiver number. Ex. chan: 1 instead of chan: 0
 TODO: Controls [\rand, 0, 0.1] i [\wrand, 0, 0.1, 0.9]
 TODO: MIDIOut instances
@@ -166,7 +167,15 @@ TODO: MIDIOut instances
   }
 
   note { |value|
-    this.prUpdatePattern([\midinote, value]);
+    var pattern;
+
+    if (value.isInteger)
+    { value = [value] };
+
+    if (value.isKindOf(Pattern))
+    { pattern = value };
+
+    this.prUpdatePattern([\midinote, pattern ?? value]);
   }
 
   panic {

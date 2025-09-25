@@ -89,12 +89,21 @@
   }
 
   *solo { |soloIds, id2, id3, id4, id5|
+    var hasCommon;
+
+    if (soloIds.isNil)
+    { ^this.prPrint("🟡 Provide at least one instrument to solo") };
+
     if (soloIds.isArray == false) {
       soloIds = [soloIds, id2, id3, id4, id5];
       soloIds = soloIds.reject(_.isNil).collect(_.asSymbol);
     };
 
     soloIds = soloIds.collect { |id| id.asSymbol };
+    hasCommon = soloIds.any { |id| last.keys.includes(id) };
+
+    if (hasCommon == false)
+    { ^this.prPrint("🔴 No matching instruments to solo") };
 
     last.copy do: { |event|
       if (soloIds.includes(event[\id]) == false) {

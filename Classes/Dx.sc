@@ -87,7 +87,10 @@ Dx : Px {
   }
 
   *solo { |instruments, ins2, ins3, ins4, ins5|
-    var soloIds;
+    var hasCommon, lastInstruments, soloIds;
+
+    if (instruments.isNil)
+    { ^this.prPrint("🟡 Provide at least one instrument to solo") };
 
     if (instruments.isArray == false) {
       instruments = [instruments, ins2, ins3, ins4, ins5];
@@ -100,6 +103,18 @@ Dx : Px {
       and: (instruments.includes(pattern[\instrument].asSymbol))
     }
     .collect { |pattern| pattern[\id] };
+
+    lastInstruments = last.asArray
+    .select { |pattern|
+      pattern[\dx] == true
+      and: (instruments.includes(pattern[\instrument].asSymbol))
+    }
+    .collect { |pattern| pattern[\instrument].asSymbol };
+
+    hasCommon = lastInstruments.any { |id| instruments.includes(id) };
+
+    if (hasCommon == false)
+    { ^this.prPrint("🔴 No matching instruments to solo") };
 
     last.copy do: { |pattern|
       if (soloIds.includes(pattern[\id]) == false
@@ -116,6 +131,9 @@ Dx : Px {
   *use { |newDrumMachine|
     var currentDrumMachine = drumMachine;
     var lastPatterns = Px.last.copy;
+
+    if (newDrumMachine.isNil)
+    { ^currentDrumMachine };
 
     if (currentDrumMachine == newDrumMachine)
     { ^this.prPrint("🟢 Drum machine already selected") };

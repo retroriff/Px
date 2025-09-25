@@ -161,7 +161,7 @@ TODO: MIDIOut instances
   }
 
   hold { |value|
-    if (value == 1)
+    if (value == 1 or: (value == true))
     { this.prUpdatePattern([\hasGate, false] ++ this.prSendSingleMessage) }
     { this.prUpdatePattern([\midicmd, \noteOff]) };
   }

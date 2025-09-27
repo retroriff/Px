@@ -6,6 +6,10 @@
 \1 i: \bd dur: 1;
 \2 i: \sn dur: 2 off: 1;
 
+// Or stop using specific patterns from Px:
+Px.stop(1);
+Px.stop([1, 2]);
+
 // We can make it more wet:
 1 i: \bd dur: 1 reverb: 0.2 wah: 0.1;
 2 i: \sn dur: 2 off: 1 delay: 0.2;
@@ -95,7 +99,7 @@ Px.traceOff(\1);
 4 i: \ma dur: 0.25 beat: 0.26;
 )
 
-// Control the balance with pan and rotate
+// Control the balance with pan and rotate:
 (
 1 i: \bd dur: 1 reverb: 0.2 wah: 0.1 pan: 1;
 2 i: \sn dur: 2 off: 1 delay: 0.3 pan: -1;
@@ -104,8 +108,17 @@ Px.traceOff(\1);
 Px.shuffle;
 )
 
+ // Slice and repeats part of the beat, defining a duration and its position:
+Px.chop(1, 2);
+
+// Disable it:
+Px.chop(0);
+
+// Open a mixer window:
+Px.gui;
+
 // Save a chorus
-Px.save
+Px.save;
 
 // And play it later
 1 i: \bd dur: 1 reverb: 0.2 wah: 0.1 pan: 1 dur: 0.5;

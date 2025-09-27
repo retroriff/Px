@@ -97,6 +97,7 @@ The superclass that generates the patterns from an array of events with a simpli
 ### Px class methods
 
 - `chorus`: Plays a saved chorus.
+- `chop`: (dur: Integer | Nil, drop: Integer)Slices and repeats part of the beat in short bursts. It can be disabled with a `0` or `Nil` value.
 - `gui`: Opens or refresh a gui window with pattern sliders.
 - `mixer`: Opens an `NdefMixer` instance, always on top, and assigns it to the `~mixer` variable.
 - `pause` (id: symbol): Pauses a specific pattern.

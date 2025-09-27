@@ -12,13 +12,14 @@
       seeds.order do: { |seedId|
         this.prCreateNewSeeds(seedId)
       };
+
       ^this.prReevaluate;
     };
 
     id = id.asSymbol;
 
     if (last.keys.includes(id)) {
-      this.prCreateNewSeeds(id)
+      this.prCreateNewSeeds(id);
       ^this.prReevaluate([last[id]]);
     }
   }

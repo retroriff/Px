@@ -82,6 +82,21 @@ Px {
     ^pattern;
   }
 
+  *prCreateChop { |pattern, pbindef|
+    if (pattern[\chop].isArray) {
+      var dur = pattern[\chop][0];
+      var drop = pattern[\chop][1];
+
+      if (dur != 0 and: (dur != Nil)) {
+        pbindef = Pseq([
+          Pfindur(dur.max(0.25), Pdrop(drop, pbindef))
+        ], inf);
+      };
+    };
+
+    ^pbindef;
+  }
+
   *prCreateDur { |pattern|
     var dur = pattern[\dur];
 
@@ -146,6 +161,8 @@ Px {
     { pbindef = Pbind(*pattern.asPairs) };
 
     pbindef = this.prCreateFade(pbindef, pattern[\fade]);
+    pbindef = this.prCreateChop(pattern, pbindef);
+
     ^pbindef = Pdef(pattern[\id], pbindef).quant_(4);
   }
 

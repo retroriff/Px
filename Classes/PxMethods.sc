@@ -1,4 +1,12 @@
 + Px {
+  *chop { |dur, drop|
+    last do: { |pattern|
+      pattern[\chop] = [dur ?? 1, drop ?? 0];
+    };
+
+    this.prReevaluate;
+  }
+
   *chorus {
     if (chorusPatterns.isNil) {
       ^this.prPrint("💩 Chorus is empty. Please run \"save\"");
@@ -75,7 +83,7 @@
       };
 
       if (anyParam.includes(\all)) {
-        this.prPrint("💀 Killed by Death");
+        this.prPrint("When the music is over\nTurn out the lights\nMusic is your only friend\nUntil the end 💀");
       };
     }
   }

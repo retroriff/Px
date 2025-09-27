@@ -1,4 +1,5 @@
 /*
+TODO: Fix solo 707 i: \hh dur: 0.25 beat: 0.5 solo: 1;
 TODO: Intro / Fill in
 */
 

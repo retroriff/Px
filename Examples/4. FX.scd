@@ -18,6 +18,12 @@ Fx(\px).reverb(Nil);
 Fx(\px).reverb(0.5).hpf(0.5);
 Fx(\px).hpf(1, \wave);
 
+// Space can sustain infinitely but should be used only with one-shot sounds:
+(
+1 play: ["gl1", \rand];
+Fx(\px).space(0.9, inf);
+)
+
 // And kill'em all 🤘🏼:
 Fx.clear
 

@@ -25,7 +25,10 @@ Fx {
   }
 
   *new { |name|
-    proxyName = name ?? \px;
+    if (name.isNil)
+    { name = \px };
+
+    proxyName = name.asSymbol;
   }
 
   *blp { |mix = 0.4|
@@ -48,7 +51,8 @@ Fx {
   }
 
   *delay { |mix = 0.4, delaytime = 8, decaytime = 2|
-    this.prAddEffect(\delay, mix, [delaytime, decaytime]);
+    var postArgs = "delaytime:" +  delaytime + "decaytime:" + decaytime;
+    this.prAddEffect(\delay, mix, [delaytime, decaytime], postArgs);
   }
 
   *flanger { |mix = 0.4|
@@ -56,13 +60,17 @@ Fx {
   }
 
   *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
-    this.prAddEffect(\gverb, mix, [roomsize, revtime]);
+    var postArgs = "roomsize:" +  roomsize + "revtime:" + revtime;
+    this.prAddEffect(\gverb, mix, [roomsize, revtime], postArgs);
   }
 
   *hpf { |mix = 1, freq = 1200|
+    var postArgs = "freq:" +  freq;
+    
     if (freq == \wave)
     { freq = Ndef(\hpf1, { SinOsc.kr(1/8).range(400, 1200) } ) };
-    this.prAddEffect(\hpf, mix, [freq]);
+
+    this.prAddEffect(\hpf, mix, [freq], postArgs);
   }
 
   *loadEffects {
@@ -73,28 +81,45 @@ Fx {
   }
 
   *lpf { |mix = 0.4, freq = 200|
+    var postArgs = "freq:" +  freq;
+
     if (freq == \wave)
     { freq = Ndef(\lpf1, { SinOsc.kr(1/8).range(200, 400) } ) };
 
-    this.prAddEffect(\lpf, mix, [freq]);
+    this.prAddEffect(\lpf, mix, [freq], postArgs);
   }
 
   *pan { |pos = 0|
+    var postArgs = "pos:" +  pos;
+
     if (pos == \wave)
     { pos = Ndef(\pan1, { SinOsc.kr(1/8).range(-1.0, 1.0) } ) };
 
     if (pos == Nil)
     { pos = 0 };
-    this.prAddEffect(\pan, 1, [pos]);
+
+    this.prAddEffect(\pan, 1, [pos], postArgs);
   }
 
   *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
-    this.prAddEffect(\reverb, mix, [room, damp]);
+    var postArgs = "room:" +  room + "damp:" + damp;
+    this.prAddEffect(\reverb, mix, [room, damp], postArgs);
   }
 
   *setVstPresetsPath { |path|
     presetsPath = path;
   }
+
+  *space { |mix = 0.4, fb = 0.95|
+    var postArgs = "fb:" + fb;
+
+    if (fb == inf)
+    { fb = 1 }
+    { fb = fb.clip(0, 0.99) };
+
+    this.prAddEffect(\space, mix, [fb], postArgs);
+  }
+
 
   *vst { |mix = 1, plugin|
     var defaultPlugin = "ValhallaFreqEcho";
@@ -148,7 +173,7 @@ Fx {
     ^activeArgs[proxyName][\vst][0];
   }
 
-  *prAddEffect { |fx, mix, args|
+  *prAddEffect { |fx, mix, args, postArgs|
     var hasFx = false;
 
     if (activeEffects[proxyName].isNil)
@@ -156,26 +181,22 @@ Fx {
 
     hasFx = activeEffects[proxyName].includes(fx);
 
-    if (hasFx == false and: (mix != Nil)) {
-      this.prActivateEffect(args, fx, mix);
-    };
+    if (hasFx == false and: (mix != Nil))
+    { this.prActivateEffect(args, fx, mix, postArgs) };
 
-    if (args != activeArgs[proxyName][fx] and: (mix != Nil)) {
-      this.prUpdateEffect(args, fx);
-    };
+    if (args != activeArgs[proxyName][fx] and: (mix != Nil))
+    { this.prUpdateEffect(args, fx) };
 
-    if (fx == \vst and: (hasFx == false)) {
-      this.prActivateVst(args, fx);
-    };
+    if (fx == \vst and: (hasFx == false))
+    { this.prActivateVst(args, fx) };
 
-    if (mix.isNil or: (mix == Nil)) {
-      ^this.prDisableFx(fx);
-    };
+    if (mix.isNil or: (mix == Nil))
+    { ^this.prDisableFx(fx) };
 
     this.prSetMixerValue(fx, mix.clip(0, 1));
   }
 
-  *prActivateEffect { |args, fx, mix|
+  *prActivateEffect { |args, fx, mix, postArgs|
     var index;
     proxy[proxyName] = Ndef(proxyName);
     activeEffects[proxyName] = activeEffects[proxyName].add(fx);
@@ -188,7 +209,9 @@ Fx {
       { activeArgs[proxyName] = Dictionary.new };
 
       activeArgs[proxyName].add(fx -> args);
-      this.prPrint("✨ Enabled" + "\\" ++ fx + "with mix:" + mix);
+      if (postArgs.isNil)
+      { postArgs = "no args" };
+      this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs);
     };
   }
 

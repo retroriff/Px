@@ -9,12 +9,14 @@ The Fx class facilitates the addition of effects to the link::Classes/Px:: set c
 These are the available effects:
 
 code::
-Fx(\test).delay(mix: 0.3, delaytime: 8, decaytime: 2);
+Fx(\test).delay(mix: 0.3, delaytime: 8, decaytime: 2);  
+Fx(\test).flanger(mix: 0.3);
 Fx(\test).gverb(mix: 0.4, roomsize: 200, revtime: 5);
 Fx(\test).hpf(mix: 0.3, freq: \wave);
 Fx(\test).lpf(mix: 0.3, freq: \wave);
 Fx(\test).pan(pos: 0);
 Fx(\test).reverb(mix: 0.3, room: 0.7, damp: 0.7);
+Fx(\test).space(mix: 0.3, fb: 0.95);
 Fx(\test).vst(mix: 0.3, plugin: "ValhallaFreqEcho");
 ::
 

@@ -118,15 +118,17 @@ The superclass that generates the patterns from an array of events with a simpli
 
 Px has the same FX methods than Fx, but it is helpful as a shortcut.
 
-| Name     | Arguments                                                   | Description                           |
-| -------- | ----------------------------------------------------------- | ------------------------------------- |
-| `blp`    | mix?: number \| Nil                                         | Adds a BLP filter to the proxy        |
-| `delay`  | mix?: number \| Nil                                         | Adds a delay filter to the proxy      |
-| `gverb`  | mix?: number \| Nil, delaytime?: number, decaytime?: number | Adds a gverb filter to the proxy      |
-| `hpf`    | mix?: number \| Nil, wave?: boolean                         | Adds a HPF filter to the proxy        |
-| `pan`    | number \| \wave                                             | Sets the balance                      |
-| `reverb` | mix?: number \| Nil, room?: number, damp?: number           | Adds a reverb filter to the proxy     |
-| `vst`    | mix?: number \| Nil, plugin?: string                        | Adds a VST plugin filter to the proxy |
+| Name      | Arguments                                                   | Description                                |
+| --------- | ----------------------------------------------------------- | ------------------------------------------ |
+| `blp`     | mix?: number \| Nil                                         | Adds a BLP filter to the proxy             |
+| `delay`   | mix?: number \| Nil                                         | Adds a delay filter to the proxy           |
+| `flanger` | mix?: number \| Nil                                         | Adds a flanger filter to the proxy         |
+| `gverb`   | mix?: number \| Nil, delaytime?: number, decaytime?: number | Adds a gverb filter to the proxy           |
+| `hpf`     | mix?: number \| Nil, wave?: boolean                         | Adds a HPF filter to the proxy             |
+| `pan`     | number \| \wave                                             | Sets the balance                           |
+| `reverb`  | mix?: number \| Nil, room?: number, damp?: number           | Adds a reverb filter to the proxy          |
+| `space`   | mix?: number \| Nil, fb?: 0 to 0.99 \| inf                  | Adds a spatial allpass reverb to the proxy |
+| `vst`     | mix?: number \| Nil, plugin?: string                        | Adds a VST plugin filter to the proxy      |
 
 ### Pattern shortcuts
 

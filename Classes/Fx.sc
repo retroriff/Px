@@ -120,6 +120,10 @@ Fx {
     this.prAddEffect(\space, mix, [fb], postArgs);
   }
 
+  *tremolo { |mix = 0.6, rate = 1|
+    var postArgs = "rate:" + rate;
+    this.prAddEffect(\tremolo, mix, [rate], postArgs);
+  }
 
   *vst { |mix = 1, plugin|
     var defaultPlugin = "ValhallaFreqEcho";

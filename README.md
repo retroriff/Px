@@ -128,6 +128,7 @@ Px has the same FX methods than Fx, but it is helpful as a shortcut.
 | `pan`     | number \| \wave                                             | Sets the balance                           |
 | `reverb`  | mix?: number \| Nil, room?: number, damp?: number           | Adds a reverb filter to the proxy          |
 | `space`   | mix?: number \| Nil, fb?: 0 to 0.99 \| inf                  | Adds a spatial allpass reverb to the proxy |
+| `tremolo` | mix?: number \| Nil, rate?: number                          | Adds a tremolo effect to the proxy         |
 | `vst`     | mix?: number \| Nil, plugin?: string                        | Adds a VST plugin filter to the proxy      |
 
 ### Pattern shortcuts

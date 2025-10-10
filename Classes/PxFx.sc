@@ -7,6 +7,10 @@
     Fx(\px).delay(mix, delaytime, decaytime);
   }
 
+  *flanger { |mix = 0.4|
+    Fx(\px).flanger(mix);
+  }
+
   *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
     Fx(\px).gverb(mix, roomsize, revtime);
   }
@@ -21,6 +25,10 @@
 
   *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
     Fx(\px).reverb(mix, room, damp);
+  }
+
+  *space { |mix = 1, fb = 0.95|
+    Fx(\px).space(mix, fb);
   }
 
   *vst { |mix = 1, plugin|

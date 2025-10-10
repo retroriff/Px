@@ -61,10 +61,19 @@
       { fadeTime = fadeTime };
 
       Ndef(\x).proxyspace.free(fadeTime);
+      Fx.activeEffects = Dictionary.new;
 
       if (midiOut.notNil) {
         Px.panic;
       };
+    };
+
+    if (name.notNil) {      
+      last.removeAt(name);
+      lastFormatted.removeAt(name);
+      ndefList.removeAt(name);
+      Fx.activeEffects.removeAt(name);
+      ^Ndef(name.asSymbol).free(fadeTime)
     };
 
     Ndef(\px).free(fadeTime);
@@ -75,6 +84,7 @@
       (fadeTime * 2).wait;
 
       ndefList.keys do: { |key|
+        Fx.activeEffects.removeAt(key);
         Ndef(key).free(fadeTime);
       };
 

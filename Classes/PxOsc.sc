@@ -7,7 +7,7 @@
         var code = msg[1].asString;
         var receiver = msg[2].asString;
 
-        code.interpret;
+        { code.interpret }.defer;
 
         if (receiver != "animatron")
         { this.prPrint(("🤖 " ++ code)) };

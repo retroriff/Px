@@ -1,9 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(*/px.sh *)",
-      "Bash(./px.sh *)",
-      "Bash(Club/px.sh *)"
+      "Bash(Club/px.sh:*)"
     ],
     "deny": [],
     "ask": []

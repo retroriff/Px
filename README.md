@@ -316,8 +316,8 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `\cp`  | Hand**C**la**P**    | 39           |
 | `\cb`  | **C**ow**B**ell     | 56           |
 | `\cy`  | **C**ymbal          | 49           |
-| `\hh`  | Open**H**i**h**at   | 46           |
-| `\ch`  | **C**losed**H**ihat | 42           |
+| `\oh`  | Open**H**i**h**at   | 46           |
+| `\hh`  | **C**losed**H**ihat | 42           |
 
 ### TR08 class methods
 

@@ -1,13 +1,13 @@
 // We can separately filter our patterns using these FX filters:
 1 i: \bd dur: 1 reverb: 0.4 delay: 0.2;
-2 i: \sn dur: 2 off: 1 reverb: 0.3 delay: 0.2;
+2 i: \sd dur: 2 off: 1 reverb: 0.3 delay: 0.2;
 3 i: \cy dur: 0.25 beat: 0.7 wah: 0.6 reverb: 0.3;
 
 // Add a random filter value:
-2 i: \sn dur: 2 off: 1 reverb: \rand;
+2 i: \sd dur: 2 off: 1 reverb: \rand;
 
 // Or define the probability of each item with weight:
-2 i: \sn dur: 2 off: 1 reverb: [\wrand, 0.2, 0.8, 0.4];
+2 i: \sd dur: 2 off: 1 reverb: [\wrand, 0.2, 0.8, 0.4];
 
 // Filter them all together with global FX:
 Px reverb: 0.5;
@@ -34,7 +34,7 @@ Fx(\x).reverb(1, 1, 1);
 // Global FX also can load a VST plugin:
 (
 1 i: \bd dur: 1;
-2 i: \sn dur: 2 off: 1;
+2 i: \sd dur: 2 off: 1;
 3 i: \cy dur: 0.25 beat: 0.7;
 Px.vst(0.4, "ValhallaFreqEcho");
 )

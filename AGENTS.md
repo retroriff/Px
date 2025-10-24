@@ -11,10 +11,10 @@
 
 ## Task Detection Guide
 
-| User Request Type | Examples | Route To |
-|-------------------|----------|----------|
-| **Playing Music** | "play a beat", "add reverb", "how do I use samples?", "create a drum pattern" | [Music Creation Docs](#documentation-for-music-creation) |
-| **Development** | "add a feature", "fix this bug", "refactor", "how does the code work?", "implement X" | [Development Docs](#documentation-for-development) |
+| User Request Type | Examples                                                                              | Route To                                                 |
+| ----------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| **Playing Music** | "play a beat", "add reverb", "how do I use samples?", "create a drum pattern"         | [Music Creation Docs](#documentation-for-music-creation) |
+| **Development**   | "add a feature", "fix this bug", "refactor", "how does the code work?", "implement X" | [Development Docs](#documentation-for-development)       |
 
 ---
 
@@ -24,11 +24,18 @@
 
 ### Primary References (read in order of relevance)
 
-1. **`Docs/audio-samples.md`** - How audio sample files are organized and referenced
+1. **`README.md`** - Complete API reference
+
+   - Full list of pattern methods
+   - Full list of effects
+   - Parameter descriptions
+
+2. **`Docs/how-to-play/audio-samples.md`** - How audio sample files are organized and referenced
+
    - Sample location: `~/icloud/Music/Samples/Live Coding`
    - Folder structure and indexing format
 
-2. **`Examples/*.scd`** - Working code examples for music creation
+3. **`Examples/*.scd`** - Working code examples for music creation
    - `1. Basic.scd` - Core pattern syntax
    - `2. Loops.scd` - Playing audio sample files
    - `3. Drum Machines.scd` - Using drum machine presets
@@ -36,14 +43,9 @@
    - `5. MIDI.scd` - MIDI integration
    - `6. Notes.scd` - Playing notes and melodies
 
-3. **`README.md`** - Complete API reference
-   - Full list of pattern methods
-   - Full list of effects
-   - Parameter descriptions
-
 ### What NOT to Read for Music Creation
 
-- ❌ `Docs/init-context.md` - Internal architecture (not needed for playing)
+- ❌ `Docs/how-to-develop-features/` - Internal architecture (not needed for playing)
 - ❌ `Classes/*.sc` - Source code (not needed unless debugging)
 
 ### Quick Music Creation Commands
@@ -55,7 +57,7 @@ Px.loadSynthDefs;
 
 // Play patterns
 1 i: \bd dur: 1 reverb: 0.2      // Kick drum
-2 i: \sn dur: 2 off: 1           // Snare on beat 2
+2 i: \sd dur: 2 off: 1           // Snare on beat 2
 3 play: "pop-2:0" dur: 4         // Play sample file
 
 // Stop
@@ -72,7 +74,8 @@ Px.release(16)                   // Fade out all
 
 ### Primary References (read in order)
 
-1. **`Docs/init-context.md`** - Complete architecture and development workflow
+1. **`Docs/how-to-develop-features/init-context.md`** - Complete architecture and development workflow
+
    - Core class hierarchy
    - How the DSL pattern works
    - Pattern generation flow
@@ -84,21 +87,23 @@ Px.release(16)                   // Fade out all
    - `Classes/Px.sc` - Base pattern generator
    - `Classes/Fx.sc` - Effects handler
    - `Classes/Dx.sc` - Drum machines
-   - See `init-context.md` for full file organization
+   - See `Docs/how-to-develop-features/init-context.md` for full file organization
 
 ### What NOT to Read for Development
 
 - ❌ `Examples/*.scd` - Usage examples (helpful for testing, not for architecture)
-- ❌ `Docs/audio-samples.md` - User-facing sample guide (not relevant for coding)
+- ❌ `Docs/how-to-play-music/audio-samples.md` - User-facing sample guide (not relevant for coding)
 
 ### Development Quick Reference
 
 **After editing `.sc` files:**
+
 - **Must recompile**: Cmd+K (macOS) or Language → Recompile Class Library
 - **Test manually**: Run code from `Examples/` directory
 - **No unit tests**: Manual testing only
 
 **Common development tasks:**
+
 - Add effect → Edit `Effects/*.scd` + `Classes/Fx.sc`
 - Add pattern parameter → Edit `Classes/Number.sc` + `Classes/Px.sc`
 - Add drum preset → Create `Presets/yaml/*.yaml`
@@ -120,17 +125,19 @@ Px.release(16)                   // Fade out all
 **User**: "How do I play a sample with reverb?"
 
 **Agent should:**
-1. ✅ Read `Docs/audio-samples.md` (understand sample referencing)
+
+1. ✅ Read `Docs/how-to-play-music/audio-samples.md` (understand sample referencing)
 2. ✅ Read `Examples/2. Loops.scd` (see sample playback examples)
 3. ✅ Read `Examples/4. FX.scd` (see reverb examples)
-4. ❌ Do NOT read `init-context.md` or `Classes/*.sc`
+4. ❌ Do NOT read `Docs/how-to-develop-features` or `Classes/*.sc`
 
 ### Example 2: Development Request
 
 **User**: "Add a new effect called 'chorus'"
 
 **Agent should:**
-1. ✅ Read `Docs/init-context.md` (understand effect architecture)
+
+1. ✅ Read `Docs/how-to-develop-features/init-context.md` (understand effect architecture)
 2. ✅ Read `Classes/Fx.sc` (see existing effect methods)
 3. ✅ Read `Effects/Reverb.scd` (example effect structure)
 4. ❌ Do NOT read `README.md` or `Examples/*` initially
@@ -140,8 +147,9 @@ Px.release(16)                   // Fade out all
 **User**: "The reverb isn't working, can you fix it?"
 
 **Agent should:**
+
 1. ✅ Start with `Examples/4. FX.scd` (verify correct usage)
-2. ✅ If usage is correct, then read `Docs/init-context.md` (understand architecture)
+2. ✅ If usage is correct, then read `Docs/how-to-develop-features/init-context.md` (understand architecture)
 3. ✅ Then read `Classes/Fx.sc` and `Effects/Reverb.scd` (debug code)
 
 ---

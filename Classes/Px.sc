@@ -1,5 +1,4 @@
 /*
-TODO: Solo doesn't work anymore: 707 i: \bd dur: 1 solo: 1
 TODO: Any param should have a beat function.
       Maybe \beat or [0.3, 0.5].beat(16)
       Already created Number.prCreateBeat
@@ -168,10 +167,12 @@ Px {
   }
 
   *prHandleSoloPattern { |pattern|
-    var hasSolo = pattern['solo'] == true;
+    var hasSolo = pattern[\solo] == true;
 
     if (hasSolo) {
-      ^this.solo(pattern['id']);
+      if (pattern[\dx] == true)
+      { ^Dx.solo(pattern[\id]) }
+      { ^Px.solo(pattern[\id]) };
     };
   }
 

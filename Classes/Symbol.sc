@@ -82,7 +82,7 @@
   }
 
   prHasDrumMachine {
-    var drumMachines = [505, 606, 626, 707, 727, 808, 909];
+    var drumMachines = [505, 606, 707, 727, 808, 909];
     ^drumMachines.includes(this);
   }
 

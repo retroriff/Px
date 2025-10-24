@@ -24,18 +24,20 @@
 
 ### Primary References (read in order of relevance)
 
-1. **`README.md`** - Complete API reference
+1. **`Docs/how-to-play-music/agent-instructions.md`** - Agents responses
+
+2. **`README.md`** - Complete API reference
 
    - Full list of pattern methods
    - Full list of effects
    - Parameter descriptions
 
-2. **`Docs/how-to-play/audio-samples.md`** - How audio sample files are organized and referenced
+3. **`Docs/how-to-play-music/audio-samples.md`** - How audio sample files are organized and referenced
 
    - Sample location: `~/icloud/Music/Samples/Live Coding`
    - Folder structure and indexing format
 
-3. **`Examples/*.scd`** - Working code examples for music creation
+4. **`Examples/*.scd`** - Working code examples for music creation
    - `1. Basic.scd` - Core pattern syntax
    - `2. Loops.scd` - Playing audio sample files
    - `3. Drum Machines.scd` - Using drum machine presets

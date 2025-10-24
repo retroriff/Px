@@ -1,4 +1,5 @@
 /*
+TODO: Solo doesn't work anymore: 707 i: \bd dur: 1 solo: 1
 TODO: Any param should have a beat function.
       Maybe \beat or [0.3, 0.5].beat(16)
       Already created Number.prCreateBeat

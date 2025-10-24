@@ -6,16 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-## 🎯 Start of Conversation
+## 🎯 Slash Commands
 
-**IMPORTANT: At the very start of EVERY new conversation, IMMEDIATELY and AUTOMATICALLY present the user with these two options WITHOUT waiting for them to ask:**
+This repository has two distinct modes. Use the appropriate slash command to load the relevant documentation:
 
-1. **⚡️ Development** - Modifying code and adding features
-2. **🎛️ Music Creation** - Writing live coding music
+- `/dev` - **Development Mode** - Modifying code and adding features
+- `/play` - **Music Creation Mode** - Writing live coding music
 
-Ask which mode they're working in, then follow the routing guide in `AGENTS.md` to load only the relevant documentation.
-
-This should be the FIRST thing you do in any new conversation - do not wait for the user to request it.
+These commands will load only the relevant documentation for each task, saving tokens.
 
 ---
 
@@ -23,8 +21,8 @@ This should be the FIRST thing you do in any new conversation - do not wait for 
 
 This repository is used for two distinct purposes:
 
-1. **⚡️ Development** - Modifying code and adding features
-2. **🎛️ Music Creation** - Writing live coding music
+1. **⚡️ Development** - Modifying code and adding features (use `/dev`)
+2. **🎛️ Music Creation** - Writing live coding music (use `/play`)
 
 **`AGENTS.md` will route you to the correct documentation** based on which task the user is requesting. This prevents loading unnecessary documentation and saves tokens.
 

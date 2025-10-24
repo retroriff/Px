@@ -11,7 +11,7 @@ When users request music creation (e.g., "play a 707 kick", "add reverb", "creat
 When a user asks to play music, **immediately execute** the corresponding SuperCollider code using:
 
 ```bash
-Club/px.sh 'SUPERCOLLIDER_CODE_HERE'
+./play.sh 'SUPERCOLLIDER_CODE_HERE'
 ```
 
 **Example:**
@@ -21,7 +21,7 @@ User: "Play a 707 kick drum"
 Agent response:
 
 ```bash
-Club/px.sh '707 i: \bd dur: 1'
+./play.sh '707 i: \bd dur: 1'
 ```
 
 ### L DON'T: Provide Extra Information
@@ -37,21 +37,21 @@ Club/px.sh '707 i: \bd dur: 1'
 
 | User Request                    | Agent Action                         |
 | ------------------------------- | ------------------------------------ |
-| "Play a 707 kick on every beat" | `Club/px.sh '707 i: \bd dur: 1'`        |
-| "Add a snare on 2 and 4"        | `Club/px.sh '707 i: \sd dur: 2 off: 1'` |
-| "Add some reverb"               | `Club/px.sh 'Px.reverb(0.3)'`           |
-| "Stop everything"               | `Club/px.sh 'Px.release(16)'`           |
-| "Play the electro preset"       | `Club/px.sh 'Dx.preset(\electro, 2)'`   |
+| "Play a 707 kick on every beat" | `./play.sh '707 i: \bd dur: 1'`        |
+| "Add a snare on 2 and 4"        | `./play.sh '707 i: \sd dur: 2 off: 1'` |
+| "Add some reverb"               | `./play.sh 'Px.reverb(0.3)'`           |
+| "Stop everything"               | `./play.sh 'Px.release(16)'`           |
+| "Play the electro preset"       | `./play.sh 'Dx.preset(\electro, 2)'`   |
 
 ## Script Location
 
 The script is located at:
 
 ```
-/Users/xavier.catchot@m10s.io/Library/Application Support/SuperCollider/Extensions/Px/Club/px.sh
+/Users/xavier.catchot@m10s.io/Library/Application Support/SuperCollider/Extensions/Px/./play.sh
 ```
 
-Always use the relative path `Club/px.sh` when executing from the project root directory.
+Always use the relative path `./play.sh` when executing from the project root directory.
 
 ## Prerequisites
 
@@ -66,9 +66,9 @@ User: "Create a full beat with kick, snare, and hi-hats"
 Agent:
 
 ```bash
-Club/px.sh '707 i: \bd dur: 1'
-Club/px.sh '707 i: \sd dur: 2 off: 1'
-Club/px.sh '707 i: \oh dur: 0.25 beat: 0.7 amp: 0.4'
+./play.sh '707 i: \bd dur: 1'
+./play.sh '707 i: \sd dur: 2 off: 1'
+./play.sh '707 i: \oh dur: 0.25 beat: 0.7 amp: 0.4'
 ```
 
 ## Response Style

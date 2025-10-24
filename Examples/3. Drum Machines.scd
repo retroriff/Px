@@ -1,7 +1,7 @@
 // We have 5 available drum machines: 505, 606, 707, 808 and 909:
 (
 707 i: \bd dur: 1;
-707 i: \sn dur: 2 off: 1;
+707 i: \sd dur: 2 off: 1;
 707 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 degree: \rand length: 3 rotate: 1;
 707 i: \rd dur: 0.25 beat: 0.7 amp: 0.3;
 707 i: \ss dur: 0.25 off: 0.5 beat: 0.7 amp: 0.5;
@@ -11,7 +11,7 @@
 
 (
 909 i: \bd dur: 1;
-909 i: \sn dur: 2 off: 1;
+909 i: \sd dur: 2 off: 1;
 909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 degree: \rand length: 3 rotate: 1;
 909 i: \rd dur: 0.25 beat: 0.7 amp: 0.3 rotate: 1;
 909 i: \oh dur: 1 amp: 0.6 off: 0.5 pan: \rand;
@@ -22,7 +22,7 @@
 
 (
 909 i: \bd dur: 0.25 beat: 0.3;
-909 i: \sn dur: 0.25 fill: 0.3;
+909 i: \sd dur: 0.25 fill: 0.3;
 909 i: \ht dur: 0.25 fill: 0.3;
 909 i: \lt dur: 0.25 fill: 0.5;
 909 i: \rd dur: 0.25 beat: 0.3 amp: 0.5 reverb: 0.5;

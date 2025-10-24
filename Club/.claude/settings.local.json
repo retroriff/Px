@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/xavier.catchot@m10s.io/Library/Application Support/SuperCollider/Extensions/Px/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

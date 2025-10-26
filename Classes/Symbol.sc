@@ -81,6 +81,10 @@
     Crossfader(this, b);
   }
 
+  xset { |key, value|
+    Ndef(this).xset(key, value);
+  }
+ 
   prHasDrumMachine {
     var drumMachines = [505, 606, 707, 727, 808, 909];
     ^drumMachines.includes(this);

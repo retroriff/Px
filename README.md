@@ -68,7 +68,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `r`      | number \| \rand \| [\wrand, item1, item2, weight] | Rate value. The term rate was discarded because it was an existing Integer method                                                                                                            |
 | `rest`   | beats: integer                                    | Rests muted for a specific amount of beats                                                                                                                                                   |
 | `rotate` | 1 (enable)                                        | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
-| `seed`   | seed: integer \| symbol \| \rand                  | Generate a specific random seed or a `Prand` using `\rand`                                                                                                                                   |
+| `seed`   | seed: integer \| symbol \| \rand                  | Generate a specific random seed or a `Pxrand` using `\rand`                                                                                                                                  |
 | `set`    | 1 (enable)                                        | Allows to add more pairs to an existing pattern when `i`, `loop` and `play` are not present. When we use drum machines, the value must be the instrument.                                    |
 | `solo`   | 1 (enable)                                        | Mutes all patterns that don't contain a solo method                                                                                                                                          |
 | `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
@@ -183,7 +183,7 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 #### MIDI methods
 
 - `Pmidi.init`: Initializes the MIDIClient. Latency can be passed as argument.
-- `Px.panic`: Silences all active notes across channels.
+- `Px.panic`: Silences all active notes across channels, or channel-specific (`Px.panic(0)`).
 
 #### MIDI event methods
 

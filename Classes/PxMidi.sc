@@ -41,8 +41,12 @@ TODO: MIDIOut instances
     midiClient[deviceName].latency = latency ?? abletonLiveLatencyMs;
   }
 
-  *panic {
-    var chans = last.collect { |value| value[\chan] }.reject(_.isNil);
+  *panic { |chan|
+    var chans;
+
+   if (chan.isNil)
+   { chans = last.collect { |value| value[\chan] }.reject(_.isNil) }
+   { chans = [chan] };
 
     if (chans.isEmpty.not) {
       chans do: { |chan|

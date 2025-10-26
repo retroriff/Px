@@ -213,7 +213,13 @@
       var parts = sample.asString.split($:);
 
       if (parts.size > 1) {
-        ^[parts[0], parts[1].asInteger];
+        var file = parts[1];
+
+        if (file.asSymbol == \rand)
+        { file = \rand }
+        { file = file.asInteger };
+
+        ^[parts[0], file];
       }
 
       ^[parts[0], 0];

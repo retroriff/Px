@@ -126,7 +126,7 @@
 
           if (pattern[\seed] == \rand) {
             files = (0..filesCount - 1);
-            Prand(this.buf(pattern[\buf][0], files), inf);
+            Pxrand(this.buf(pattern[\buf][0], files), inf);
           } {
             files = Array.rand(8, 0, filesCount - 1);
             Pseq(this.buf(pattern[\buf][0], files), inf);
@@ -173,7 +173,7 @@
           pattern[\start] = pattern[\trim];
         };
 
-        if ([Buffer, Pseq, Prand].includes(buf.class))
+        if ([Buffer, Pseq, Pxrand].includes(buf.class))
         { pattern[\buf] = buf }
         { pattern[\amp] = 0 };
       }

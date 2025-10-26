@@ -72,7 +72,7 @@
       last.removeAt(name);
       lastFormatted.removeAt(name);
       ndefList.removeAt(name);
-      Fx.activeEffects.removeAt(name);
+      Fx.clear(name.asSymbol);
       ^Ndef(name.asSymbol).free(fadeTime)
     };
 

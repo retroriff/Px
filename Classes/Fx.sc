@@ -35,11 +35,20 @@ Fx {
     this.prAddEffect(\blp, mix);
   }
 
-  *clear {
+  *clear { |singleProxy|
     var fx = activeEffects[proxyName];
 
-    if (fx.isArray and: { fx.isEmpty.not })
+    if (fx.isArray and: { fx.isEmpty.not } and: { singleProxy.isNil } )
     { this.prPrint("🌵 All effects have been disabled") };
+
+    if (singleProxy.notNil) {
+      proxyName = singleProxy.asSymbol;
+      fx = activeEffects[proxyName];
+
+      ^fx do: { |fx, i|
+        this.prDisableFx(fx, noPostln: true);
+      }
+    };
 
     fx do: { |fx, i|
       proxy[proxyName][i + 1] = nil;
@@ -236,7 +245,7 @@ Fx {
     this.prPrint("👉 Set VST parameter: Fx.vstSet(1, 1);");
   }
 
-  *prDisableFx { |fx|
+  *prDisableFx { |fx, noPostln|
     var index = this.prGetIndex(fx);
     var wetIndex = (\wet ++ index).asSymbol;
 
@@ -250,26 +259,27 @@ Fx {
     if (activeEffects[proxyName].indexOf(fx).notNil)
     { activeEffects[proxyName].removeAt(activeEffects[proxyName].indexOf(fx)) };
 
-    this.prFadeOutFx(index, fx, wetIndex);
+    this.prFadeOutFx(index, fx, wetIndex, noPostln);
   }
 
-  *prFadeOutFx { |index, fx, wetIndex|
+  *prFadeOutFx { |index, fx, wetIndex, noPostln|
     var wet = proxy[proxyName].get(wetIndex, { |f| f });
     var fadeOut = wet / 25;
+    var fadedProxyName = proxyName;
 
     fork {
       while { wet > 0.0 } {
         wet = wet - fadeOut;
 
         if (wet > 0)
-        { proxy[proxyName].set(wetIndex, wet) }
+        { proxy[fadedProxyName].set(wetIndex, wet) }
         {
-          proxy[proxyName][index] = nil;
+          proxy[fadedProxyName][index] = nil;
 
           if (vstController.notNil)
           { vstController.close };
 
-          if (proxy[proxyName].isPlaying)
+          if (proxy[fadedProxyName].isPlaying and: (noPostln != true))
           { this.prPrint("🔇 Disabled".scatArgs(("\\" ++ fx), "FX")) };
         };
 

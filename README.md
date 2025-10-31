@@ -93,6 +93,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `play` | [folder: string, file: number \| array \| \rand]\* | Plays a buffer                         |
 
 `*` The array can be replaced by a string shortcut: `"folder:index"`.
+`**` It also accepts a Buffer object: `Buffer.read(s, "chord.aiff".resolveRelative)`.
 
 ### Px class methods
 

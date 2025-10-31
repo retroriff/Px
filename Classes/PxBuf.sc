@@ -65,22 +65,33 @@
   }
 
   *prCreateBufInstruments { |pattern|
-    pattern[\play].notNil.if {
+    if (pattern[\play].notNil) {
+      var folder, file;
       var numChannels = 2;
       var playBuf = \playbuf;
-      var folder = pattern[\play][0];
-      var file = pattern[\play][1];
+
+      if (pattern[\play].isArray) {
+        folder = pattern[\play][0];
+        file = pattern[\play][1];
+      };
+
+      if (pattern[\play].class == Buffer) {
+        numChannels = pattern[\play].numChannels;
+      };
 
       if (file.isInteger) {
         numChannels = Px.samplesDict[folder][file].numChannels;
-        playBuf = (numChannels == 1).if(\playbufMono, \playbuf);
+      };
+
+      if (numChannels == 1) {
+        playBuf = \playbufMono;
       };
 
       pattern = pattern ++ (instrument: playBuf, buf: pattern[\play]);
       pattern.removeAt(\play);
     };
 
-    pattern[\loop].notNil.if {
+    if (pattern[\loop].notNil) {
       pattern = pattern ++ (instrument: \loop, buf: pattern[\loop]);
       pattern.removeAt(\loop);
     };

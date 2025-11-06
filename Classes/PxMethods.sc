@@ -52,10 +52,9 @@
 
     if (anyParam.includes(\all)) {
       var tdefs = Tdef.all.select { |t| t.isPlaying }.keys;
+      tdefs do: { |key| Tdef(key).stop };
 
       ~animatronNetAddr.sendMsg("/sc/hush", fadeTime);
-
-      tdefs do: { |key| Tdef(key).stop };
 
       if (fadeTime == \all)
       { fadeTime = fadeTime };

@@ -10,6 +10,12 @@
       Array.fill(16, { [min, max].wchoose([1 - weight, weight]) });
     };
 
+    if (pattern[\seed] == \rand) {
+      var amp = pattern[\amp] ?? 1;
+
+      ^[Pwrand([0, amp], [1 - weight, weight], inf)];
+    };
+
     thisThread.randSeed = seed;
 
     if (pseqWeight > 0) {

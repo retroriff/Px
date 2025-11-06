@@ -212,8 +212,6 @@
     if (sample.isString) {
       var parts = sample.asString.split($:);
 
-      "garrow".postln;
-
       if (parts.size > 1) {
         var file = parts[1];
 

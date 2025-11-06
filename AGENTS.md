@@ -26,7 +26,7 @@
 
 1. **`Docs/how-to-play-music/agent-instructions.md`** - Agents responses
 
-2. **`README.md`** - Complete API reference
+2. **`README.md`** - Complete reference
 
    - Full list of pattern methods
    - Full list of effects
@@ -38,7 +38,7 @@
    - Folder structure and indexing format
 
 4. **`Examples/*.scd`** - Working code examples for music creation
-   - `1. Basic.scd` - Core pattern syntax
+   - `1. Basic.scd` - Core pattern syntax and beats
    - `2. Loops.scd` - Playing audio sample files
    - `3. Drum Machines.scd` - Using drum machine presets
    - `4. FX.scd` - Adding effects

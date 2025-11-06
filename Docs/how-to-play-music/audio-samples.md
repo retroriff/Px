@@ -4,7 +4,7 @@
 
 ## Audio samples files
 
-We use all sample audio files from `~/icloud/Music/Samples/Live\ Coding`.
+We use all sample audio files from `~/icloud/Music/Samples/Live\ Coding`. You should read all its folders and files to learn which samples refenrences can be played.
 
 ## How to reference an audio sample file
 

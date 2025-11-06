@@ -212,11 +212,18 @@
     if (sample.isString) {
       var parts = sample.asString.split($:);
 
+      "garrow".postln;
+
       if (parts.size > 1) {
         var file = parts[1];
 
-        if (file.asSymbol == \rand)
+        case
+        { file.asSymbol == \jump }
+        { file = \jump }
+
+        { file.asSymbol == \rand }
         { file = \rand }
+
         { file = file.asInteger };
 
         ^[parts[0], file];

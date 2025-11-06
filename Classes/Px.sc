@@ -143,7 +143,7 @@ Px {
     pattern[\pan] = switch (pattern[\pan].asSymbol)
 
     { \rand }
-    { Pwhite(-0.7, 0.7, inf) }
+    { Pwhite(-0.6, 0.6, inf) }
 
     { \rotate }
     { Pwalk((0..10).normalize(-1, 1), 1, Pseq([1, -1], inf), startPos: 5) }

@@ -14,7 +14,7 @@ Px.stop([1, 2]);
 1 i: \bd dur: 1 reverb: 0.2 wah: 0.1;
 2 i: \sd dur: 2 off: 1 delay: 0.2;
 
-// And create some random or Euclidian rhythms:
+// And create some random beats or Euclidian rhythms:
 3 i: \hh dur: 0.25 beat: 0.7;
 4 i: \ma dur: 0.25 euclid: [3, 5];
 
@@ -26,7 +26,7 @@ Px.stop([1, 2]);
 4 i: \ma dur: 0.25 euclid: [3, 5];
 )
 
-// We can control the balance of hits and rests with weight:
+// We can control the beats balance of hits and rests with weight:
 (
 1 i: \bd dur: 1;
 2 i: \sd dur: 2 off: 1;
@@ -34,7 +34,7 @@ Px.stop([1, 2]);
 4 i: \ma dur: 0.25 beat: 0.7;
 )
 
-// Add some rest time
+// Add some rest time to the beat:
 (
 1 i: \bd dur: 1;
 2 i: \sd dur: 2 off: 1 delay: 0.2;
@@ -42,7 +42,7 @@ Px.stop([1, 2]);
 4 i: \ma dur: 0.25 beat: 0.25;
 )
 
-// And add random variations with another weight defined as a hundredth:
+// And add random beat variations with another weight defined as a hundredth:
 (
 1 i: \bd dur: 1;
 2 i: \sd dur: 2 off: 1 delay: 0.2;
@@ -53,14 +53,14 @@ Px.stop([1, 2]);
 // And shuffle a new beat
 Px.shuffle;
 
-// We can set up our own rhythm:
+// We can set up our own beat pattern:
 1 i: \bd dur: 0.25 beat: [1, 0, 1, 0, 0, 1, 0, 1];
 
-// We can fill the gaps of a pattern beat
+// We can fill the gaps of a beat pattern:
 1 i: \bd dur: 0.25 beat: [1, 0, 1, 0, 0, 1, 0, 1];
 2 i: \sd dur: 0.5 fill: 1;
 
-// And set up a fill weight
+// And set up a fill weight:
 (
 1 i: \lc dur: 0.25 a: 0.4 beat: 0.42;
 2 i: \lc dur: 0.25 a: 0.5 fill: 0.52 args: (freq: 200);

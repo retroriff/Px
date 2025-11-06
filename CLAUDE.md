@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**⚠️ READ `AGENTS.md` FIRST** - It contains the task routing guide for this project.
+**⚠️ READ `@AGENTS.md` FIRST** - It contains the task routing guide for this project.
 
 ---
 

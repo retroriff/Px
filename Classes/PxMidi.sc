@@ -44,9 +44,12 @@ TODO: MIDIOut instances
   *panic { |chan|
     var chans;
 
-   if (chan.isNil)
-   { chans = last.collect { |value| value[\chan] }.reject(_.isNil) }
-   { chans = [chan] };
+    if (chan.isNil)
+    { chans = last.collect { |value| value[\chan] }.reject(_.isNil) }
+    { chans = [chan] };
+
+    if (chans.size == 0)
+    { chans = (0..15) };
 
     if (chans.isEmpty.not) {
       chans do: { |chan|

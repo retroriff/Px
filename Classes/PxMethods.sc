@@ -67,7 +67,8 @@
       };
     };
 
-    if (name.notNil) {      
+    if (name.notNil) {
+      colors.removeAt(name);
       last.removeAt(name);
       lastFormatted.removeAt(name);
       ndefList.removeAt(name);
@@ -76,6 +77,7 @@
     };
 
     Ndef(\px).free(fadeTime);
+    colors = Dictionary.new;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
 

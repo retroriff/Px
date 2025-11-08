@@ -8,6 +8,7 @@ TODO: Rename name references to id?
 
 Px {
   classvar <>chorusPatterns;
+  classvar <>colors;
   classvar <drumMachinesPath;
   classvar <>last;
   classvar <>lastFormatted;
@@ -27,6 +28,7 @@ Px {
   *initClass {
     // CmdPeriod.add { Px.clear };
     chorusPatterns = Dictionary.new;
+    colors = Dictionary.new;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
     midiHoldedNotes = Dictionary.new;
@@ -188,6 +190,7 @@ Px {
   *prInitializeDictionaries { |pattern|
     if (Ndef(\px).isPlaying.not) {
       chorusPatterns.clear;
+      colors.clear;
       last.clear;
       ndefList.clear;
     };

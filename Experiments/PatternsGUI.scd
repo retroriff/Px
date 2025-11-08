@@ -22,6 +22,8 @@ var truncateText = { |text|
   text;
 };
 
+var colors = Dictionary.new;
+
 ~emptyPatternsText = StaticText()
 .align_(\center)
 .string_("🔴 Px is not running")
@@ -85,6 +87,9 @@ var truncateText = { |text|
       { Color.new255(255, 255, 122) }
       { ~sliderStaticTextColor }
     };
+
+    if (colors[pattern[\id]].isNil)
+    { colors[pattern[\id]] = Color.rand };
 
     // StaticText
     staticText = StaticText()

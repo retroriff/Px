@@ -54,7 +54,7 @@
     }.keys.asSortedList;
     var nonDrumMachinePatterns =  patterns.select { |pattern|
       pattern[\drumMachine].isNil
-    }.keys.asSortedList;
+    }.keys.asArray.sort({ |a, b| a.asInteger < b.asInteger });
     var sortedKeys = drumMachinePatterns ++ nonDrumMachinePatterns;
 
     ^sortedKeys collect: { |key|
@@ -77,13 +77,16 @@
       var staticTextColor = {
         if (pattern[\drumMachine].notNil)
         { Color.new255(255, 255, 122) }
-        { Color.rand }
+        { colors[pattern[\id]] }
       };
 
       var slideAction = { |value|
         pattern[\id].asInteger.set(1).amp(value);
         numberBox.value_(value);
       };
+
+      if (colors[pattern[\id]].isNil)
+      { colors[pattern[\id]] = Color.rand };
 
       // StaticText
       staticText = StaticText()

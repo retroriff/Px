@@ -144,9 +144,16 @@
   }
 
   *prGetAmp { |amp|
+    var hasPwrand = {
+      amp.list[0].isKindOf(Pwrand);
+    };
+
     case
     { amp.isKindOf(Pwhite) }
     { ^amp.hi }
+
+    { amp.isKindOf(Pseq) and: { hasPwrand.value == true } }
+    { ^amp.list[0].list.reject { |x| x.isKindOf(Rest) }.maxItem }
 
     { amp.isKindOf(Pattern) }
     { ^amp.list.reject { |x| x.isKindOf(Rest) }.maxItem }

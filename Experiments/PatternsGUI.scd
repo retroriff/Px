@@ -62,7 +62,7 @@ var colors = Dictionary.new;
   }.keys.asSortedList;
   var nonDrumMachinePatterns =  patterns.select { |pattern|
     pattern[\drumMachine].isNil
-  }.keys.asSortedList;
+  }.keys.asArray.sort({ |a, b| a.asInteger < b.asInteger });
   var sortedKeys = drumMachinePatterns ++ nonDrumMachinePatterns;
 
   sortedKeys collect: { |key|

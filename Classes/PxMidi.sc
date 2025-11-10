@@ -52,8 +52,12 @@ TODO: MIDIOut instances
     { chans = (0..15) };
 
     if (chans.isEmpty.not) {
-      chans do: { |chan|
+      chans keysValuesDo: { |key, chan|
         this.prChannelNoteOff(chan);
+        last.removeAt(key);
+        lastFormatted.removeAt(key);
+        ndefList.removeAt(key);
+        Ndef(key).free;
       };
     }
   }

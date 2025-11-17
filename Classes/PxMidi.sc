@@ -51,6 +51,12 @@ TODO: MIDIOut instances
     if (chans.size == 0)
     { chans = (0..15) };
 
+    if (chans.isArray) {
+      ^chans do: {
+        this.prChannelNoteOff(chan);
+      }
+    };
+
     if (chans.isEmpty.not) {
       chans keysValuesDo: { |key, chan|
         this.prChannelNoteOff(chan);

@@ -12,7 +12,8 @@
       "Edit(**)",
       "Write(**)",
       "Edit(.claude/**)",
-      "Write(.claude/**)"
+      "Write(.claude/**)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

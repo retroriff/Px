@@ -120,7 +120,8 @@
     var id = Px.patternState[\id];
     var lastFx = Px.patternState[\fx] ?? [];
     var allFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
-    this.prUpdatePattern([\fx, allFx]);
+
+    ^PxDebouncer.wrap(this).enqueue([\fx, allFx]);
   }
 }
 

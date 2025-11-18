@@ -52,8 +52,8 @@ TODO: MIDIOut instances
     { chans = (0..15) };
 
     if (chans.isArray) {
-      ^chans do: {
-        this.prChannelNoteOff(chan);
+      ^chans do: { |ch|
+        this.prChannelNoteOff(ch);
       }
     };
 

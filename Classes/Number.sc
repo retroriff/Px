@@ -5,12 +5,12 @@
 
   amp { |value|
     var pairs = this.prCreatePatternFromArray(\amp, value);
-    this.prUpdatePattern(pairs);
+    ^PxDebouncer.wrap(this).enqueue(pairs)
   }
 
   args { |value|
     if (value.class == Event) {
-      this.prUpdatePattern(value.asPairs);
+      ^PxDebouncer.wrap(this).enqueue(value.asPairs);
     }
   }
 
@@ -24,7 +24,7 @@
     { pairs = [\beat, true, \beatSet, value] }
     { this.prRemoveBeatSetWhenSet };
 
-    this.prUpdatePattern(pairs);
+    ^PxDebouncer.wrap(this).enqueue(pairs)
   }
 
   doesNotUnderstand { |selector, args|
@@ -46,18 +46,18 @@
     allEventKeys = (allEventKeys ++ synthDefControlNames).asArray.flat ++ customMethods;
 
     if (allEventKeys.includes(selector))
-    { this.prUpdatePattern([selector, args]) }
+    { ^PxDebouncer.wrap(this).enqueue([selector, args]) }
     { ("🔴 Method not understood:" + selector).postln };
   }
 
   dur { |value|
-    this.prUpdatePattern([\dur, value]);
+    ^PxDebouncer.wrap(this).enqueue([\dur, value])
   }
 
   euclid { |value|
     var hits = value[0];
     var total = value[1];
-    this.prUpdatePattern([\euclid, [hits, total]]);
+    ^PxDebouncer.wrap(this).enqueue([\euclid, [hits, total]]);
   }
 
   fade { |value|
@@ -66,7 +66,7 @@
 
   fill { |value|
     var pairs = [\fill, true, \weight, value];
-    this.prUpdatePattern(pairs);
+    ^PxDebouncer.wrap(this).enqueue(pairs)
   }
 
   gui { |value|
@@ -81,11 +81,11 @@
 
   human { |delay|
     delay = delay ?? 0.1;
-    this.prUpdatePattern([\human, delay.clip(0, 1)]);
+    ^PxDebouncer.wrap(this).enqueue([\human, delay.clip(0, 1)])
   }
 
   i { |value|
-    this.prPlay(i: value.asSymbol);
+    ^this.prPlay(i: value.asSymbol);
   }
 
   in { |value|
@@ -97,25 +97,25 @@
   }
 
   off { |value|
-    this.prUpdatePattern([\timingOffset, value]);
+    ^PxDebouncer.wrap(this).enqueue([\timingOffset, value])
   }
 
   loop { |value|
-    this.prPlay(loop: value);
+    ^this.prPlay(loop: value);
   }
 
   out { |value|
     if (value.class == Bus)
-    { this.prUpdatePattern([\out, value]) }
+    { ^PxDebouncer.wrap(this).enqueue([\out, value]) }
     { this.prFade(\out, value) };
   }
 
   play { |value|
-    this.prPlay(play: value);
+    ^this.prPlay(play: value);
   }
 
   rest { |value|
-    this.prUpdatePattern([\rest, value]);
+    ^PxDebouncer.wrap(this).enqueue([\rest, value])
   }
 
   rotate { |value|
@@ -124,7 +124,7 @@
   }
 
   seed { |value|
-    this.prUpdatePattern([\seed, value]);
+    ^PxDebouncer.wrap(this).enqueue([\seed, value])
   }
 
   set { |setId|
@@ -149,27 +149,27 @@
 
   solo { |value|
     var isSolo = value != 0;
-    this.prUpdatePattern([\solo, isSolo]);
+    ^PxDebouncer.wrap(this).enqueue([\solo, isSolo]);
   }
 
   weight { |value|
-    this.prUpdatePattern([\weight, value.clip(0, 1)]);
+    ^PxDebouncer.wrap(this).enqueue([\weight, value.clip(0, 1)]);
   }
 
   // 303 SynthDef methods with arrays to be patterns
   ctf { |value|
     var pairs = this.prCreatePatternFromArray(\ctf, value);
-    this.prUpdatePattern(pairs);
+    ^PxDebouncer.wrap(this).enqueue(pairs)
   }
 
   env { |value|
     var pairs = this.prCreatePatternFromArray(\env, value);
-    this.prUpdatePattern(pairs);
+    ^PxDebouncer.wrap(this).enqueue(pairs)
   }
 
   res { |value|
     var pairs = this.prCreatePatternFromArray(\res, value);
-    this.prUpdatePattern(pairs);
+    ^PxDebouncer.wrap(this).enqueue(pairs)
   }
 
   // Functions
@@ -315,10 +315,10 @@
     { fade = direction }
     { fade = [direction, time.clip(0.1, time)] };
 
-    this.prUpdatePattern([\fade, fade]);
+    ^PxDebouncer.wrap(this).enqueue([\fade, fade]);
   }
 
-  prPlay { |i, play, loop|
+prPlay { |i, play, loop|
     var instrumentWithoutSufix = this.prRemoveSufix(i);
 
     var newPattern = (
@@ -331,12 +331,13 @@
     if (i.asString != instrumentWithoutSufix.asString and: { this.prExtractSufix(i).notNil})
     { newPattern.putAll([\file, this.prExtractSufix(i)]) };
 
-    this.prPlayClass(newPattern);
+    Px.patternState = newPattern;
+    ^PxDebouncer.wrap(this);
   }
 
-  prPlayClass { |newPattern|
+prPlayClass { |newPattern|
     var drumMachinePattern = Px.last.detect { |pattern|
-      pattern['id'] == this.asSymbol and: (pattern['drumMachine'].notNil)
+        pattern['id'] == this.asSymbol and: (pattern['drumMachine'].notNil)
     };
 
     Px.patternState = newPattern;
@@ -345,10 +346,16 @@
       ^Dx(newPattern.putAll([\drumMachine, drumMachinePattern[\drumMachine]]))
     };
 
-    if (this.prHasDrumMachine)
-    { ^Dx(newPattern.putAll([\drumMachine, this])) }
-    { ^Px(newPattern) };
-  }
+    if (this.prHasDrumMachine) {
+      ^Dx(newPattern.putAll([\drumMachine, this]))
+    };
+
+    Px.last.keys.includes(newPattern[\id]).not.if {
+      ^Px(newPattern)
+    };
+
+    ^newPattern;
+}
 
   prPreventNonZeroExponential { |curve, value|
     if (curve == \exp and: (value == 0))

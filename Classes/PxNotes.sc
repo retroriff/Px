@@ -81,7 +81,7 @@
 
 + Number {
   arp { |value|
-    this.prUpdatePattern([\arp, value]);
+    ^PxDebouncer.wrap(this).enqueue([\arp, value]);
   }
 
   degree { |value|
@@ -93,15 +93,15 @@
     if (value.isKindOf(Pattern))
     { pattern = value };
 
-    this.prUpdatePattern([\degree, pattern ?? value]);
+    ^PxDebouncer.wrap(this).enqueue([\degree, pattern ?? value]);
   }
 
   scale { |value|
-    this.prUpdatePattern([\scale, value.asSymbol]);
+    ^PxDebouncer.wrap(this).enqueue([\scale, value.asSymbol]);
   }
 
   sus { |value|
-    this.prUpdatePattern([\sus, value]);
+    ^PxDebouncer.wrap(this).enqueue([\sus, value]);
   }
 }
 

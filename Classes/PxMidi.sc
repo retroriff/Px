@@ -174,13 +174,13 @@ TODO: MIDIOut instances
   }
 
   device { |value|
-    this.prUpdatePattern([\midiout, value]);
+    ^PxDebouncer.wrap(this).enqueue([\midiout, value]);
   }
 
   hold { |value|
     if (value == 1 or: (value == true))
-    { this.prUpdatePattern([\hasGate, false] ++ this.prSendSingleMessage) }
-    { this.prUpdatePattern([\midicmd, \noteOff]) };
+    { ^PxDebouncer.wrap(this).enqueue([\hasGate, false] ++ this.prSendSingleMessage) }
+    { ^PxDebouncer.wrap(this).enqueue([\midicmd, \noteOff]) };
   }
 
   note { |value|
@@ -192,11 +192,11 @@ TODO: MIDIOut instances
     if (value.isKindOf(Pattern))
     { pattern = value };
 
-    this.prUpdatePattern([\midinote, pattern ?? value]);
+    ^PxDebouncer.wrap(this).enqueue([\midinote, pattern ?? value]);
   }
 
   panic {
-    this.prUpdatePattern([\midicmd, \allNotesOff] ++ this.prSendSingleMessage);
+    ^PxDebouncer.wrap(this).enqueue([\midicmd, \allNotesOff] ++ this.prSendSingleMessage);
   }
 
   prConvertToMidiValue { |value|

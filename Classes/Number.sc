@@ -8,12 +8,6 @@
     this.prUpdatePattern(pairs);
   }
 
-  args { |value|
-    if (value.class == Event) {
-      this.prUpdatePattern(value.asPairs);
-    }
-  }
-
   beat { |value|
     var pairs = Array.new;
 
@@ -116,11 +110,6 @@
 
   rest { |value|
     this.prUpdatePattern([\rest, value]);
-  }
-
-  rotate { |value|
-    if (value != 0)
-    { this.pan(\rotate) };
   }
 
   seed { |value|

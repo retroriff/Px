@@ -35,3 +35,9 @@ FadeOut {
     Crossfader.fadeOut(name, fadeTime);
   }
 }
+
++ Ndef {
+  in { |fadeTime|
+    Crossfader.fadeIn(this.key, fadeTime);
+  }
+}

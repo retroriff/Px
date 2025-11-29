@@ -1,14 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./play.sh:*)",
-      "Bash(cat \"~/Library/Application Support/SuperCollider/Extensions/Px/Docs/how-to-play-music/agent-instructions.md\")",
       "Bash(cat -A)",
-      "Bash(cat \"Docs/how-to-play-music/agent-instructions.md\")",
-      "Bash(cat \"Docs/how-to-play-music/audio-samples.md\")",
-      "Bash(ls ~/icloud/Music/Samples/Live\\ Coding)",
-      "Bash(ls ~/icloud/Music/Samples/Live\\ Coding/*)",
-      "Read(~/icloud/Music/Samples/**)",
       "Edit(**)",
       "Write(**)",
       "Edit(.claude/**)",

@@ -137,6 +137,6 @@ examples:
 code::
 1 i: \bd dur: 1 delay: 0.2;
 2 i: \sd dur: 2 off: 1 reverb: 0.2;
-3 i: \hh dur: 0.25 off: 0.5 rotate: 1;
+3 i: \hh dur: 0.25 off: 0.5 pan: \rotate;
 ::
 

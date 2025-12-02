@@ -26,11 +26,11 @@ Px.stop([1, 2]);
 4 i: \ma dur: 0.25 euclid: [3, 5];
 )
 
-// We can control the beats balance of hits and rests with weight:
+// We can control the beats balance of hits and rests:
 (
 1 i: \bd dur: 1;
 2 i: \sd dur: 2 off: 1;
-3 i: \cp dur: 0.25 beat: 0.7 weight: 0.2;
+3 i: \cp dur: 0.25 beat: 0.2;
 4 i: \ma dur: 0.25 beat: 0.7;
 )
 
@@ -63,9 +63,9 @@ Px.shuffle;
 // And set up a fill weight:
 (
 1 i: \lc dur: 0.25 a: 0.4 beat: 0.42;
-2 i: \lc dur: 0.25 a: 0.5 fill: 0.52 args: (freq: 200);
-3 i: \lc dur: 0.25 fill: 0.63 args: (freq: 160);
-4 i: \lc dur: 0.25 fill: 0.62 args: (freq: 180);
+2 i: \lc dur: 0.25 a: 0.5 fill: 0.52 freq: 200;
+3 i: \lc dur: 0.25 fill: 0.63 freq: 160;
+4 i: \lc dur: 0.25 fill: 0.62 freq: 180;
 5 i: \ht dur: 0.25 fill: 0.3;
 Px reverb: 0.1 delay: 0.1;
 )
@@ -93,7 +93,7 @@ Px.traceOff(\1);
 
 // Fade in and fade out tracks:
 (
-1 i: \bd dur: 1 reverb: 0.2 wah: 0.1 fade: \out;
+1 i: \bd dur: 1 reverb: 0.2 wah: 0.1 out: 20;
 2 i: \sd dur: 2 off: 1 delay: 0.3;
 3 i: \hh dur: 0.25 beat: 0.12 seed: 250 in: 20;
 4 i: \ma dur: 0.25 beat: 0.26;
@@ -104,7 +104,7 @@ Px.traceOff(\1);
 1 i: \bd dur: 1 reverb: 0.2 wah: 0.1 pan: 1;
 2 i: \sd dur: 2 off: 1 delay: 0.3 pan: -1;
 3 i: \hh dur: 0.25 pan: \rand beat: 0.12 seed: 250;
-4 i: \ma dur: 0.25 beat: 0.26 rotate: 1;
+4 i: \ma dur: 0.25 beat: 0.26 pan: \rotate;
 Px.shuffle;
 )
 

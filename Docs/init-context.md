@@ -2,8 +2,6 @@
 
 This file provides guidance to LLM agents when working with code in this repository.
 
-**Note**: This document is for **development tasks only**. For music creation tasks, see `AGENTS.md` routing guide.
-
 ## Project Overview
 
 **Px** is a SuperCollider extension for enhanced live coding. It provides a simplified, chainable syntax for pattern generation, effects processing, and real-time performance. This is a **Quark** (SuperCollider package) installed in the SuperCollider Extensions directory.

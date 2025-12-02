@@ -266,26 +266,14 @@
   }
 
   prGenerateDrumMachineId { |ins|
+    var drumMachineId = (this.asString ++ ins.asString).asSymbol;
+
     var findExistingPatternForIns = Px.last.detect({ |pattern|
       pattern[\drumMachine] == this and: (pattern[\instrument] == ins);
     });
 
-    var drumMachinesPatternsExcludingIns = Px.last.select({ |pattern|
-      pattern[\drumMachine] == this and: (pattern[\instrument] != ins)
-    });
-
-    var getMaximumId = drumMachinesPatternsExcludingIns
-    .collect({ |pattern| pattern[\id].asInteger })
-    .maxItem;
-
-    var generateNewDrumMachineId = {
-      if (drumMachinesPatternsExcludingIns.isEmpty)
-      { this * 100 + 1 }
-      { getMaximumId + 1 };
-    };
-
     if (findExistingPatternForIns.isNil)
-    { ^generateNewDrumMachineId.value.asSymbol }
+    { ^drumMachineId }
     { ^findExistingPatternForIns[\id] };
   }
 

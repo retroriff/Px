@@ -137,8 +137,9 @@
   }
 
   solo { |value|
-    var isSolo = value != 0;
-    this.prUpdatePattern([\solo, isSolo]);
+    if (value == 0)
+    { Px.unsolo }
+    { this.prUpdatePattern([\solo, true]) };
   }
 
   weight { |value|
@@ -255,7 +256,7 @@
   }
 
   prGenerateDrumMachineId { |ins|
-    var drumMachineId = (this.asString ++ ins.asString).asSymbol;
+    var drumMachineId = (ins.asString ++ this.asString).asSymbol;
 
     var findExistingPatternForIns = Px.last.detect({ |pattern|
       pattern[\drumMachine] == this and: (pattern[\instrument] == ins);

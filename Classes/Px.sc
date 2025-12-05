@@ -1,7 +1,4 @@
 /*
-TODO: Fix Px.solo(\707hh): For some reason doesn't work with frum pattern ids
-TODO: 1 i: \bd dur: 1 solo: 0 should also unsolo
-TODO: Update px-agent with unsolo method
 TODO: Any param should have a beat function.
       Maybe \beat or [0.3, 0.5].beat(16)
       Already created Number.prCreateBeat
@@ -173,9 +170,7 @@ Px {
   }
 
   *prHandleSoloPattern { |pattern|
-    var hasSolo = pattern[\solo] == true;
-
-    if (hasSolo) {
+    if (pattern[\solo] == true) {
       if (pattern[\dx] == true)
       { ^Dx.solo(pattern[\id]) }
       { ^Px.solo(pattern[\id]) };

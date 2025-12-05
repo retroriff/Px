@@ -110,6 +110,9 @@
   *solo { |soloIds, id2, id3, id4, id5|
     var hasCommon;
 
+    if (soloIds == false)
+    { ^this.unsolo };
+
     if (soloIds.isNil)
     { ^this.prPrint("🟡 Provide at least one instrument to solo") };
 
@@ -126,6 +129,8 @@
 
     last.copy do: { |event|
       if (soloIds.includes(event[\id]) == false) {
+        mutedPatterns.put(event[\id], event);
+
         if (event[\hasGate] == false) {
           this.prChannelNoteOff(event[\chan]);
         };
@@ -133,6 +138,20 @@
         Px.stop(event[\id]);
       }
     };
+  }
+
+  *unsolo {
+    if (mutedPatterns.isNil || mutedPatterns.isEmpty) {
+      ^this.prPrint("🟡 No muted patterns to restore");
+    };
+
+    mutedPatterns.keysValuesDo { |id, event|
+      last.putAll([id, event]);
+    };
+
+    mutedPatterns = Dictionary.new;
+
+    ^this.prReevaluate;
   }
 
   *stop { |idArray|

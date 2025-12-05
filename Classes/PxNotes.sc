@@ -7,6 +7,14 @@
     ^this.prReevaluate;
   }
 
+  *scale { |value|
+    last do: { |pattern|
+      pattern[\scale] = value;
+    };
+
+    ^this.prReevaluate;
+  }
+
   *prCreateDegrees { |pattern, midiratio|
     var createRandomDegrees = {
       var length, scale, scaleDegrees, randomDegrees;

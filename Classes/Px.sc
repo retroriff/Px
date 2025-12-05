@@ -1,4 +1,5 @@
 /*
+TODO: Save muted patterns by solo in a Dictionary, and play them when un-soloing.
 TODO: Any param should have a beat function.
       Maybe \beat or [0.3, 0.5].beat(16)
       Already created Number.prCreateBeat

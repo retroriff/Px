@@ -176,6 +176,7 @@
         };
 
         last.removeAt(id);
+        lastFormatted.removeAt(id);
         ndefList.removeAt(id);
         Pdef(id).source = nil;
       } {

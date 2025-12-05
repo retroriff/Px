@@ -1,5 +1,7 @@
 /*
-TODO: Save muted patterns by solo in a Dictionary, and play them when un-soloing.
+TODO: Fix Px.solo(\707hh): For some reason doesn't work with frum pattern ids
+TODO: 1 i: \bd dur: 1 solo: 0 should also unsolo
+TODO: Update px-agent with unsolo method
 TODO: Any param should have a beat function.
       Maybe \beat or [0.3, 0.5].beat(16)
       Already created Number.prCreateBeat
@@ -16,6 +18,7 @@ Px {
   classvar <midiClient;
   classvar <>midiHoldedNotes;
   classvar <midiOut;
+  classvar <>mutedPatterns;
   classvar <>ndefList;
   classvar <>patternState;
   classvar <samplesDict;
@@ -32,6 +35,7 @@ Px {
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
     midiHoldedNotes = Dictionary.new;
+    mutedPatterns = Dictionary.new;
     ndefList = Dictionary.new;
     seeds = Dictionary.new;
     windowWidth = 68;

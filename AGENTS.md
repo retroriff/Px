@@ -35,6 +35,13 @@
 - Add effect → Edit `Effects/*.scd` + `Classes/Fx.sc`
 - Add pattern parameter → Edit `Classes/Number.sc` + `Classes/Px.sc`
 - Add drum preset → Create `Presets/yaml/*.yaml`
+- Add/modify class method → Update corresponding `HelpSource/Classes/<ClassName>.schelp`
+
+**Help file conventions:**
+- Help files are in `HelpSource/Classes/` using SCDoc format (.schelp)
+- Private methods (starting with `pr`) are not documented
+- When adding new public methods, update the corresponding help file
+- Reference existing help files (Px.schelp, Fx.schelp, Sx.schelp) for format examples
 
 ---
 
@@ -42,6 +49,7 @@
 
 - `.sc` - SuperCollider class definitions (source code)
 - `.scd` - SuperCollider data/scripts (executable code, effect definitions)
+- `.schelp` - SuperCollider help files (SCDoc format documentation)
 - `.yaml` - Drum machine preset data
 
 # Variable definitions

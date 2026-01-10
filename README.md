@@ -22,7 +22,6 @@ Additional code examples can be found [here](/Examples/).
 6. 📡 [OSC Communication](#-osc-communication)
 7. 🎚️ [Crossfader](#%EF%B8%8F-crossfader)
 8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#%EF%B8%8F-tr08-a-roland-tr-08-midi-controller)
-9. ✅ [Unit Tests](#-unit-tests)
 
 ## 🛠️ Installation
 
@@ -327,20 +326,3 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `loadPresets` | None                           | Reloads presets from YAML files      |
 | `preset`      | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
 | `stop`        | None                           | Same as `\808 i: \all`               |
-
-## ✅ Unit Tests
-
-```js
-// Runs all tests
-TestAll.run
-
-// Individual tests:
-TestPxArray.run
-TestPxEvent.run
-TestPx.run
-TestFx.run
-TestSx.run
-
-// Disables passing tests verbosity
-UnitTest.reportPasses = false
-```

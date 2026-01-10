@@ -1,6 +1,7 @@
 # LLM Agent Task Routing
 
-**When the user wants to modify code, add features, or understand the codebase:**
+- Write clean, solid, and maintainable code.
+- Avoid unnecessary comments. The code should be self-explanatory through clear naming and structure. Only add comments to explain non-obvious logic, edge cases, or complex behavior.
 
 ### Primary References (read in order)
 

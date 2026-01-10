@@ -51,6 +51,8 @@
     if (pattern[\degree].isKindOf(Pattern).not) {
       var degrees = pattern[\degree];
       var length = pattern[\midiControl] ?? inf;
+      var isRandomDegrees = (degrees == \rand);
+      var processedDegrees;
 
       if (degrees == \rand)
       { degrees = createRandomDegrees.value };
@@ -59,7 +61,13 @@
       { degrees = degrees.midiratio };
 
       pattern[\degreeRaw] = degrees;
-      pattern[\degree] = Pseq(degreesWithVariations.(degrees), length);
+      processedDegrees = degreesWithVariations.(degrees);
+
+      if (pattern[\arp].notNil || isRandomDegrees || (midiratio == true)) {
+        pattern[\degree] = Pseq(processedDegrees, length);
+      } {
+        pattern[\degree] = processedDegrees;
+      };
     };
 
     ^pattern;

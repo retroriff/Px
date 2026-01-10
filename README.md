@@ -18,10 +18,11 @@ Additional code examples can be found [here](/Examples/).
 2. ✨ [Fx: A Nodeproxy Effects Handler](#-fx-a-nodeproxy-effects-handler)
 3. 🛢️ [Dx: Drum Machines](#%EF%B8%8F-drum-machines)
 4. 🌊 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
-5. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
-6. 📡 [OSC Communication](#-osc-communication)
-7. 🎚️ [Crossfader](#%EF%B8%8F-crossfader)
-8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#%EF%B8%8F-tr08-a-roland-tr-08-midi-controller)
+5. 🎹 [Nx: Musical Chord Data](#-nx-musical-chord-data)
+6. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
+7. 📡 [OSC Communication](#-osc-communication)
+8. 🎚️ [Crossfader](#%EF%B8%8F-crossfader)
+9. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#%EF%B8%8F-tr08-a-roland-tr-08-midi-controller)
 
 ## 🛠️ Installation
 
@@ -254,6 +255,34 @@ The synth must be previously loaded with `Sx.loadSynth`.
 We can update args independently: `Sx.set(\amp, 0.5, lag: 0)`
 
 **Tip**: The `shuffle` array method provides the capability to specify a random seed for the scramble method.
+
+## 🎹 Nx: Musical Chord Data
+
+A class for managing musical chord data. It loads chord definitions from external files in `Score/` and provides accessor methods for chord properties.
+
+```js
+Nx.set(\emAdd9);
+Nx.midinotes;   // -> [52, 55, 59, 66]
+Nx.degrees;     // -> [0, 2, 4, 7]
+Nx.scale;       // -> \minor
+```
+
+Chord data files are organized by root note: `Score/e.scd`, `Score/a.scd`, `Score/c.scd`.
+
+### Nx class methods
+
+| Name           | Returns              | Description                                      |
+| -------------- | -------------------- | ------------------------------------------------ |
+| `chord`        | Array                | Returns intervals array                          |
+| `chords`       | Dictionary           | Returns all loaded chords                        |
+| `degrees`      | Array                | Returns scale degrees array                      |
+| `key`          | Integer              | Returns MIDI key (base note)                     |
+| `loadChords`   | None                 | Reloads chord files from `Score/`                |
+| `midinotes`    | Array                | Returns computed MIDI notes (key + intervals)    |
+| `name`         | Symbol               | Returns current chord name                       |
+| `root`         | Integer              | Returns root value (pitch class 0-11)            |
+| `scale`        | Symbol               | Returns scale symbol                             |
+| `set`          | None                 | Sets the current chord by name                   |
 
 ## 📡 OSC Communication
 

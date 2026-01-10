@@ -26,6 +26,7 @@
    - `Classes/Px.sc` - Base pattern generator
    - `Classes/Fx.sc` - Effects handler
    - `Classes/Dx.sc` - Drum machines
+   - `Classes/Nx.sc` - Musical chord data manager
    - See `Docs/init-context.md` for full file organization
 
 ### Development Quick Reference
@@ -35,6 +36,7 @@
 - Add effect → Edit `Effects/*.scd` + `Classes/Fx.sc`
 - Add pattern parameter → Edit `Classes/Number.sc` + `Classes/Px.sc`
 - Add drum preset → Create `Presets/yaml/*.yaml`
+- Add chord → Edit `Score/*.scd`
 - Add/modify class method → Update corresponding `HelpSource/Classes/<ClassName>.schelp`
 
 **Help file conventions:**

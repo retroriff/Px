@@ -36,4 +36,8 @@
 - `.scd` - SuperCollider data/scripts (executable code, effect definitions)
 - `.yaml` - Drum machine preset data
 
----
+# Variable definitions
+
+In SuperCollider, `var` is lexically scoped and each { ... } introduces a new lexical scope (function block).
+Variables defined inside an if branch belong only to that branch’s scope and are not visible outside.
+If a variable is used across branches or later in the function, it must be declared in the outer (top-level) scope.

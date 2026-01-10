@@ -59,8 +59,6 @@ Nx {
 
     current = chordName.asSymbol;
     currentChord = chord;
-
-    ^this.prPrint("🟢 Chord is" + chordName);
   }
 
   *shuffle { |note|
@@ -81,6 +79,7 @@ Nx {
     };
 
     selected = pool.keys.asArray.choose;
+    this.prPrint("🟢 Chord is" + selected);
     ^this.set(selected);
   }
 

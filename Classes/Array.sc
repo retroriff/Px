@@ -1,4 +1,8 @@
 + Array {
+  pseq { |dur|
+    ^Pseq(this, dur ?? inf);
+  }
+
   shuffle { |seed|
     if (seed.isNil)
     { thisThread.randSeed = this.prGenerateRandNumber }

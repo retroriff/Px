@@ -121,11 +121,11 @@
 
     if (this.prHasDrumMachine and: { setId != true }) {
       var drumMachinePattern = Px.last.detect { |pattern|
-        pattern['drumMachine'].notNil and: (pattern['instrument'] == setId)
+        pattern[\drumMachine].notNil and: (pattern[\instrument] == setId)
       };
 
       var dxPresetPattern = Px.last.detect { |pattern|
-        pattern['id'] == this.asSymbol
+        pattern[\id] == this.asSymbol
       };
 
       var pattern = drumMachinePattern ?? dxPresetPattern;
@@ -267,6 +267,24 @@
     { ^findExistingPatternForIns[\id] };
   }
 
+  prGenerateDrumMachineIntegerId { |drumMachineNumber|
+    var existingPattern = Px.last.detect({ |pattern|
+      pattern[\drumMachine] == drumMachineNumber and: (pattern[\id] == Px.patternState[\id])
+    });
+
+    var existingIds = Px.last
+      .select({ |pattern| pattern[\drumMachine] == drumMachineNumber })
+      .collect({ |pattern| pattern[\drumMachineIntegerId] })
+      .reject(_.isNil);
+
+    if (existingPattern.notNil and: { existingPattern[\drumMachineIntegerId].notNil })
+    { ^existingPattern[\drumMachineIntegerId] };
+
+    if (existingIds.isEmpty)
+    { ^(drumMachineNumber * 100) + 1 }
+    { ^existingIds.maxItem + 1 };
+  }
+
   prExtractSufix { |value|
     var parts = value.asString.split($:);
 
@@ -314,18 +332,28 @@
 
   prPlayClass { |newPattern|
     var drumMachinePattern = Px.last.detect { |pattern|
-      pattern['id'] == this.asSymbol and: (pattern['drumMachine'].notNil)
+      pattern[\id] == this.asSymbol and: (pattern[\drumMachine].notNil)
     };
 
     Px.patternState = newPattern;
 
     if (drumMachinePattern.notNil) {
-      ^Dx(newPattern.putAll([\drumMachine, drumMachinePattern[\drumMachine]]))
+      newPattern.putAll([
+        \drumMachine, drumMachinePattern[\drumMachine],
+        \drumMachineIntegerId, this.prGenerateDrumMachineIntegerId(drumMachinePattern[\drumMachine])
+      ]);
+      ^Dx(newPattern);
     };
 
-    if (this.prHasDrumMachine)
-    { ^Dx(newPattern.putAll([\drumMachine, this])) }
-    { ^Px(newPattern) };
+    if (this.prHasDrumMachine) {
+      newPattern.putAll([
+        \drumMachine, this,
+        \drumMachineIntegerId, this.prGenerateDrumMachineIntegerId(this)
+      ]);
+      ^Dx(newPattern);
+    }
+    
+    ^Px(newPattern);
   }
 
   prPreventNonZeroExponential { |curve, value|

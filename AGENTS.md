@@ -13,7 +13,15 @@
    - Development workflow and testing
    - How to add features (effects, parameters, presets)
 
-2. **`Classes/*.sc`** - Source code to modify
+2. **`Docs/pattern-internals.md`** - Deep technical reference for pattern system
+
+   - Pattern data structure (all dictionary keys)
+   - ID systems (regular, manual drum, preset patterns)
+   - Beat generation and fill mechanics
+   - Drum machine architecture internals
+   - Pattern lifecycle and relationships
+
+3. **`Classes/*.sc`** - Source code to modify
    - `Classes/Number.sc` - Integer method extensions (DSL entry point)
    - `Classes/Px.sc` - Base pattern generator
    - `Classes/Fx.sc` - Effects handler

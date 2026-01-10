@@ -62,9 +62,25 @@
   *prCreateFillFromBeat { |amp, pattern|
     var steps = 16;
     var invertBeat, previousBeats, totalBeat;
-    var previousPatternId = (pattern[\id].asInteger - 1).asSymbol;
+    var previousPattern;
+    var getInvertBeat;
+    var getTotalBeat;
+    
+    // Find previous pattern using integer ID for drum machines
+    if (pattern[\drumMachineIntegerId].notNil) {
+      var previousIntegerId = pattern[\drumMachineIntegerId].asInteger - 1;
 
-    var getInvertBeat = { |beatAmp, invertAmp = 1|
+      // Search for pattern with matching integer ID
+      previousPattern = last.detect({ |p|
+        p[\drumMachineIntegerId] == previousIntegerId
+      });
+    } {
+      // Use regular ID for non-drum-machine patterns
+      var previousId = (pattern[\id].asInteger - 1).asSymbol;
+      previousPattern = last[previousId];
+    };
+
+    getInvertBeat = { |beatAmp, invertAmp = 1|
       var invertBeat = beatAmp.iter.loop.nextN(steps).linlin(0, amp, amp, Rest());
       var weight = pattern[\weight] ?? 1;
 
@@ -79,13 +95,13 @@
       };
     };
 
-    var getTotalBeat = { |invertBeat|
-      var beat = last[previousPatternId][\totalBeats] ?? Array.fill(steps, 0);
+    getTotalBeat = { |invertBeat|
+      var beat = previousPattern[\totalBeats] ?? Array.fill(steps, 0);
       (beat + invertBeat) collect: { |step| step.clip(0, 1) };
     };
 
-    if (last[previousPatternId].notNil)
-    { previousBeats = last[previousPatternId][\beats] ?? last[previousPatternId][\totalBeats] };
+    if (previousPattern.notNil)
+    { previousBeats = previousPattern[\beats] ?? previousPattern[\totalBeats] };
 
     if (previousBeats.isNil)
     { ^amp };

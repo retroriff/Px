@@ -1,13 +1,13 @@
 Nx {
   classvar <chords;
-  classvar <current;
   classvar <currentChord;
+  classvar currentChordName;
 
   *initClass {
     chords = Dictionary.new;
 
     this.loadChords;
-    this.set(\emAdd9);
+    this.set(\EmAdd9);
   }
 
   *chord {
@@ -39,7 +39,7 @@ Nx {
   }
 
   *name {
-    ^current;
+    ^currentChordName;
   }
 
   *root {
@@ -57,29 +57,33 @@ Nx {
       ^this.prPrint("🔴 Chord" + chordName + "not found");
     };
 
-    current = chordName.asSymbol;
     currentChord = chord;
+    currentChordName = chordName.asSymbol;
   }
 
-  *shuffle { |note|
-    var pool, selected;
+  *shuffle { |note, quality|
+    var pool = chords;
+    var selected;
 
     if (note.notNil) {
-      var targetNote = note.asString.toLower;
-
-      pool = chords.select { |chord, name|
-        name.asString[0].toLower == targetNote[0]
+      var rootNote = note.asString[0].toUpper;
+      pool = pool.select { |chord, name|
+        name.asString[0] == rootNote
       };
+    };
 
-      if (pool.isEmpty) {
-        ^this.prPrint("No chords found for note:" + note);
+    if (quality.notNil) {
+      pool = pool.select { |chord, name|
+        chord[\scale] == quality
       };
-    } {
-      pool = chords;
+    };
+
+    if (pool.isEmpty) {
+      ^this.prPrint("No chords found for:" + note + quality);
     };
 
     selected = pool.keys.asArray.choose;
-    this.prPrint("🟢 Chord is" + selected);
+    this.prPrint("Chord is" + selected);
     ^this.set(selected);
   }
 

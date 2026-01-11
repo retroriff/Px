@@ -1,0 +1,152 @@
+class:: Nx
+summary:: Musical Chord Data Manager
+categories:: JITLib>NodeProxy, Live Coding
+related:: Classes/Px, Classes/Sx, Classes/Fx
+
+description::
+The Nx class manages musical chord data for the link::Classes/Px:: pattern system. It loads chord definitions from Score files and provides methods to access chord properties like intervals, degrees, scale type, and MIDI notes.
+
+subsection:: Basic Usage
+
+code::
+// Set a specific chord
+Nx.set(\Em7);
+
+// Get chord properties
+Nx.chord;      // intervals
+Nx.degrees;    // scale degrees
+Nx.key;        // root MIDI note
+Nx.midinotes;  // all MIDI notes
+Nx.scale;      // scale type (\major, \minor, etc.)
+
+// Random chord selection
+Nx.shuffle;                  // any chord
+Nx.shuffle(\E);              // any E chord
+Nx.shuffle(\E, \minor);      // E minor chords
+Nx.shuffle(\E, \major);      // E major chords
+::
+
+ClassMethods::
+
+method:: set
+Sets the current chord by name.
+
+argument:: chordName
+The chord name as a Symbol (e.g., \Em, \Am7, \Cmaj9).
+
+code::
+Nx.set(\EmAdd9);
+Nx.set(\Am7);
+::
+
+method:: shuffle
+Randomly selects a chord from the library with optional filtering.
+
+argument:: note
+Optional root note filter as a Symbol (e.g., \E, \A, \C). Filters chords by their first character.
+
+argument:: quality
+Optional scale quality filter as a Symbol. Available values: \major, \minor, \lydian, \mixolydian, \suspended.
+
+code::
+Nx.shuffle;                  // any random chord
+Nx.shuffle(\E);              // random E chord (any quality)
+Nx.shuffle(\E, \major);      // random E major chord
+Nx.shuffle(\E, \minor);      // random E minor chord
+Nx.shuffle(\A, \lydian);     // random A lydian chord
+::
+
+method:: chord
+Returns the intervals array of the current chord.
+
+code::
+Nx.set(\Em);
+Nx.chord;  // -> [0, 3, 7]
+::
+
+method:: degrees
+Returns the scale degrees array of the current chord.
+
+code::
+Nx.set(\Em7);
+Nx.degrees;  // -> [0, 2, 4, 6]
+::
+
+method:: key
+Returns the root MIDI note number of the current chord.
+
+code::
+Nx.set(\Em);
+Nx.key;  // -> 52
+::
+
+method:: midinotes
+Returns all MIDI notes of the current chord.
+
+code::
+Nx.set(\Em);
+Nx.midinotes;  // -> [52, 55, 59]
+::
+
+method:: name
+Returns the name of the current chord as a Symbol.
+
+code::
+Nx.set(\Am7);
+Nx.name;  // -> \Am7
+::
+
+method:: root
+Returns the root note index (0-11) of the current chord.
+
+code::
+Nx.set(\Em);
+Nx.root;  // -> 4 (E)
+::
+
+method:: scale
+Returns the scale type of the current chord.
+
+code::
+Nx.set(\Em);
+Nx.scale;  // -> \minor
+
+Nx.set(\Cmaj7);
+Nx.scale;  // -> \major
+::
+
+method:: loadChords
+Reloads all chord definitions from Score/*.scd files. Useful after editing chord files.
+
+code::
+Nx.loadChords;
+::
+
+method:: chords
+Class variable containing all loaded chords as a Dictionary.
+
+code::
+Nx.chords.keys;  // list all available chord names
+::
+
+method:: currentChord
+Class variable containing the current chord data Dictionary.
+
+examples::
+
+code::
+// Setup and explore chords
+Nx.set(\EmAdd9);
+Nx.chord;       // [0, 3, 7, 14]
+Nx.midinotes;   // [52, 55, 59, 66]
+Nx.scale;       // \minor
+
+// Random selection with filters
+Nx.shuffle(\E, \minor);  // picks Em, Em7, EmAdd9, or Em9
+Nx.shuffle(\A, \major);  // picks major A chords
+
+// Use with Px patterns
+(
+1 i: \piano degree: Nx.degrees;
+)
+::

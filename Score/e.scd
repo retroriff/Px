@@ -31,7 +31,7 @@ Dictionary[
 	],
 	\EAdd4Add9 -> Dictionary[
 		\degree -> [0, 3, 4, 8],
-		\intervals -> [0, 5, 7, 14],
+		\intervals ->[0, 4, 5, 7, 14],
 		\key -> 52,
 		\root -> 4,
 		\scale -> \major

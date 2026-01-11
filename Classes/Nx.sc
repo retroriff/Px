@@ -11,11 +11,15 @@ Nx {
   }
 
   *chord {
-	  ^currentChord[\intervals];
+    ^currentChordName;
   }
 
   *degrees {
     ^currentChord[\degree];
+  }
+
+  *intervals {
+	  ^currentChord[\intervals];
   }
 
   *key {
@@ -36,10 +40,6 @@ Nx {
     var intervals = currentChord[\intervals];
 
     ^intervals.collect { |interval| key + interval };
-  }
-
-  *name {
-    ^currentChordName;
   }
 
   *root {

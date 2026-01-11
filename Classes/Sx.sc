@@ -211,7 +211,7 @@ Sx {
     var pairs = Array.new;
 
     if (waveList.includes(value).not) {
-      this.prPrint("🔴 Wave not valid");
+      this.prPrint("🔴 Wave not valid. Use:" + waveList);
       ^pairs;
     };
 

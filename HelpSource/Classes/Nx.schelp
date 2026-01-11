@@ -13,8 +13,8 @@ code::
 Nx.set(\Em7);
 
 // Get chord properties
-Nx.chord;      // intervals
 Nx.degrees;    // scale degrees
+Nx.intervals;  // intervals
 Nx.key;        // root MIDI note
 Nx.midinotes;  // all MIDI notes
 Nx.scale;      // scale type (\major, \minor, etc.)
@@ -56,12 +56,12 @@ Nx.shuffle(\E, \minor);      // random E minor chord
 Nx.shuffle(\A, \lydian);     // random A lydian chord
 ::
 
-method:: chord
+method:: intervals
 Returns the intervals array of the current chord.
 
 code::
 Nx.set(\Em);
-Nx.chord;  // -> [0, 3, 7]
+Nx.intervals;  // -> [0, 3, 7]
 ::
 
 method:: degrees
@@ -88,12 +88,12 @@ Nx.set(\Em);
 Nx.midinotes;  // -> [52, 55, 59]
 ::
 
-method:: name
+method:: chord
 Returns the name of the current chord as a Symbol.
 
 code::
 Nx.set(\Am7);
-Nx.name;  // -> \Am7
+Nx.chord;  // -> \Am7
 ::
 
 method:: root
@@ -137,7 +137,7 @@ examples::
 code::
 // Setup and explore chords
 Nx.set(\EmAdd9);
-Nx.chord;       // [0, 3, 7, 14]
+Nx.intervals;       // [0, 3, 7, 14]
 Nx.midinotes;   // [52, 55, 59, 66]
 Nx.scale;       // \minor
 

@@ -210,6 +210,11 @@ Sx {
   *prGenerateWave { |value|
     var pairs = Array.new;
 
+    if (waveList.includes(value).not) {
+      this.prPrint("🔴 Wave not valid");
+      ^pairs;
+    };
+
     waveList do: { |wave|
       var waveValue = 0;
 

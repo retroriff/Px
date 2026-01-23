@@ -1,37 +1,51 @@
 Sx {
+  classvar chordSynths;
   classvar <defaultEvent;
   classvar <defaultScale;
   classvar <>last;
+  classvar <mode;
   classvar synth;
   classvar <waveList;
 
   *initClass {
     // CmdPeriod.add { Sx.clear };
+    chordSynths = [];
     defaultScale = \scriabin;
     defaultEvent = (
       amp: 1,
+      atk: 0,
       chord: [0],
       degree: [0],
       dur: [1],
       env: 0,
       octave: [0],
+      rel: 3,
       root: 0,
       scale: defaultScale,
       vcf: 1,
       wave: \saw;
     );
     last = Event.new;
+    mode = \seq;
     waveList = [\pulse, \saw, \sine, \triangle];
   }
 
   *new { |event, fadeTime|
+    var isChordMode;
+
     event = this.prCreateDefaultArgs(event ?? Event.new);
+    isChordMode = this.prIsChordMode(event);
+
+    if (isChordMode) {
+      ^this.prPlayChord(event, fadeTime ?? event[\atk]);
+    };
+
     last = event.copy;
 
     this.play(fadeTime);
 
     event.keysValuesDo { |key, value|
-      this.set(key, value);
+      this.qset(key, value);
     };
   }
 
@@ -47,11 +61,17 @@ Sx {
   }
 
   *play { |fadeTime|
+    if (mode == \chord) {
+      this.prFreeChordSynths;
+    };
+
+    mode = \seq;
+
     if (Ndef(\sx).isPlaying.not) {
       synth = Synth(\sx);
     };
 
-    Ndef(\sx, { In.ar(~sxBus, 2) }).play(fadeTime: fadeTime);
+    Ndef(\sx, { In.ar(~sxBus, 2) }).play(fadeTime: fadeTime ?? 0);
   }
 
   *qset { |key, value, lag|
@@ -60,6 +80,10 @@ Sx {
 
   *release { |fadeTime = 10|
     Ndef(\sx).free(fadeTime);
+
+    if (mode == \chord) {
+      ^this.prFreeChordSynths(fadeTime);
+    }
 
     ^fork {
       (fadeTime * 2).wait;
@@ -101,7 +125,16 @@ Sx {
     { pairs = this.prGenerateScale(value) }
 
     { key == \wave }
-    { pairs = this.prGenerateWave(value) };
+    { pairs = this.prGenerateWave(value) }
+
+    { key == \chord and: (mode == \chord)} {
+        var event = last.copy;
+        event[\chord] = value;
+
+        if (quant.isNil)
+        { ^this.prPlayChord(event, last[\atk]) }
+        { ^this.prScheduleQuantized({ this.prPlayChord(event, last[\atk]) }) };
+    };
 
     pairs = pairs ++ this.prGenerateArraySize(pairs[0], pairs[1]);
     pairs = pairs ++ [\lag, lag ?? 0];
@@ -130,12 +163,13 @@ Sx {
   }
 
   *prCreateQuantizedSet { |pairs|
+    this.prScheduleQuantized({ this.prSet(pairs) });
+  }
+
+  *prScheduleQuantized { |func|
     var clock = TempoClock.default;
     var nextBeat = clock.nextTimeOnGrid(4);
-
-    clock.schedAbs(nextBeat, {
-      this.prSet(pairs);
-    });
+    clock.schedAbs(nextBeat, func);
   }
 
   *prGenerateDegree { |degree, octave, root|
@@ -244,5 +278,68 @@ Sx {
 
   *prUpdateLast { |key, value|
     last.putAll([key, value]);
+  }
+
+  *prIsChordMode { |event|
+    var chord = event[\chord];
+    var degree = event[\degree];
+    var chordIsDefault = (chord == [0]) or: (chord == defaultEvent[\chord]);
+    var degreeIsDefault = (degree == [0]) or: (degree == defaultEvent[\degree]);
+    var chordIsSymbol = chord.isKindOf(Symbol);
+
+    ^(chordIsSymbol or: chordIsDefault.not) and: degreeIsDefault;
+  }
+
+  *prPlayChord { |event, fadeTime|
+    var chord = event[\chord];
+    var midinotes;
+    var amp = event[\amp] ?? 1;
+    var octave = event[\octave] ?? [0];
+    var wavePairs = this.prGenerateWave(event[\wave] ?? \saw);
+    var crossfadeTime = event[\rel] ?? 3;
+
+    if (chord.isKindOf(Symbol)) {
+      Nx.set(chord);
+      midinotes = Nx.midinotes;
+      this.prPrint("Chord:" + chord + "midinotes:" + midinotes);
+    } {
+      var key = event[\key] ?? 60;
+      midinotes = chord.collect { |interval| key + interval };
+    };
+
+    this.prFreeChordSynths(crossfadeTime);
+
+    if (synth.notNil) {
+      synth.free;
+      synth = nil;
+    };
+
+    mode = \chord;
+    last = event.copy;
+
+    Ndef(\sx, { In.ar(~sxBus, 2) }).play(fadeTime: fadeTime ?? 5);
+
+    midinotes.do { |note, i|
+      var oct = octave.wrapAt(i).clip(-2, 2);
+      var midinote = note + (oct * 12);
+      var synthAmp = amp / (i + 1).sqrt;
+      var newSynth = Synth(\sxPad, [
+        \midinote, midinote,
+        \amp, synthAmp,
+        \atk, event[\atk] ?? 5,
+        \rel, event[\rel] ?? 3,
+        \vcf, event[\vcf] ?? 1,
+      ] ++ wavePairs);
+
+      chordSynths = chordSynths.add(newSynth);
+    };
+  }
+
+  *prFreeChordSynths { |releaseTime|
+    chordSynths.do { |synth|
+      synth.set(\gate, 0, \rel, releaseTime ?? 3);
+    };
+
+    chordSynths = [];
   }
 }

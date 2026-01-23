@@ -24,8 +24,8 @@ SynthDef(\sx, {
     // Frequency
     deg = Dser(degree, degreeSize);
     deg = Demand.ar(trig, 0, Dseq([deg], inf));
-    freq = (DegreeToKey.ar(scale, deg + \chord.kr([0, 0, 0, 0])) + 48).midicps;
-	freq = freq * { Rand(-0.1, 0.1).midiratio }.dup(4);
+    freq = (DegreeToKey.ar(scale, deg) + 48).midicps;
+	freq = freq * Rand(-0.1, 0.1).midiratio;
     freq = freq.lag2(lag);
 
     // Waveform
@@ -42,7 +42,32 @@ SynthDef(\sx, {
     vcf = MoogFF.ar(sig, MouseX.kr(1000, 5000));
     sig = Select.ar(\vcf.kr(1) > 0, [sig * -9.dbamp, vcf]);
 
-    sig = Splay.ar(sig * \amp.kr(1));
+    sig = Pan2.ar(sig * \amp.kr(1), 0);
     Out.ar(~sxBus, sig);
+}).add;
+
+SynthDef(\sxPad, {
+	var freq, sig = 0, vcf;
+	var midinote = \midinote.kr(60);
+	var lag = \lag.kr(0).clip(0, 5);
+	var atk = \atk.kr(0.01);
+	var rel = \rel.kr(0.5);
+	var gate = \gate.kr(1);
+	var env = EnvGen.kr(Env.asr(atk, 1, rel), gate, doneAction: 2);
+
+	freq = midinote.midicps;
+	freq = freq * Rand(-0.1, 0.1).midiratio;
+	freq = freq.lag2(lag);
+
+	sig = sig + (Pulse.ar(freq) * \pulse.kr(0));
+	sig = sig + (Saw.ar(freq, mul: 2.dbamp) * \saw.kr(1));
+	sig = sig + (SinOsc.ar(freq, mul: 4.dbamp) * \sine.kr(0));
+	sig = sig + (LFTri.ar(freq, mul: 2.dbamp) * \triangle.kr(0));
+
+	vcf = MoogFF.ar(sig, MouseX.kr(1000, 5000));
+	sig = Select.ar(\vcf.kr(1) > 0, [sig * -9.dbamp, vcf]);
+
+	sig = Pan2.ar(sig * env * \amp.kr(1), \pan.kr(0));
+	Out.ar(~sxBus, sig);
 }).add;
 )

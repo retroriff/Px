@@ -8,6 +8,22 @@ Dominant:    7
 Suspended:   sus2 / sus4
 Added:       AddN
 Altered:     SharpN / FlatN
+
+Since a guitar is tuned to root 4 (E), we need to adjust the degrees accordingly
+whenever we switch keys by updating the ~root value.
+
+Below are the same chords transposed to start from degree 0
+(relative to the chosen root = 4):
+
+~guitarDegree = [0, 4, 8, 9b, 11, 15]; // emAdd9
+~guitarDegree = [-3, 0, 3, 7, 9, 11]; // A major chord
+~guitarDegree = [2, 6s, 9, 11, 13, 16]; // cMaj7
+
+If we want to play using root 4:
+
+~guitarDegree = [0, 4, 8, 9b, 11, 15]; // emAdd9
+~guitarDegree = [0, 4s, 7, 8s, 11, 14]; // cMaj7
+~guitarDegree = [0, 4, 8, 11, 12, 14]; // A major chord
 */
 
 (

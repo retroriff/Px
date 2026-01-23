@@ -12,7 +12,7 @@ Altered:     SharpN / FlatN
 
 (
 Dictionary[
-	\E -> Dictionary[
+	\A -> Dictionary[
 		\degree -> [0, 2, 4],
 		\guitarDegree -> [2, 6s, 9, 11, 13, 16],
 		\intervals -> [0, 4, 7],

@@ -18,6 +18,10 @@ Nx {
     ^currentChord[\degree];
   }
 
+  *guitarDegrees {
+    ^currentChord[\guitarDegree];
+  }
+
   *intervals {
 	  ^currentChord[\intervals];
   }

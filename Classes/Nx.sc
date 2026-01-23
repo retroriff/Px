@@ -82,6 +82,12 @@ Nx {
       ^this.prPrint("No chords found for:" + note + quality);
     };
 
+    pool = pool.reject { |chord, name| name == currentChordName };
+
+    if (pool.isEmpty) {
+      ^this.prPrint("Only one chord available, cannot shuffle");
+    };
+
     selected = pool.keys.asArray.choose;
     this.prPrint("Chord is" + selected);
     ^this.set(selected);

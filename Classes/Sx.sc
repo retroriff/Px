@@ -132,8 +132,8 @@ Sx {
         event[\chord] = value;
 
         if (quant.isNil)
-        { ^this.prPlayChord(event, last[\atk]) }
-        { ^this.prScheduleQuantized({ this.prPlayChord(event, last[\atk]) }) };
+        { ^this.prUpdateOrPlayChord(event, last[\atk], lag) }
+        { ^this.prScheduleQuantized({ this.prUpdateOrPlayChord(event, last[\atk], lag) }) };
     };
 
     pairs = pairs ++ this.prGenerateArraySize(pairs[0], pairs[1]);
@@ -267,7 +267,13 @@ Sx {
   }
 
   *prSet { |pairs|
-    synth.set(*pairs);
+    if (mode == \seq) {
+      synth.set(*pairs);
+    } {
+      chordSynths.do { |sxPad|
+        sxPad.set(*pairs);
+      };
+    };
   }
 
   *prShouldBeArray { |key|
@@ -333,6 +339,92 @@ Sx {
 
       chordSynths = chordSynths.add(newSynth);
     };
+  }
+
+  *prUpdateOrPlayChord { |event, fadeTime, lag|
+    var shouldUpdate = (lag.notNil) and: { lag > 0 } and: { chordSynths.notEmpty };
+
+    if (shouldUpdate) {
+      ^this.prUpdateChord(event, lag);
+    } {
+      ^this.prPlayChord(event, fadeTime);
+    };
+  }
+
+  *prUpdateChord { |event, lag|
+    var chord = event[\chord];
+    var newMidinotes;
+    var octave = event[\octave] ?? [0];
+    var oldSize = chordSynths.size;
+    var newSize, minSize;
+    var lastChord = last[\chord];
+    var shouldScramble = false;
+
+    if (chord.isKindOf(Symbol)) {
+      Nx.set(chord);
+      newMidinotes = Nx.midinotes;
+    } {
+      var key = event[\key] ?? 60;
+      newMidinotes = chord.collect { |interval| key + interval };
+    };
+
+    newMidinotes = newMidinotes.collect { |note, i|
+      var oct = octave.wrapAt(i).clip(-2, 2);
+      note + (oct * 12);
+    };
+
+    if (chord.isKindOf(Symbol) and: lastChord.isKindOf(Symbol)) {
+      if (chord == lastChord) {
+        shouldScramble = true;
+      };
+    };
+
+    if (chord.isKindOf(Array) and: lastChord.isKindOf(Array)) {
+      if (chord.size == lastChord.size) {
+        if (chord.sort == lastChord.sort) {
+          shouldScramble = true;
+        };
+      };
+    };
+
+    if (shouldScramble) {
+      newMidinotes = newMidinotes.scramble;
+    };
+
+    newSize = newMidinotes.size;
+    minSize = min(oldSize, newSize);
+
+    minSize.do { |i|
+      chordSynths[i].set(\midinote, newMidinotes[i], \lag, lag);
+    };
+
+    if (newSize > oldSize) {
+      (newSize - oldSize).do { |i|
+        var idx = oldSize + i;
+        var midinote = newMidinotes[idx];
+        var synthAmp = (event[\amp] ?? 1) / (idx + 1).sqrt;
+        var wavePairs = this.prGenerateWave(event[\wave] ?? \saw);
+        var newSynth = Synth(\sxPad, [
+          \midinote, midinote,
+          \amp, synthAmp,
+          \atk, event[\atk] ?? 5,
+          \rel, event[\rel] ?? 3,
+          \vcf, event[\vcf] ?? 1,
+        ] ++ wavePairs);
+        chordSynths = chordSynths.add(newSynth);
+      };
+    } {
+      if (newSize < oldSize) {
+        var relTime = event[\rel] ?? 3;
+        (oldSize - newSize).do { |i|
+          var idx = newSize + i;
+          chordSynths[idx].set(\gate, 0, \rel, relTime);
+        };
+        chordSynths = chordSynths[0..newSize-1];
+      };
+    };
+
+    last = event.copy;
   }
 
   *prFreeChordSynths { |releaseTime|

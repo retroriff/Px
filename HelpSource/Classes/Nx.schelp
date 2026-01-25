@@ -4,7 +4,7 @@ categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/Px, Classes/Sx, Classes/Fx
 
 description::
-The Nx class manages musical chord data for the link::Classes/Px:: pattern system. It loads chord definitions from Score files and provides methods to access chord properties like intervals, degrees, scale type, and MIDI notes.
+The Nx class manages musical chord data for the link::Classes/Px:: pattern system. It dynamically builds chords by combining tonics (root notes) with chord qualities (intervals/scales), allowing generation of any chord on-the-fly. The class provides methods to access chord properties like intervals, degrees, scale type, and MIDI notes.
 
 subsection:: Basic Usage
 
@@ -40,13 +40,13 @@ Nx.set(\Am7);
 ::
 
 method:: shuffle
-Randomly selects a chord from the library with optional filtering.
+Randomly selects a chord by combining a tonic with a chord quality, with optional filtering.
 
-argument:: note
-Optional root note filter as a Symbol (e.g., \E, \A, \C). Filters chords by their first character.
+argument:: tonic
+Optional tonic (root note) filter as a Symbol (e.g., \E, \A, \C, \Db, \Cs). If specified, only that tonic will be used. If nil, any tonic will be chosen.
 
-argument:: quality
-Optional scale quality filter as a Symbol. Available values: \major, \minor, \lydian, \mixolydian, \suspended.
+argument:: scale
+Optional scale filter as a Symbol. If specified, only chord qualities matching that scale will be used.
 
 code::
 Nx.shuffle;                  // any random chord
@@ -116,21 +116,52 @@ Nx.scale;  // -> \major
 ::
 
 method:: loadChords
-Reloads all chord definitions from Score/*.scd files. Useful after editing chord files.
+Reloads tonics and chord quality definitions from Score/tonics.scd and Score/chords.scd. Useful after editing chord data files.
 
 code::
 Nx.loadChords;
 ::
 
-method:: chords
-Class variable containing all loaded chords as a Dictionary.
+method:: tonics
+Class variable containing all loaded tonics (root notes) as a Dictionary.
 
 code::
-Nx.chords.keys;  // list all available chord names
+Nx.tonics.keys;  // list all available tonics: C, Cs, Db, D, Ds, Eb, E, F, Fs, Gb, G, Gs, Ab, A, As, Bb, B
+::
+
+method:: chordQualities
+Class variable containing all loaded chord qualities as a Dictionary.
+
+code::
+Nx.chordQualities.keys;  // list all available chord qualities
 ::
 
 method:: currentChord
 Class variable containing the current chord data Dictionary.
+
+subsection:: Supported Chord Qualities
+
+The following chord qualities are available in chords.scd:
+
+table::
+## Quality Key || User Input Examples || Scale || Intervals
+## \maj || \E, \C || major || [0, 4, 7]
+## \m || \Em, \Am || minor || [0, 3, 7]
+## \maj7 || \Cmaj7 || major || [0, 4, 7, 11]
+## \m7 || \Am7, \Em7 || minor || [0, 3, 7, 10]
+## \m9 || \Am9, \Em9 || minor || [0, 3, 7, 10, 14]
+## \m11 || \Am11, \Em11 || minor || [0, 3, 7, 10, 17]
+## \mAdd9 || \EmAdd9 || minor || [0, 3, 7, 14]
+## \add4Add9 || \EAdd4Add9 || major || [0, 4, 5, 7, 14]
+## \69 || \A69 || major || [0, 2, 4, 9, 11]
+## \maj7Sharp11 || \Cmaj7Sharp11 || lydian || [0, 4, 7, 11, 18]
+## \sus2AddSharp11 || \Csus2AddSharp11 || hexSus || [0, 2, 5, 7, 18]
+## \7sus4Add13 || \E7sus4Add13 || mixolydian || [0, 5, 10, 15]
+::
+
+note::
+Chord names are built by combining a tonic with a quality. For example, emphasis::\EmAdd9:: combines the tonic emphasis::\E:: with the quality emphasis::\mAdd9::. Simple shortcuts: emphasis::\E:: becomes E major (tonic + \maj), emphasis::\Em:: becomes E minor (tonic + \m).
+::
 
 examples::
 

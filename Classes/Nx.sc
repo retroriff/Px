@@ -2,7 +2,7 @@ Nx {
   classvar <chords;
   classvar <currentChord;
   classvar <currentChordName;
-  classvar = defaultOctave;
+  classvar <defaultOctave;
   classvar <>octave;
   classvar <tonics;
 
@@ -36,13 +36,6 @@ Nx {
     ^currentChord[\key];
   }
 
-  *midinotes {
-    var key = currentChord[\key];
-    var intervals = currentChord[\intervals];
-
-    ^intervals.collect { |interval| key + interval };
-  }
-
   *loadChords {
     var tonicsPath, chordsPath;
 
@@ -63,11 +56,22 @@ Nx {
     };
   }
 
-  *midinotes {
+  *midinotes { |octaveArg|
     var key = currentChord[\key];
     var intervals = currentChord[\intervals];
+    var octaveOffset, targetOctave;
 
-    ^intervals.collect { |interval| key + interval };
+    // Validate octave range if provided
+    if (octaveArg.notNil) {
+      if ((octaveArg < -1) or: { octaveArg > 9 }) {
+        ^this.prPrint("Octave must be between -1 and 9");
+      };
+    };
+
+    targetOctave = octaveArg ?? octave;
+    octaveOffset = (targetOctave - defaultOctave) * 12;
+
+    ^intervals.collect { |interval| key + interval + octaveOffset };
   }
 
   *root {
@@ -78,8 +82,16 @@ Nx {
     ^currentChord[\scale];
   }
 
-  *set { |chordName, octave|
+  *set { |chordName, octaveArg|
     var parsed, tonicData, qualityData, combinedChord;
+
+    // Handle octave parameter
+    if (octaveArg.notNil) {
+      if ((octaveArg < -1) or: { octaveArg > 9 }) {
+        ^this.prPrint("Octave must be between -1 and 9");
+      };
+      octave = octaveArg;
+    };
 
     // Parse the chord name
     parsed = this.prParseChordName(chordName.asSymbol);

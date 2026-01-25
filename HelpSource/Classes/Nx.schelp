@@ -29,14 +29,18 @@ Nx.shuffle(\E, \major);      // E major chords
 ClassMethods::
 
 method:: set
-Sets the current chord by name.
+Sets the current chord by name and optionally changes the octave.
 
 argument:: chordName
 The chord name as a Symbol (e.g., \Em, \Am7, \Cmaj9).
 
+argument:: octave
+Optional octave value (Integer from -1 to 9). If provided, updates the class octave variable. Default octave is 3.
+
 code::
 Nx.set(\EmAdd9);
-Nx.set(\Am7);
+Nx.set(\Am7, 4);  // Set Am7 in octave 4
+Nx.set(\E, 5);    // Set E major in octave 5
 ::
 
 method:: shuffle
@@ -81,11 +85,20 @@ Nx.key;  // -> 52
 ::
 
 method:: midinotes
-Returns all MIDI notes of the current chord.
+Returns all MIDI notes of the current chord, optionally transposed to a different octave.
+
+argument:: octave
+Optional octave value (Integer from -1 to 9). If provided, temporarily transposes the MIDI notes without changing the class octave variable. If nil, uses the current class octave value.
 
 code::
 Nx.set(\Em);
-Nx.midinotes;  // -> [52, 55, 59]
+Nx.midinotes;     // -> [52, 55, 59] (octave 3, default)
+Nx.midinotes(4);  // -> [64, 67, 71] (octave 4, temporary)
+Nx.midinotes;     // -> [52, 55, 59] (still octave 3)
+
+// Change octave permanently
+Nx.octave = 5;
+Nx.midinotes;     // -> [76, 79, 83] (octave 5)
 ::
 
 method:: chord
@@ -139,6 +152,22 @@ Nx.chordQualities.keys;  // list all available chord qualities
 method:: currentChord
 Class variable containing the current chord data Dictionary.
 
+method:: octave
+Class variable for the current octave value. Can be read and written to change the octave globally. Valid range: -1 to 9. Default is 3.
+
+code::
+Nx.octave;      // -> 3 (default)
+Nx.octave = 5;  // Change to octave 5
+Nx.midinotes;   // MIDI notes transposed to octave 5
+::
+
+method:: defaultOctave
+Class variable containing the default octave value (3). This is the reference octave for chord definitions in tonics.scd. Read-only.
+
+code::
+Nx.defaultOctave;  // -> 3
+::
+
 subsection:: Supported Chord Qualities
 
 The following chord qualities are available in chords.scd:
@@ -169,12 +198,31 @@ code::
 // Setup and explore chords
 Nx.set(\EmAdd9);
 Nx.intervals;       // [0, 3, 7, 14]
-Nx.midinotes;   // [52, 55, 59, 66]
-Nx.scale;       // \minor
+Nx.midinotes;       // [52, 55, 59, 66]
+Nx.scale;           // \minor
 
 // Random selection with filters
 Nx.shuffle(\E, \minor);  // picks Em, Em7, EmAdd9, or Em9
 Nx.shuffle(\A, \major);  // picks major A chords
+
+// Working with octaves
+Nx.set(\Am7);
+Nx.midinotes;       // [57, 60, 64, 67] (octave 3, default)
+
+// Temporarily transpose to octave 4
+Nx.midinotes(4);    // [69, 72, 76, 79]
+Nx.midinotes;       // [57, 60, 64, 67] (still octave 3)
+
+// Permanently change octave
+Nx.octave = 5;
+Nx.midinotes;       // [81, 84, 88, 91]
+
+// Set chord with specific octave
+Nx.set(\E, 2);
+Nx.midinotes;       // [40, 44, 47] (E major in octave 2)
+
+// Reset to default
+Nx.octave = 3;
 
 // Use with Px patterns
 (

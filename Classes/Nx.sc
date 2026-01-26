@@ -1,13 +1,23 @@
 Nx {
   classvar <chords;
   classvar <currentChord;
-  classvar currentChordName;
+  classvar <currentChordName;
+  classvar <defaultOctave;
+  classvar <>octave;
+  classvar <tonics;
 
   *initClass {
     chords = Dictionary.new;
+    defaultOctave = 3;
+    octave = defaultOctave;
+    tonics = Dictionary.new;
 
     this.loadChords;
     this.set(\EmAdd9);
+  }
+
+  *new { |chordName, octave|
+    ^this.set(chordName, octave);
   }
 
   *chord {
@@ -31,19 +41,41 @@ Nx {
   }
 
   *loadChords {
-    chords = Dictionary.new;
+    var tonicsPath, chordsPath;
 
-    PathName(("../Score/").resolveRelative).filesDo { |file|
-      var chordDict = File.readAllString(file.fullPath).interpret;
-      chords.putAll(chordDict);
+    // Load tonics.scd
+    tonicsPath = ("../Score/tonics.scd").resolveRelative;
+    tonics = File.readAllString(tonicsPath).interpret;
+
+    // Load chords.scd (qualities)
+    chordsPath = ("../Score/chords.scd").resolveRelative;
+    chords = File.readAllString(chordsPath).interpret;
+
+    if (tonics.isNil or: { tonics.isEmpty }) {
+      this.prPrint("ERROR: Failed to load tonics.scd");
+    };
+
+    if (chords.isNil or: { chords.isEmpty }) {
+      this.prPrint("ERROR: Failed to load chords.scd");
     };
   }
 
-  *midinotes {
+  *midinotes { |octaveArg|
     var key = currentChord[\key];
     var intervals = currentChord[\intervals];
+    var octaveOffset, targetOctave;
 
-    ^intervals.collect { |interval| key + interval };
+    // Validate octave range if provided
+    if (octaveArg.notNil) {
+      if ((octaveArg < -1) or: { octaveArg > 9 }) {
+        ^this.prPrint("Octave must be between -1 and 9");
+      };
+    };
+
+    targetOctave = octaveArg ?? octave;
+    octaveOffset = (targetOctave - defaultOctave) * 12;
+
+    ^intervals.collect { |interval| key + interval + octaveOffset };
   }
 
   *root {
@@ -54,37 +86,112 @@ Nx {
     ^currentChord[\scale];
   }
 
-	*set { |chordName|
-    var chord = chords[chordName.asSymbol];
+  *set { |chordName, octaveArg|
+    var parsed, tonicData, qualityData, combinedChord;
 
-    if (chord.isNil) {
-      ^this.prPrint("🔴 Chord" + chordName + "not found");
+    // Handle octave parameter
+    if (octaveArg.notNil) {
+      if ((octaveArg < -1) or: { octaveArg > 9 }) {
+        ^this.prPrint("Octave must be between -1 and 9");
+      };
+      octave = octaveArg;
     };
 
-    currentChord = chord;
+    // Parse the chord name
+    parsed = this.prParseChordName(chordName.asSymbol);
+    if (parsed.isNil) {
+      ^this.prPrint("Invalid chord name:" + chordName);
+    };
+
+    // Look up tonic data
+    tonicData = tonics[parsed[\tonic]];
+    if (tonicData.isNil) {
+      ^this.prPrint("Tonic not found:" + parsed[\tonic]);
+    };
+
+    // Look up quality data
+    qualityData = chords[parsed[\quality]];
+    if (qualityData.isNil) {
+      ^this.prPrint("Chord quality not found:" + parsed[\quality]);
+    };
+
+    // Combine into current chord
+    combinedChord = Dictionary.new;
+    combinedChord[\key] = tonicData[\key];
+    combinedChord[\root] = tonicData[\root];
+    combinedChord[\degree] = qualityData[\degree];
+    combinedChord[\intervals] = qualityData[\intervals];
+    combinedChord[\scale] = qualityData[\scale];
+
+    // Update state
+    currentChord = combinedChord;
     currentChordName = chordName.asSymbol;
   }
 
-  *shuffle { |note, quality|
-    var pool = chords;
-    var selected;
+  *shuffle { |tonic, scale|
+    var tonicPool, qualityPool, selectedTonic, selectedQuality, chordName;
 
-    if (note.notNil) {
-      var rootNote = note.asString[0].toUpper;
-      pool = pool.select { |chord, name|
-        name.asString[0] == rootNote
+    // Build tonic pool
+    if (tonic.notNil) {
+      if (tonics.includesKey(tonic.asSymbol).not) {
+        ^this.prPrint("Invalid tonic:" + tonic);
+      };
+      tonicPool = [tonic.asSymbol];
+    } {
+      tonicPool = tonics.keys.asArray;
+    };
+
+    // Build quality pool (filter by scale if specified)
+    if (scale.notNil) {
+      qualityPool = chords.select { |qual, name|
+        qual[\scale] == scale.asSymbol
+      }.keys.asArray;
+
+      if (qualityPool.isEmpty) {
+        ^this.prPrint("No chord qualities found for scale:" + scale);
+      };
+    } {
+      qualityPool = chords.keys.asArray;
+    };
+
+    // Random selection
+    selectedTonic = tonicPool.choose;
+    selectedQuality = qualityPool.choose;
+
+    // Build chord name
+    chordName = this.prBuildChordName(selectedTonic, selectedQuality);
+
+    this.prPrint("Chord is" + chordName);
+    ^this.set(chordName);
+  }
+
+  *prParseChordName { |chordSymbol|
+    var input, tonicSym, qualitySym, qualityStr;
+
+    input = chordSymbol.asString;
+
+    // Try 2-character tonic first (Cs, Db, Eb, etc.)
+    if (input.size >= 2) {
+      tonicSym = input[0..1].asSymbol;
+      if (tonics.includesKey(tonicSym)) {
+        qualityStr = input[2..];
+        qualitySym = this.prMapQuality(qualityStr);
+        ^Dictionary[\tonic -> tonicSym, \quality -> qualitySym];
       };
     };
 
-    if (quality.notNil) {
-      pool = pool.select { |chord, name|
-        chord[\scale] == quality
+    // Try 1-character tonic
+    if (input.size >= 1) {
+      tonicSym = input[0].asSymbol;
+      if (tonics.includesKey(tonicSym)) {
+        qualityStr = input[1..];
+        qualitySym = this.prMapQuality(qualityStr);
+        ^Dictionary[\tonic -> tonicSym, \quality -> qualitySym];
       };
     };
 
-    if (pool.isEmpty) {
-      ^this.prPrint("No chords found for:" + note + quality);
-    };
+    ^nil;  // Invalid tonic
+  }
 
     pool = pool.reject { |chord, name| name == currentChordName };
 

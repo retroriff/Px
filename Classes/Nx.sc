@@ -193,15 +193,17 @@ Nx {
     ^nil;  // Invalid tonic
   }
 
-    pool = pool.reject { |chord, name| name == currentChordName };
+  *prMapQuality { |qualityStr|
+    // Empty = major default (only special case)
+    if (qualityStr.isEmpty) { ^"maj" };
 
-    if (pool.isEmpty) {
-      ^this.prPrint("Only one chord available, cannot shuffle");
-    };
+    // Everything else: return as string
+    ^qualityStr;
+  }
 
-    selected = pool.keys.asArray.choose;
-    this.prPrint("Chord is" + selected);
-    ^this.set(selected);
+  *prBuildChordName { |tonicSym, qualityStr|
+    var suffix = if (qualityStr == "maj") { "" } { qualityStr };
+    ^(tonicSym.asString ++ suffix).asSymbol;
   }
 
   *prPrint { |value|

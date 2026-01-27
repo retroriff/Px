@@ -6,7 +6,6 @@
 ### Primary References (read in order)
 
 1. **`Docs/init-context.md`** - Complete architecture and development workflow
-
    - Core class hierarchy
    - How the DSL pattern works
    - Pattern generation flow
@@ -14,7 +13,6 @@
    - How to add features (effects, parameters, presets)
 
 2. **`Docs/pattern-internals.md`** - Deep technical reference for pattern system
-
    - Pattern data structure (all dictionary keys)
    - ID systems (regular, manual drum, preset patterns)
    - Beat generation and fill mechanics
@@ -40,10 +38,16 @@
 - Add/modify class method → Update corresponding `HelpSource/Classes/<ClassName>.schelp`
 
 **Help file conventions:**
+
 - Help files are in `HelpSource/Classes/` using SCDoc format (.schelp)
 - Private methods (starting with `pr`) are not documented
 - When adding new public methods, update the corresponding help file
 - Reference existing help files (Px.schelp, Fx.schelp, Sx.schelp) for format examples
+
+**Data file conventions:**
+
+- Dictionary entries must be in alphabetical order by key
+- When adding new entries, insert at the correct alphabetical position
 
 ---
 

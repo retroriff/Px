@@ -85,4 +85,5 @@ Dictionary[
     \intervals -> [0, 5, 7, 10, 21],
     \scale -> \mixolydian
   ]
+];
 )

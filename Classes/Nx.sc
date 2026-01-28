@@ -1,5 +1,6 @@
 Nx {
   classvar <chords;
+  classvar <circleOfFifths;
   classvar <currentChord;
   classvar <currentChordName;
   classvar <defaultOctave;
@@ -8,6 +9,7 @@ Nx {
 
   *initClass {
     chords = Dictionary.new;
+    circleOfFifths = [\C, \G, \D, \A, \E, \B, \Fs, \Db, \Ab, \Eb, \Bb, \F];
     defaultOctave = 3;
     octave = defaultOctave;
     tonics = Dictionary.new;
@@ -165,6 +167,56 @@ Nx {
     ^this.set(chordName);
   }
 
+  *fifth { |tonic = \C, position = 0, quality = \major|
+    var startIndex, targetIndex, targetTonic, qualityStr, chordName, pos;
+
+    if (tonics.includesKey(tonic.asSymbol).not) {
+      ^this.prPrint("Invalid tonic:" + tonic);
+    };
+
+    startIndex = circleOfFifths.indexOf(tonic.asSymbol);
+    if (startIndex.isNil) {
+      startIndex = this.prEnharmonicIndex(tonic.asSymbol);
+      if (startIndex.isNil) {
+        ^this.prPrint("Tonic not in circle of fifths:" + tonic);
+      };
+    };
+
+    pos = if (position == \rand) { 12.rand } { position };
+
+    targetIndex = (startIndex + pos) % 12;
+    if (targetIndex < 0) { targetIndex = targetIndex + 12 };
+
+    targetTonic = circleOfFifths[targetIndex];
+
+    qualityStr = this.prFifthQuality(quality);
+    if (qualityStr.isNil) {
+      ^this.prPrint("Invalid quality:" + quality ++ ". Use \\major, \\minor, \\dom7, \\maj7, \\m7, \\sus4, \\dim, \\aug, \\add9, or \\rand");
+    };
+
+    chordName = this.prBuildChordName(targetTonic, qualityStr);
+
+    this.prPrint("Chord is" + chordName);
+    ^this.set(chordName);
+  }
+
+  *prEnharmonicIndex { |tonic|
+    var map = Dictionary[\Cs -> \Db, \Ds -> \Eb, \Gb -> \Fs, \Gs -> \Ab, \As -> \Bb];
+    var equiv = map[tonic];
+    if (equiv.notNil) { ^circleOfFifths.indexOf(equiv) };
+    ^nil;
+  }
+
+  *prFifthQuality { |quality|
+    var map = Dictionary[
+      \major -> "maj", \minor -> "m", \dom7 -> "dom7",
+      \maj7 -> "maj7", \m7 -> "m7", \sus4 -> "sus4",
+      \dim -> "dim", \aug -> "aug", \add9 -> "add9"
+    ];
+    var q = if (quality == \rand) { map.keys.asArray.choose } { quality.asSymbol };
+    ^map[q];
+  }
+
   *prParseChordName { |chordSymbol|
     var input, tonicSym, qualitySym, qualityStr;
 
@@ -176,7 +228,9 @@ Nx {
       if (tonics.includesKey(tonicSym)) {
         qualityStr = input[2..];
         qualitySym = this.prMapQuality(qualityStr);
-        ^Dictionary[\tonic -> tonicSym, \quality -> qualitySym];
+        if (chords.includesKey(qualitySym)) {
+          ^Dictionary[\tonic -> tonicSym, \quality -> qualitySym];
+        };
       };
     };
 

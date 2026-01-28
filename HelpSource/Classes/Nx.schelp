@@ -60,6 +60,39 @@ Nx.shuffle(\E, \minor);      // random E minor chord
 Nx.shuffle(\A, \lydian);     // random A lydian chord
 ::
 
+method:: fifth
+Navigates the circle of fifths from a starting tonic and sets the resulting chord. Inspired by omnichord chord button layout where harmonically related chords are adjacent.
+
+argument:: tonic
+Starting tonic as a Symbol (e.g., \C, \A, \Fs). Default: \C
+
+argument:: position
+Circle position offset. Positive values move clockwise (fifths up), negative values move counterclockwise (fifths down). Wraps at 12. Use \rand for random position. Default: 0
+
+argument:: quality
+Chord quality (Omnichord-style): \major, \minor, \dom7, \maj7, \m7, \sus4, \dim, \aug, \add9, or \rand. Default: \major
+
+code::
+Nx.fifth;                    // C major (default)
+Nx.fifth(\A);                // A major
+Nx.fifth(\A, 1);             // E major (V of A, one fifth up)
+Nx.fifth(\A, 2);             // B major (two fifths up)
+Nx.fifth(\A, -1);            // D major (IV of A, one fifth down)
+Nx.fifth(\A, 0, \minor);     // A minor
+Nx.fifth(\A, 2, \dom7);      // B dominant 7th
+Nx.fifth(\C, 0, \dim);       // C diminished
+Nx.fifth(\C, 0, \aug);       // C augmented
+Nx.fifth(\C, 12);            // C major (wraps back)
+Nx.fifth(\C, \rand);         // Random position from C
+Nx.fifth(\C, 0, \rand);      // C with random quality
+Nx.fifth(\C, \rand, \rand);  // Random position and quality
+
+// Common progressions become easy
+Nx.fifth(\C, 0);  // I  (C)
+Nx.fifth(\C, -1); // IV (F)
+Nx.fifth(\C, 1);  // V  (G)
+::
+
 method:: intervals
 Returns the intervals array of the current chord.
 
@@ -152,6 +185,13 @@ Nx.chordQualities.keys;  // list all available chord qualities
 method:: currentChord
 Class variable containing the current chord data Dictionary.
 
+method:: circleOfFifths
+Class variable containing the circle of fifths as an Array of Symbols. Used by the link::#*fifth:: method.
+
+code::
+Nx.circleOfFifths;  // -> [\C, \G, \D, \A, \E, \B, \Fs, \Db, \Ab, \Eb, \Bb, \F]
+::
+
 method:: octave
 Class variable for the current octave value. Can be read and written to change the octave globally. Valid range: -1 to 9. Default is 3.
 
@@ -186,6 +226,11 @@ table::
 ## \maj7Sharp11 || \Cmaj7Sharp11 || lydian || [0, 4, 7, 11, 18]
 ## \sus2AddSharp11 || \Csus2AddSharp11 || hexSus || [0, 2, 5, 7, 18]
 ## \7sus4Add13 || \E7sus4Add13 || mixolydian || [0, 5, 10, 15]
+## \dom7 || \Cdom7, \Adom7 || mixolydian || [0, 4, 7, 10]
+## \add9 || \Cadd9, \Aadd9 || major || [0, 4, 7, 14]
+## \aug || \Caug, \Aaug || major || [0, 4, 8]
+## \dim || \Cdim, \Adim || minor || [0, 3, 6]
+## \sus4 || \Csus4, \Asus4 || major || [0, 5, 7]
 ::
 
 note::

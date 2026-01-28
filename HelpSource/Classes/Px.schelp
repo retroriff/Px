@@ -651,9 +651,63 @@ subsection:: MIDI Methods
 
 definitionlist::
 ## chan
-|| Routes pattern to MIDI channel.
+|| Routes pattern to MIDI channel. When the code::chan:: parameter is present, the pattern is automatically configured as a MIDI event.
+
+Behind the scenes, the following events are added to the pattern:
+list::
+## code::\type: \midi:: - Marks the event as a MIDI type
+## code::\midicmd: \noteOn:: - MIDI command (default is code::\noteOn::, can be code::\noteOff:: or code::\control::)
+## code::\midiout: midiClient[deviceName]:: - MIDIOut instance (uses device set in code::Px.initMidi::)
+## code::\chan: 0:: - MIDI channel (defaults to 0 if not specified)
+## code::\instrument: \midi:: - Sets instrument to MIDI
+::
+
 code::
 1 chan: 0 dur: 1 degree: 0;  // MIDI channel 1
+::
+
+strong::MIDI DSL to Pbind Translation Examples::
+
+The following examples show how Px DSL syntax translates to the underlying Pbind code:
+
+strong::Example 1: Using note directly to send midinotes::
+code::
+// Px DSL syntax:
+1 chan: 5 dur: 0.5 note: [57, 60, 64];
+
+// Translates to:
+(
+Pdef(\def, Pbind(
+  \type, \midi,
+  \chan, 5,
+  \midinote, Pseq([57, 60, 64], inf),
+  \midicmd, \noteOn,
+  \midiout, Px.midiOut,
+  \amp, 1,
+  \dur, 0.5,
+)).play.quant_(4);
+)
+::
+
+strong::Example 2: Using degree, scale, and octave::
+code::
+// Px DSL syntax:
+1 chan: 5 dur: 0.5 degree: [0, 2, 4, 7].pseq scale: \minor octave: 4;
+
+// Translates to:
+(
+Pdef(\def, Pbind(
+  \type, \midi,
+  \chan, 5,
+  \midicmd, \noteOn,
+  \midiout, Px.midiOut,
+  \amp, 1,
+  \degree, Pseq([0, 2, 4, 7], inf),
+  \dur, 0.5,
+  \octave, 4,
+  \scale, Scale.minor,
+)).play.quant_(4);
+)
 ::
 
 ## control

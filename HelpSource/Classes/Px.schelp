@@ -723,9 +723,9 @@ code::
 || Holds MIDI notes (1) or releases them (0).
 
 ## note
-|| Sets MIDI notes.
+|| Sets MIDI notes. Here octaves can be adjusted with ctranspose:
 code::
-1 i: \wobble dur: 0.5 note: [56, 53, 60, 53, 60, 63].pseq;
+1 i: \wobble dur: 0.5 note: [56, 53, 60, 53, 60, 63].pseq ctranspose: 12;
 ::
 
 ## panic

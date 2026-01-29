@@ -4,7 +4,7 @@ Nx {
   classvar <currentChord;
   classvar <currentChordName;
   classvar <defaultOctave;
-  classvar <fifthChords;
+  classvar <fifthChordsDict;
   classvar <>octave;
   classvar <tonics;
 
@@ -12,7 +12,7 @@ Nx {
     chords = Dictionary.new;
     circleOfFifths = [\C, \G, \D, \A, \E, \B, \Fs, \Db, \Ab, \Eb, \Bb, \F];
     defaultOctave = 3;
-    fifthChords = Dictionary[
+    fifthChordsDict = Dictionary[
       \add9 -> "add9", \aug -> "aug", \dim -> "dim", \dom7 -> "dom7",
       \m7 -> "m7", \maj7 -> "maj7", \major -> "maj", \minor -> "m", \sus4 -> "sus4"
     ];
@@ -196,13 +196,17 @@ Nx {
 
     qualityStr = this.prFifthQuality(quality);
     if (qualityStr.isNil) {
-      ^this.prPrint("Invalid quality:" + quality ++ ". Use" + (fifthChords.keys.asArray ++ \rand));
+      ^this.prPrint("Invalid quality:" + quality ++ ". Use" + (fifthChordsDict.keys.asArray ++ \rand));
     };
 
     chordName = this.prBuildChordName(targetTonic, qualityStr);
 
     this.prPrint("Chord is" + chordName);
     ^this.set(chordName);
+  }
+
+  *fifthChords {
+    ^fifthChordsDict.keys;
   }
 
   *prEnharmonicIndex { |tonic|
@@ -213,8 +217,8 @@ Nx {
   }
 
   *prFifthQuality { |quality|
-    var q = if (quality == \rand) { fifthChords.keys.asArray.choose } { quality.asSymbol };
-    ^fifthChords[q];
+    var q = if (quality == \rand) { fifthChordsDict.keys.asArray.choose } { quality.asSymbol };
+    ^fifthChordsDict[q];
   }
 
   *prParseChordName { |chordSymbol|

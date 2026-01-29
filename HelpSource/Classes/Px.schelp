@@ -723,7 +723,10 @@ code::
 || Holds MIDI notes (1) or releases them (0).
 
 ## note
-|| Sets MIDI note or note pattern.
+|| Sets MIDI notes. Octaves can be adjusted with ctranspose.
+code::
+1 i: \wobble dur: 0.5 note: [56, 53, 60, 53, 60, 63].pseq ctranspose: 1;
+::
 
 ## panic
 || Sends all notes off for this pattern's channel.

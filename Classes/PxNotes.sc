@@ -1,10 +1,18 @@
 + Px {
+  *ctranspose { |value|
+    last do: { |pattern|
+      pattern[\ctranspose] = value;
+    };
+
+    this.prReevaluate;
+  }
+
   *root { |value|
     last do: { |pattern|
       pattern[\root] = value;
     };
 
-    ^this.prReevaluate;
+    this.prReevaluate;
   }
 
   *scale { |value|
@@ -12,7 +20,7 @@
       pattern[\scale] = value;
     };
 
-    ^this.prReevaluate;
+    this.prReevaluate;
   }
 
   *prCreateDegrees { |pattern, midiratio|
@@ -95,14 +103,21 @@
     if (octave.isArray)
     { pattern[\octave] = Pseq(octave, inf) };
 
+    if (pattern[\octaveTranspose].notNil) {
+      var oct = pattern[\octaveTranspose];
+      var ct = pattern[\ctranspose] ?? 0;
+      pattern[\ctranspose] = oct + ct;
+      pattern.removeAt(\octaveTranspose);
+    };
+
     ^pattern;
   }
 
   *prApplyOctaveToMidinote { |pattern, octave|
     if (octave.isArray) {
-      pattern[\ctranspose] = Pseq(octave.collect { |o| o * 12 }, inf);
+      pattern[\octaveTranspose] = Pseq(octave.collect { |o| o * 12 }, inf);
     } {
-      pattern[\ctranspose] = octave * 12;
+      pattern[\octaveTranspose] = octave * 12;
     };
 
     pattern.removeAt(\octave);

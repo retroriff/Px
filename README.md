@@ -235,7 +235,6 @@ A class designed for controlling a synthesizer equipped with a built-in sequence
 Sx(
     (
         amp: 1,
-        chord: [0, 2, 4],
         dur: 1/4,
         euclid: [3, 5],
         degree: [0, 1, 2, 3],
@@ -276,20 +275,20 @@ Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (
 
 ### Nx class methods
 
-| Name              | Arguments                   | Returns    | Description                                         |
-| ----------------- | --------------------------- | ---------- | --------------------------------------------------- |
-| `chord`           | None                        | Symbol     | Returns current chord name                          |
-| `chordQualities`  | None                        | Dictionary | Returns all loaded chord qualities                  |
-| `degrees`         | None                        | Array      | Returns scale degrees array                         |
-| `key`             | None                        | Integer    | Returns MIDI key (base note)                        |
-| `loadChords`      | None                        | None       | Reloads chord data from `Score/`                    |
-| `midinotes`       | octave?: Integer (-1 to 9)  | Array      | Returns MIDI notes, optionally transposed           |
-| `octave`          | None                        | Integer    | Gets/sets current octave (default: 3, range: -1..9) |
-| `root`            | None                        | Integer    | Returns root value (pitch class 0-11)               |
-| `scale`           | None                        | Symbol     | Returns scale symbol                                |
-| `set`             | chord: Symbol, octave?: Int | None       | Sets current chord, optionally changes octave       |
-| `shuffle`         | tonic?: Symbol, scale?: Sym | None       | Randomly selects a chord with optional filters      |
-| `tonics`          | None                        | Dictionary | Returns all loaded tonics (root notes)              |
+| Name             | Arguments                   | Returns    | Description                                         |
+| ---------------- | --------------------------- | ---------- | --------------------------------------------------- |
+| `chord`          | None                        | Symbol     | Returns current chord name                          |
+| `chordQualities` | None                        | Dictionary | Returns all loaded chord qualities                  |
+| `degrees`        | None                        | Array      | Returns scale degrees array                         |
+| `key`            | None                        | Integer    | Returns MIDI key (base note)                        |
+| `loadChords`     | None                        | None       | Reloads chord data from `Score/`                    |
+| `midinotes`      | octave?: Integer (-1 to 9)  | Array      | Returns MIDI notes, optionally transposed           |
+| `octave`         | None                        | Integer    | Gets/sets current octave (default: 3, range: -1..9) |
+| `root`           | None                        | Integer    | Returns root value (pitch class 0-11)               |
+| `scale`          | None                        | Symbol     | Returns scale symbol                                |
+| `set`            | chord: Symbol, octave?: Int | None       | Sets current chord, optionally changes octave       |
+| `shuffle`        | tonic?: Symbol, scale?: Sym | None       | Randomly selects a chord with optional filters      |
+| `tonics`         | None                        | Dictionary | Returns all loaded tonics (root notes)              |
 
 ## 📡 OSC Communication
 

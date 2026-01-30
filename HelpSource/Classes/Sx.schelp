@@ -64,7 +64,6 @@ Optional fade-in time in seconds for the Ndef.
 code::
 Sx((
     amp: 1,
-    chord: [0, 2, 4],
     degree: [0, 1, 2, 3],
     dur: 1/4,
     env: 1,
@@ -269,6 +268,7 @@ Sx.set(\chord, [0, 3, 5], 1);
 // Euclidean rhythm
 Sx((
     degree: [0, 3, 5, 7],
+    dur: 0.25,
     euclid: [5, 8],
     env: 1
 ));
@@ -276,7 +276,6 @@ Sx((
 // Complex sequence with octave variation
 Sx((
     amp: 0.8,
-    chord: [0, 2, 4],
     degree: [0, 1, 2, 3, 4, 5, 6, 7],
     dur: 1/8,
     env: 1,

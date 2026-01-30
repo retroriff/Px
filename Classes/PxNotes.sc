@@ -88,9 +88,24 @@
       octave = octaveBeat;
     };
 
+    if (pattern[\midinote].notNil and: { octave.notNil }) {
+      pattern = this.prApplyOctaveToMidinote(pattern, octave);
+    };
+
     if (octave.isArray)
     { pattern[\octave] = Pseq(octave, inf) };
 
+    ^pattern;
+  }
+
+  *prApplyOctaveToMidinote { |pattern, octave|
+    if (octave.isArray) {
+      pattern[\ctranspose] = Pseq(octave.collect { |o| o * 12 }, inf);
+    } {
+      pattern[\ctranspose] = octave * 12;
+    };
+
+    pattern.removeAt(\octave);
     ^pattern;
   }
 }

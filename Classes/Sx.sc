@@ -336,7 +336,8 @@ Sx {
       var oct = octave.wrapAt(i).clip(-2, 2);
       var midinote = note + (oct * 12);
       var synthAmp = amp / (i + 1).sqrt;
-      var newSynth = Synth(\sxPad, [
+      var newSynth = Synth(\sx, [
+        \seq, 0,
         \midinote, midinote,
         \amp, synthAmp,
         \atk, event[\atk] ?? fadeTime ?? 5,
@@ -411,7 +412,8 @@ Sx {
         var midinote = newMidinotes[idx];
         var synthAmp = (event[\amp] ?? 1) / (idx + 1).sqrt;
         var wavePairs = this.prGenerateWave(event[\wave] ?? \saw);
-        var newSynth = Synth(\sxPad, [
+        var newSynth = Synth(\sx, [
+          \seq, 0,
           \midinote, midinote,
           \amp, synthAmp,
           \atk, event[\atk] ?? 5,

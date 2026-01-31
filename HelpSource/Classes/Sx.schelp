@@ -23,6 +23,12 @@ Sx((
     wave: \saw
 ));
 
+// Or play a pad chord:
+Sx((
+    chord: [0, 2, 4, 5],
+    wave: \saw
+));
+
 // Modify parameters in real-time
 Sx.set(\wave, \pulse);
 Sx.set(\chord, [0, 3, 5]);
@@ -191,8 +197,9 @@ definitionlist::
 || Amplitude/volume of the synth (0-1 range). Default: 1
 
 ## chord
-|| Array of intervals to create chords. Default: [0]. Maximum 4 voices.
+|| Chord symbol or array of intervals to create chords. Default: [0]. Maximum 4 voices.
 code::
+Sx.set(\chord, \Am);       // A minor chord
 Sx.set(\chord, [0, 2, 4]); // Major triad
 Sx.set(\chord, [0, 3, 7]); // Minor triad
 ::

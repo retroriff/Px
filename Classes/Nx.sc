@@ -14,7 +14,8 @@ Nx {
     defaultOctave = 3;
     fifthChordsDict = Dictionary[
       \add9 -> "add9", \aug -> "aug", \dim -> "dim", \dom7 -> "dom7",
-      \m7 -> "m7", \maj7 -> "maj7", \major -> "maj", \minor -> "m", \sus4 -> "sus4"
+      \m7 -> "m7", \maj7 -> "maj7", \major -> "maj", \minor -> "m",
+      \sus4 -> "sus4"
     ];
     octave = defaultOctave;
     tonics = Dictionary.new;
@@ -99,8 +100,10 @@ Nx {
     // Handle octave parameter
     if (octaveArg.notNil) {
       if ((octaveArg < -1) or: { octaveArg > 9 }) {
-        ^this.prPrint("Octave must be between -1 and 9");
+        octaveArg = octaveArg.clip(-1, 9);
+        this.prPrint("Octave must be between -1 and 9. Clipped to:" + octaveArg);
       };
+
       octave = octaveArg;
     };
 

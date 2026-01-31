@@ -8,6 +8,9 @@ Sx {
   classvar <waveList;
 
   *initClass {
+    // It fixes this error when we play a pad after stopping it with "Command .".
+    // Not sure if generates other issues while playing other stuff:
+    // FAILURE IN SERVER /n_set Node 1017 not found
     // CmdPeriod.add { Sx.clear };
     chordSynths = [];
     defaultScale = \scriabin;
@@ -35,17 +38,21 @@ Sx {
 
     event = this.prCreateDefaultArgs(event ?? Event.new);
     isChordMode = this.prIsChordMode(event);
-
-    if (isChordMode) {
-      ^this.prPlayChord(event, fadeTime ?? event[\atk]);
-    };
-
     last = event.copy;
 
-    this.play(fadeTime);
+    if (isChordMode) {
+      this.prPlayChord(event, fadeTime ?? event[\atk]);
+    } {
+      if (mode == \chord) {
+        this.prFreeChordSynths;
+        mode = \seq;
+      };
 
-    event.keysValuesDo { |key, value|
-      this.qset(key, value);
+      this.play(fadeTime);
+
+      event.keysValuesDo { |key, value|
+        this.qset(key, value);
+      };
     };
   }
 
@@ -62,7 +69,7 @@ Sx {
 
   *play { |fadeTime|
     if (mode == \chord) {
-      this.prFreeChordSynths;
+      ^Ndef(\sx).play(fadeTime: fadeTime ?? 5);
     };
 
     mode = \seq;
@@ -307,7 +314,7 @@ Sx {
     if (chord.isKindOf(Symbol)) {
       Nx.set(chord);
       midinotes = Nx.midinotes;
-      this.prPrint("Chord:" + chord + "midinotes:" + midinotes);
+      // this.prPrint("Chord:" + chord + "midinotes:" + midinotes);
     } {
       var key = event[\key] ?? 60;
       midinotes = chord.collect { |interval| key + interval };
@@ -332,7 +339,7 @@ Sx {
       var newSynth = Synth(\sxPad, [
         \midinote, midinote,
         \amp, synthAmp,
-        \atk, event[\atk] ?? 5,
+        \atk, event[\atk] ?? fadeTime ?? 5,
         \rel, event[\rel] ?? 3,
         \vcf, event[\vcf] ?? 1,
       ] ++ wavePairs);

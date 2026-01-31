@@ -8,6 +8,8 @@ The Sx class is a single-instance polyphonic synthesizer with a built-in sequenc
 
 Sx is designed for melodic sequences where you want direct control over a synthesizer's parameters without creating new pattern instances each time. It wraps a custom SynthDef with a demand-rate sequencer and outputs through an Ndef for effects processing.
 
+Sx can be played as a sequenced synth using scale degrees, or as a pad synth with chord voicings. It supports real-time parameter changes with optional lag and quantization to the beat grid.
+
 Before using Sx, the synth definition must be loaded:
 code::
 Sx.loadSynth;
@@ -23,15 +25,15 @@ Sx((
     wave: \saw
 ));
 
-// Or play a pad chord:
+// Or play a pad synth:
 Sx((
-    chord: [0, 2, 4, 5],
+    pad: [0, 2, 4, 5],
     wave: \saw
 ));
 
 // Modify parameters in real-time
 Sx.set(\wave, \pulse);
-Sx.set(\chord, [0, 3, 5]);
+Sx.set(\pad, [0, 3, 5]);
 
 // Stop with fade out
 Sx.release(5);
@@ -110,7 +112,7 @@ argument:: lag
 Optional lag time for smooth transitions.
 
 code::
-Sx.qset(\chord, [0, 4, 7]);
+Sx.qset(\pad, [0, 4, 7]);
 ::
 
 method:: release
@@ -143,7 +145,7 @@ code::
 Sx.set(\wave, \pulse);
 
 // Change with lag (smooth transition)
-Sx.set(\chord, [0, 3, 5], 1);
+Sx.set(\pad, [0, 3, 5], 1);
 
 // Using shuffle for randomized sequences
 Sx.set(\degree, [0, 1, 2, 3].shuffle(71));
@@ -196,14 +198,6 @@ definitionlist::
 ## amp
 || Amplitude/volume of the synth (0-1 range). Default: 1
 
-## chord
-|| Chord symbol or array of intervals to create chords. Default: [0]. Maximum 4 voices.
-code::
-Sx.set(\chord, \Am);       // A minor chord
-Sx.set(\chord, [0, 2, 4]); // Major triad
-Sx.set(\chord, [0, 3, 7]); // Minor triad
-::
-
 ## degree
 || Array of scale degrees for the sequence. Default: [0]. Combined with octave for the full melodic pattern.
 code::
@@ -229,6 +223,14 @@ Sx((euclid: [3, 8])); // 3 hits distributed over 8 steps
 || Array of octave transpositions (-2 to 2 range). Combined with degree for the melodic sequence. Default: [0]
 code::
 Sx.set(\octave, [0, 0, 1, -1]);
+::
+
+## pad
+|| Chord symbol or array of intervals to play pad chords.
+code::
+Sx.set(\pad, \Am);       // A minor chord
+Sx.set(\pad, [0, 2, 4]); // Major triad
+Sx.set(\pad, [0, 3, 7]); // Minor triad
 ::
 
 ## root
@@ -298,7 +300,7 @@ Sx.set(\degree, [0, 2, 4, 5, 7].shuffle(42));
 Sx.last;
 
 // Quantized changes (on next beat grid)
-Sx.qset(\chord, [0, 5, 9]);
+Sx.qset(\pad, [0, 5, 9]);
 
 // Volume control
 Sx.vol(0.7);

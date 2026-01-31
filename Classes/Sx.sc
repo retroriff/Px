@@ -1,9 +1,9 @@
 Sx {
-  classvar chordSynths;
   classvar <defaultEvent;
   classvar <defaultScale;
-  classvar <>last;
+  classvar padSynths;
   classvar <mode;
+  classvar <>last;
   classvar synth;
   classvar <waveList;
 
@@ -12,7 +12,6 @@ Sx {
     // Not sure if generates other issues while playing other stuff:
     // FAILURE IN SERVER /n_set Node 1017 not found
     // CmdPeriod.add { Sx.clear };
-    chordSynths = [];
     defaultScale = \scriabin;
     defaultEvent = (
       amp: 1,
@@ -30,21 +29,22 @@ Sx {
     );
     last = Event.new;
     mode = \seq;
+    padSynths = [];
     waveList = [\pulse, \saw, \sine, \triangle];
   }
 
   *new { |event, fadeTime|
-    var isChordMode;
+    var isPadMode;
 
     event = this.prCreateDefaultArgs(event ?? Event.new);
-    isChordMode = this.prIsChordMode(event);
+    isPadMode = this.prIsPadMode(event);
     last = event.copy;
 
-    if (isChordMode) {
-      this.prPlayChord(event, fadeTime ?? event[\atk]);
+    if (isPadMode) {
+      this.prPlayPad(event, fadeTime ?? event[\atk]);
     } {
-      if (mode == \chord) {
-        this.prFreeChordSynths;
+      if (mode == \pad) {
+        this.prFreePadSynths;
         mode = \seq;
       };
 
@@ -68,7 +68,7 @@ Sx {
   }
 
   *play { |fadeTime|
-    if (mode == \chord) {
+    if (mode == \pad) {
       ^Ndef(\sx).play(fadeTime: fadeTime ?? 5);
     };
 
@@ -88,8 +88,8 @@ Sx {
   *release { |fadeTime = 10|
     Ndef(\sx).free(fadeTime);
 
-    if (mode == \chord) {
-      ^this.prFreeChordSynths(fadeTime);
+    if (mode == \pad) {
+      ^this.prFreePadSynths(fadeTime);
     }
 
     ^fork {
@@ -134,13 +134,13 @@ Sx {
     { key == \wave }
     { pairs = this.prGenerateWave(value) }
 
-    { key == \chord and: (mode == \chord)} {
+    { key == \pad and: (mode == \pad)} {
         var event = last.copy;
-        event[\chord] = value;
+        event[\pad] = value;
 
         if (quant.isNil)
-        { ^this.prUpdateOrPlayChord(event, last[\atk], lag) }
-        { ^this.prScheduleQuantized({ this.prUpdateOrPlayChord(event, last[\atk], lag) }) };
+        { ^this.prUpdateOrPlayPad(event, last[\atk], lag) }
+        { ^this.prScheduleQuantized({ this.prUpdateOrPlayPad(event, last[\atk], lag) }) };
     };
 
     pairs = pairs ++ this.prGenerateArraySize(pairs[0], pairs[1]);
@@ -277,14 +277,14 @@ Sx {
     if (mode == \seq) {
       synth.set(*pairs);
     } {
-      chordSynths.do { |sxPad|
+      padSynths.do { |sxPad|
         sxPad.set(*pairs);
       };
     };
   }
 
   *prShouldBeArray { |key|
-    var arrayKeys = [\chord, \degree, \dur, \octave];
+    var arrayKeys = [\chord, \degree, \dur, \octave, \pad];
 
     ^arrayKeys.includes(key);
   }
@@ -293,41 +293,40 @@ Sx {
     last.putAll([key, value]);
   }
 
-  *prIsChordMode { |event|
-    var chord = event[\chord];
+  *prIsPadMode { |event|
+    var pad = event[\pad];
     var degree = event[\degree];
-    var chordIsDefault = (chord == [0]) or: (chord == defaultEvent[\chord]);
+    var padIsDefault = (pad == [0]) or: (pad == defaultEvent[\pad]);
     var degreeIsDefault = (degree == [0]) or: (degree == defaultEvent[\degree]);
-    var chordIsSymbol = chord.isKindOf(Symbol);
-
-    ^(chordIsSymbol or: chordIsDefault.not) and: degreeIsDefault;
+    var padIsSymbol = pad.isKindOf(Symbol);
+    ^(padIsSymbol or: padIsDefault.not) and: degreeIsDefault;
   }
 
-  *prPlayChord { |event, fadeTime|
-    var chord = event[\chord];
+  *prPlayPad { |event, fadeTime|
+    var pad = event[\pad];
     var midinotes;
     var amp = event[\amp] ?? 1;
     var octave = event[\octave] ?? [0];
     var wavePairs = this.prGenerateWave(event[\wave] ?? \saw);
     var crossfadeTime = event[\rel] ?? 3;
 
-    if (chord.isKindOf(Symbol)) {
-      Nx.set(chord);
+    if (pad.isKindOf(Symbol)) {
+      Nx.set(pad);
       midinotes = Nx.midinotes;
-      // this.prPrint("Chord:" + chord + "midinotes:" + midinotes);
+      // this.prPrint("Pad:" + pad + "midinotes:" + midinotes);
     } {
       var key = event[\key] ?? 60;
-      midinotes = chord.collect { |interval| key + interval };
+      midinotes = pad.collect { |interval| key + interval };
     };
 
-    this.prFreeChordSynths(crossfadeTime);
+    this.prFreePadSynths(crossfadeTime);
 
     if (synth.notNil) {
       synth.free;
       synth = nil;
     };
 
-    mode = \chord;
+    mode = \pad;
     last = event.copy;
 
     Ndef(\sx, { In.ar(~sxBus, 2) }).play(fadeTime: fadeTime ?? 5);
@@ -337,43 +336,43 @@ Sx {
       var midinote = note + (oct * 12);
       var synthAmp = amp / (i + 1).sqrt;
       var newSynth = Synth(\sx, [
-        \seq, 0,
-        \midinote, midinote,
         \amp, synthAmp,
         \atk, event[\atk] ?? fadeTime ?? 5,
+        \midinote, midinote,
         \rel, event[\rel] ?? 3,
+        \seq, 0,
         \vcf, event[\vcf] ?? 1,
       ] ++ wavePairs);
 
-      chordSynths = chordSynths.add(newSynth);
+      padSynths = padSynths.add(newSynth);
     };
   }
 
-  *prUpdateOrPlayChord { |event, fadeTime, lag|
-    var shouldUpdate = (lag.notNil) and: { lag > 0 } and: { chordSynths.notEmpty };
+  *prUpdateOrPlayPad { |event, fadeTime, lag|
+    var shouldUpdate = (lag.notNil) and: { lag > 0 } and: { padSynths.notEmpty };
 
     if (shouldUpdate) {
-      ^this.prUpdateChord(event, lag);
+      ^this.prUpdatePad(event, lag);
     } {
-      ^this.prPlayChord(event, fadeTime);
+      ^this.prPlayPad(event, fadeTime);
     };
   }
 
-  *prUpdateChord { |event, lag|
-    var chord = event[\chord];
+  *prUpdatePad { |event, lag|
+    var pad = event[\pad];
     var newMidinotes;
     var octave = event[\octave] ?? [0];
-    var oldSize = chordSynths.size;
+    var oldSize = padSynths.size;
     var newSize, minSize;
-    var lastChord = last[\chord];
+    var lastPad = last[\pad];
     var shouldScramble = false;
 
-    if (chord.isKindOf(Symbol)) {
-      Nx.set(chord);
+    if (pad.isKindOf(Symbol)) {
+      Nx.set(pad);
       newMidinotes = Nx.midinotes;
     } {
       var key = event[\key] ?? 60;
-      newMidinotes = chord.collect { |interval| key + interval };
+      newMidinotes = pad.collect { |interval| key + interval };
     };
 
     newMidinotes = newMidinotes.collect { |note, i|
@@ -381,15 +380,15 @@ Sx {
       note + (oct * 12);
     };
 
-    if (chord.isKindOf(Symbol) and: lastChord.isKindOf(Symbol)) {
-      if (chord == lastChord) {
+    if (pad.isKindOf(Symbol) and: lastPad.isKindOf(Symbol)) {
+      if (pad == lastPad) {
         shouldScramble = true;
       };
     };
 
-    if (chord.isKindOf(Array) and: lastChord.isKindOf(Array)) {
-      if (chord.size == lastChord.size) {
-        if (chord.sort == lastChord.sort) {
+    if (pad.isKindOf(Array) and: lastPad.isKindOf(Array)) {
+      if (pad.size == lastPad.size) {
+        if (pad.sort == lastPad.sort) {
           shouldScramble = true;
         };
       };
@@ -403,7 +402,7 @@ Sx {
     minSize = min(oldSize, newSize);
 
     minSize.do { |i|
-      chordSynths[i].set(\midinote, newMidinotes[i], \lag, lag);
+      padSynths[i].set(\midinote, newMidinotes[i], \lag, lag);
     };
 
     if (newSize > oldSize) {
@@ -413,34 +412,34 @@ Sx {
         var synthAmp = (event[\amp] ?? 1) / (idx + 1).sqrt;
         var wavePairs = this.prGenerateWave(event[\wave] ?? \saw);
         var newSynth = Synth(\sx, [
-          \seq, 0,
-          \midinote, midinote,
           \amp, synthAmp,
           \atk, event[\atk] ?? 5,
+          \midinote, midinote,
           \rel, event[\rel] ?? 3,
+          \seq, 0,
           \vcf, event[\vcf] ?? 1,
         ] ++ wavePairs);
-        chordSynths = chordSynths.add(newSynth);
+        padSynths = padSynths.add(newSynth);
       };
     } {
       if (newSize < oldSize) {
         var relTime = event[\rel] ?? 3;
         (oldSize - newSize).do { |i|
           var idx = newSize + i;
-          chordSynths[idx].set(\gate, 0, \rel, relTime);
+          padSynths[idx].set(\gate, 0, \rel, relTime);
         };
-        chordSynths = chordSynths[0..newSize-1];
+        padSynths = padSynths[0..newSize-1];
       };
     };
 
     last = event.copy;
   }
 
-  *prFreeChordSynths { |releaseTime|
-    chordSynths.do { |synth|
+  *prFreePadSynths { |releaseTime|
+    padSynths.do { |synth|
       synth.set(\gate, 0, \rel, releaseTime ?? 3);
     };
 
-    chordSynths = [];
+    padSynths = [];
   }
 }

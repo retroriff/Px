@@ -33,7 +33,7 @@ SynthDef(\sx, {
   freqDirect = midinote.midicps;
 
   // Frequency selection
-  freq = Select.ar(seq, [freqDirect, freqSeq]);
+  freq = Select.ar(seq, [K2A.ar(freqDirect), freqSeq]);
   freq = freq * Rand(-0.1, 0.1).midiratio;
   freq = freq.lag2(lag);
 

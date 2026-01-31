@@ -44,10 +44,6 @@ Nx {
 	  ^currentChord[\intervals];
   }
 
-  *key {
-    ^currentChord[\key];
-  }
-
   *loadChords {
     var tonicsPath, chordsPath;
 
@@ -69,7 +65,7 @@ Nx {
   }
 
   *midinotes { |octaveArg|
-    var key = currentChord[\key];
+    var rootNote = currentChord[\root];
     var intervals = currentChord[\intervals];
     var octaveOffset, targetOctave;
 
@@ -83,7 +79,7 @@ Nx {
     targetOctave = octaveArg ?? octave;
     octaveOffset = (targetOctave - defaultOctave) * 12;
 
-    ^intervals.collect { |interval| key + interval + octaveOffset };
+    ^intervals.collect { |interval| rootNote + interval + octaveOffset };
   }
 
   *root {
@@ -127,7 +123,6 @@ Nx {
 
     // Combine into current chord
     combinedChord = Dictionary.new;
-    combinedChord[\key] = tonicData[\key];
     combinedChord[\root] = tonicData[\root];
     combinedChord[\degree] = qualityData[\degree];
     combinedChord[\intervals] = qualityData[\intervals];

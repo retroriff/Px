@@ -15,7 +15,7 @@ Nx.set(\Em7);
 // Get chord properties
 Nx.degrees;    // scale degrees
 Nx.intervals;  // intervals
-Nx.key;        // root MIDI note
+Nx.root;       // root MIDI note
 Nx.midinotes;  // all MIDI notes
 Nx.scale;      // scale type (\major, \minor, etc.)
 
@@ -109,14 +109,6 @@ Nx.set(\Em7);
 Nx.degrees;  // -> [0, 2, 4, 6]
 ::
 
-method:: key
-Returns the root MIDI note number of the current chord.
-
-code::
-Nx.set(\Em);
-Nx.key;  // -> 52
-::
-
 method:: midinotes
 Returns all MIDI notes of the current chord, optionally transposed to a different octave.
 
@@ -143,11 +135,11 @@ Nx.chord;  // -> \Am7
 ::
 
 method:: root
-Returns the root note index (0-11) of the current chord.
+Returns the root MIDI note number of the current chord.
 
 code::
 Nx.set(\Em);
-Nx.root;  // -> 4 (E)
+Nx.root;  // -> 52
 ::
 
 method:: scale

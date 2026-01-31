@@ -1,3 +1,17 @@
+// Sx can be played as a sequenced synth:
+
+Sx((
+    degree: [0, 2, 4, 5],
+    dur: 1/4,
+    wave: \saw
+));
+
+// Or as a pad synth:
+Sx((
+    pad: [0, 2, 4, 5],
+    wave: \saw
+));
+
 // We can send arguments to the \sx nodeproxy synth:
 (
 Sx(

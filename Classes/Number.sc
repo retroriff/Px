@@ -5,13 +5,7 @@
 
   amp { |value|
     var pairs = this.prCreatePatternFromArray(\amp, value);
-    ^PxDebouncer.wrap(this).enqueue(pairs)
-  }
-
-  args { |value|
-    if (value.class == Event) {
-      ^PxDebouncer.wrap(this).enqueue(value.asPairs);
-    }
+    ^PxDebouncer(this).enqueue(pairs)
   }
 
   beat { |value|
@@ -24,7 +18,7 @@
     { pairs = [\beat, true, \beatSet, value] }
     { this.prRemoveBeatSetWhenSet };
 
-    ^PxDebouncer.wrap(this).enqueue(pairs)
+    ^PxDebouncer(this).enqueue(pairs)
   }
 
   doesNotUnderstand { |selector, args|
@@ -46,18 +40,18 @@
     allEventKeys = (allEventKeys ++ synthDefControlNames).asArray.flat ++ customMethods;
 
     if (allEventKeys.includes(selector))
-    { ^PxDebouncer.wrap(this).enqueue([selector, args]) }
+    { ^PxDebouncer(this).enqueue([selector, args]) }
     { ("🔴 Method not understood:" + selector).postln };
   }
 
   dur { |value|
-    ^PxDebouncer.wrap(this).enqueue([\dur, value])
+    ^PxDebouncer(this).enqueue([\dur, value])
   }
 
   euclid { |value|
     var hits = value[0];
     var total = value[1];
-    ^PxDebouncer.wrap(this).enqueue([\euclid, [hits, total]]);
+    ^PxDebouncer(this).enqueue([\euclid, [hits, total]]);
   }
 
   fade { |value|
@@ -66,7 +60,7 @@
 
   fill { |value|
     var pairs = [\fill, true, \weight, value];
-    ^PxDebouncer.wrap(this).enqueue(pairs)
+    ^PxDebouncer(this).enqueue(pairs)
   }
 
   gui { |value|
@@ -81,7 +75,7 @@
 
   human { |delay|
     delay = delay ?? 0.1;
-    ^PxDebouncer.wrap(this).enqueue([\human, delay.clip(0, 1)])
+    ^PxDebouncer(this).enqueue([\human, delay.clip(0, 1)])
   }
 
   i { |value|
@@ -97,7 +91,7 @@
   }
 
   off { |value|
-    ^PxDebouncer.wrap(this).enqueue([\timingOffset, value])
+    ^PxDebouncer(this).enqueue([\timingOffset, value])
   }
 
   loop { |value|
@@ -106,7 +100,7 @@
 
   out { |value|
     if (value.class == Bus)
-    { ^PxDebouncer.wrap(this).enqueue([\out, value]) }
+    { ^PxDebouncer(this).enqueue([\out, value]) }
     { this.prFade(\out, value) };
   }
 
@@ -115,11 +109,11 @@
   }
 
   rest { |value|
-    ^PxDebouncer.wrap(this).enqueue([\rest, value])
+    ^PxDebouncer(this).enqueue([\rest, value])
   }
 
   seed { |value|
-    ^PxDebouncer.wrap(this).enqueue([\seed, value])
+    ^PxDebouncer(this).enqueue([\seed, value])
   }
 
   set { |setId|
@@ -144,27 +138,27 @@
 
   solo { |value|
     var isSolo = value != 0;
-    ^PxDebouncer.wrap(this).enqueue([\solo, isSolo]);
+    ^PxDebouncer(this).enqueue([\solo, isSolo]);
   }
 
   weight { |value|
-    ^PxDebouncer.wrap(this).enqueue([\weight, value.clip(0, 1)]);
+    ^PxDebouncer(this).enqueue([\weight, value.clip(0, 1)]);
   }
 
   // 303 SynthDef methods with arrays to be patterns
   ctf { |value|
     var pairs = this.prCreatePatternFromArray(\ctf, value);
-    ^PxDebouncer.wrap(this).enqueue(pairs)
+    ^PxDebouncer(this).enqueue(pairs)
   }
 
   env { |value|
     var pairs = this.prCreatePatternFromArray(\env, value);
-    ^PxDebouncer.wrap(this).enqueue(pairs)
+    ^PxDebouncer(this).enqueue(pairs)
   }
 
   res { |value|
     var pairs = this.prCreatePatternFromArray(\res, value);
-    ^PxDebouncer.wrap(this).enqueue(pairs)
+    ^PxDebouncer(this).enqueue(pairs)
   }
 
   // Functions
@@ -316,7 +310,7 @@
     { fade = direction }
     { fade = [direction, time.clip(0.1, time)] };
 
-    ^PxDebouncer.wrap(this).enqueue([\fade, fade]);
+    ^PxDebouncer(this).enqueue([\fade, fade]);
   }
 
 prPlay { |i, play, loop|
@@ -333,7 +327,7 @@ prPlay { |i, play, loop|
     { newPattern.putAll([\file, this.prExtractSufix(i)]) };
 
     Px.patternState = newPattern;
-    ^PxDebouncer.wrap(this);
+    ^PxDebouncer(this);
   }
 
   prPlayClass { |newPattern|

@@ -36,14 +36,6 @@ PxDebouncer {
     ^this
   }
 
-  *wrap { |obj|
-    // If obj is already a wrapper, return it
-    obj.isKindOf(this).if { ^obj };
-
-    // Otherwise create wrapper
-    ^this.new(obj)
-  }
-
   doesNotUnderstand { |selector, args|
     var pair;
 

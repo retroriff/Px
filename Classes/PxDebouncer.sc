@@ -14,10 +14,10 @@ PxDebouncer {
   }
 
   commit {
-    if (pending.notEmpty) {
-      original.prUpdatePattern(pending.flat);
-      pending.clear;
-    };
+    var pairs = [];
+    pending.do { |p| pairs = pairs ++ p };
+    original.prUpdatePattern(pairs);
+    pending.clear;
   }
 
   enqueue { |pair|

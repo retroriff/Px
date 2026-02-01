@@ -33,7 +33,7 @@ PxDebouncer {
       });
     };
 
-    // ^this
+    ^this
   }
 
   *wrap { |obj|
@@ -53,7 +53,7 @@ PxDebouncer {
       pair = [selector, args];
     };
 
-    this.enqueue(pair);
+    ^this.enqueue(pair);
   }
 
   printOn { |stream|

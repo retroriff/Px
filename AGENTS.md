@@ -22,6 +22,7 @@
 3. **`Classes/*.sc`** - Source code to modify
    - `Classes/Number.sc` - Integer method extensions (DSL entry point)
    - `Classes/Px.sc` - Base pattern generator
+   - `Classes/PxDebouncer.sc` - Internal class that batches method chain calls into a single pattern update
    - `Classes/Fx.sc` - Effects handler
    - `Classes/Dx.sc` - Drum machines
    - `Classes/Nx.sc` - Musical chord data manager

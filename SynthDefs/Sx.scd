@@ -2,7 +2,7 @@
 ~sxBus = Bus.audio(s, 2);
 
 SynthDef(\sx, {
-  var chord, chordActive, chordSeq, deg, degreeFix, env, envPad, freq, freqDirect, freqSeq, outChord, outMono, sig = 0, sigMono, trig, vcf;
+  var chordActive, chordSeq, deg, degreeFix, env, envPad, freq, freqDirect, freqSeq, outChord, outMono, sig = 0, sigMono, trig, vcf;
   var atk = \atk.kr(0.01);
   var chord = \chord.kr([0, 0, 0, 0]);
   var degree = \degree.kr(0 ! 256);
@@ -66,11 +66,6 @@ SynthDef(\sx, {
 
   outMono = Pan2.ar(sigMono * env * \amp.kr(1) * 0.25, \pan.kr(0));
   outChord = Pan2.ar(sig * env * \amp.kr(1) * 0.25, \pan.kr(0));
-
-  sigMono.poll(label: "mono");     // Should print 1 value
-  sig.poll(label: "sig");          // Before output mixing - prints 4 values
-  outMono.poll(label: "outMono");  // Prints 2 values (stereo)
-  outChord.poll(label: "outChord"); // Prints 8 values (4 stereo pairs)
 
   sig = (outMono * (1 - chordSeq)) + (outChord * chordSeq);
   Out.ar(~sxBus, sig);

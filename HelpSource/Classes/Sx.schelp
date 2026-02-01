@@ -1,0 +1,310 @@
+class:: Sx
+summary:: A Sequenced Polyphonic Synthesizer
+categories:: Live Coding, Synthesis
+related:: Classes/Px, Classes/Fx, Classes/Ndef
+
+description::
+The Sx class is a single-instance polyphonic synthesizer with a built-in sequencer. Unlike Px which creates multiple pattern instances, Sx plays a single synth with parameters that can be modified in real-time using the set method.
+
+Sx is designed for melodic sequences where you want direct control over a synthesizer's parameters without creating new pattern instances each time. It wraps a custom SynthDef with a demand-rate sequencer and outputs through an Ndef for effects processing.
+
+Sx can be played as a sequenced synth using scale degrees, or as a pad synth with chord voicings. It supports real-time parameter changes with optional lag and quantization to the beat grid.
+
+Before using Sx, the synth definition must be loaded:
+code::
+Sx.loadSynth;
+::
+
+subsection:: Basic Usage
+
+code::
+// Create and play a simple sequence
+Sx((
+    degree: [0, 2, 4, 5],
+    dur: 1/4,
+    wave: \saw
+));
+
+// Or play a pad synth:
+Sx((
+    pad: [0, 2, 4, 5],
+    wave: \saw
+));
+
+// Modify parameters in real-time
+Sx.set(\wave, \pulse);
+Sx.set(\pad, [0, 3, 5]);
+
+// Stop with fade out
+Sx.release(5);
+::
+
+subsection:: Default Event
+
+The following parameters have default values if not specified:
+
+code::
+(
+    amp: 1,
+    chord: [0],
+    degree: [0],
+    dur: [1],
+    env: 0,
+    octave: [0],
+    root: 0,
+    scale: \scriabin,
+    vcf: 1,
+    wave: \saw
+)
+::
+
+ClassMethods::
+
+method:: new
+Creates a new Sx instance and starts playback. If Sx is already playing, updates the parameters.
+
+argument:: event
+An Event containing synthesis parameters. All keys from the default event are supported.
+
+argument:: fadeTime
+Optional fade-in time in seconds for the Ndef.
+
+code::
+Sx((
+    amp: 1,
+    degree: [0, 1, 2, 3],
+    dur: 1/4,
+    env: 1,
+    octave: [0, 0, 0, 1],
+    root: 0,
+    scale: \dorian,
+    vcf: 1,
+    wave: \saw
+));
+::
+
+method:: clear
+Resets the Sx class to its initial state, reinitializing all class variables.
+
+method:: loadSynth
+Loads the Sx SynthDef from the SynthDefs/Sx.scd file. This must be called before using Sx.
+
+code::
+Sx.loadSynth;
+::
+
+method:: play
+Starts or resumes playback of the Sx synth. Creates the synth if it doesn't exist and plays through Ndef(\sx).
+
+argument:: fadeTime
+Optional fade-in time in seconds.
+
+method:: qset
+Quantized set - schedules parameter changes to occur on the next beat grid (quantized to 4 beats).
+
+argument:: key
+The parameter name as a Symbol.
+
+argument:: value
+The new value for the parameter.
+
+argument:: lag
+Optional lag time for smooth transitions.
+
+code::
+Sx.qset(\pad, [0, 4, 7]);
+::
+
+method:: release
+Fades out and frees the synth.
+
+argument:: fadeTime
+Duration of the fade-out in seconds. Default is 10.
+
+code::
+Sx.release(5);
+::
+
+method:: set
+Sets a parameter value with optional lag and quantization.
+
+argument:: key
+The parameter name as a Symbol.
+
+argument:: value
+The new value for the parameter.
+
+argument:: lag
+Optional lag time (0-5 seconds) for smooth parameter transitions.
+
+argument:: quant
+If true, changes are quantized to the beat grid.
+
+code::
+// Immediate change
+Sx.set(\wave, \pulse);
+
+// Change with lag (smooth transition)
+Sx.set(\pad, [0, 3, 5], 1);
+
+// Using shuffle for randomized sequences
+Sx.set(\degree, [0, 1, 2, 3].shuffle(71));
+::
+
+method:: stop
+Stops the Ndef playback.
+
+argument:: fadeTime
+Optional fade-out time in seconds.
+
+method:: tempo
+Sets the tempo for the internal sequencer. When set, overrides the TempoClock.default.tempo.
+
+argument:: tempo
+The tempo value (beats per second, not BPM).
+
+method:: vol
+Gets or sets the volume of the Ndef.
+
+argument:: value
+If nil, prints current volume. Otherwise sets the volume (0-1 range).
+
+code::
+Sx.vol;      // prints current volume
+Sx.vol(0.5); // sets volume to 0.5
+::
+
+method:: last
+Returns the last event that was passed to Sx, useful for inspecting current state.
+
+code::
+Sx.last;
+::
+
+method:: defaultEvent
+Returns the default event dictionary containing all default parameter values.
+
+method:: defaultScale
+Returns the default scale symbol (\scriabin).
+
+method:: waveList
+Returns an array of available waveform symbols: [\pulse, \saw, \sine, \triangle].
+
+subsection:: Event Parameters
+
+The following parameters can be set in the event or via the set method:
+
+definitionlist::
+## amp
+|| Amplitude/volume of the synth (0-1 range). Default: 1
+
+## degree
+|| Array of scale degrees for the sequence. Default: [0]. Combined with octave for the full melodic pattern.
+code::
+Sx.set(\degree, [0, 2, 4, 5, 7]);
+::
+
+## dur
+|| Array of durations for the sequence. Default: [1]. Supports Euclidean rhythms via the euclid parameter.
+code::
+Sx.set(\dur, [1/4, 1/8, 1/8]);
+::
+
+## env
+|| Envelope toggle. 0 = sustained (no envelope), 1 = percussive envelope. Default: 0
+
+## euclid
+|| Generates Euclidean rhythm patterns. Expects [hits, steps] array.
+code::
+Sx((euclid: [3, 8])); // 3 hits distributed over 8 steps
+::
+
+## octave
+|| Array of octave transpositions (-2 to 2 range). Combined with degree for the melodic sequence. Default: [0]
+code::
+Sx.set(\octave, [0, 0, 1, -1]);
+::
+
+## pad
+|| Chord symbol or array of intervals to play pad chords.
+code::
+Sx.set(\pad, \Am);       // A minor chord
+Sx.set(\pad, [0, 2, 4]); // Major triad
+Sx.set(\pad, [0, 3, 7]); // Minor triad
+::
+
+## root
+|| Root note transposition in semitones (-12 to 12 range). Default: 0
+
+## scale
+|| Scale symbol for pitch mapping. Default: \scriabin. Use \default to reset.
+code::
+Sx.set(\scale, \dorian);
+Sx.set(\scale, \minor);
+::
+
+## vcf
+|| Filter toggle. 0 = bypass filter, 1 = enable MoogFF filter (controlled by MouseX). Default: 1
+
+## wave
+|| Waveform selection. Available: \pulse, \saw, \sine, \triangle. Default: \saw
+code::
+Sx.set(\wave, \pulse);
+Sx.set(\wave, \triangle);
+::
+::
+
+examples::
+
+code::
+// Load the synth first
+Sx.loadSynth;
+
+// Basic melodic sequence
+Sx((
+    degree: [0, 2, 4, 5, 7],
+    dur: 1/4,
+    scale: \minor
+));
+
+// Add chord voicing
+Sx.set(\chord, [0, 4, 7]);
+
+// Change waveform with smooth transition
+Sx.set(\wave, \pulse);
+Sx.set(\chord, [0, 3, 5], 1);
+
+// Euclidean rhythm
+Sx((
+    degree: [0, 3, 5, 7],
+    dur: 0.25,
+    euclid: [5, 8],
+    env: 1
+));
+
+// Complex sequence with octave variation
+Sx((
+    amp: 0.8,
+    degree: [0, 1, 2, 3, 4, 5, 6, 7],
+    dur: 1/8,
+    env: 1,
+    octave: [0, 0, 0, 1, 0, 0, -1, 0],
+    scale: \dorian,
+    wave: \saw
+));
+
+// Randomized sequence using shuffle with seed
+Sx.set(\degree, [0, 2, 4, 5, 7].shuffle(42));
+
+// Check current state
+Sx.last;
+
+// Quantized changes (on next beat grid)
+Sx.qset(\pad, [0, 5, 9]);
+
+// Volume control
+Sx.vol(0.7);
+
+// Stop with fade out
+Sx.release(8);
+::

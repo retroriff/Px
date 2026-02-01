@@ -14,7 +14,7 @@ Dx : Px {
 
   *initClass {
     drumMachine = 808;
-    dxAmp = 0.5;
+    dxAmp = 0.1;
 
     fx = Dictionary.new;
     instrumentFolders = Dictionary.new;
@@ -294,7 +294,7 @@ Dx : Px {
     var fade = [direction, fadeTime.clip(0.1, fadeTime)];
 
     last do: { |pattern|
-      if (pattern['drumMachine'] == drumMachine) {
+      if (pattern[\drumMachine] == drumMachine) {
         pattern.putAll([\fade, fade, direction, fadeTime]);
         super.new(pattern);
       };

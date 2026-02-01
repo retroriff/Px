@@ -1,75 +1,314 @@
 class:: Fx
-summary:: A Nodeproxy Effects Handler
+summary:: A NodeProxy Effects Handler
 categories:: JITLib>NodeProxy, Live Coding
-related:: Classes/Nodeproxy, Reference/NodeProxy_roles
+related:: Classes/Px, Classes/Sx, Classes/Ndef, Reference/NodeProxy_roles
 
 description::
-The Fx class facilitates the addition of effects to the link::Classes/Px:: set classes, as well as to any other Ndef.
+The Fx class facilitates the addition of audio effects to the link::Classes/Px:: pattern system and any other Ndef. Effects are applied as NodeProxy filter slots, allowing multiple effects to be chained and mixed.
 
-These are the available effects:
+subsection:: Basic Usage
 
 code::
-Fx(\test).delay(mix: 0.3, delaytime: 8, decaytime: 2);  
-Fx(\test).flanger(mix: 0.3);
-Fx(\test).gverb(mix: 0.4, roomsize: 200, revtime: 5);
-Fx(\test).hpf(mix: 0.3, freq: \wave);
-Fx(\test).lpf(mix: 0.3, freq: \wave);
-Fx(\test).pan(pos: 0);
-Fx(\test).reverb(mix: 0.3, room: 0.7, damp: 0.7);
-Fx(\test).space(mix: 0.3, fb: 0.95);
-Fx(\test).vst(mix: 0.3, plugin: "ValhallaFreqEcho");
+// Apply effects to the main Px output
+Fx(\px).reverb(0.5);
+Fx(\px).delay(0.3);
+
+// Chain multiple effects
+Fx(\px).reverb(0.3).hpf(0.5);
+
+// Remove an effect (pass Nil)
+Fx(\px).reverb(Nil);
+
+// Clear all effects
+Fx.clear;
+::
+
+subsection:: Using with Any Ndef
+
+code::
+// Create any Ndef
+Ndef(\x, { SinOsc.ar([200, 201]) }).play;
+
+// Apply effects
+Fx(\x).reverb(0.5);
+Fx(\x).delay(0.3);
 ::
 
 ClassMethods::
 
-METHOD:: clear
-Clear all active effects and reset all FX dictionaries.
+method:: new
+Initializes the Fx controller for a specific proxy.
 
-METHOD:: loadEffects
-Read FX files. It reloads the FX after editing them.
-
-METHOD:: setVstPresetsPath
-Used to define the directory where VST plugin presets are stored.
-
-argument:: path
-An absolute path
-
-METHOD:: vst
-Load a VST plugin and use it as a Nodeproxy filter:
-
-argument:: mix
-The dry/wet mix of the effect, ranging from `0` (completely dry) to `1` (completely wet).
-
-argument:: plugin
-The name of the VST plugin to load.
-
-METHOD:: vstReadProgram
-Loads a VST preset from the default presets folder
-
-argument:: preset
-Preset name as a symbol
-
-subsection:: VST plugins
-The  strong::vstController:: classVar is a shortcut for link::Classes/VSTPluginNodeProxyController::, so we can add its same methods.
-
-Examples::
+argument:: name
+The proxy name as a Symbol. Defaults to \px.
 
 code::
-// Load all presets
-Fx.setVstPresetsPath("../VST/presets/".resolveRelative);
+Fx(\px).reverb(0.5);
+Fx(\myNdef).delay(0.3);
+::
 
-// Load a VST plugin
-Fx(\test).vst(0.3, "ValhallaFreqEcho");
+subsection:: Effects
 
-// Set plugin parameters.
-Fx.vstController.set(1, 0.1);
+method:: blp
+Band-limited low-pass filter with tempo-synced modulation.
 
-// Set a preset
-Fx(\test).vstReadProgram(\mdosc);
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
 
-// Save a preset
-Fx(\test).vstWriteProgram(\mdosc2);
+code::
+Fx(\px).blp(0.6);
+::
 
-// Opens the VST editor for the given VST plugin.
+method:: delay
+Delay effect with tempo-synced delay time.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
+
+argument:: delaytime
+Delay time in beats. Default: 8.
+
+argument:: decaytime
+Decay time in seconds. Default: 2.
+
+code::
+Fx(\px).delay(0.3, 4, 3);
+::
+
+method:: flanger
+Classic flanger effect with feedback and modulated delay.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
+
+code::
+Fx(\px).flanger(0.5);
+::
+
+method:: gverb
+GVerb algorithmic reverb with adjustable room size.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
+
+argument:: roomsize
+Room size in meters. Default: 200.
+
+argument:: revtime
+Reverb time in seconds. Default: 5.
+
+code::
+Fx(\px).gverb(0.4, 100, 3);
+::
+
+method:: hpf
+Resonant high-pass filter.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 1.
+
+argument:: freq
+Cutoff frequency in Hz, or \wave for LFO modulation. Default: 1200.
+
+code::
+Fx(\px).hpf(1, 800);
+Fx(\px).hpf(1, \wave);  // LFO modulated
+::
+
+method:: lpf
+Resonant low-pass filter.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
+
+argument:: freq
+Cutoff frequency in Hz, or \wave for LFO modulation. Default: 200.
+
+code::
+Fx(\px).lpf(0.5, 400);
+Fx(\px).lpf(0.5, \wave);  // LFO modulated
+::
+
+method:: pan
+Stereo panning control.
+
+argument:: pos
+Pan position from -1 (left) to 1 (right), or \wave for LFO modulation. Default: 0.
+
+code::
+Fx(\px).pan(-0.5);       // Pan left
+Fx(\px).pan(\wave);      // Auto-pan with LFO
+::
+
+method:: reverb
+FreeVerb reverb with room and damping controls.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.3.
+
+argument:: room
+Room size (0-1). Default: 0.7.
+
+argument:: damp
+High frequency damping (0-1). Default: 0.7.
+
+code::
+Fx(\px).reverb(0.5, 0.8, 0.5);
+::
+
+method:: space
+Spacious reverb using allpass chains with feedback control. Can sustain infinitely with high feedback values.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
+
+argument:: fb
+Feedback amount (0-0.99). Default: 0.95. Use inf for infinite sustain.
+
+code::
+Fx(\px).space(0.5, 0.9);
+Fx(\px).space(0.9, inf);  // Infinite sustain (use with one-shots)
+::
+
+method:: tremolo
+Amplitude modulation effect with tempo-synced rate.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.6.
+
+argument:: rate
+Rate multiplier (synced to tempo). Default: 1.
+
+code::
+Fx(\px).tremolo(0.5, 2);
+::
+
+subsection:: Management
+
+method:: clear
+Clears all active effects from a proxy or all proxies.
+
+argument:: singleProxy
+Optional proxy name. If omitted, clears all effects from all proxies.
+
+code::
+Fx.clear(\px);   // Clear effects from \px only
+Fx.clear;        // Clear all effects
+::
+
+method:: loadEffects
+Reloads all effect definitions from the Effects/*.scd files. Useful after editing effect files.
+
+code::
+Fx.loadEffects;
+::
+
+subsection:: VST Plugins
+
+method:: vst
+Loads and applies a VST plugin effect.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 1.
+
+argument:: plugin
+VST plugin name as String. Default: "ValhallaFreqEcho".
+
+code::
+Fx(\px).vst(0.5, "ValhallaFreqEcho");
+::
+
+method:: setVstPresetsPath
+Sets the directory path for VST plugin presets.
+
+argument:: path
+Absolute path to the presets directory.
+
+code::
+Fx.setVstPresetsPath("/path/to/VST/presets/");
+::
+
+method:: vstReadProgram
+Loads a VST preset from the presets folder.
+
+argument:: preset
+Preset name as Symbol, or index as Integer.
+
+code::
+Fx.vstReadProgram(\myPreset);
+Fx.vstReadProgram(0);  // Load first preset
+::
+
+method:: vstWriteProgram
+Saves the current VST settings as a preset file.
+
+argument:: preset
+Preset name as Symbol.
+
+code::
+Fx.vstWriteProgram(\myNewPreset);
+::
+
+method:: vstSet
+Sets a VST plugin parameter value.
+
+argument:: param
+Parameter index.
+
+argument:: value
+Parameter value (0-1).
+
+code::
+Fx.vstSet(1, 0.5);
+::
+
+method:: vstController
+Class variable providing access to the VSTPluginNodeProxyController for advanced VST control.
+
+code::
+// Open VST editor GUI
 Fx.vstController.editor;
+
+// Set parameter directly
+Fx.vstController.set(1, 0.9);
+::
+
+examples::
+
+code::
+// Setup a basic pattern
+(
+1 i: \bd dur: 1;
+2 i: \sd dur: 2 off: 1;
+3 i: \hh dur: 0.25 beat: 0.7;
+)
+
+// Add effects to the main output
+Fx(\px).reverb(0.3);
+Fx(\px).delay(0.2, 4);
+
+// Chain effects
+Fx(\px).hpf(0.5, \wave).flanger(0.3);
+
+// Use space for ambient textures
+(
+1 play: ["ambient", 0];
+Fx(\px).space(0.9, 0.98);
+)
+
+// Remove specific effect
+Fx(\px).reverb(Nil);
+
+// Clear all effects
+Fx.clear;
+
+// VST plugin workflow
+Fx.setVstPresetsPath("../VST/presets/".resolveRelative);
+Fx(\px).vst(0.4, "ValhallaFreqEcho");
+Fx.vstController.editor;
+Fx.vstReadProgram(\myPreset);
+Fx.vstWriteProgram(\myPreset2);
+
+// Stop patterns
+Px.stop;
 ::

@@ -18,11 +18,11 @@ Additional code examples can be found [here](/Examples/).
 2. ✨ [Fx: A Nodeproxy Effects Handler](#-fx-a-nodeproxy-effects-handler)
 3. 🛢️ [Dx: Drum Machines](#%EF%B8%8F-drum-machines)
 4. 🌊 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
-5. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
-6. 📡 [OSC Communication](#-osc-communication)
-7. 🎚️ [Crossfader](#%EF%B8%8F-crossfader)
-8. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#%EF%B8%8F-tr08-a-roland-tr-08-midi-controller)
-9. ✅ [Unit Tests](#-unit-tests)
+5. 🎹 [Nx: Musical Chord Data](#-nx-musical-chord-data)
+6. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
+7. 📡 [OSC Communication](#-osc-communication)
+8. 🎚️ [Crossfader](#%EF%B8%8F-crossfader)
+9. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#%EF%B8%8F-tr08-a-roland-tr-08-midi-controller)
 
 ## 🛠️ Installation
 
@@ -54,23 +54,22 @@ The superclass that generates the patterns from an array of events with a simpli
 | Name     | Arguments                                         | Description                                                                                                                                                                                  |
 | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `amp`    | number \| number[] \| Pattern                     | Amplification. An array generates a Pseq                                                                                                                                                     |
-| `args`   | Event                                             | Additional args                                                                                                                                                                              |
 | `beat`   | weight: range 0..1                                | Generates a random rhythm, or own rhythym defined by set                                                                                                                                     |
 | `dur`    | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
 | `euclid` | [hits: number, total: number]                     | Generates an Euclidian rhythm                                                                                                                                                                |
 | `fill`   | weight: range 0..1                                | Fills the rests gap of its previous sequential pattern                                                                                                                                       |
-| `gui`    | 1 (open) \| 0 (close)                             | Open or refresh a patterns gui window. A 0 value closes the window. pattern                                                                                                                  |
+| `gui`    | nil (open or update) \| 0 (close)                 | Open or refresh a patterns gui window. A 0 value closes the window. pattern                                                                                                                  |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
-| `in`     | seconds: integer                                  | Fades in the pattern. Same as `fade: \in` "in")                                                                                                                                              |
+| `in`     | seconds: integer                                  | Fades in the pattern.                                                                                                                                                                        |
 | `off`    | beats: integer                                    | Offset value                                                                                                                                                                                 |
-| `out`    | seconds: integer                                  | Fades out the pattern. Same as `fade: \out`                                                                                                                                                  |
+| `out`    | seconds: integer                                  | Fades out the pattern.                                                                                                                                                                       |
 | `pan`    | range -1..1 \| \rand \| \rotate \| Pattern        | A pan controller                                                                                                                                                                             |
 | `r`      | number \| \rand \| [\wrand, item1, item2, weight] | Rate value. The term rate was discarded because it was an existing Integer method                                                                                                            |
 | `rest`   | beats: integer                                    | Rests muted for a specific amount of beats                                                                                                                                                   |
-| `rotate` | 1 (enable)                                        | Creates a back-and-forth pan rotation between left and right channels                                                                                                                        |
 | `seed`   | seed: integer \| symbol \| \rand                  | Generate a specific random seed or a `Pxrand` using `\rand`                                                                                                                                  |
 | `set`    | 1 (enable)                                        | Allows to add more pairs to an existing pattern when `i`, `loop` and `play` are not present. When we use drum machines, the value must be the instrument.                                    |
 | `solo`   | 1 (enable)                                        | Mutes all patterns that don't contain a solo method                                                                                                                                          |
+| `unsolo` | None                                              | Restore all patterns that have been muted by solo method                                                                                                                                     |
 | `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
 | `weight` | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
@@ -107,7 +106,7 @@ The superclass that generates the patterns from an array of events with a simpli
 - `root`: Sets a global root note to all patterns.
 - `save`: Saves a chorus.
 - `seed`: Sets a global seed for all patterns.
-- `shuffle`: Generates new random seeds.
+- `shuffle` (id: symbol): Generates a new random seed for a pattern, or all patterns when id is not provided.
 - `stop`: Stops all patterns. It can stop specific patterns if a single id or an array of ids is provided.
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
 - `tempo` (bpm: nil | number): Sets the tempo if bpm is given; returns current tempo if nil.
@@ -236,7 +235,6 @@ A class designed for controlling a synthesizer equipped with a built-in sequence
 Sx(
     (
         amp: 1,
-        chord: [0, 2, 4],
         dur: 1/4,
         euclid: [3, 5],
         degree: [0, 1, 2, 3],
@@ -256,6 +254,41 @@ The synth must be previously loaded with `Sx.loadSynth`.
 We can update args independently: `Sx.set(\amp, 0.5, lag: 0)`
 
 **Tip**: The `shuffle` array method provides the capability to specify a random seed for the scramble method.
+
+## 🎹 Nx: Musical Chord Data
+
+A class for managing musical chord data. It dynamically builds chords by combining tonics (root notes) with chord qualities (intervals/scales). Supports octave transposition.
+
+```js
+Nx.set(\EmAdd9);
+Nx.midinotes;    // -> [52, 55, 59, 66] (octave 3)
+Nx.degrees;      // -> [0, 2, 4, 7]
+Nx.scale;        // -> \minor
+
+// Work with octaves
+Nx.midinotes(4); // -> [64, 67, 71, 78] (octave 4, temporary)
+Nx.octave = 5;
+Nx.midinotes;    // -> [76, 79, 83, 90] (octave 5, permanent)
+```
+
+Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (chord qualities).
+
+### Nx class methods
+
+| Name             | Arguments                   | Returns    | Description                                         |
+| ---------------- | --------------------------- | ---------- | --------------------------------------------------- |
+| `chord`          | None                        | Symbol     | Returns current chord name                          |
+| `chordQualities` | None                        | Dictionary | Returns all loaded chord qualities                  |
+| `degrees`        | None                        | Array      | Returns scale degrees array                         |
+| `key`            | None                        | Integer    | Returns MIDI key (base note)                        |
+| `loadChords`     | None                        | None       | Reloads chord data from `Score/`                    |
+| `midinotes`      | octave?: Integer (-1 to 9)  | Array      | Returns MIDI notes, optionally transposed           |
+| `octave`         | None                        | Integer    | Gets/sets current octave (default: 3, range: -1..9) |
+| `root`           | None                        | Integer    | Returns root value (pitch class 0-11)               |
+| `scale`          | None                        | Symbol     | Returns scale symbol                                |
+| `set`            | chord: Symbol, octave?: Int | None       | Sets current chord, optionally changes octave       |
+| `shuffle`        | tonic?: Symbol, scale?: Sym | None       | Randomly selects a chord with optional filters      |
+| `tonics`         | None                        | Dictionary | Returns all loaded tonics (root notes)              |
 
 ## 📡 OSC Communication
 
@@ -328,20 +361,3 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | `loadPresets` | None                           | Reloads presets from YAML files      |
 | `preset`      | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
 | `stop`        | None                           | Same as `\808 i: \all`               |
-
-## ✅ Unit Tests
-
-```js
-// Runs all tests
-TestAll.run
-
-// Individual tests:
-TestPxArray.run
-TestPxEvent.run
-TestPx.run
-TestFx.run
-TestSx.run
-
-// Disables passing tests verbosity
-UnitTest.reportPasses = false
-```

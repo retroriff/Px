@@ -118,11 +118,6 @@
     ^PxDebouncer.wrap(this).enqueue([\rest, value])
   }
 
-  rotate { |value|
-    if (value != 0)
-    { this.pan(\rotate) };
-  }
-
   seed { |value|
     ^PxDebouncer.wrap(this).enqueue([\seed, value])
   }
@@ -132,11 +127,11 @@
 
     if (this.prHasDrumMachine and: { setId != true }) {
       var drumMachinePattern = Px.last.detect { |pattern|
-        pattern['drumMachine'].notNil and: (pattern['instrument'] == setId)
+        pattern[\drumMachine].notNil and: (pattern[\instrument] == setId)
       };
 
       var dxPresetPattern = Px.last.detect { |pattern|
-        pattern['id'] == this.asSymbol
+        pattern[\id] == this.asSymbol
       };
 
       var pattern = drumMachinePattern ?? dxPresetPattern;
@@ -266,27 +261,33 @@
   }
 
   prGenerateDrumMachineId { |ins|
+    var drumMachineId = (ins.asString ++ this.asString).asSymbol;
+
     var findExistingPatternForIns = Px.last.detect({ |pattern|
       pattern[\drumMachine] == this and: (pattern[\instrument] == ins);
     });
 
-    var drumMachinesPatternsExcludingIns = Px.last.select({ |pattern|
-      pattern[\drumMachine] == this and: (pattern[\instrument] != ins)
+    if (findExistingPatternForIns.isNil)
+    { ^drumMachineId }
+    { ^findExistingPatternForIns[\id] };
+  }
+
+  prGenerateDrumMachineIntegerId { |drumMachineNumber|
+    var existingPattern = Px.last.detect({ |pattern|
+      pattern[\drumMachine] == drumMachineNumber and: (pattern[\id] == Px.patternState[\id])
     });
 
-    var getMaximumId = drumMachinesPatternsExcludingIns
-    .collect({ |pattern| pattern[\id].asInteger })
-    .maxItem;
+    var existingIds = Px.last
+      .select({ |pattern| pattern[\drumMachine] == drumMachineNumber })
+      .collect({ |pattern| pattern[\drumMachineIntegerId] })
+      .reject(_.isNil);
 
-    var generateNewDrumMachineId = {
-      if (drumMachinesPatternsExcludingIns.isEmpty)
-      { this * 100 + 1 }
-      { getMaximumId + 1 };
-    };
+    if (existingPattern.notNil and: { existingPattern[\drumMachineIntegerId].notNil })
+    { ^existingPattern[\drumMachineIntegerId] };
 
-    if (findExistingPatternForIns.isNil)
-    { ^generateNewDrumMachineId.value.asSymbol }
-    { ^findExistingPatternForIns[\id] };
+    if (existingIds.isEmpty)
+    { ^(drumMachineNumber * 100) + 1 }
+    { ^existingIds.maxItem + 1 };
   }
 
   prExtractSufix { |value|
@@ -335,27 +336,31 @@ prPlay { |i, play, loop|
     ^PxDebouncer.wrap(this);
   }
 
-prPlayClass { |newPattern|
+  prPlayClass { |newPattern|
     var drumMachinePattern = Px.last.detect { |pattern|
-        pattern['id'] == this.asSymbol and: (pattern['drumMachine'].notNil)
+      pattern[\id] == this.asSymbol and: (pattern[\drumMachine].notNil)
     };
 
     Px.patternState = newPattern;
 
     if (drumMachinePattern.notNil) {
-      ^Dx(newPattern.putAll([\drumMachine, drumMachinePattern[\drumMachine]]))
+      newPattern.putAll([
+        \drumMachine, drumMachinePattern[\drumMachine],
+        \drumMachineIntegerId, this.prGenerateDrumMachineIntegerId(drumMachinePattern[\drumMachine])
+      ]);
+      ^Dx(newPattern);
     };
 
     if (this.prHasDrumMachine) {
-      ^Dx(newPattern.putAll([\drumMachine, this]))
-    };
+      newPattern.putAll([
+        \drumMachine, this,
+        \drumMachineIntegerId, this.prGenerateDrumMachineIntegerId(this)
+      ]);
+      ^Dx(newPattern);
+    }
 
-    Px.last.keys.includes(newPattern[\id]).not.if {
-      ^Px(newPattern)
-    };
-
-    ^newPattern;
-}
+    ^Px(newPattern);
+  }
 
   prPreventNonZeroExponential { |curve, value|
     if (curve == \exp and: (value == 0))

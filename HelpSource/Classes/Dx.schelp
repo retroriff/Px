@@ -1,0 +1,343 @@
+class:: Dx
+summary:: Drum Machine Preset Handler
+categories:: Live Coding, Drums
+related:: Classes/Px, Classes/Fx, Classes/Sx
+
+description::
+Dx extends link::Classes/Px:: to provide drum machine functionality with preset patterns loaded from YAML files. It supports classic drum machine emulations and allows switching between different drum machines while maintaining pattern state.
+
+subsection:: Available Drum Machines
+
+The following drum machines are available:
+
+definitionlist::
+## 505
+|| Roland TR-505 emulation
+
+## 606
+|| Roland TR-606 emulation
+
+## 626
+|| Roland TR-626 emulation
+
+## 707
+|| Roland TR-707 emulation
+
+## 727
+|| Roland TR-727 emulation
+
+## 808
+|| Roland TR-808 emulation (default)
+
+## 909
+|| Roland TR-909 emulation
+::
+
+subsection:: Basic Usage
+
+Use the drum machine number as the pattern ID prefix:
+
+code::
+// Manual drum patterns with 808
+808 i: \bd dur: 1;
+808 i: \sd dur: 2 off: 1;
+808 i: \hh dur: 0.25 beat: 0.7;
+
+// Play a 909
+909 i: \bd dur: 1;
+909 i: \sd dur: 2 off: 1;
+
+// Stop all 808 patterns
+\808 i: \all;
+
+// Stop all 909 patterns
+\909 i: \all;
+::
+
+subsection:: Using Presets
+
+code::
+// Load a preset
+Dx.preset(\electro, 2);
+
+// Load with custom amplitude
+Dx.preset(\electro, 2, 0.5);
+
+// Add effects to the preset
+Dx.reverb(0.3);
+Dx.delay(0.2);
+
+// Stop the preset
+Dx.stop;
+::
+
+subsection:: Common Instruments
+
+Most drum machines include these instruments:
+
+definitionlist::
+## bd
+|| Bass drum / Kick
+
+## sd
+|| Snare drum
+
+## hh
+|| Closed hi-hat
+
+## oh
+|| Open hi-hat
+
+## cp
+|| Clap / Handclap
+
+## lt
+|| Low tom
+
+## mt
+|| Mid tom
+
+## ht
+|| High tom
+
+## cy
+|| Cymbal / Crash
+
+## rd
+|| Ride cymbal
+
+## cb
+|| Cowbell
+
+## rs
+|| Rimshot
+
+## ma
+|| Maracas
+
+## cl
+|| Claves
+
+## ss
+|| Snare sidestick
+
+## cr
+|| Crash
+::
+
+ClassMethods::
+
+subsection:: Presets
+
+method:: preset
+Loads and plays a drum machine preset from the YAML files.
+
+argument:: name
+Preset name as Symbol (e.g., \electro, \house, \techno).
+
+argument:: number
+Preset variation number (1-based index).
+
+argument:: amp
+Optional amplitude multiplier. Default: 1.
+
+code::
+Dx.preset(\electro, 1);
+Dx.preset(\electro, 2, 0.5);  // Half volume
+::
+
+method:: loadPresets
+Reloads all drum machine presets from the Presets/yaml/ directory. Call this after editing YAML preset files.
+
+code::
+Dx.loadPresets;
+::
+
+method:: use
+Switches to a different drum machine type. Existing patterns are migrated to the new machine.
+
+argument:: newDrumMachine
+Drum machine number (505, 606, 626, 707, 727, 808, or 909).
+
+code::
+Dx use: 909;  // Switch from 808 to 909
+::
+
+subsection:: Effects
+
+method:: delay
+Applies delay effect to the current preset.
+
+argument:: value
+Wet/dry mix (0-1). Default: 0.3.
+
+code::
+Dx.delay(0.4);
+::
+
+method:: reverb
+Applies reverb effect to the current preset.
+
+argument:: value
+Wet/dry mix (0-1). Default: 0.3.
+
+code::
+Dx.reverb(0.5);
+::
+
+subsection:: Playback Control
+
+method:: play
+Fades in the drum machine preset. Alias for strong::in::.
+
+argument:: fadeTime
+Fade-in duration in beats. Default: 16.
+
+code::
+Dx.play(8);
+::
+
+method:: in
+Fades in the drum machine preset.
+
+argument:: fadeTime
+Fade-in duration in beats. Default: 16.
+
+code::
+Dx.in(16);
+::
+
+method:: out
+Fades out the drum machine preset.
+
+argument:: fadeTime
+Fade-out duration in beats. Default: 16.
+
+code::
+Dx.out(8);
+::
+
+method:: release
+Fades out and releases the drum machine. Alias for strong::out:: with default 10 beats.
+
+argument:: fadeTime
+Fade-out duration in beats. Default: 10.
+
+code::
+Dx.release;
+Dx.release(20);
+::
+
+method:: stop
+Immediately stops all patterns from the current drum machine preset.
+
+code::
+Dx.stop;
+::
+
+subsection:: Volume and Mixing
+
+method:: vol
+Gets or sets the volume for drum machine presets.
+
+argument:: amp
+Amplitude value (0-1). If omitted, prints current volume.
+
+code::
+Dx.vol;       // Print current volume
+Dx.vol(0.5);  // Set volume to 0.5
+::
+
+method:: solo
+Mutes all instruments except the specified ones.
+
+argument:: instruments
+Instrument symbol or symbols to solo.
+
+argument:: ins2
+Optional additional instrument.
+
+argument:: ins3
+Optional additional instrument.
+
+argument:: ins4
+Optional additional instrument.
+
+argument:: ins5
+Optional additional instrument.
+
+code::
+Dx.solo(\bd);              // Solo bass drum only
+Dx.solo(\bd, \sd);         // Solo bass drum and snare
+Dx.solo(\bd, \sd, \hh);    // Solo multiple instruments
+::
+
+subsection:: Utilities
+
+method:: gui
+Opens a GUI window for controlling the drum machine (inherited from Px).
+
+method:: shuffle
+Randomizes beat patterns for instruments using random beat generation (inherited from Px).
+
+code::
+Dx.shuffle;
+::
+
+examples::
+
+code::
+// Manual drum patterns with different machines
+(
+707 i: \bd dur: 1;
+707 i: \sd dur: 2 off: 1;
+707 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 pan: \rotate;
+707 i: \rd dur: 0.25 beat: 0.7 amp: 0.3;
+)
+
+// Stop all 707 patterns
+\707 i: \all;
+
+// Use 909 drum machine
+(
+909 i: \bd dur: 1;
+909 i: \sd dur: 2 off: 1;
+909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4;
+909 i: \rd dur: 0.25 beat: 0.7 amp: 0.3;
+909 i: \cr dur: 16 off: 4;
+)
+
+// Update a drum pattern
+909 set: \bd dur: 0.5;
+
+// Stop 909 patterns
+\909 i: \all;
+
+// Using presets
+Dx.preset(\electro, 2);
+
+// Add effects to preset
+Dx.delay(0.5);
+Dx.reverb(0.5);
+
+// Adjust volume
+Dx.vol(0.7);
+
+// Shuffle beat patterns
+Dx.shuffle;
+
+// Switch drum machine (patterns migrate)
+Dx use: 909;
+
+// Open GUI
+Dx.gui;
+
+// Fade out and stop
+Dx.release(10);
+
+// Or stop immediately
+Dx.stop;
+
+// Reload presets after editing YAML files
+Dx.loadPresets;
+::

@@ -1,0 +1,268 @@
+class:: Nx
+summary:: Musical Chord Data Manager
+categories:: JITLib>NodeProxy, Live Coding
+related:: Classes/Px, Classes/Sx, Classes/Fx
+
+description::
+The Nx class manages musical chord data for the link::Classes/Px:: pattern system. It dynamically builds chords by combining tonics (root notes) with chord qualities (intervals/scales), allowing generation of any chord on-the-fly. The class provides methods to access chord properties like intervals, degrees, scale type, and MIDI notes.
+
+subsection:: Basic Usage
+
+code::
+// Set a specific chord
+Nx.set(\Em7);
+
+// Get chord properties
+Nx.degrees;    // scale degrees
+Nx.intervals;  // intervals
+Nx.root;       // root MIDI note
+Nx.midinotes;  // all MIDI notes
+Nx.scale;      // scale type (\major, \minor, etc.)
+
+// Random chord selection
+Nx.shuffle;                  // any chord
+Nx.shuffle(\E);              // any E chord
+Nx.shuffle(\E, \minor);      // E minor chords
+Nx.shuffle(\E, \major);      // E major chords
+::
+
+ClassMethods::
+
+method:: set
+Sets the current chord by name and optionally changes the octave.
+
+argument:: chordName
+The chord name as a Symbol (e.g., \Em, \Am7, \Cmaj9).
+
+argument:: octave
+Optional octave value (Integer from -1 to 9). If provided, updates the class octave variable. Default octave is 3.
+
+code::
+Nx.set(\EmAdd9);
+Nx.set(\Am7, 4);  // Set Am7 in octave 4
+Nx.set(\E, 5);    // Set E major in octave 5
+::
+
+method:: shuffle
+Randomly selects a chord by combining a tonic with a chord quality, with optional filtering.
+
+argument:: tonic
+Optional tonic (root note) filter as a Symbol (e.g., \E, \A, \C, \Db, \Cs). If specified, only that tonic will be used. If nil, any tonic will be chosen.
+
+argument:: scale
+Optional scale filter as a Symbol. If specified, only chord qualities matching that scale will be used.
+
+code::
+Nx.shuffle;                  // any random chord
+Nx.shuffle(\E);              // random E chord (any quality)
+Nx.shuffle(\E, \major);      // random E major chord
+Nx.shuffle(\E, \minor);      // random E minor chord
+Nx.shuffle(\A, \lydian);     // random A lydian chord
+::
+
+method:: fifth
+Navigates the circle of fifths from a starting tonic and sets the resulting chord. Inspired by omnichord chord button layout where harmonically related chords are adjacent.
+
+argument:: tonic
+Starting tonic as a Symbol (e.g., \C, \A, \Fs). Default: \C
+
+argument:: position
+Circle position offset. Positive values move clockwise (fifths up), negative values move counterclockwise (fifths down). Wraps at 12. Use \rand for random position. Default: 0
+
+argument:: quality
+Chord quality (Omnichord-style): \major, \minor, \dom7, \maj7, \m7, \sus4, \dim, \aug, \add9, or \rand. Default: \major
+
+code::
+Nx.fifth;                    // C major (default)
+Nx.fifth(\A);                // A major
+Nx.fifth(\A, 1);             // E major (V of A, one fifth up)
+Nx.fifth(\A, 2);             // B major (two fifths up)
+Nx.fifth(\A, -1);            // D major (IV of A, one fifth down)
+Nx.fifth(\A, 0, \minor);     // A minor
+Nx.fifth(\A, 2, \dom7);      // B dominant 7th
+Nx.fifth(\C, 0, \dim);       // C diminished
+Nx.fifth(\C, 0, \aug);       // C augmented
+Nx.fifth(\C, 12);            // C major (wraps back)
+Nx.fifth(\C, \rand);         // Random position from C
+Nx.fifth(\C, 0, \rand);      // C with random quality
+Nx.fifth(\C, \rand, \rand);  // Random position and quality
+
+// Common progressions become easy
+Nx.fifth(\C, 0);  // I  (C)
+Nx.fifth(\C, -1); // IV (F)
+Nx.fifth(\C, 1);  // V  (G)
+::
+
+method:: intervals
+Returns the intervals array of the current chord.
+
+code::
+Nx.set(\Em);
+Nx.intervals;  // -> [0, 3, 7]
+::
+
+method:: degrees
+Returns the scale degrees array of the current chord.
+
+code::
+Nx.set(\Em7);
+Nx.degrees;  // -> [0, 2, 4, 6]
+::
+
+method:: midinotes
+Returns all MIDI notes of the current chord, optionally transposed to a different octave.
+
+argument:: octave
+Optional octave value (Integer from -1 to 9). If provided, temporarily transposes the MIDI notes without changing the class octave variable. If nil, uses the current class octave value.
+
+code::
+Nx.set(\Em);
+Nx.midinotes;     // -> [52, 55, 59] (octave 3, default)
+Nx.midinotes(4);  // -> [64, 67, 71] (octave 4, temporary)
+Nx.midinotes;     // -> [52, 55, 59] (still octave 3)
+
+// Change octave permanently
+Nx.octave = 5;
+Nx.midinotes;     // -> [76, 79, 83] (octave 5)
+::
+
+method:: chord
+Returns the name of the current chord as a Symbol.
+
+code::
+Nx.set(\Am7);
+Nx.chord;  // -> \Am7
+::
+
+method:: root
+Returns the root MIDI note number of the current chord.
+
+code::
+Nx.set(\Em);
+Nx.root;  // -> 52
+::
+
+method:: scale
+Returns the scale type of the current chord.
+
+code::
+Nx.set(\Em);
+Nx.scale;  // -> \minor
+
+Nx.set(\Cmaj7);
+Nx.scale;  // -> \major
+::
+
+method:: loadChords
+Reloads tonics and chord quality definitions from Score/tonics.scd and Score/chords.scd. Useful after editing chord data files.
+
+code::
+Nx.loadChords;
+::
+
+method:: tonics
+Class variable containing all loaded tonics (root notes) as a Dictionary.
+
+code::
+Nx.tonics.keys;  // list all available tonics: C, Cs, Db, D, Ds, Eb, E, F, Fs, Gb, G, Gs, Ab, A, As, Bb, B
+::
+
+method:: chordQualities
+Class variable containing all loaded chord qualities as a Dictionary.
+
+code::
+Nx.chordQualities.keys;  // list all available chord qualities
+::
+
+method:: currentChord
+Class variable containing the current chord data Dictionary.
+
+method:: circleOfFifths
+Class variable containing the circle of fifths as an Array of Symbols. Used by the link::#*fifth:: method.
+
+code::
+Nx.circleOfFifths;  // -> [\C, \G, \D, \A, \E, \B, \Fs, \Db, \Ab, \Eb, \Bb, \F]
+::
+
+method:: octave
+Class variable for the current octave value. Can be read and written to change the octave globally. Valid range: -1 to 9. Default is 3.
+
+code::
+Nx.octave;      // -> 3 (default)
+Nx.octave = 5;  // Change to octave 5
+Nx.midinotes;   // MIDI notes transposed to octave 5
+::
+
+method:: defaultOctave
+Class variable containing the default octave value (3). This is the reference octave for chord definitions in tonics.scd. Read-only.
+
+code::
+Nx.defaultOctave;  // -> 3
+::
+
+subsection:: Supported Chord Qualities
+
+The following chord qualities are available in chords.scd:
+
+table::
+## Quality Key || User Input Examples || Scale || Intervals
+## \maj || \E, \C || major || [0, 4, 7]
+## \m || \Em, \Am || minor || [0, 3, 7]
+## \maj7 || \Cmaj7 || major || [0, 4, 7, 11]
+## \m7 || \Am7, \Em7 || minor || [0, 3, 7, 10]
+## \m9 || \Am9, \Em9 || minor || [0, 3, 7, 10, 14]
+## \m11 || \Am11, \Em11 || minor || [0, 3, 7, 10, 17]
+## \mAdd9 || \EmAdd9 || minor || [0, 3, 7, 14]
+## \add4Add9 || \EAdd4Add9 || major || [0, 4, 5, 7, 14]
+## \69 || \A69 || major || [0, 2, 4, 9, 11]
+## \maj7Sharp11 || \Cmaj7Sharp11 || lydian || [0, 4, 7, 11, 18]
+## \sus2AddSharp11 || \Csus2AddSharp11 || hexSus || [0, 2, 5, 7, 18]
+## \7sus4Add13 || \E7sus4Add13 || mixolydian || [0, 5, 10, 15]
+## \dom7 || \Cdom7, \Adom7 || mixolydian || [0, 4, 7, 10]
+## \add9 || \Cadd9, \Aadd9 || major || [0, 4, 7, 14]
+## \aug || \Caug, \Aaug || major || [0, 4, 8]
+## \dim || \Cdim, \Adim || minor || [0, 3, 6]
+## \sus4 || \Csus4, \Asus4 || major || [0, 5, 7]
+::
+
+note::
+Chord names are built by combining a tonic with a quality. For example, emphasis::\EmAdd9:: combines the tonic emphasis::\E:: with the quality emphasis::\mAdd9::. Simple shortcuts: emphasis::\E:: becomes E major (tonic + \maj), emphasis::\Em:: becomes E minor (tonic + \m).
+::
+
+examples::
+
+code::
+// Setup and explore chords
+Nx.set(\EmAdd9);
+Nx.intervals;       // [0, 3, 7, 14]
+Nx.midinotes;       // [52, 55, 59, 66]
+Nx.scale;           // \minor
+
+// Random selection with filters
+Nx.shuffle(\E, \minor);  // picks Em, Em7, EmAdd9, or Em9
+Nx.shuffle(\A, \major);  // picks major A chords
+
+// Working with octaves
+Nx.set(\Am7);
+Nx.midinotes;       // [57, 60, 64, 67] (octave 3, default)
+
+// Temporarily transpose to octave 4
+Nx.midinotes(4);    // [69, 72, 76, 79]
+Nx.midinotes;       // [57, 60, 64, 67] (still octave 3)
+
+// Permanently change octave
+Nx.octave = 5;
+Nx.midinotes;       // [81, 84, 88, 91]
+
+// Set chord with specific octave
+Nx.set(\E, 2);
+Nx.midinotes;       // [40, 44, 47] (E major in octave 2)
+
+// Reset to default
+Nx.octave = 3;
+
+// Use with Px patterns
+(
+1 i: \piano degree: Nx.degrees;
+)
+::

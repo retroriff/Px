@@ -1,12 +1,27 @@
 class:: Px
-summary:: A patterns builder class for SuperCollider
-categories:: Streams-Patterns-Events>Patterns>Parallel
-related:: Classes/Event, Classes/Pbind, Classes/PbindFx, Classes/Ptpar
+summary:: A Pattern Builder for Live Coding
+categories:: Live Coding, Streams-Patterns-Events>Patterns
+related:: Classes/Fx, Classes/Dx, Classes/Sx, Classes/Ndef, Classes/Pbindef
 
 description::
-The `Px` class is a patterns builder that shorten and simplify
-the patterns syntax and incorporates some additional features
-for live coding.
+Px is a pattern builder that provides a concise DSL (Domain-Specific Language) for creating and manipulating musical patterns in SuperCollider. It simplifies the standard pattern syntax for live coding performances.
+
+Patterns are created using Integer method chaining. Each pattern has a unique ID (the integer) and parameters are set using keyword methods:
+
+code::
+707 i: \bd dur: 1;           // Pattern 1: bass drum, duration 1 beat
+707 i: \sd dur: 2 off: 1;    // Pattern 2: snare drum, duration 2 beats, offset 1 beat
+707 i: \hh dur: 0.25 beat: 0.7;  // Pattern 3: hi-hat with random beat
+::
+
+To stop a pattern, use a Symbol instead of an Integer:
+
+code::
+\707 i: \bd;   // Stop pattern 1
+\707 i: \sd;   // Stop pattern 2
+::
+
+subsection:: Architecture
 
 Px is a concatenation of Ndef proxies, where each Ndef represents a Pbindef
 that defines a sequence of musical events. We can control multiple sound sources
@@ -31,112 +46,772 @@ Ndef(\sd).release(10);
 // Fx can apply FX to \px and to each item:
 Fx(\px).reverb(Nil)
 Fx(\sd).reverb(0.5)
-
-// We can use Pdef utilities:
-Pdef.gui
 ::
 
-subsection::MIDI
+subsection:: Setup
 
-This is how we can play a MIDI instrument in channel 1 (chan: 0) with velocity 127 (amp: 1):
-
-code::
-1 chan: 0 dur: 1 octave: 4 degree: 5 amp: 1;
-
-// It is equivalent to:
-MIDIClient.init;
-o = MIDIOut.new(0);
-
-Pbind(
-  \type, \midi,
-  \chan, 0,
-  \midicmd, \noteOn,
-  \midiout, o,
-  \dur, 1,
-  \octave, 4,
-  \degree, 5,
-);
-::
-
-We also can send control messages to the previous pattern.
+Before using Px, load the SynthDefs and optionally your sample library:
 
 code::
-// Send control to id 1
-2 control: [1, 1];
-
-// Same as:
-Pbind(
-  \type, \midi,
-  \midiout, o,
-  \midicmd, \control,
-  \chan, 1,
-  \ctlNum, 1,
-  \control, 127,
-);
-::
-
-This is how we can individually map a control:
-code::
-MIDIClient.init;
-o = MIDIOut.new(0);
-o.control(0, 1, 127); // Channel 1, controller 1, value 127
+Px.loadSynthDefs;
+Px.loadSamples("/path/to/samples/");
 ::
 
 ClassMethods::
 
-method:: new
-Creates a new instance of the Px class.
-argument:: newPattern
-The pattern event to build and control.
-argument:: name
-A string representing the name of the Pdef instance.
-argument:: trace
-A boolean value indicating whether to enable tracing for the patterns.
+subsection:: Pattern Control
 
-method:: gui
-Opens a GUI interface for controlling and visualizing the patterns.
+method:: new
+Creates a new pattern instance. Typically called internally by the DSL methods.
+
+argument:: newPattern
+The pattern event dictionary.
+
+argument:: name
+Optional name for the Pdef instance.
+
+argument:: trace
+Enable pattern tracing for debugging.
+
+method:: clear
+Clears all patterns and stops the main Ndef(\px).
+
+code::
+Px.clear;
+::
+
+method:: play
+Starts playing the main Ndef(\px) with optional fade-in time.
+
+argument:: fadeTime
+Fade-in duration in seconds.
+
+code::
+Px.play(4);
+::
+
+method:: stop
+Stops patterns by ID. Pass nil to stop all patterns.
+
+argument:: idArray
+Pattern ID or array of IDs to stop.
+
+code::
+Px.stop(1);        // Stop pattern 1
+Px.stop([1, 2]);   // Stop patterns 1 and 2
+Px.stop;           // Stop all patterns
+::
 
 method:: release
-Releases the patterns with a fade-out effect.
+Releases patterns with a fade-out effect.
+
 argument:: time
-The duration of the fade-out effect in seconds.
+Fade-out duration in seconds. Default: 10.
+
 argument:: name
-The name of the `Px` instance to release.
+Pattern name to release. Use \all for all patterns.
+
+code::
+Px.release;      // Release all with default fade
+Px.release(20);  // Release all with 20 second fade
+::
+
+method:: pause
+Pauses a pattern by ID.
+
+argument:: id
+Pattern ID to pause.
+
+method:: resume
+Resumes a paused pattern.
+
+argument:: id
+Pattern ID to resume.
+
+subsection:: State Management
 
 method:: save
-Saves the current patterns as the last used patterns for a given name.
-argument:: name
-The name under which to save the patterns.
+Saves the current active patterns to a chorus buffer for later recall.
+
+code::
+Px.save;
+::
 
 method:: chorus
-Loads and plays the last saved patterns for a given name.
-argument:: name
-The name of the patterns to load and play.
+Recalls and plays the previously saved patterns.
+
+code::
+Px.chorus;
+::
+
+method:: last
+Returns a Dictionary containing all current pattern states.
 
 method:: shuffle
-Shuffles the seed values for randomization in the patterns.
+Randomizes the seed values for patterns using random beat generation.
+
+code::
+Px.shuffle;
+::
+
+subsection:: Utilities
+
+method:: gui
+Opens a mixer GUI window for controlling pattern volumes.
+
+code::
+Px.gui;
+::
+
+method:: mixer
+Opens the NdefMixer window for audio mixing.
+
+method:: loadSynthDefs
+Loads all SynthDef files from the SynthDefs directory.
+
+method:: loadSamples
+Loads audio samples from a directory structure into the sample dictionary.
+
+argument:: pxPath
+Path to the samples directory.
+
+method:: buf
+Retrieves sample buffers from the loaded sample dictionary.
+
+argument:: folder
+Folder name containing the samples.
+
+argument:: file
+Optional file index or name. If omitted, returns all buffers in the folder.
+
+code::
+Px.buf("kicks");       // List all files in "kicks" folder
+Px.buf("kicks", 0);    // Get first sample from "kicks"
+::
+
+method:: synthDef
+Browses or retrieves a SynthDef by name.
+
+argument:: synthDef
+SynthDef name as Symbol.
+
+method:: trace
+Enables trace output for a pattern, showing each event as it plays.
+
 argument:: name
-The name of the patterns to shuffle.
+Pattern name as Symbol.
+
+code::
+Px.trace(\1);
+::
+
+method:: traceOff
+Disables trace output for a pattern.
+
+argument:: name
+Pattern name as Symbol.
 
 method:: help
 Displays help information for the Px class or a specific SynthDef.
+
 argument:: synthDef
-The name of a SynthDef to display help information for.
+Optional SynthDef name.
 
-method:: last
-Returns the last used patterns for a given name.
+subsection:: Performance
 
-method:: trace
-Traces and displays the pattern evaluation process.
-argument:: name
-The name of the patterns to trace.
+method:: solo
+Solos one or more patterns, muting all others.
 
-
-examples:
+argument:: soloIds
+Pattern ID or array of IDs to solo. Pass false to unsolo.
 
 code::
-1 i: \bd dur: 1 delay: 0.2;
-2 i: \sd dur: 2 off: 1 reverb: 0.2;
-3 i: \hh dur: 0.25 off: 0.5 rotate: 1;
+Px.solo(1);          // Solo pattern 1
+Px.solo([1, 2]);     // Solo patterns 1 and 2
+Px.solo(false);      // Unsolo all
 ::
 
+method:: unsolo
+Restores all muted patterns to playback.
+
+method:: chop
+Slices and repeats part of the beat pattern.
+
+argument:: dur
+Duration of the chop. Use 0 to disable.
+
+argument:: drop
+Position in the pattern to chop.
+
+code::
+Px.chop(1, 2);   // Chop with duration 1, drop at position 2
+Px.chop(0);      // Disable chop
+::
+
+method:: tempo
+Gets or sets the tempo in BPM.
+
+argument:: tempo
+Tempo value in BPM.
+
+argument:: withNdef
+If true, rebuilds Ndefs after tempo change.
+
+code::
+Px.tempo(120);
+::
+
+method:: vol
+Gets or sets the master volume.
+
+argument:: value
+Volume value (0-1 range).
+
+argument:: name
+Optional pattern name. Defaults to \px (master).
+
+code::
+Px.vol(0.5);         // Set master volume to 0.5
+Px.vol(0.3, \1);     // Set pattern 1 volume to 0.3
+::
+
+subsection:: Global Effects
+
+These methods apply effects to the master output (Ndef(\px)). For individual pattern effects, use the DSL methods.
+
+method:: reverb
+Applies FreeVerb reverb to the master output.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.3.
+
+argument:: room
+Room size (0-1). Default: 0.7.
+
+argument:: damp
+Damping (0-1). Default: 0.7.
+
+code::
+Px reverb: 0.5;
+::
+
+method:: delay
+Applies delay effect to the master output.
+
+argument:: mix
+Wet/dry mix (0-1).
+
+argument:: delaytime
+Delay time in beats. Default: 8.
+
+argument:: decaytime
+Decay time in seconds. Default: 2.
+
+method:: hpf
+Applies high-pass filter to the master output.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 1.
+
+argument:: freq
+Cutoff frequency in Hz, or \wave for LFO modulation. Default: 1200.
+
+method:: lpf
+Applies low-pass filter to the master output.
+
+argument:: mix
+Wet/dry mix (0-1).
+
+argument:: args
+Frequency or additional arguments.
+
+method:: blp
+Applies band-limited low-pass filter to the master output.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
+
+method:: flanger
+Applies flanger effect to the master output.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
+
+method:: gverb
+Applies GVerb reverb to the master output.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
+
+argument:: roomsize
+Room size. Default: 200.
+
+argument:: revtime
+Reverb time. Default: 5.
+
+method:: space
+Applies spacious reverb with infinite sustain capability.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 1.
+
+argument:: fb
+Feedback amount (0-0.99). Default: 0.95.
+
+method:: vst
+Loads and applies a VST plugin effect.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 1.
+
+argument:: plugin
+VST plugin name.
+
+code::
+Px.vst(0.4, "ValhallaFreqEcho");
+::
+
+method:: wah
+Applies wah-wah effect to the master output.
+
+argument:: mix
+Wet/dry mix (0-1).
+
+argument:: args
+Additional wah parameters.
+
+subsection:: Notes and Scales
+
+method:: root
+Sets the root note for all active patterns.
+
+argument:: value
+Root note transposition in semitones.
+
+code::
+Px root: 3;
+::
+
+method:: scale
+Sets the scale for all active patterns.
+
+argument:: value
+Scale name as Symbol.
+
+code::
+Px scale: \minor;
+::
+
+subsection:: MIDI
+
+method:: initMidi
+Initializes MIDI output to an external device.
+
+argument:: latency
+MIDI latency in seconds.
+
+argument:: deviceName
+MIDI device name.
+
+argument:: portName
+MIDI port name.
+
+code::
+Px.initMidi(0.1);
+::
+
+method:: panic
+Sends all notes off message.
+
+argument:: chan
+Optional MIDI channel. If omitted, sends to all channels.
+
+section:: DSL Methods
+
+These methods are available on Integer (pattern ID) for building patterns through method chaining.
+
+subsection:: Core Methods
+
+definitionlist::
+## i
+|| Sets the instrument (SynthDef name).
+code::
+707 i: \bd dur: 1;
+::
+
+## play
+|| Plays a sample from a folder.
+code::
+1 play: "fm:0";
+1 play: "fm:rand";  // Random sample
+::
+
+## loop
+|| Plays a looping sample.
+code::
+707 loop: ["breaks", 0] dur: 8;
+::
+
+## dur
+|| Sets the duration in beats.
+code::
+707 i: \bd dur: 0.5;
+::
+
+## amp / a
+|| Sets the amplitude (0-1).
+code::
+707 i: \bd dur: 1 amp: 0.5;
+707 i: \bd dur: 1 a: 0.5;  // Shorthand
+::
+
+## off
+|| Sets the timing offset in beats.
+code::
+2 i: \sd dur: 2 off: 1;  // Plays on beat 2
+::
+::
+
+subsection:: Beat Generation
+
+definitionlist::
+## beat
+|| Generates random or fixed beat patterns.
+code::
+707 i: \hh dur: 0.25 beat: 0.7;              // 70% probability
+707 i: \hh dur: 0.25 beat: [1, 0, 1, 0];     // Fixed pattern
+::
+
+## fill
+|| Fills gaps in the beat pattern from another pattern.
+code::
+707 i: \bd dur: 0.25 beat: 0.7;
+707 i: \sd dur: 0.25 fill: 0.5;  // Fills gaps from pattern 1
+::
+
+## euclid
+|| Generates Euclidean rhythm patterns.
+code::
+707 i: \cp dur: 0.25 euclid: [3, 8];  // 3 hits over 8 steps
+::
+
+## rest
+|| Adds rest periods to beat patterns.
+code::
+707 i: \hh dur: 0.25 beat: 0.7 rest: 4;  // 4 beats of rest
+::
+
+## seed
+|| Sets a seed for reproducible random patterns.
+code::
+707 i: \hh dur: 0.25 beat: 0.7 seed: 42;
+::
+
+## weight
+|| Sets the probability weight (0-1).
+code::
+3 i: \hh dur: 0.25 beat: 0.7 weight: 0.3;
+::
+::
+
+subsection:: Pattern Effects
+
+definitionlist::
+## reverb
+|| Applies reverb to the pattern.
+code::
+1 play: "fm" dur: 1 reverb: 0.3;
+1 play: "fm" dur: 1 reverb: \rand;  // Random amount
+::
+
+## delay
+|| Applies delay to the pattern.
+code::
+1 play: "fm" dur: 1 delay: 0.2;
+::
+
+## hpf
+|| Applies high-pass filter.
+code::
+1 play: "fm" dur: 1 hpf: 0.5;
+::
+
+## lpf
+|| Applies low-pass filter.
+code::
+1 play: "fm" dur: 1 lpf: 0.3;
+::
+
+## wah
+|| Applies wah effect.
+code::
+1 play: "fm" dur: 1 wah: 0.4;
+::
+::
+
+subsection:: Notes and Scales
+
+definitionlist::
+## degree
+|| Sets pitch degrees in the current scale.
+code::
+1 i: \303 dur: 0.25 degree: [0, 2, 4, 5].pseq;
+1 i: \303 dur: 0.25 degree: \rand;  // Random degrees
+::
+
+## scale
+|| Sets the scale for the pattern.
+code::
+1 i: \303 dur: 0.25 degree: [0, 2, 4].pseq scale: \minor;
+::
+
+## octave
+|| Sets the octave.
+code::
+1 i: \303 dur: 0.25 degree: [0, 2, 4].pseq octave: 5;
+::
+
+## arp
+|| Sets arpeggio configuration.
+
+## sus
+|| Sets sustain configuration.
+::
+
+subsection:: Buffer/Sample Control
+
+definitionlist::
+## r
+|| Sets the playback rate.
+code::
+1 loop: ["breaks", 0] dur: 8 r: 1.5;  // 1.5x speed
+::
+
+## start
+|| Sets the start position for buffer playback.
+code::
+1 loop: ["breaks", 0] dur: 8 start: 0.5;  // Start at 50%
+::
+
+## trim
+|| Trims the sample to a specific start position.
+code::
+1 loop: ["breaks", 0] dur: 8 trim: 0.25;
+1 loop: ["breaks", 0] dur: 8 trim: \seq;  // Sequential trimming
+::
+::
+
+subsection:: Pattern Control
+
+definitionlist::
+## set
+|| Updates an existing pattern without recreating it.
+code::
+1 play: "fm" dur: 1;
+1 set: true dur: 0.5;  // Update duration only
+::
+
+## solo
+|| Solos this pattern. Use 0 to unsolo.
+code::
+707 i: \bd dur: 1 solo: 1;
+::
+
+## in
+|| Fades in the pattern.
+code::
+707 i: \bd dur: 1 in: 16;  // Fade in over 16 beats
+::
+
+## out
+|| Fades out the pattern.
+code::
+707 i: \bd dur: 1 out: 8;  // Fade out over 8 beats
+::
+
+## fade
+|| Sets fade direction (\in or \out).
+
+## pan
+|| Sets stereo panning (-1 to 1, or special values).
+code::
+707 i: \bd dur: 1 pan: -1;        // Hard left
+707 i: \bd dur: 1 pan: \rotate;   // Rotating pan
+707 i: \bd dur: 1 pan: \rand;     // Random pan
+::
+
+## human
+|| Adds humanization timing variation.
+code::
+1 i: \bd dur: 1 human: 0.05;  // 5% timing variation
+::
+::
+
+subsection:: MIDI Methods
+
+definitionlist::
+## chan
+|| Routes pattern to MIDI channel. When the code::chan:: parameter is present, the pattern is automatically configured as a MIDI event.
+
+Behind the scenes, the following events are added to the pattern:
+list::
+## code::\type: \midi:: - Marks the event as a MIDI type
+## code::\midicmd: \noteOn:: - MIDI command (default is code::\noteOn::, can be code::\noteOff:: or code::\control::)
+## code::\midiout: midiClient[deviceName]:: - MIDIOut instance (uses device set in code::Px.initMidi::)
+## code::\chan: 0:: - MIDI channel (defaults to 0 if not specified)
+## code::\instrument: \midi:: - Sets instrument to MIDI
+::
+
+code::
+1 chan: 0 dur: 1 degree: 0;  // MIDI channel 1
+::
+
+strong::MIDI DSL to Pbind Translation Examples::
+
+The following examples show how Px DSL syntax translates to the underlying Pbind code:
+
+strong::Example 1: Using note directly to send midinotes::
+code::
+// Px DSL syntax:
+1 chan: 5 dur: 0.5 note: [57, 60, 64];
+
+// Translates to:
+(
+Pdef(\def, Pbind(
+  \type, \midi,
+  \chan, 5,
+  \midinote, Pseq([57, 60, 64], inf),
+  \midicmd, \noteOn,
+  \midiout, Px.midiOut,
+  \amp, 1,
+  \dur, 0.5,
+)).play.quant_(4);
+)
+::
+
+strong::Example 2: Using degree, scale, and octave::
+code::
+// Px DSL syntax:
+1 chan: 5 dur: 0.5 degree: [0, 2, 4, 7].pseq scale: \minor octave: 4;
+
+// Translates to:
+(
+Pdef(\def, Pbind(
+  \type, \midi,
+  \chan, 5,
+  \midicmd, \noteOn,
+  \midiout, Px.midiOut,
+  \amp, 1,
+  \degree, Pseq([0, 2, 4, 7], inf),
+  \dur, 0.5,
+  \octave, 4,
+  \scale, Scale.minor,
+)).play.quant_(4);
+)
+::
+
+## control
+|| Sends MIDI control change.
+code::
+2 control: [1, 64];  // Controller 1, value 64
+::
+
+## device
+|| Sets MIDI output device.
+
+## hold
+|| Holds MIDI notes (1) or releases them (0).
+
+## note
+|| Sets MIDI notes. Here octaves can be adjusted with ctranspose:
+code::
+1 i: \wobble dur: 0.5 note: [56, 53, 60, 53, 60, 63].pseq octave: [-2, -1];
+
+// Translates to:
+(
+Pdef(\def, Pbind(
+  \instrument, \wobble,
+  \dur, 0.5,
+  \midinote, Pseq([58, 53, 60, 53, 60, 63], inf),
+  \ctranspose, Pseq([-24, -12], inf),
+)).play.quant(4);
+)
+::
+
+## panic
+|| Sends all notes off for this pattern's channel.
+::
+
+subsection:: Synth Parameters (303)
+
+definitionlist::
+## ctf
+|| Cutoff frequency for filter.
+code::
+1 i: \303 dur: 0.25 ctf: 0.5;
+::
+
+## env
+|| Envelope amount.
+code::
+1 i: \303 dur: 0.25 env: 0.8;
+::
+
+## res
+|| Resonance amount.
+code::
+1 i: \303 dur: 0.25 res: 0.6;
+::
+::
+
+subsection:: Dynamic Values
+
+Many parameters accept special dynamic values:
+
+code::
+// Random values
+707 i: \bd dur: 1 amp: \rand;
+
+// Weighted random
+707 i: \bd dur: 1 amp: [\wrand, 0.2, 0.8, 0.4];
+
+// Curves (linear or exponential)
+707 i: \bd dur: 0.25 amp: [\lin, 0, 1, 8];    // Linear 0 to 1 over 8 beats
+707 i: \bd dur: 0.25 amp: [\exp, 0.1, 1, 8];  // Exponential
+::
+
+examples::
+
+code::
+// Basic drum pattern
+(
+707 i: \bd dur: 1;
+707 i: \sd dur: 2 off: 1;
+707 i: \hh dur: 0.25 beat: 0.7;
+)
+
+// Random beats with effects
+(
+707 i: \bd dur: 1 reverb: 0.2;
+707 i: \sd dur: 2 off: 1 delay: 0.3;
+707 i: \hh dur: 0.25 beat: 0.7 pan: \rotate;
+707 i: \cp dur: 0.25 euclid: [3, 5];
+)
+
+// Using loops
+1 loop: ["breaks", 0] dur: 8;
+
+// TB-303 style
+(
+1 i: \303 dur: 0.25 degree: [0, 2, 4, 5].pseq octave: 5 ctf: 0.3 env: 0.8 res: 0.5;
+Px reverb: 0.2 delay: 0.1;
+)
+
+// Save and recall patterns
+Px.save;
+Px.clear;
+Px.chorus;
+
+// Stop everything
+Px.release(10);
+::

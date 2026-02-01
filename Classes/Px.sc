@@ -1,8 +1,8 @@
 /*
+TODO: Fix \m42
 TODO: Any param should have a beat function.
       Maybe \beat or [0.3, 0.5].beat(16)
       Already created Number.prCreateBeat
-TODO: Fix 707 set: \cp amp: 0.5;
 TODO: Rename name references to id?
 */
 
@@ -16,6 +16,7 @@ Px {
   classvar <midiClient;
   classvar <>midiHoldedNotes;
   classvar <midiOut;
+  classvar <>mutedPatterns;
   classvar <>ndefList;
   classvar <>patternState;
   classvar <samplesDict;
@@ -33,6 +34,7 @@ Px {
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
     midiHoldedNotes = Dictionary.new;
+    mutedPatterns = Dictionary.new;
     ndefList = Dictionary.new;
     seeds = Dictionary.new;
     windowWidth = 68;
@@ -174,9 +176,7 @@ Px {
   }
 
   *prHandleSoloPattern { |pattern|
-    var hasSolo = pattern[\solo] == true;
-
-    if (hasSolo) {
+    if (pattern[\solo] == true) {
       if (pattern[\dx] == true)
       { ^Dx.solo(pattern[\id]) }
       { ^Px.solo(pattern[\id]) };

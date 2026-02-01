@@ -1,10 +1,26 @@
 + Px {
+  *ctranspose { |value|
+    last do: { |pattern|
+      pattern[\ctranspose] = value;
+    };
+
+    this.prReevaluate;
+  }
+
   *root { |value|
     last do: { |pattern|
       pattern[\root] = value;
     };
 
-    ^this.prReevaluate;
+    this.prReevaluate;
+  }
+
+  *scale { |value|
+    last do: { |pattern|
+      pattern[\scale] = value;
+    };
+
+    this.prReevaluate;
   }
 
   *prCreateDegrees { |pattern, midiratio|
@@ -43,6 +59,8 @@
     if (pattern[\degree].isKindOf(Pattern).not) {
       var degrees = pattern[\degree];
       var length = pattern[\midiControl] ?? inf;
+      var isRandomDegrees = (degrees == \rand);
+      var processedDegrees;
 
       if (degrees == \rand)
       { degrees = createRandomDegrees.value };
@@ -51,7 +69,13 @@
       { degrees = degrees.midiratio };
 
       pattern[\degreeRaw] = degrees;
-      pattern[\degree] = Pseq(degreesWithVariations.(degrees), length);
+      processedDegrees = degreesWithVariations.(degrees);
+
+      if (pattern[\arp].notNil || isRandomDegrees || (midiratio == true)) {
+        pattern[\degree] = Pseq(processedDegrees, length);
+      } {
+        pattern[\degree] = processedDegrees;
+      };
     };
 
     ^pattern;
@@ -72,9 +96,31 @@
       octave = octaveBeat;
     };
 
+    if (pattern[\midinote].notNil and: { octave.notNil }) {
+      pattern = this.prApplyOctaveToMidinote(pattern, octave);
+    };
+
     if (octave.isArray)
     { pattern[\octave] = Pseq(octave, inf) };
 
+    if (pattern[\octaveTranspose].notNil) {
+      var oct = pattern[\octaveTranspose];
+      var ct = pattern[\ctranspose] ?? 0;
+      pattern[\ctranspose] = oct + ct;
+      pattern.removeAt(\octaveTranspose);
+    };
+
+    ^pattern;
+  }
+
+  *prApplyOctaveToMidinote { |pattern, octave|
+    if (octave.isArray) {
+      pattern[\octaveTranspose] = Pseq(octave.collect { |o| o * 12 }, inf);
+    } {
+      pattern[\octaveTranspose] = octave * 12;
+    };
+
+    pattern.removeAt(\octave);
     ^pattern;
   }
 }

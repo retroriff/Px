@@ -1,22 +1,25 @@
 PxDebouncer {
+  classvar <>current;
   var <original;
+  var <pattern;
   var pending;
   var scheduled;
 
-  init { |number|
+  init { |number, capturedPattern|
     original = number;
+    pattern = capturedPattern;
     pending = List.new;
     scheduled = false;
   }
 
-  *new { |number|
-    ^super.new.init(number)
+  *new { |number, capturedPattern|
+    ^super.new.init(number, capturedPattern)
   }
 
   commit {
     var pairs = [];
     pending.do { |p| pairs = pairs ++ p };
-    original.prUpdatePattern(pairs);
+    original.prUpdatePattern(pairs, pattern);
     pending.clear;
   }
 
@@ -32,20 +35,6 @@ PxDebouncer {
         nil
       });
     };
-
-    ^this
-  }
-
-  doesNotUnderstand { |selector, args|
-    var pair;
-
-    if (args.size == 1) {
-      pair = [selector, args[0]];
-    } {
-      pair = [selector, args];
-    };
-
-    ^this.enqueue(pair);
   }
 
   printOn { |stream|

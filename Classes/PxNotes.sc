@@ -65,6 +65,9 @@
       if (degrees == \rand)
       { degrees = createRandomDegrees.value };
 
+      if (degrees.isArray.not)
+      { degrees = [degrees] };
+
       if (midiratio == true)
       { degrees = degrees.midiratio };
 
@@ -127,7 +130,8 @@
 
 + Number {
   arp { |value|
-    ^PxDebouncer.wrap(this).enqueue([\arp, value]);
+    this.prDebouncer.enqueue([\arp, value]);
+    ^this
   }
 
   degree { |value|
@@ -139,15 +143,18 @@
     if (value.isKindOf(Pattern))
     { pattern = value };
 
-    ^PxDebouncer.wrap(this).enqueue([\degree, pattern ?? value]);
+    this.prDebouncer.enqueue([\degree, pattern ?? value]);
+    ^this
   }
 
   scale { |value|
-    ^PxDebouncer.wrap(this).enqueue([\scale, value.asSymbol]);
+    this.prDebouncer.enqueue([\scale, value.asSymbol]);
+    ^this
   }
 
   sus { |value|
-    ^PxDebouncer.wrap(this).enqueue([\sus, value]);
+    this.prDebouncer.enqueue([\sus, value]);
+    ^this
   }
 }
 

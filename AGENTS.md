@@ -59,6 +59,32 @@
 - `.schelp` - SuperCollider help files (SCDoc format documentation)
 - `.yaml` - Drum machine preset data
 
+## Class Extensions Across Files
+
+SuperCollider's `+ ClassName { }` syntax allows extending classes across multiple files. When investigating a class, search ALL files for extensions:
+
+**Number** (DSL entry point methods):
+- `Number.sc` - Core methods (play, loop, amp, dur, beat, etc.)
+- `PxNotes.sc` - Note methods (degree, arp, scale, sus)
+- `PxFx.sc` - Effect methods
+- `PxBuf.sc` - Buffer/sample methods
+- `PxMidi.sc` - MIDI methods
+
+**Px** (pattern generator):
+- `Px.sc` - Core pattern creation
+- `PxBeats.sc` - Beat generation
+- `PxNotes.sc` - Degree/scale processing
+- `PxFx.sc` - Effect processing
+- `PxBuf.sc` - Buffer/loop handling
+- `PxMidi.sc` - MIDI integration
+- `PxGui.sc` - GUI methods
+- `PxRand.sc` - Randomization
+- `PxMethods.sc` - Utility methods
+
+**Symbol**: `Symbol.sc`, `PxNotes.sc`, `PxBuf.sc`, `PxMidi.sc`
+
+When debugging or modifying behavior, always grep for `^\+ ClassName` to find all extensions.
+
 # Variable definitions
 
 In SuperCollider, `var` is lexically scoped and each { ... } introduces a new lexical scope (function block).

@@ -192,6 +192,9 @@ Fx {
     if (activeEffects[proxyName].isNil)
     { activeEffects[proxyName] = Array.new };
 
+    if (activeArgs[proxyName].isNil)
+    { activeArgs[proxyName] = Dictionary.new };
+
     hasFx = activeEffects[proxyName].includes(fx);
 
     if (hasFx == false and: (mix != Nil))

@@ -197,11 +197,13 @@
 
 + Number {
   r { |args|
-    ^PxDebouncer.wrap(this).enqueue([\rate, this.prCreatePatternKey(args)]);
+    this.prDebouncer.enqueue([\rate, this.prCreatePatternKey(args)]);
+    ^this
   }
 
   start { |value|
-    ^PxDebouncer.wrap(this).enqueue([\start, value]);
+    this.prDebouncer.enqueue([\start, value]);
+    ^this
   }
 
   trim { |startPosition|
@@ -214,7 +216,8 @@
 
     { startPosition = startPosition.clip(0, 0.75) };
 
-    ^PxDebouncer.wrap(this).enqueue([\trim, startPosition]);
+    this.prDebouncer.enqueue([\trim, startPosition]);
+    ^this
   }
 }
 

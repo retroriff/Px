@@ -25,7 +25,6 @@ Px {
   classvar <>window;
   classvar <windowWidth;
   classvar <windowHeight;
-  classvar count;
 
   *initClass {
     // CmdPeriod.add { Px.clear };
@@ -39,14 +38,10 @@ Px {
     seeds = Dictionary.new;
     windowWidth = 68;
     windowHeight = 350.min(Window.screenBounds.height / 4);
-    count = 0;
   }
 
   *new { |newPattern|
     var pattern, pdef, playList;
-
-    count = count + 1;
-    count.postln;
 
     this.prInitializeDictionaries(newPattern);
     this.prHandleSoloPattern(newPattern);

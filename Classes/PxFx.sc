@@ -1,22 +1,22 @@
 + Px {
   *blp { |mix = 0.4|
-    Fx(\px).blp(mix);
+    AppClock.sched(0, { Fx(\px).blp(mix); nil });
   }
 
   *delay { |mix, delaytime = 8, decaytime = 2|
-    Fx(\px).delay(mix, delaytime, decaytime);
+    AppClock.sched(0, { Fx(\px).delay(mix, delaytime, decaytime); nil });
   }
 
   *flanger { |mix = 0.4|
-    Fx(\px).flanger(mix);
+    AppClock.sched(0, { Fx(\px).flanger(mix); nil });
   }
 
   *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
-    Fx(\px).gverb(mix, roomsize, revtime);
+    AppClock.sched(0, { Fx(\px).gverb(mix, roomsize, revtime); nil });
   }
 
   *hpf { |mix = 1, freq = 1200|
-    Fx(\px).hpf(mix, freq);
+    AppClock.sched(0, { Fx(\px).hpf(mix, freq); nil });
   }
 
   *lpf { |mix, args|
@@ -24,15 +24,15 @@
   }
 
   *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
-    Fx(\px).reverb(mix, room, damp);
+    AppClock.sched(0, { Fx(\px).reverb(mix, room, damp); nil });
   }
 
   *space { |mix = 1, fb = 0.95|
-    Fx(\px).space(mix, fb);
+    AppClock.sched(0, { Fx(\px).space(mix, fb); nil });
   }
 
   *vst { |mix = 1, plugin|
-    Fx(\px).vst(mix, plugin);
+    AppClock.sched(0, { Fx(\px).vst(mix, plugin); nil });
   }
 
   *wah { |mix, args|
@@ -117,11 +117,13 @@
   }
 
   prFx { |fx, mix|
-    var id = Px.patternState[\id];
-    var lastFx = Px.patternState[\fx] ?? [];
+    var debouncer = this.prDebouncer;
+    var pattern = debouncer.pattern ?? Px.patternState;
+    var lastFx = pattern[\fx] ?? [];
     var allFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
 
-    ^PxDebouncer.wrap(this).enqueue([\fx, allFx]);
+    debouncer.enqueue([\fx, allFx]);
+    ^this
   }
 }
 

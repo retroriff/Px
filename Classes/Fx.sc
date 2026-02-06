@@ -189,6 +189,8 @@ Fx {
   *prAddEffect { |fx, mix, args, postArgs|
     var hasFx = false;
 
+    PxDebouncer.flush;
+
     if (activeEffects[proxyName].isNil)
     { activeEffects[proxyName] = Array.new };
 

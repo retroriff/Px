@@ -1,9 +1,14 @@
 PxDebouncer {
   classvar <>current;
+  classvar <queue;
   var <original;
   var <pattern;
   var pending;
   var scheduled;
+
+  *initClass {
+    queue = IdentitySet.new;
+  }
 
   init { |number, capturedPattern|
     original = number;
@@ -16,15 +21,27 @@ PxDebouncer {
     ^super.new.init(number, capturedPattern)
   }
 
+  *flush {
+    queue.copy.do { |debouncer| 
+      debouncer.commit
+    };
+  }
+
   commit {
     var pairs = [];
+
+    if (pending.size == 0)
+    { ^this };
+
     pending.do { |p| pairs = pairs ++ p };
     original.prUpdatePattern(pairs, pattern);
     pending.clear;
+    queue.remove(this);
   }
 
   enqueue { |pair|
     pending.add(pair);
+    queue.add(this);
 
     if (scheduled.not) {
       scheduled = true;

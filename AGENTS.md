@@ -19,7 +19,10 @@
    - Drum machine architecture internals
    - Pattern lifecycle and relationships
 
-3. **`Classes/*.sc`** - Source code to modify
+3. **`Docs/code-conventions.md`** - Code formatting rules
+   - Blank lines around conditionals
+
+4. **`Classes/*.sc`** - Source code to modify
    - `Classes/Number.sc` - Integer method extensions (DSL entry point)
    - `Classes/Px.sc` - Base pattern generator
    - `Classes/PxDebouncer.sc` - Internal class that batches method chain calls into a single pattern update

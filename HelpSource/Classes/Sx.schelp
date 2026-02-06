@@ -188,7 +188,7 @@ method:: defaultScale
 Returns the default scale symbol (\scriabin).
 
 method:: waveList
-Returns an array of available waveform symbols: [\pulse, \saw, \sine, \triangle].
+Returns an array of available waveform symbols: [\pulse, \saw, \sine, \tri].
 
 subsection:: Event Parameters
 
@@ -247,10 +247,10 @@ Sx.set(\scale, \minor);
 || Filter toggle. 0 = bypass filter, 1 = enable MoogFF filter (controlled by MouseX). Default: 1
 
 ## wave
-|| Waveform selection. Available: \pulse, \saw, \sine, \triangle. Default: \saw
+|| Waveform selection. Available: \pulse, \saw, \sine, \tri. Default: \saw
 code::
 Sx.set(\wave, \pulse);
-Sx.set(\wave, \triangle);
+Sx.set(\wave, \tri);
 ::
 ::
 

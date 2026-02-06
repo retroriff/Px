@@ -30,7 +30,7 @@ Sx {
     last = Event.new;
     mode = \seq;
     padSynths = [];
-    waveList = [\pulse, \saw, \sine, \triangle];
+    waveList = [\pulse, \saw, \sine, \tri];
   }
 
   *new { |event, fadeTime|
@@ -75,7 +75,9 @@ Sx {
     mode = \seq;
 
     if (Ndef(\sx).isPlaying.not) {
-      synth = Synth(\sx);
+      this.prScheduleQuantized({
+        synth = Synth(\sx);
+      });
     };
 
     Ndef(\sx, { In.ar(~sxBus, 2) }).play(fadeTime: fadeTime ?? 0);
@@ -176,7 +178,11 @@ Sx {
   *prScheduleQuantized { |func|
     var clock = TempoClock.default;
     var nextBeat = clock.nextTimeOnGrid(4);
-    clock.schedAbs(nextBeat, func);
+
+    clock.schedAbs(nextBeat, {
+      Server.default.makeBundle(Server.default.latency, func);
+      nil;
+    });
   }
 
   *prGenerateDegree { |degree, octave, root|

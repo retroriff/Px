@@ -34,7 +34,7 @@ Sx(
 // Or set individual values
 Sx.set(\wave, \pulse);
 Sx.set(\wave, \sine);
-Sx.set(\wave, \triangle);
+Sx.set(\wave, \tri);
 Sx.set(\chord, [0, 3, 5]);
 
 // Define a lag2 time with the third argument:

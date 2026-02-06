@@ -43,7 +43,7 @@ SynthDef(\sx, {
   sig = sig + (Pulse.ar(freq) * \pulse.kr(0));
   sig = sig + (Saw.ar(freq, mul: 2.dbamp) * \saw.kr(1));
   sig = sig + (SinOsc.ar(freq, mul: 4.dbamp) * \sine.kr(0));
-  sig = sig + (LFTri.ar(freq, mul: 2.dbamp) * \triangle.kr(0));
+  sig = sig + (LFTri.ar(freq, mul: 2.dbamp) * \tri.kr(0));
 
   // Envelope
   envPad = EnvGen.kr(Env.asr(atk, 1, rel), gate);

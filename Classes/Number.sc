@@ -150,6 +150,7 @@
     };
 
     Px.patternState = Px.last[id];
+    PxDebouncer.current = PxDebouncer(this, Px.patternState);
   }
 
   solo { |value|
@@ -335,7 +336,7 @@
     ^this
   }
 
-prPlay { |i, play, loop|
+  prPlay { |i, play, loop|
     var instrumentWithoutSufix = this.prRemoveSufix(i);
 
     var newPattern = (

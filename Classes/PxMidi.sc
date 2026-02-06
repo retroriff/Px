@@ -152,7 +152,8 @@ TODO: MIDIOut instances
     if (midiControlEvent.notNil)
     { newPattern = newPattern.putPairs(midiControlEvent) };
 
-    this.prPlayClass(newPattern);
+    Px.patternState = newPattern;
+    PxDebouncer.current = PxDebouncer(this, newPattern);
   }
 
   control { |value|

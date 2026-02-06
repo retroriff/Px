@@ -1,6 +1,4 @@
 /*
-TODO: Amp doesn't seem to work here:   5 chan: 4 amp: 1 name: "strings" hold: 1 degree: 2 octave: 3  in: 20;
-      Check if it works in main
 TODO: Any param should have a beat function.
       Maybe \beat or [0.3, 0.5].beat(16)
       Already created Number.prCreateBeat
@@ -165,7 +163,9 @@ Px {
     { pbindef = this.prCreatePbindFx(pattern) }
     { pbindef = Pbind(*pattern.asPairs) };
 
-    pbindef = this.prCreateFade(pbindef, pattern[\fade]);
+    if (pattern[\midiControl] != 1)
+    { pbindef = this.prCreateFade(pbindef, pattern[\fade]) };
+
     pbindef = this.prCreateChop(pattern, pbindef);
 
     ^pbindef = Pdef(pattern[\id], pbindef).quant_(4);

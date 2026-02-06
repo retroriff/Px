@@ -122,6 +122,7 @@
     var lastFx = pattern[\fx] ?? [];
     var allFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
 
+    Px.patternState[\fx] = allFx;
     debouncer.enqueue([\fx, allFx]);
     ^this
   }

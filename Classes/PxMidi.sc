@@ -176,14 +176,12 @@ TODO: MIDIOut instances
 
   device { |value|
     this.prDebouncer.enqueue([\midiout, value]);
-    ^this
   }
 
   hold { |value|
     if (value == 1 or: (value == true))
     { this.prDebouncer.enqueue([\hasGate, false] ++ this.prSendSingleMessage) }
     { this.prDebouncer.enqueue([\midicmd, \noteOff]) };
-    ^this
   }
 
   note { |value|
@@ -196,12 +194,10 @@ TODO: MIDIOut instances
     { pattern = value };
 
     this.prDebouncer.enqueue([\midinote, pattern ?? value]);
-    ^this
   }
 
   panic {
     this.prDebouncer.enqueue([\midicmd, \allNotesOff] ++ this.prSendSingleMessage);
-    ^this
   }
 
   prConvertToMidiValue { |value|

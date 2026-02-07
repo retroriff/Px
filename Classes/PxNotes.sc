@@ -131,7 +131,6 @@
 + Number {
   arp { |value|
     this.prDebouncer.enqueue([\arp, value]);
-    ^this
   }
 
   degree { |value|
@@ -149,12 +148,10 @@
 
   scale { |value|
     this.prDebouncer.enqueue([\scale, value.asSymbol]);
-    ^this
   }
 
   sus { |value|
     this.prDebouncer.enqueue([\sus, value]);
-    ^this
   }
 }
 

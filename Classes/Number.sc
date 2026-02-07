@@ -6,7 +6,6 @@
   amp { |value|
     var pairs = this.prCreatePatternFromArray(\amp, value);
     this.prDebouncer.enqueue(pairs);
-    ^this
   }
 
   beat { |value|
@@ -20,7 +19,6 @@
     { this.prRemoveBeatSetWhenSet };
 
     this.prDebouncer.enqueue(pairs);
-    ^this
   }
 
   doesNotUnderstand { |selector, args|
@@ -46,22 +44,19 @@
 
     allEventKeys = (allEventKeys ++ synthDefControlNames).asArray.flat ++ customMethods;
 
-    if (allEventKeys.includes(selector)) {
-      this.prDebouncer.enqueue([selector, args]);
-      ^this
-    } { ("🔴 Method not understood:" + selector).postln };
+    if (allEventKeys.includes(selector))
+    { this.prDebouncer.enqueue([selector, args])}
+    { ("🔴 Method not understood:" + selector).postln };
   }
 
   dur { |value|
     this.prDebouncer.enqueue([\dur, value]);
-    ^this
   }
 
   euclid { |value|
     var hits = value[0];
     var total = value[1];
     this.prDebouncer.enqueue([\euclid, [hits, total]]);
-    ^this
   }
 
   fade { |value|
@@ -71,7 +66,6 @@
   fill { |value|
     var pairs = [\fill, true, \weight, value];
     this.prDebouncer.enqueue(pairs);
-    ^this
   }
 
   gui { |value|
@@ -87,11 +81,10 @@
   human { |delay|
     delay = delay ?? 0.1;
     this.prDebouncer.enqueue([\human, delay.clip(0, 1)]);
-    ^this
   }
 
   i { |value|
-    ^this.prPlay(i: value.asSymbol);
+    this.prPlay(i: value.asSymbol);
   }
 
   in { |value|
@@ -104,32 +97,28 @@
 
   off { |value|
     this.prDebouncer.enqueue([\timingOffset, value]);
-    ^this
   }
 
   loop { |value|
-    ^this.prPlay(loop: value);
+    this.prPlay(loop: value);
   }
 
   out { |value|
-    if (value.class == Bus) {
-      this.prDebouncer.enqueue([\out, value]);
-      ^this
-    } { this.prFade(\out, value) };
+    if (value.class == Bus)
+    { this.prDebouncer.enqueue([\out, value]) }
+    { this.prFade(\out, value) };
   }
 
   play { |value|
-    ^this.prPlay(play: value);
+    this.prPlay(play: value);
   }
 
   rest { |value|
     this.prDebouncer.enqueue([\rest, value]);
-    ^this
   }
 
   seed { |value|
     this.prDebouncer.enqueue([\seed, value]);
-    ^this
   }
 
   set { |setId|
@@ -156,31 +145,26 @@
   solo { |value|
     var isSolo = value != 0;
     this.prDebouncer.enqueue([\solo, isSolo]);
-    ^this
   }
 
   weight { |value|
     this.prDebouncer.enqueue([\weight, value.clip(0, 1)]);
-    ^this
   }
 
   // 303 SynthDef methods with arrays to be patterns
   ctf { |value|
     var pairs = this.prCreatePatternFromArray(\ctf, value);
     this.prDebouncer.enqueue(pairs);
-    ^this
   }
 
   env { |value|
     var pairs = this.prCreatePatternFromArray(\env, value);
     this.prDebouncer.enqueue(pairs);
-    ^this
   }
 
   res { |value|
     var pairs = this.prCreatePatternFromArray(\res, value);
     this.prDebouncer.enqueue(pairs);
-    ^this
   }
 
   // Functions

@@ -198,12 +198,10 @@
 + Number {
   r { |args|
     this.prDebouncer.enqueue([\rate, this.prCreatePatternKey(args)]);
-    ^this
   }
 
   start { |value|
     this.prDebouncer.enqueue([\start, value]);
-    ^this
   }
 
   trim { |startPosition|
@@ -217,7 +215,6 @@
     { startPosition = startPosition.clip(0, 0.75) };
 
     this.prDebouncer.enqueue([\trim, startPosition]);
-    ^this
   }
 }
 

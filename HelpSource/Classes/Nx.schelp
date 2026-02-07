@@ -29,35 +29,59 @@ Nx.shuffle(\E, \major);      // E major chords
 ClassMethods::
 
 method:: set
-Sets the current chord by name and optionally changes the octave.
+Sets the current chord. Supports three calling forms:
 
-argument:: chordName
-The chord name as a Symbol (e.g., \Em, \Am7, \Cmaj9).
-
-argument:: octave
-Optional octave value (Integer from -1 to 9). If provided, updates the class octave variable. Default octave is 3.
-
+definitionlist::
+## 1 argument: chord name ||
 code::
-Nx.set(\EmAdd9);
-Nx.set(\Am7, 4);  // Set Am7 in octave 4
-Nx.set(\E, 5);    // Set E major in octave 5
+Nx.set(\Em7);
+Nx.set(\Cmaj9);
+Nx.set(\E);       // E major
+::
+## 2 arguments: tonic + quality ||
+code::
+Nx.set(\C, \minor);    // C minor
+Nx.set(\E, \maj7);     // E major 7th
+Nx.set(\A, \dom7);     // A dominant 7th
+::
+## 3 arguments: tonic + quality + octave ||
+code::
+Nx.set(\C, \minor, 4);  // C minor in octave 4
+Nx.set(\E, \m7, 5);     // E minor 7th in octave 5
+::
 ::
 
-method:: shuffle
-Randomly selects a chord by combining a tonic with a chord quality, with optional filtering.
+argument:: chordNameOrTonic
+In 1-arg form: the full chord name as a Symbol (e.g., \Em, \Am7, \Cmaj9). In 2/3-arg form: the tonic as a Symbol (e.g., \C, \E, \Fs).
 
-argument:: tonic
-Optional tonic (root note) filter as a Symbol (e.g., \E, \A, \C, \Db, \Cs). If specified, only that tonic will be used. If nil, any tonic will be chosen.
+argument:: qualityArg
+Chord quality as a Symbol. Accepts user-friendly names (\minor, \major, \dom7, \maj7, \m7, \sus4, \dim, \aug, \add9) or direct quality keys (\m9, \m11, \mAdd9, etc.).
 
-argument:: scale
-Optional scale filter as a Symbol. If specified, only chord qualities matching that scale will be used.
+argument:: octaveArg
+Optional octave value (Integer from -1 to 9).
+
+Returns:: this (for method chaining)
+
+method:: tonic
+Returns the current tonic as a Symbol.
 
 code::
-Nx.shuffle;                  // any random chord
-Nx.shuffle(\E);              // random E chord (any quality)
-Nx.shuffle(\E, \major);      // random E major chord
-Nx.shuffle(\E, \minor);      // random E minor chord
-Nx.shuffle(\A, \lydian);     // random A lydian chord
+Nx.set(\Em7);
+Nx.tonic;  // -> \E
+
+Nx.set(\C, \minor);
+Nx.tonic;  // -> \C
+::
+
+method:: quality
+Returns the current chord quality as a String.
+
+code::
+Nx.set(\Em7);
+Nx.quality;  // -> "m7"
+
+Nx.set(\C, \minor);
+Nx.quality;  // -> "m"
 ::
 
 method:: fifth
@@ -78,19 +102,36 @@ Nx.fifth(\A);                // A major
 Nx.fifth(\A, 1);             // E major (V of A, one fifth up)
 Nx.fifth(\A, 2);             // B major (two fifths up)
 Nx.fifth(\A, -1);            // D major (IV of A, one fifth down)
-Nx.fifth(\A, 0, \minor);     // A minor
-Nx.fifth(\A, 2, \dom7);      // B dominant 7th
-Nx.fifth(\C, 0, \dim);       // C diminished
-Nx.fifth(\C, 0, \aug);       // C augmented
-Nx.fifth(\C, 12);            // C major (wraps back)
-Nx.fifth(\C, \rand);         // Random position from C
-Nx.fifth(\C, 0, \rand);      // C with random quality
-Nx.fifth(\C, \rand, \rand);  // Random position and quality
+Nx.fifth(\A, 0, \minor);    // A minor
+Nx.fifth(\A, 2, \dom7);     // B dominant 7th
+Nx.fifth(\C, 0, \dim);      // C diminished
+Nx.fifth(\C, 0, \aug);      // C augmented
+Nx.fifth(\C, 12);           // C major (wraps back)
+Nx.fifth(\C, \rand);        // Random position from C
+Nx.fifth(\C, 0, \rand);     // C with random quality
+Nx.fifth(\C, \rand, \rand); // Random position and quality
 
 // Common progressions become easy
 Nx.fifth(\C, 0);  // I  (C)
 Nx.fifth(\C, -1); // IV (F)
 Nx.fifth(\C, 1);  // V  (G)
+::
+
+method:: shuffle
+Randomly selects a chord by combining a tonic with a chord quality, with optional filtering.
+
+argument:: tonicArg
+Optional tonic (root note) filter as a Symbol (e.g., \E, \A, \C, \Db, \Cs). If specified, only that tonic will be used. If nil, any tonic will be chosen.
+
+argument:: scale
+Optional scale filter as a Symbol. If specified, only chord qualities matching that scale will be used.
+
+code::
+Nx.shuffle;                  // any random chord
+Nx.shuffle(\E);              // random E chord (any quality)
+Nx.shuffle(\E, \major);      // random E major chord
+Nx.shuffle(\E, \minor);      // random E minor chord
+Nx.shuffle(\A, \lydian);     // random A lydian chord
 ::
 
 method:: intervals
@@ -229,6 +270,25 @@ note::
 Chord names are built by combining a tonic with a quality. For example, emphasis::\EmAdd9:: combines the tonic emphasis::\E:: with the quality emphasis::\mAdd9::. Simple shortcuts: emphasis::\E:: becomes E major (tonic + \maj), emphasis::\Em:: becomes E minor (tonic + \m).
 ::
 
+subsection:: Quality Aliases
+
+When using the 2-arg or 3-arg form of link::#*set::, user-friendly quality names are mapped through qualityAliases:
+
+table::
+## Friendly Name || Maps To
+## \major || "maj"
+## \minor || "m"
+## \dom7 || "dom7"
+## \maj7 || "maj7"
+## \m7 || "m7"
+## \sus4 || "sus4"
+## \dim || "dim"
+## \aug || "aug"
+## \add9 || "add9"
+::
+
+Direct quality keys (e.g., \m9, \m11, \mAdd9) are also accepted and passed through as-is.
+
 examples::
 
 code::
@@ -237,6 +297,11 @@ Nx.set(\EmAdd9);
 Nx.intervals;       // [0, 3, 7, 14]
 Nx.midinotes;       // [52, 55, 59, 66]
 Nx.scale;           // \minor
+
+// Tonic + quality form
+Nx.set(\E, \minor);
+Nx.tonic;           // \E
+Nx.quality;         // "m"
 
 // Random selection with filters
 Nx.shuffle(\E, \minor);  // picks Em, Em7, EmAdd9, or Em9
@@ -254,9 +319,13 @@ Nx.midinotes;       // [57, 60, 64, 67] (still octave 3)
 Nx.octave = 5;
 Nx.midinotes;       // [81, 84, 88, 91]
 
-// Set chord with specific octave
-Nx.set(\E, 2);
-Nx.midinotes;       // [40, 44, 47] (E major in octave 2)
+// Set chord with specific octave via Nx()
+Nx(\Am7, 4);
+Nx.midinotes;       // [69, 72, 76, 79] (Am7 in octave 4)
+
+// Set chord with octave via set
+Nx.set(\E, \minor, 2);
+Nx.midinotes;       // E minor in octave 2
 
 // Reset to default
 Nx.octave = 3;

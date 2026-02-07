@@ -4,15 +4,17 @@ Nx {
   classvar <currentChord;
   classvar <currentChordName;
   classvar <defaultOctave;
-  classvar <fifthChordsDict;
+  classvar <qualityAliases;
   classvar <>octave;
+  classvar <quality;
+  classvar <tonic;
   classvar <tonics;
 
   *initClass {
     chords = Dictionary.new;
     circleOfFifths = [\C, \G, \D, \A, \E, \B, \Fs, \Db, \Ab, \Eb, \Bb, \F];
     defaultOctave = 3;
-    fifthChordsDict = Dictionary[
+    qualityAliases = Dictionary[
       \add9 -> "add9", \aug -> "aug", \dim -> "dim", \dom7 -> "dom7",
       \m7 -> "m7", \maj7 -> "maj7", \major -> "maj", \minor -> "m",
       \sus4 -> "sus4"
@@ -24,8 +26,8 @@ Nx {
     this.set(\EmAdd9);
   }
 
-  *new { |chordName, octave|
-    ^this.set(chordName, octave);
+  *new { |chordName, octaveArg|
+    ^this.set(chordName, nil, octaveArg);
   }
 
   *chord {
@@ -45,7 +47,7 @@ Nx {
   }
 
   *loadChords {
-    var tonicsPath, chordsPath;
+    var chordsPath, tonicsPath;
 
     // Load tonics.scd
     tonicsPath = ("../Score/tonics.scd").resolveRelative;
@@ -90,58 +92,80 @@ Nx {
     ^currentChord[\scale];
   }
 
-  *set { |chordName, octaveArg|
-    var parsed, tonicData, qualityData, combinedChord;
+  *set { |chordNameOrTonic, qualityArg, octaveArg|
+    var chordName, combinedChord, parsed, qualityData, qualityStr, tonicData;
 
-    // Handle octave parameter
     if (octaveArg.notNil) {
-      if ((octaveArg < -1) or: { octaveArg > 9 }) {
-        octaveArg = octaveArg.clip(-1, 9);
-        this.prPrint("Octave must be between -1 and 9. Clipped to:" + octaveArg);
-      };
-
+      octaveArg = octaveArg.clip(-1, 9);
       octave = octaveArg;
     };
 
-    // Parse the chord name
-    parsed = this.prParseChordName(chordName.asSymbol);
-    if (parsed.isNil) {
-      ^this.prPrint("Invalid chord name:" + chordName);
+    if (qualityArg.notNil) {
+      // 2-arg or 3-arg form: tonic + quality (+ octave)
+      qualityStr = qualityAliases[qualityArg.asSymbol] ?? { qualityArg.asString };
+
+      tonicData = tonics[chordNameOrTonic.asSymbol];
+
+      if (tonicData.isNil) {
+        ^this.prPrint("Tonic not found:" + chordNameOrTonic);
+      };
+
+      qualityData = chords[qualityStr];
+
+      if (qualityData.isNil) {
+        ^this.prPrint("Chord quality not found:" + qualityStr);
+      };
+
+      tonic = chordNameOrTonic.asSymbol;
+      quality = qualityStr;
+      chordName = this.prBuildChordName(tonic, quality);
+    } {
+      // 1-arg form: chord name
+      parsed = this.prParseChordName(chordNameOrTonic.asSymbol);
+
+      if (parsed.isNil) {
+        ^this.prPrint("Invalid chord name:" + chordNameOrTonic);
+      };
+
+      tonicData = tonics[parsed[\tonic]];
+
+      if (tonicData.isNil) {
+        ^this.prPrint("Tonic not found:" + parsed[\tonic]);
+      };
+
+      qualityData = chords[parsed[\quality]];
+
+      if (qualityData.isNil) {
+        ^this.prPrint("Chord quality not found:" + parsed[\quality]);
+      };
+
+      tonic = parsed[\tonic];
+      quality = parsed[\quality];
+      chordName = chordNameOrTonic.asSymbol;
     };
 
-    // Look up tonic data
-    tonicData = tonics[parsed[\tonic]];
-    if (tonicData.isNil) {
-      ^this.prPrint("Tonic not found:" + parsed[\tonic]);
-    };
-
-    // Look up quality data
-    qualityData = chords[parsed[\quality]];
-    if (qualityData.isNil) {
-      ^this.prPrint("Chord quality not found:" + parsed[\quality]);
-    };
-
-    // Combine into current chord
     combinedChord = Dictionary.new;
     combinedChord[\root] = tonicData[\root];
     combinedChord[\degree] = qualityData[\degree];
     combinedChord[\intervals] = qualityData[\intervals];
     combinedChord[\scale] = qualityData[\scale];
 
-    // Update state
     currentChord = combinedChord;
-    currentChordName = chordName.asSymbol;
+    currentChordName = chordName;
+
+    ^this;
   }
 
-  *shuffle { |tonic, scale|
-    var tonicPool, qualityPool, selectedTonic, selectedQuality, chordName;
+  *shuffle { |tonicArg, scale|
+    var chordName, qualityPool, selectedQuality, selectedTonic, tonicPool;
 
     // Build tonic pool
-    if (tonic.notNil) {
-      if (tonics.includesKey(tonic.asSymbol).not) {
-        ^this.prPrint("Invalid tonic:" + tonic);
+    if (tonicArg.notNil) {
+      if (tonics.includesKey(tonicArg.asSymbol).not) {
+        ^this.prPrint("Invalid tonic:" + tonicArg);
       };
-      tonicPool = [tonic.asSymbol];
+
+      tonicPool = [tonicArg.asSymbol];
     } {
       tonicPool = tonics.keys.asArray;
     };
@@ -170,31 +194,35 @@ Nx {
     ^this.set(chordName);
   }
 
-  *fifth { |tonic = \C, position = 0, quality = \major|
-    var startIndex, targetIndex, targetTonic, qualityStr, chordName, pos;
+  *fifth { |tonicArg = \C, position = 0, quality = \major|
+    var chordName, pos, qualityStr, startIndex, targetIndex, targetTonic;
 
-    if (tonics.includesKey(tonic.asSymbol).not) {
-      ^this.prPrint("Invalid tonic:" + tonic);
+    if (tonics.includesKey(tonicArg.asSymbol).not) {
+      ^this.prPrint("Invalid tonic:" + tonicArg);
     };
 
-    startIndex = circleOfFifths.indexOf(tonic.asSymbol);
+    startIndex = circleOfFifths.indexOf(tonicArg.asSymbol);
+
     if (startIndex.isNil) {
-      startIndex = this.prEnharmonicIndex(tonic.asSymbol);
+      startIndex = this.prEnharmonicIndex(tonicArg.asSymbol);
+
       if (startIndex.isNil) {
-        ^this.prPrint("Tonic not in circle of fifths:" + tonic);
+        ^this.prPrint("Tonic not in circle of fifths:" + tonicArg);
       };
     };
 
     pos = if (position == \rand) { 12.rand } { position };
 
     targetIndex = (startIndex + pos) % 12;
+
     if (targetIndex < 0) { targetIndex = targetIndex + 12 };
 
     targetTonic = circleOfFifths[targetIndex];
 
     qualityStr = this.prFifthQuality(quality);
+
     if (qualityStr.isNil) {
-      ^this.prPrint("Invalid quality:" + quality ++ ". Use" + (fifthChordsDict.keys.asArray ++ \rand));
+      ^this.prPrint("Invalid quality:" + quality ++ ". Use" + (qualityAliases.keys.asArray ++ \rand));
     };
 
     chordName = this.prBuildChordName(targetTonic, qualityStr);
@@ -203,24 +231,23 @@ Nx {
     ^this.set(chordName);
   }
 
-  *fifthChords {
-    ^fifthChordsDict.keys;
+  *prFifthQuality { |quality|
+    if (quality == \rand)
+    { quality = qualityAliases.keys.asArray.choose };
+
+    ^qualityAliases[quality.asSymbol];
   }
 
-  *prEnharmonicIndex { |tonic|
+  *prEnharmonicIndex { |tonicSym|
+    var equiv;
     var map = Dictionary[\Cs -> \Db, \Ds -> \Eb, \Gb -> \Fs, \Gs -> \Ab, \As -> \Bb];
-    var equiv = map[tonic];
+    equiv = map[tonicSym];
     if (equiv.notNil) { ^circleOfFifths.indexOf(equiv) };
     ^nil;
   }
 
-  *prFifthQuality { |quality|
-    var q = if (quality == \rand) { fifthChordsDict.keys.asArray.choose } { quality.asSymbol };
-    ^fifthChordsDict[q];
-  }
-
   *prParseChordName { |chordSymbol|
-    var input, tonicSym, qualitySym, qualityStr;
+    var input, qualityStr, qualitySym, tonicSym;
 
     input = chordSymbol.asString;
 

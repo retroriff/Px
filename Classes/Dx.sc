@@ -14,7 +14,7 @@ Dx : Px {
 
   *initClass {
     drumMachine = 808;
-    dxAmp = 0.1;
+    dxAmp = 0.3;
 
     fx = Dictionary.new;
     instrumentFolders = Dictionary.new;

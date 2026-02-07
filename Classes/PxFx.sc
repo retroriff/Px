@@ -124,7 +124,6 @@
 
     Px.patternState[\fx] = allFx;
     debouncer.enqueue([\fx, allFx]);
-    ^this
   }
 }
 

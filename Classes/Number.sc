@@ -45,7 +45,7 @@
     allEventKeys = (allEventKeys ++ synthDefControlNames).asArray.flat ++ customMethods;
 
     if (allEventKeys.includes(selector))
-    { this.prDebouncer.enqueue([selector, args])}
+    { this.prDebouncer.enqueue([selector, args]) }
     { ("🔴 Method not understood:" + selector).postln };
   }
 
@@ -317,7 +317,6 @@
     { fade = [direction, time.clip(0.1, time)] };
 
     this.prDebouncer.enqueue([\fade, fade]);
-    ^this
   }
 
   prPlay { |i, play, loop|
@@ -335,7 +334,6 @@
 
     Px.patternState = newPattern;
     PxDebouncer.current = PxDebouncer(this, newPattern);
-    ^this
   }
 
   prPlayClass { |newPattern|

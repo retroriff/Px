@@ -86,6 +86,15 @@ Dx : Px {
     this.preset(lastPreset[0], lastPreset[1], dxAmp);
   }
 
+  *shuffle {
+    var folders = this.prGetDrumMachinesFolders;
+    var randomIndex = folders.size.rand;
+
+    Dx.use(folders[randomIndex]);
+    this.prPrint("🎲 Drum machine:".scatArgs(folders[randomIndex]));
+  }
+
+
   *solo { |instruments, ins2, ins3, ins4, ins5|
     var hasCommon, lastInstruments, soloIds;
 

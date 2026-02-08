@@ -1,0 +1,5 @@
+{
+  "permissions": {
+    "additionalDirectories": ["~/icloud/Music/SuperCollider/px-agent"]
+  }
+}

@@ -134,13 +134,6 @@
     w.front;
   }
 
-  *shuffle {
-    var folders = this.prGetDrumMachinesFolders;
-    var randomIndex = folders.size.rand;
-
-    Dx.use(folders[randomIndex]);
-  }
-
   *prGetDrumMachinesFolders {
     ^PathName(drumMachinesPath).folders.collect(_.folderName);
   }

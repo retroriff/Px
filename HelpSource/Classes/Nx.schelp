@@ -88,7 +88,7 @@ method:: fifth
 Navigates the circle of fifths from a starting tonic and sets the resulting chord. Inspired by omnichord chord button layout where harmonically related chords are adjacent.
 
 argument:: tonic
-Starting tonic as a Symbol (e.g., \C, \A, \Fs). Default: \C
+Starting tonic as a Symbol (e.g., \C, \A, \Fs), or \rand for a random tonic from the circle of fifths. Default: \C
 
 argument:: position
 Circle position offset. Positive values move clockwise (fifths up), negative values move counterclockwise (fifths down). Wraps at 12. Use \rand for random position. Default: 0
@@ -107,9 +107,11 @@ Nx.fifth(\A, 2, \dom7);     // B dominant 7th
 Nx.fifth(\C, 0, \dim);      // C diminished
 Nx.fifth(\C, 0, \aug);      // C augmented
 Nx.fifth(\C, 12);           // C major (wraps back)
+Nx.fifth(\rand);             // Random tonic, major quality
 Nx.fifth(\C, \rand);        // Random position from C
 Nx.fifth(\C, 0, \rand);     // C with random quality
-Nx.fifth(\C, \rand, \rand); // Random position and quality
+Nx.fifth(\rand, \rand, \rand); // Fully random
+Nx.fifth(\rand, (-2..2).choose, \dim); // Random tonic, random nearby position, dim quality
 
 // Common progressions become easy
 Nx.fifth(\C, 0);  // I  (C)

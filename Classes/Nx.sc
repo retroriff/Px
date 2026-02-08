@@ -197,9 +197,11 @@ Nx {
   *fifth { |tonicArg = \C, position = 0, quality = \major|
     var chordName, pos, qualityStr, startIndex, targetIndex, targetTonic;
 
-    if (tonics.includesKey(tonicArg.asSymbol).not) {
-      ^this.prPrint("Invalid tonic:" + tonicArg);
-    };
+    if (tonicArg == \rand)
+    { tonicArg = circleOfFifths.choose };
+
+    if (tonics.includesKey(tonicArg.asSymbol).not)
+    { ^this.prPrint("Invalid tonic:" + tonicArg) };
 
     startIndex = circleOfFifths.indexOf(tonicArg.asSymbol);
 

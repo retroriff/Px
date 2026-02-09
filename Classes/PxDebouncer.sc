@@ -37,6 +37,9 @@ PxDebouncer {
     original.prUpdatePattern(pairs, pattern);
     pending.clear;
     queue.remove(this);
+
+    if (this === current)
+    { current = nil };
   }
 
   enqueue { |pair|
@@ -52,6 +55,13 @@ PxDebouncer {
         nil
       });
     };
+  }
+
+  prTakePending {
+    var taken = pending.copy;
+    pending.clear;
+    queue.remove(this);
+    ^taken;
   }
 
   printOn { |stream|

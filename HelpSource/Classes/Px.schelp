@@ -6,7 +6,7 @@ related:: Classes/Fx, Classes/Dx, Classes/Sx, Classes/Ndef, Classes/Pbindef
 description::
 Px is a pattern builder that provides a concise DSL (Domain-Specific Language) for creating and manipulating musical patterns in SuperCollider. It simplifies the standard pattern syntax for live coding performances.
 
-Patterns are created using Integer method chaining. Each pattern has a unique ID (the integer) and parameters are set using keyword methods:
+Patterns are created using Integer method chaining. Each pattern has a unique ID (the integer) and parameters are set using keyword methods, in any order:
 
 code::
 707 i: \bd dur: 1;           // Pattern 1: bass drum, duration 1 beat
@@ -47,6 +47,12 @@ Ndef(\sd).release(10);
 Fx(\px).reverb(Nil)
 Fx(\sd).reverb(0.5)
 ::
+
+subsection:: Method Chaining (PxDebouncer)
+
+Method chaining works through a debouncing system (link::Classes/PxDebouncer::). When a chain like code::1 i: \sine amp: 0.5 dur: 1:: is evaluated, SuperCollider calls each method (code::i::, code::amp::, code::dur::) sequentially. The first method creates a PxDebouncer instance that captures the pattern, and subsequent methods enqueue their key-value pairs into it. The debouncer schedules a single commit on the next AppClock cycle, which merges all pairs and sends them to Px or Dx as one pattern update.
+
+This batching means the pattern is only built and played once per chain, regardless of how many methods are called.
 
 subsection:: Setup
 
@@ -224,6 +230,18 @@ Solos one or more patterns, muting all others.
 
 argument:: soloIds
 Pattern ID or array of IDs to solo. Pass false to unsolo.
+
+argument:: id2
+Optional additional pattern ID to solo.
+
+argument:: id3
+Optional additional pattern ID to solo.
+
+argument:: id4
+Optional additional pattern ID to solo.
+
+argument:: id5
+Optional additional pattern ID to solo.
 
 code::
 Px.solo(1);          // Solo pattern 1

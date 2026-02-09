@@ -118,11 +118,17 @@
 
   prFx { |fx, mix|
     var debouncer = this.prDebouncer;
-    var pattern = debouncer.pattern ?? Px.patternState;
-    var lastFx = pattern[\fx] ?? [];
-    var allFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
+    var lastFx = [];
+    var allFx;
 
-    Px.patternState[\fx] = allFx;
+    if (debouncer.pattern.notNil and: { debouncer.pattern[\fx].notNil })
+    { lastFx = debouncer.pattern[\fx] };
+
+    allFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
+
+    if (debouncer.pattern.notNil)
+    { debouncer.pattern[\fx] = allFx };
+
     debouncer.enqueue([\fx, allFx]);
   }
 }

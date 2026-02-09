@@ -29,7 +29,10 @@
     var playbufKeys = SynthDescLib.global[\playbuf].controlNames.asSet;
     var synthDefControlNames = (loopKeys ++ playbufKeys);
     var customMethods = [\finish, \length, \name];
-    var currentInstrument = Px.patternState[\instrument];
+    var currentInstrument;
+
+    if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.notNil })
+    { currentInstrument = PxDebouncer.current.pattern[\instrument] };
 
     if (currentInstrument.notNil and: { SynthDescLib.global[currentInstrument].notNil }) {
       synthDefControlNames = synthDefControlNames ++ SynthDescLib.global[currentInstrument].controlNames;
@@ -138,8 +141,7 @@
       id = pattern[\id];
     };
 
-    Px.patternState = Px.last[id];
-    PxDebouncer.current = PxDebouncer(this, Px.patternState);
+    PxDebouncer.current = PxDebouncer(this, Px.last[id]);
   }
 
   solo { |value|
@@ -272,9 +274,9 @@
     { ^findExistingPatternForIns[\id] };
   }
 
-  prGenerateDrumMachineIntegerId { |drumMachineNumber|
+  prGenerateDrumMachineIntegerId { |drumMachineNumber, patternId|
     var existingPattern = Px.last.detect({ |pattern|
-      pattern[\drumMachine] == drumMachineNumber and: (pattern[\id] == Px.patternState[\id])
+      pattern[\drumMachine] == drumMachineNumber and: (pattern[\id] == patternId)
     });
 
     var existingIds = Px.last
@@ -321,6 +323,7 @@
 
   prPlay { |i, play, loop|
     var instrumentWithoutSufix = this.prRemoveSufix(i);
+    var oldPending;
 
     var newPattern = (
       id: this.createId(i),
@@ -332,8 +335,13 @@
     if (i.asString != instrumentWithoutSufix.asString and: { this.prExtractSufix(i).notNil})
     { newPattern.putAll([\file, this.prExtractSufix(i)]) };
 
-    Px.patternState = newPattern;
+    if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.isNil })
+    { oldPending = PxDebouncer.current.prTakePending };
+
     PxDebouncer.current = PxDebouncer(this, newPattern);
+
+    if (oldPending.notNil)
+    { oldPending.do { |p| PxDebouncer.current.enqueue(p) } };
   }
 
   prPlayClass { |newPattern|
@@ -341,21 +349,25 @@
       pattern[\id] == this.asSymbol and: (pattern[\drumMachine].notNil)
     };
 
-    Px.patternState = newPattern;
-
     if (drumMachinePattern.notNil) {
+      var drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(drumMachinePattern[\drumMachine], newPattern[\id]);
+
       newPattern.putAll([
         \drumMachine, drumMachinePattern[\drumMachine],
-        \drumMachineIntegerId, this.prGenerateDrumMachineIntegerId(drumMachinePattern[\drumMachine])
+        \drumMachineIntegerId, drumMachineIntegerId
       ]);
+
       ^Dx(newPattern);
     };
 
     if (this.prHasDrumMachine) {
+      var drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(this, newPattern[\id]);
+
       newPattern.putAll([
         \drumMachine, this,
-        \drumMachineIntegerId, this.prGenerateDrumMachineIntegerId(this)
+        \drumMachineIntegerId, drumMachineIntegerId
       ]);
+
       ^Dx(newPattern);
     }
 
@@ -369,10 +381,13 @@
   }
 
   prRemoveBeatSetWhenSet {
-    var id = Px.patternState[\id];
-    if (Px.last[id].notNil) {
-      Px.last[id].removeAt(\beatSet);
-    };
+    var id;
+
+    if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.notNil })
+    { id = PxDebouncer.current.pattern[\id] };
+
+    if (id.notNil and: { Px.last[id].notNil })
+    { Px.last[id].removeAt(\beatSet) };
   }
 
   prRemoveSufix { |name|
@@ -393,6 +408,9 @@
   }
 
   prDebouncer {
-    ^PxDebouncer.current ?? PxDebouncer(this)
+    if (PxDebouncer.current.isNil)
+    { PxDebouncer.current = PxDebouncer(this) };
+
+    ^PxDebouncer.current;
   }
 }

@@ -513,6 +513,12 @@ code::
 707 i: \cp dur: 0.25 euclid: [3, 8];  // 3 hits over 8 steps
 ::
 
+## repeat
+|| Sets the number of times a beat pattern repeats before stopping. The pattern is removed from the active set after playback completes.
+code::
+707 i: \hh dur: 0.25 beat: 0.7 repeat: 2;  // Repeat beat 2 times then stop
+::
+
 ## rest
 || Adds rest periods to beat patterns.
 code::

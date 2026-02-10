@@ -9,11 +9,11 @@ Deep technical reference for Px pattern system architecture. This document expla
 Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each pattern is a key-value dictionary containing:
 - **Identity** - id, drumMachine, instrument
 - **Audio parameters** - amp, dur, pan, octave, degree, scale
-- **Rhythm** - beat, beatSet, fill, weight, euclid, rest, human
+- **Rhythm** - beat, beatSet, fill, weight, euclid, rest, repeat, human
 - **Effects** - fx, fade, chop, reverb
 - **MIDI** - chan, midiout, midicmd, midinote
 - **Samples** - loop, play, file
-- **Internal state** - beats, totalBeats, repeats, solo
+- **Internal state** - beats, totalBeats, solo
 
 ### Key Pattern Dictionary Keys
 
@@ -30,6 +30,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 - `pattern[\beats]` - Generated beat array (stored after creation)
 - `pattern[\totalBeats]` - Combined beat used by fill patterns
 - `pattern[\fill]` - Invert previous pattern's beat
+- `pattern[\repeat]` - Number of times the beat pattern repeats (removed before Pdef creation)
 - `pattern[\weight]` - Probability 0-1 for beat randomness
 
 **Where to find:** Check source files for complete list - pattern keys are used throughout `Classes/Px.sc`, `Classes/Number.sc`, `Classes/PxBeats.sc`

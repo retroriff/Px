@@ -12,8 +12,12 @@
 
     if (pattern[\seed] == \rand) {
       var amp = pattern[\amp] ?? 1;
+      var repeats = inf;
 
-      ^[Pwrand([0, amp], [1 - weight, weight], inf)];
+      if (pattern[\repeat].notNil)
+      { repeats = 16 * pattern[\repeat] };
+
+      ^Pwrand([0, amp], [1 - weight, weight], repeats);
     };
 
     thisThread.randSeed = seed;
@@ -29,13 +33,15 @@
   }
 
   *prCreateBeatSet { |amp, pattern|
+    var repeats = pattern[\repeat] ?? inf;
+
     var list = pattern[\beatSet].collect { |step|
       if (step > 0)
       { amp }
       { step};
     };
 
-    ^Pseq(list, inf);
+    ^Pseq(list, repeats);
   }
 
   *prCreateRhythmBeat { |amp, pattern|

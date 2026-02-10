@@ -116,6 +116,10 @@
     this.prPlay(play: value);
   }
 
+  repeat { |value|
+    this.prDebouncer.enqueue([\repeat, value]);
+  }
+
   rest { |value|
     this.prDebouncer.enqueue([\rest, value]);
   }

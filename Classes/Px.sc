@@ -40,7 +40,9 @@ Px {
   }
 
   *new { |newPattern|
-    var pattern, pdef, playList;
+    var hasRepeat, pattern, pdef, playList;
+
+    hasRepeat = newPattern[\repeat].notNil;
 
     this.prInitializeDictionaries(newPattern);
     this.prHandleSoloPattern(newPattern);
@@ -64,7 +66,10 @@ Px {
     Ndef(\px)[0] = { Mix.new(playList.values) };
 
     lastFormatted[newPattern[\id]] = pattern;
-    this.prRemoveFinitePatternFromLast(newPattern);
+
+    if (hasRepeat)
+    { last.removeAt(newPattern[\id]) }
+    { this.prRemoveFinitePatternFromLast(newPattern) };
   }
 
   *prCreateAmp { |pattern|
@@ -79,8 +84,10 @@ Px {
     pattern[\dur] = this.prCreateBeatRest(pattern);
     pattern[\amp] = amp;
 
-    if (pattern[\amp].isArray)
-    { pattern[\amp] = Pseq(pattern[\amp], inf) };
+    if (pattern[\amp].isArray) {
+      var repeats = pattern[\repeat] ?? inf;
+      pattern[\amp] = Pseq(pattern[\amp], repeats);
+    };
 
     ^pattern;
   }
@@ -158,6 +165,8 @@ Px {
 
   *prCreatePdef { |pattern|
     var pbindef;
+
+    pattern.removeAt(\repeat);
 
     if (this.prHasFX(pattern) == true)
     { pbindef = this.prCreatePbindFx(pattern) }

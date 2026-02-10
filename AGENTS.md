@@ -90,6 +90,23 @@ When debugging or modifying behavior, always grep for `^\+ ClassName` to find al
 
 # Variable definitions
 
-In SuperCollider, `var` is lexically scoped and each { ... } introduces a new lexical scope (function block).
-Variables defined inside an if branch belong only to that branch’s scope and are not visible outside.
+In SuperCollider, all `var` declarations in a scope must appear **before any executable statements**. Placing a `var` after an `if` or any other expression is a syntax error.
+
+```supercollider
+// BAD — var after executable statement
+myMethod { |x|
+    if (x > 5) { ^x };
+    var y = 10; // syntax error
+}
+
+// GOOD — all vars declared first
+myMethod { |x|
+    var y = 10;
+
+    if (x > 5) { ^x };
+}
+```
+
+`var` is lexically scoped and each { ... } introduces a new lexical scope (function block).
+Variables defined inside an if branch belong only to that branch's scope and are not visible outside.
 If a variable is used across branches or later in the function, it must be declared in the outer (top-level) scope.

@@ -41,12 +41,16 @@
 - Add chord → Edit `Score/*.scd`
 - Add/modify class method → Update corresponding `HelpSource/Classes/<ClassName>.schelp`
 
-**Help file conventions:**
+**Documentation conventions:**
 
-- Help files are in `HelpSource/Classes/` using SCDoc format (.schelp)
+"Update documentation" means updating both:
+1. **Help files** (`HelpSource/Classes/<ClassName>.schelp`) - Detailed SCDoc format documentation
+2. **README.md** - Brief feature listing in the class methods tables
+
 - Private methods (starting with `pr`) are not documented
-- When adding new public methods, update the corresponding help file
+- When adding new public methods, update the corresponding help file and add the method to the README table
 - Reference existing help files (Px.schelp, Fx.schelp, Sx.schelp) for format examples
+- README entries should be concise (one-line description); help files contain full details and examples
 
 **Data file conventions:**
 

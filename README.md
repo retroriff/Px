@@ -216,7 +216,8 @@ Dx.preset(\electro, 1);
 
 | Name          | Arguments                                         | Description                           |
 | ------------- | ------------------------------------------------- | ------------------------------------- |
-| `delay`       | mix?: range 0..1 \|                               | Adds delay FX to the preset patterns  |
+| `delay`       | mix?: range 0..1                                  | Adds delay FX to the preset patterns  |
+| `fill`        | instrument?: symbol                               | One-shot random fill with crash accent |
 | `gui`         | None                                              | Opens a drum machine bank GUI         |
 | `loadPresets` | None                                              | Reloads presets from YAML files       |
 | `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/)      |

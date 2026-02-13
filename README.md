@@ -133,11 +133,13 @@ Px has the same FX methods than Fx, but it is helpful as a shortcut.
 
 ### Pattern shortcuts
 
-The following array shortcuts will be automacally converted to patterns:
+Array extension methods that create pattern objects:
 
-| Shortcut             | Pattern conversion                    | Works with         | How                                                                            |
-| -------------------- | ------------------------------------- | ------------------ | ------------------------------------------------------------------------------ |
-| `[\lin, 0, 1, 8, 1]` | `Pseg([0.01, 1, 1], [5, 1], \linear)` | amp, ctf, env, res | Linear (`\lin`) or exponential (`\exp`), start, end, repeats? (omitted is inf) |
+| Method                  | Description                                                          |
+| ----------------------- | -------------------------------------------------------------------- |
+| `[0, 1].pseg(\exp, 16)` | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats? |
+| `[1, 2, 3].pseq`        | Creates a `Pseq` loop from the array                                 |
+| `[0, 1, 2, 3].shuffle(71)` | Scrambles the array with a random seed for reproducibility        |
 
 ## ✨ Fx: A Nodeproxy Effects Handler
 
@@ -214,18 +216,18 @@ Dx.preset(\electro, 1);
 
 ### Dx class methods
 
-| Name          | Arguments                                         | Description                           |
-| ------------- | ------------------------------------------------- | ------------------------------------- |
-| `delay`       | mix?: range 0..1                                  | Adds delay FX to the preset patterns  |
+| Name          | Arguments                                         | Description                            |
+| ------------- | ------------------------------------------------- | -------------------------------------- |
+| `delay`       | mix?: range 0..1                                  | Adds delay FX to the preset patterns   |
 | `fill`        | instrument?: symbol                               | One-shot random fill with crash accent |
-| `gui`         | None                                              | Opens a drum machine bank GUI         |
-| `loadPresets` | None                                              | Reloads presets from YAML files       |
-| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/)      |
-| `release`     | None                                              | Releases with fadeTime                |
-| `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns |
-| `shuffle`     | None                                              | Shuffles the drum machines bank       |
-| `stop`        | None                                              | Same as `\808 i: \all`                |
-| `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns   |
+| `gui`         | None                                              | Opens a drum machine bank GUI          |
+| `loadPresets` | None                                              | Reloads presets from YAML files        |
+| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/)       |
+| `release`     | None                                              | Releases with fadeTime                 |
+| `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns  |
+| `shuffle`     | None                                              | Shuffles the drum machines bank        |
+| `stop`        | None                                              | Same as `\808 i: \all`                 |
+| `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns    |
 
 ## 🌊 Sx: A Sequenced Synth
 

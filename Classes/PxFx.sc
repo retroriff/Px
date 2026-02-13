@@ -90,8 +90,7 @@
   }
 
   wah { |mix|
-    var pairs = this.prCreatePatternFromArray(\wah, mix);
-    this.prFx(\wah, pairs[1]);
+    this.prFx(\wah, mix);
   }
 
   prCreatePatternKey { |value|

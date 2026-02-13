@@ -19,6 +19,8 @@ Dx : Px {
     lastPreset = Array.new;
     this.prCreatePresetsDict;
 
+    CmdPeriod.add { lastPreset = Array.new };
+
     ^super.initClass;
   }
 
@@ -34,14 +36,10 @@ Dx : Px {
   }
 
   *fill { |instrument = \sd|
-    var crashAccent, crashAccentPreference, savedBeat, sdPattern;
+    var hasCrashInstrument, savedBeat, sdPattern;
 
-    crashAccentPreference = [\cr, \hh, \oh];
-
-    sdPattern = last.detect { |pattern|
-      (pattern[\drumMachine] == drumMachine) and: 
-      { pattern[\instrument].asSymbol == instrument.asSymbol }
-    };
+    if (instrumentFolders.isEmpty)
+    { this.prGetInstrumentFolders };
 
     this.new((
       instrument: instrument.asSymbol,
@@ -55,30 +53,26 @@ Dx : Px {
       weight: 0.6,
     ));
 
-    if (sdPattern.notNil) {
-      savedBeat = sdPattern[\beatSet] ?? sdPattern[\beats];
+    if (instrument.asSymbol != \cr and: { this.prHasInstrument(\cr) })
+    { hasCrashInstrument = true };
 
-      crashAccent = crashAccentPreference.detect { |ins|
-        (ins != instrument.asSymbol) and: { this.prHasInstrument(ins) }
+
+    fork {
+      4.wait;
+
+      if (lastPreset.size > 0)
+      { this.preset(lastPreset[0], lastPreset[1], dxAmp) };
+
+      if (hasCrashInstrument == true) {
+        this.new((
+          instrument: \cr,
+          amp: dxAmp,
+          drumMachine: drumMachine,
+          dx: true,
+          id: (instrument.asString ++ "FillIn" ++ drumMachine.asString).asSymbol,
+        ));
       };
-
-      fork {
-        4.wait;
-        sdPattern.putAll([\beat, true, \beatSet, savedBeat]);
-        sdPattern.removeAt(\seed);
-        this.new(sdPattern);
-
-        if (crashAccent.notNil) {
-          this.new((
-            instrument: crashAccent,
-            amp: dxAmp,
-            drumMachine: drumMachine,
-            dx: true,
-            id: (instrument.asString ++ "Fill" ++ drumMachine.asString).asSymbol,
-          ));
-        };
-      };
-    }
+    };
   }
 
   *in { |fadeTime = 16|
@@ -293,7 +287,7 @@ Dx : Px {
       };
     };
 
-    if (preset[\name].notNil and: { hasNewPreset == true })
+    if (preset.notNil and: { preset[\name].notNil } and: { hasNewPreset == true })
     { super.prPrint("🎧 Preset:".scatArgs(preset[\name])) };
 
     dxAmp = newAmp;

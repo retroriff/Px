@@ -1,20 +1,20 @@
 presets:
-  - name: 'Core, "Backbeat"'
-    preset:
+  # name: 'Core, "Backbeat"'
+  -  preset:
       - instrument: bd
         list: [1, 0, 0, 0, 5, 0, 0, 0, 9, 0, 0, 0, 13, 0, 0, 0]
       - instrument: sd
         list: [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0]
-  - name: 'Core, "Backbeat + Hats"'
-    preset:
+  # name: 'Core, "Backbeat + Hats"'
+  -  preset:
       - instrument: bd
         list: [1, 0, 0, 0, 5, 0, 0, 0, 9, 0, 0, 0, 13, 0, 0, 0]
       - instrument: sd
         list: [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0]
       - instrument: oh
         list: [0, 0, 3, 0, 0, 0, 7, 0, 0, 0, 11, 0, 0, 0, 15, 0]
-  - name: 'Core, "Backbeat + Hats + Claps"'
-    preset:
+  # name: 'Core, "Backbeat + Hats + Claps"'
+  -  preset:
       - instrument: bd
         list: [1, 0, 0, 0, 5, 0, 0, 0, 9, 0, 0, 0, 13, 0, 0, 0]
       - instrument: sd

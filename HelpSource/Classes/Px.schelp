@@ -245,6 +245,7 @@ Optional additional pattern ID to solo.
 
 code::
 Px.solo(1);          // Solo pattern 1
+Px.solo(1, 2);       // Solo patterns 1 and 2
 Px.solo([1, 2]);     // Solo patterns 1 and 2
 Px.solo(false);      // Unsolo all
 ::
@@ -799,9 +800,26 @@ code::
 // Weighted random
 707 i: \bd dur: 1 amp: [\wrand, 0.2, 0.8, 0.4];
 
-// Curves (linear or exponential)
-707 i: \bd dur: 0.25 amp: [\lin, 0, 1, 8];    // Linear 0 to 1 over 8 beats
-707 i: \bd dur: 0.25 amp: [\exp, 0.1, 1, 8];  // Exponential
+// Sequencing - converted to a Pseq
+// Format: [values].pseq(repeats)
+// - repeats: (optional) number of times to loop. Omit to loop indefinitely
+1 i: \303 dur: 0.25 degree: [0, 2, 4, 5].pseq; // Pseq([0, 2, 4, 5], inf)
+1 i: \303 dur: 0.25 degree: [0, 2, 4, 5].pseq(2); // Pseq([0, 2, 4, 5], 2)
+
+// Curves (linear or exponential) - converted to a Pseg
+// Format: [levels].pseg(curve, beats, repeats)
+// - curve: \lin (default) or \exp
+// - beats: number of beats for the transition (default: 8)
+// - repeats: (optional) number of times to cycle. Omit to hold at end value indefinitely
+
+// Fade in over 16 beats and keep playing at amp 1
+707 i: \hh dur: 0.25 amp: [0, 1].pseg(\exp, 16); // Pseg([0.01, 1, 1], [16, inf], \exponential)
+
+// Fade in over 16 beats then stop the pattern
+707 i: \hh dur: 0.25 amp: [0, 1].pseg(\exp, 16, 1); // Pseg([0.01, 1], [16, 1], \exponential)
+
+// Linear ramp from 0 to 1 over 8 beats
+707 i: \bd dur: 0.25 amp: [0, 1].pseg(\lin, 8); // Pseg([0, 1, 1], [8, inf], \linear)
 ::
 
 examples::

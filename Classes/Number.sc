@@ -3,11 +3,6 @@
     this.amp(value);
   }
 
-  amp { |value|
-    var pairs = this.prCreatePatternFromArray(\amp, value);
-    this.prDebouncer.enqueue(pairs);
-  }
-
   beat { |value|
     var pairs = Array.new;
 
@@ -152,22 +147,6 @@
     this.prDebouncer.enqueue([\weight, value.clip(0, 1)]);
   }
 
-  // 303 SynthDef methods with arrays to be patterns
-  ctf { |value|
-    var pairs = this.prCreatePatternFromArray(\ctf, value);
-    this.prDebouncer.enqueue(pairs);
-  }
-
-  env { |value|
-    var pairs = this.prCreatePatternFromArray(\env, value);
-    this.prDebouncer.enqueue(pairs);
-  }
-
-  res { |value|
-    var pairs = this.prCreatePatternFromArray(\res, value);
-    this.prDebouncer.enqueue(pairs);
-  }
-
   // Functions
   createId { |ins|
     var instrumentWithoutSufix = this.prRemoveSufix(ins);
@@ -177,31 +156,6 @@
     }
 
     ^this.asSymbol;
-  }
-
-  prCreateBeat { |key, value|
-    var beat = Array.fill(16, { 2.rand });
-
-    ^[key, Pseq(beat, inf)];
-  }
-
-  prCreatePatternFromArray { |key, value|
-    var curves, isCurve;
-    var pairs = [key, value];
-
-    if (value == \beat)
-    { ^this.prCreateBeat(key, value) };
-
-    if (value.isArray.not)
-    { ^pairs };
-
-    isCurve = [\exp, \lin].includes(value[0]);
-
-    case
-    { isCurve }
-    { ^this.prCreatePseg(key, value) };
-
-    ^pairs;
   }
 
   prCreateArrayFromSample { |sample|
@@ -227,34 +181,6 @@
     };
 
     ^sample;
-  }
-
-  prCreatePseg { |key, value|
-    var curve = value[0];
-    var start = this.prPreventNonZeroExponential(value[0], value[1]);
-    var end = this.prPreventNonZeroExponential(value[0], value[2]);
-    var beats = value[3] ?? 8;
-    var dur = value[4] ?? inf;
-    var hasRepeats = dur.isInteger;
-    var curvesDict = Dictionary[
-      \exp -> \exponential,
-      \lin -> \linear
-    ];
-    var durs, levels, pseg;
-    var repeats = Array.new;
-
-    if (hasRepeats) {
-      levels = [start, end];
-      durs = [beats, dur];
-      repeats = [\repeat, dur];
-    } {
-      levels = [start, end, end];
-      durs = [beats, inf];
-    };
-
-    pseg = Pseg(levels, durs, curvesDict[curve]);
-
-    ^[key, pseg] ++ repeats;
   }
 
   prShouldGenerateDrumMachineId { |ins|
@@ -376,12 +302,6 @@
     }
 
     ^Px(newPattern);
-  }
-
-  prPreventNonZeroExponential { |curve, value|
-    if (curve == \exp and: (value == 0))
-    { ^0.01 }
-    { ^value };
   }
 
   prRemoveBeatSetWhenSet {

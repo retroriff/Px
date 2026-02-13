@@ -28,7 +28,7 @@
     var loopKeys = SynthDescLib.global[\loop].controlNames.asSet;
     var playbufKeys = SynthDescLib.global[\playbuf].controlNames.asSet;
     var synthDefControlNames = (loopKeys ++ playbufKeys);
-    var customMethods = [\finish, \length, \name];
+    var customMethods = [\callback, \finish, \length, \name];
     var currentInstrument;
 
     if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.notNil })
@@ -132,17 +132,12 @@
     var id = this.asSymbol;
 
     if (this.prHasDrumMachine and: { setId != true }) {
-      var drumMachinePattern = Px.last.detect { |pattern|
-        pattern[\drumMachine].notNil and: (pattern[\instrument] == setId)
+      var pattern = Px.last.detect { |p|
+        (p[\drumMachine] == this) and: { p[\instrument].asSymbol == setId }
       };
 
-      var dxPresetPattern = Px.last.detect { |pattern|
-        pattern[\id] == this.asSymbol
-      };
-
-      var pattern = drumMachinePattern ?? dxPresetPattern;
-
-      id = pattern[\id];
+      if (pattern.notNil)
+      { id = pattern[\id] };
     };
 
     PxDebouncer.current = PxDebouncer(this, Px.last[id]);
@@ -251,7 +246,7 @@
     if (hasRepeats) {
       levels = [start, end];
       durs = [beats, dur];
-      repeats = [\repeats, dur];
+      repeats = [\repeat, dur];
     } {
       levels = [start, end, end];
       durs = [beats, inf];
@@ -349,12 +344,17 @@
   }
 
   prPlayClass { |newPattern|
-    var drumMachinePattern = Px.last.detect { |pattern|
+    var drumMachinePattern, drumMachineIntegerId;
+
+    if (newPattern[\drumMachine].notNil)
+    { ^Dx(newPattern) };
+
+    drumMachinePattern = Px.last.detect { |pattern|
       pattern[\id] == this.asSymbol and: (pattern[\drumMachine].notNil)
     };
 
     if (drumMachinePattern.notNil) {
-      var drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(drumMachinePattern[\drumMachine], newPattern[\id]);
+      drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(drumMachinePattern[\drumMachine], newPattern[\id]);
 
       newPattern.putAll([
         \drumMachine, drumMachinePattern[\drumMachine],
@@ -365,7 +365,7 @@
     };
 
     if (this.prHasDrumMachine) {
-      var drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(this, newPattern[\id]);
+      drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(this, newPattern[\id]);
 
       newPattern.putAll([
         \drumMachine, this,

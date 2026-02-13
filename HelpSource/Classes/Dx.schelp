@@ -197,6 +197,17 @@ code::
 Dx.play(8);
 ::
 
+method:: fill
+Creates a drum fill-in that plays for one cycle (16 steps) and then restores the original beat. If the instrument is currently playing, its beat is saved, replaced with a random fill, and restored after 4 beats. If the instrument is not playing, a temporary one-shot fill is created.
+
+argument:: instrument
+Instrument to fill with. Default: \sd (snare drum).
+
+code::
+Dx.fill;          // Snare fill (default)
+Dx.fill(\hh);     // Hi-hat fill
+::
+
 method:: in
 Fades in the drum machine preset.
 

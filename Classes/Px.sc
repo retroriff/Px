@@ -40,9 +40,7 @@ Px {
   }
 
   *new { |newPattern|
-    var hasRepeat, pattern, pdef, playList;
-
-    hasRepeat = newPattern[\repeat].notNil;
+    var pattern, pdef, playList;
 
     this.prInitializeDictionaries(newPattern);
     this.prHandleSoloPattern(newPattern);
@@ -67,9 +65,7 @@ Px {
 
     lastFormatted[newPattern[\id]] = pattern;
 
-    if (hasRepeat)
-    { last.removeAt(newPattern[\id]) }
-    { this.prRemoveFinitePatternFromLast(newPattern) };
+    this.prRemoveFinitePatternFromLast(newPattern);
   }
 
   *prCreateAmp { |pattern|
@@ -233,8 +229,9 @@ Px {
     and: { pattern[\fade][0] == \in };
     var hasFadeOut = pattern[\fade].isArray
     and: { pattern[\fade][0] == \out };
-    var hasRepeats = pattern[\repeats].notNil;
-    var hasEmptyDur = pattern[\dur] == 0;
+    var hasEmptyDur = pattern[\dur] == 0
+    or: { pattern[\dur].isNil };
+    var hasRepeat = pattern[\repeat].notNil;
 
     case
     { hasFadeIn }
@@ -243,7 +240,7 @@ Px {
     { hasFadeOut }
     { last.removeAt(pattern[\id]) }
 
-    { hasRepeats or: hasEmptyDur } {
+    { hasRepeat or: hasEmptyDur } {
       last.removeAt(pattern[\id]);
       ndefList.removeAt(pattern[\id]);
     };

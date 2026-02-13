@@ -1,6 +1,4 @@
-/*
-TODO: Intro / Fill in
-*/
+// TODO: Refactor fill method to play sd with repat and crash, and then if sd needs restore, fork it.
 
 Dx : Px {
   classvar <>drumMachine;
@@ -35,6 +33,54 @@ Dx : Px {
     this.preset(lastPreset[0], lastPreset[1], dxAmp);
   }
 
+  *fill { |instrument = \sd|
+    var crashAccent, crashAccentPreference, savedBeat, sdPattern;
+
+    crashAccentPreference = [\cr, \hh, \oh];
+
+    sdPattern = last.detect { |pattern|
+      (pattern[\drumMachine] == drumMachine) and: 
+      { pattern[\instrument].asSymbol == instrument.asSymbol }
+    };
+
+    this.new((
+      instrument: instrument.asSymbol,
+      amp: dxAmp,
+      beat: true,
+      dur: 0.25,
+      drumMachine: drumMachine,
+      id: this.prCreateId(instrument),
+      repeat: 1,
+      seed: \rand,
+      weight: 0.6,
+    ));
+
+    if (sdPattern.notNil) {
+      savedBeat = sdPattern[\beatSet] ?? sdPattern[\beats];
+
+      crashAccent = crashAccentPreference.detect { |ins|
+        (ins != instrument.asSymbol) and: { this.prHasInstrument(ins) }
+      };
+
+      fork {
+        4.wait;
+        sdPattern.putAll([\beat, true, \beatSet, savedBeat]);
+        sdPattern.removeAt(\seed);
+        this.new(sdPattern);
+
+        if (crashAccent.notNil) {
+          this.new((
+            instrument: crashAccent,
+            amp: dxAmp,
+            drumMachine: drumMachine,
+            dx: true,
+            id: (instrument.asString ++ "Fill" ++ drumMachine.asString).asSymbol,
+          ));
+        };
+      };
+    }
+  }
+
   *in { |fadeTime = 16|
     this.prFadeDrums(\in, fadeTime);
   }
@@ -63,9 +109,8 @@ Dx : Px {
     };
 
     presetPatterns do: { |pattern, i|
-      var id = this.prCreateId(i).asSymbol;
-
       if (this.prHasInstrument(pattern[\instrument]) == true) {
+        var id = this.prCreateId(pattern[\instrument]);
         var newPattern = this.prAddFxToPattern(pattern);
 
         this.new(newPattern.putAll([
@@ -154,8 +199,7 @@ Dx : Px {
     lastPatterns do: { |pattern, i|
       if (pattern[\dx] == true) {
         if (this.prHasInstrument(pattern[\instrument]) == true) {
-          var lastTwoDigits = pattern[\id] % 10;
-          pattern[\id] = this.prCreateId(lastTwoDigits);
+          pattern[\id] = this.prCreateId(pattern[\instrument]);
 
           pattern[\drumMachine] = newDrumMachine;
           this.new(pattern);
@@ -205,17 +249,8 @@ Dx : Px {
     ^pattern;
   }
 
-  *prCreateId { |i|
-    var hundred;
-
-    if (drumMachine.isInteger) {
-      // Returns 600, 700, 800 or 900
-      hundred = drumMachine - (drumMachine % 10);
-    } {
-      hundred = 100;
-    };
-
-    ^hundred * 100 + i;
+  *prCreateId { |instrument|
+    ^(instrument.asString ++ drumMachine.asString).asSymbol;
   }
 
   *prCreatePatternFromPreset { |newPreset|

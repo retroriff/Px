@@ -1,5 +1,3 @@
-// TODO: Refactor fill method to play sd with repat and crash, and then if sd needs restore, fork it.
-
 Dx : Px {
   classvar <>drumMachine;
   classvar <>dxAmp;
@@ -92,7 +90,7 @@ Dx : Px {
     this.prFadeDrums(\in, fadeTime);
   }
 
-  *preset { |name, number, amp|
+  *preset { |name = \core, number, amp|
     var newPreset = [name.asSymbol, number, amp];
 
     if (instrumentFolders.isEmpty)

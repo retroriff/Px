@@ -30,7 +30,7 @@ SynthDef(\303, {
             curve: 'exp',
         ),
         gate,
-        doneAction: Done.freeSelf
+        doneAction: Done.none
     );
 
     var waves = [

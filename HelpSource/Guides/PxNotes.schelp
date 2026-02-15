@@ -1,0 +1,68 @@
+title:: Px: Playing Notes
+summary:: Working with pitched content in Px
+categories:: Live Coding
+related:: Classes/Px
+
+description::
+Px supports two ways of specifying pitch: code::degree:: (scale-based) and code::note:: (MIDI note). Each interacts with code::octave:: differently.
+
+section:: Degree and Scale
+
+Use code::degree:: with code::scale:: to play notes relative to a musical scale. The default octave is 5 (SuperCollider's Event default).
+
+code::
+1 i: \sine dur: 0.25 degree: [0, 2, 4, 5].pseq scale: \minor;
+::
+
+Setting code::octave: 5:: explicitly changes nothing, since 5 is already the default:
+
+code::
+1 i: \sine dur: 0.25 degree: [0, 2, 4, 5].pseq scale: \minor octave: 5;
+::
+
+Lower or higher octaves shift the absolute pitch:
+
+code::
+1 i: \sine dur: 0.25 degree: [0, 2, 4, 5].pseq scale: \minor octave: 4;
+::
+
+section:: Note (MIDI Note)
+
+Use code::note:: to set MIDI notes directly. No octave transposition is applied by default.
+
+code::
+1 i: \sine dur: 0.5 note: [60, 64, 67].pseq;
+::
+
+section:: Octave Behavior
+
+The code::octave:: parameter works differently depending on whether you use code::degree:: or code::note:::
+
+definitionlist::
+## With degree
+|| code::octave:: sets the emphasis::absolute:: octave. The default is 5 (middle octave, from SuperCollider's Event system). Setting code::octave: 4:: plays one octave lower, code::octave: 6:: plays one octave higher.
+
+## With note
+|| code::octave:: is a emphasis::transposition offset:: in octaves. The default is 0 (no transposition). Each unit transposes by 12 semitones. Internally, the value is converted to code::ctranspose:: (code::octave * 12::).
+::
+
+Example using code::octave:: with code::note:: to alternate between the original pitch and one octave up:
+
+code::
+1 i: \sine dur: 0.5 note: [60, 64, 67].pseq octave: [0, 1];
+::
+
+This is equivalent to:
+
+code::
+1 i: \sine dur: 0.5 note: [60, 64, 67].pseq ctranspose: [0, 12];
+::
+
+section:: ctranspose
+
+Chromatic transposition in semitones. Works with both code::degree:: and code::note:: patterns, and stacks on top of any code::octave:: shift.
+
+code::
+1 i: \sine dur: 0.5 note: [60, 64, 67].pseq octave: 1;
+Px.ctranspose(2);  // Adds 2 semitones on top of the octave shift
+::

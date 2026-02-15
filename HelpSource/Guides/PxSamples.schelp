@@ -1,0 +1,46 @@
+title:: Px: Sample Playback
+summary:: Working with samples in Px
+categories:: Live Coding
+related:: Classes/Px
+
+description::
+Samples loaded with code::Px.loadSamples:: can be played with code::play:: and code::loop::. This guide covers how to pitch samples using scale degrees and control random degree generation.
+
+section:: Pitching Samples with Degrees
+
+Samples use a fixed-frequency SynthDef, so standard code::degree:: and code::scale:: values are converted to playback rate ratios via code::midiratio::. This means a degree of 0 plays at normal speed, and other degrees speed up or slow down the sample according to the scale intervals.
+
+code::
+1 play: "fm:0" dur: 1 degree: [0, 2, 4].pseq scale: \minor;
+::
+
+section:: Random Degrees
+
+Setting code::degree:: to code::\rand:: generates a sequence of random degrees chosen from the current scale.
+
+code::
+1 play: "fm:0" dur: 1 degree: \rand;
+::
+
+subsection:: length
+
+The code::length:: parameter controls how many random degrees are generated. The default is 1, which produces a single random degree that repeats. Use higher values to create melodic sequences.
+
+code::
+1 play: "fm:0" dur: 1 degree: \rand length: 5;
+1 play: "fm:0" dur: 1 degree: \rand length: 8 scale: \minor;
+::
+
+subsection:: seed
+
+Use code::seed:: to get reproducible random sequences. The same seed always produces the same set of random degrees.
+
+code::
+1 play: "fm:0" dur: 1 degree: \rand length: 5 seed: 42;
+::
+
+Changing the seed generates a different sequence:
+
+code::
+1 play: "fm:0" dur: 1 degree: \rand length: 5 seed: 99;
+::

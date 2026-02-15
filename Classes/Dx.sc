@@ -1,3 +1,5 @@
+// TODO: Routine Boing fill doesn't work as expected
+
 Dx : Px {
   classvar <>drumMachine;
   classvar <>dxAmp;
@@ -33,7 +35,7 @@ Dx : Px {
     this.preset(lastPreset[0], lastPreset[1], dxAmp);
   }
 
-  *fill { |instrument = \sd|
+  *fill { |instrument = \sd, repeat = 1|
     var hasCrashInstrument, savedBeat, sdPattern;
 
     if (instrumentFolders.isEmpty)
@@ -46,7 +48,7 @@ Dx : Px {
       dur: 0.25,
       drumMachine: drumMachine,
       id: this.prCreateId(instrument),
-      repeat: 1,
+      repeat: repeat,
       seed: \rand,
       weight: 0.6,
     ));
@@ -56,7 +58,7 @@ Dx : Px {
 
 
     fork {
-      4.wait;
+      (repeat * 4).wait;
 
       if (lastPreset.size > 0)
       { this.preset(lastPreset[0], lastPreset[1], dxAmp) };

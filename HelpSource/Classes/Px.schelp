@@ -1,7 +1,7 @@
 class:: Px
 summary:: A Pattern Builder for Live Coding
 categories:: Live Coding, Streams-Patterns-Events>Patterns
-related:: Classes/Fx, Classes/Dx, Classes/Sx, Classes/Ndef, Classes/Pbindef
+related:: Classes/Fx, Classes/Dx, Classes/Sx, Guides/PxNotes, Guides/PxSamples, Classes/Ndef, Classes/Pbindef
 
 description::
 Px is a pattern builder that provides a concise DSL (Domain-Specific Language) for creating and manipulating musical patterns in SuperCollider. It simplifies the standard pattern syntax for live coding performances.
@@ -468,7 +468,7 @@ code::
 ## loop
 || Plays a looping sample.
 code::
-707 loop: ["breaks", 0] dur: 8;
+707 loop: "breaks" dur: 8;
 ::
 
 ## dur
@@ -609,20 +609,26 @@ definitionlist::
 ## r
 || Sets the playback rate.
 code::
-1 loop: ["breaks", 0] dur: 8 r: 1.5;  // 1.5x speed
+1 loop: "breaks" dur: 8 r: 1.5;  // 1.5x speed
 ::
 
 ## start
 || Sets the start position for buffer playback.
 code::
-1 loop: ["breaks", 0] dur: 8 start: 0.5;  // Start at 50%
+1 loop: "breaks" dur: 8 start: 0.5;  // Start at 50%
+::
+
+## length
+|| Number of random degrees generated when using code::degree: \rand::. Default is 1. See link::Guides/PxSamples:: for details.
+code::
+1 play: "fm:0" dur: 1 degree: \rand length: 5;
 ::
 
 ## trim
 || Trims the sample to a specific start position.
 code::
-1 loop: ["breaks", 0] dur: 8 trim: 0.25;
-1 loop: ["breaks", 0] dur: 8 trim: \seq;  // Sequential trimming
+1 loop: "breaks" dur: 8 trim: 0.25;
+1 loop: "breaks" dur: 8 trim: \seq;  // Sequential trimming
 ::
 ::
 
@@ -841,7 +847,7 @@ code::
 )
 
 // Using loops
-1 loop: ["breaks", 0] dur: 8;
+1 loop: "breaks" dur: 8;
 
 // TB-303 style
 (

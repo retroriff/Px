@@ -292,7 +292,7 @@ Fx(\px).hpf(0.5, \wave).flanger(0.3);
 
 // Use space for ambient textures
 (
-1 play: ["ambient", 0];
+1 play: "ambient";
 Fx(\px).space(0.9, 0.98);
 )
 

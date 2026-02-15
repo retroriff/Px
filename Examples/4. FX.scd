@@ -20,7 +20,7 @@ Fx(\px).hpf(1, \wave);
 
 // Space can sustain infinitely but should be used only with one-shot sounds:
 (
-1 play: ["gl1", \rand];
+1 play: "gl1:rand";
 Fx(\px).space(0.9, inf);
 )
 

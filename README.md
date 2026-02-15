@@ -1,6 +1,6 @@
-# A Tailored Class Set for Enhanced Live Coding in SuperCollider
+# Px: A DSL for Live Coding in SuperCollider
 
-A set of classes designed to generate patterns on a NodeProxy and streamline the integration of effects. These classes prioritize ease of use, offering a straightforward solution for creating pattern shortcuts and enhancing them with effects. Below is a basic example:
+An embedded domain-specific language (DSL) built on SuperCollider for live coding music. Px extends the Number and Symbol classes to provide a fluent, declarative syntax for creating patterns, drum machines, and effects on NodeProxy — replacing manual Pbind/Ndef/PbindFx construction with concise one-liners. Below is a basic example:
 
 ```js
 // Play
@@ -61,6 +61,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `gui`    | nil (open or update) \| 0 (close)                 | Open or refresh a patterns gui window. A 0 value closes the window. pattern                                                                                                                  |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
 | `in`     | seconds: integer                                  | Fades in the pattern.                                                                                                                                                                        |
+| `length` | number                                            | Number of random degrees generated with `degree: \rand` (default: 1)                                                                                                                         |
 | `off`    | beats: integer                                    | Offset value                                                                                                                                                                                 |
 | `out`    | seconds: integer                                  | Fades out the pattern.                                                                                                                                                                       |
 | `pan`    | range -1..1 \| \rand \| \rotate \| Pattern        | A pan controller                                                                                                                                                                             |
@@ -219,7 +220,7 @@ Dx.preset(\electro, 1);
 | Name          | Arguments                                         | Description                            |
 | ------------- | ------------------------------------------------- | -------------------------------------- |
 | `delay`       | mix?: range 0..1                                  | Adds delay FX to the preset patterns   |
-| `fill`        | instrument?: symbol                               | One-shot random fill with crash accent |
+| `fill`        | instrument?: symbol, repeat?: integer              | One-shot random fill with crash accent |
 | `gui`         | None                                              | Opens a drum machine bank GUI          |
 | `loadPresets` | None                                              | Reloads presets from YAML files        |
 | `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/)       |

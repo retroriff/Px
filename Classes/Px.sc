@@ -1,4 +1,6 @@
 /*
+TODO:  2 i: \sd dur: 2 off: 1 reverb: [\wrand, 0.2, 0.8, 0.4] replace by [0.2, 0.8].wrand(0.4)
+  Cercar referències a [\wrand... i [\rand... i substituir per la nova sintaxi.
 TODO: Rename name references to id?
 */
 

@@ -205,10 +205,14 @@ Can be used standalone or during preset playback.
 argument:: instrument
 Instrument to fill with. Default: \sd (snare drum).
 
+argument:: repeat
+Number of times to repeat the fill. Default: 1.
+
 code::
 Dx.fill;          // Snare fill (default)
 Dx.fill(\hh);     // Hi-hat fill
 Dx.fill(\bd);     // Bass drum fill
+Dx.fill(\sd, 2);  // Snare fill repeated twice
 ::
 
 method:: in

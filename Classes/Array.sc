@@ -8,20 +8,25 @@
       \exp -> \exponential,
       \lin -> \linear
     ];
-    var durs, levels;
+    var levels, numSegs, segDur;
 
     levels = if (curve == \exp)
     { this.collect { |v| if (v == 0) { 0.01 } { v } } }
     { this };
 
+    numSegs = levels.size - 1;
+    segDur = beats / numSegs;
+
     if (repeats.notNil) {
-      durs = [beats, repeats];
-    } {
-      levels = levels ++ [levels.last];
-      durs = [beats, inf];
+      if (repeats == \inf) { repeats = inf };
+      ^Pseg(levels, segDur, curvesDict[curve], repeats);
     };
 
-    ^Pseg(levels, durs, curvesDict[curve]);
+    ^Pseg(
+      levels ++ [levels.last],
+      Array.fill(numSegs, segDur) ++ [inf],
+      curvesDict[curve]
+    );
   }
 
   shuffle { |seed|

@@ -138,7 +138,7 @@ Array extension methods that create pattern objects:
 
 | Method                  | Description                                                          |
 | ----------------------- | -------------------------------------------------------------------- |
-| `[0, 1].pseg(\exp, 16)` | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats? |
+| `[0, 1].pseg(\exp, 16)` | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats (`inf`/`\inf`/integer) |
 | `[1, 2, 3].pseq`        | Creates a `Pseq` loop from the array                                 |
 | `[0, 1, 2, 3].shuffle(71)` | Scrambles the array with a random seed for reproducibility        |
 

@@ -816,22 +816,22 @@ code::
 // Format: [levels].pseg(curve, beats, repeats)
 // - curve: \lin (default) or \exp
 // - beats: total duration across all segments (default: 8)
-// - repeats: (optional) inf or \inf to loop, integer to repeat N times then stop. Omit to hold at end value indefinitely
+// - repeats: (optional) inf or \inf to loop. Omit to hold at end value indefinitely
 
-// Fade in over 16 beats and hold at amp 1
+// Ramp up over 16 beats and hold at amp 1
 707 i: \hh dur: 0.25 amp: [0, 1].pseg(\exp, 16);
 
-// Fade in and out over 16 beats, hold at amp 0
+// Ramp up and down over 16 beats, hold at amp 0
 707 i: \hh dur: 0.25 amp: [0, 1, 0].pseg(\exp, 16);
 
-// Fade in over 16 beats, loop forever
+// Ramp up over 16 beats, loop forever
 707 i: \hh dur: 0.25 amp: [0, 1].pseg(\exp, 16, inf);
 
-// Fade in over 16 beats then stop the pattern
-707 i: \hh dur: 0.25 amp: [0, 1].pseg(\exp, 16, 1);
+// Stop the pattern after 16 beats
+707 i: \hh dur: 0.25 amp: 0.6 stop: 16;
 
-// Fade in over 16 beats, repeat twice then stop
-707 i: \hh dur: 0.25 amp: [0, 1].pseg(\exp, 16, 2);
+// Fade in over 16 beats then stop
+707 i: \hh dur: 0.25 amp: 0.6 in: 16 stop: 16;
 ::
 
 examples::

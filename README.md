@@ -258,6 +258,15 @@ The synth must be previously loaded with `Sx.loadSynth`.
 
 We can update args independently: `Sx.set(\amp, 0.5, lag: 0)`
 
+| Name      | Arguments              | Description                                |
+| --------- | ---------------------- | ------------------------------------------ |
+| `in`      | fadeTime?: integer     | Fades in the synthesizer. Default: 16      |
+| `out`     | fadeTime?: integer     | Fades out the synthesizer. Default: 16     |
+| `release` | fadeTime?: integer     | Fades out and frees the synth. Default: 10 |
+| `set`     | key: symbol, value     | Sets a parameter with optional lag         |
+| `stop`    | fadeTime?: integer     | Stops the Ndef playback                    |
+| `vol`     | amp?: range 0..1       | Gets or sets the synth amplitude           |
+
 **Tip**: The `shuffle` array method provides the capability to specify a random seed for the scramble method.
 
 ## 🎹 Nx: Musical Chord Data

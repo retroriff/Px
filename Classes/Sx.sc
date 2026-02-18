@@ -14,7 +14,7 @@ Sx {
     // CmdPeriod.add { Sx.clear };
     defaultScale = \scriabin;
     defaultEvent = (
-      amp: 1,
+      amp: 0.3,
       atk: 0,
       chord: [0],
       degree: [0],
@@ -58,6 +58,10 @@ Sx {
 
   *clear {
     this.initClass;
+  }
+
+  *in { |fadeTime = 16|
+    this.play(fadeTime);
   }
 
   *loadSynth {
@@ -153,6 +157,10 @@ Sx {
     { ^this.prCreateQuantizedSet(pairs) };
   }
 
+  *out { |fadeTime = 16|
+    this.stop(fadeTime);
+  }
+
   *stop { |fadeTime|
     Ndef(\sx).stop(fadeTime);
   }
@@ -164,10 +172,10 @@ Sx {
 
   *vol { |value|
     if (value.isNil) {
-      var vol = Ndef(\sx).vol;
-      this.prPrint("Sx vol is" + vol);
+      this.prPrint("Sx vol is" + (last[\amp] ?? defaultEvent[\amp]));
     } {
-      ^Ndef(\sx).vol_(value);
+      last[\amp] = value;
+      this.prSet([\amp, value]);
     }
   }
 

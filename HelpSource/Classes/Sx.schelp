@@ -45,7 +45,7 @@ The following parameters have default values if not specified:
 
 code::
 (
-    amp: 1,
+    amp: 0.3,
     chord: [0],
     degree: [0],
     dur: [1],
@@ -71,7 +71,7 @@ Optional fade-in time in seconds for the Ndef.
 
 code::
 Sx((
-    amp: 1,
+    amp: 0.3,
     degree: [0, 1, 2, 3],
     dur: 1/4,
     env: 1,
@@ -85,6 +85,17 @@ Sx((
 
 method:: clear
 Resets the Sx class to its initial state, reinitializing all class variables.
+
+method:: in
+Fades in the synthesizer.
+
+argument:: fadeTime
+Fade-in duration in beats. Default: 16.
+
+code::
+Sx.in;
+Sx.in(32);
+::
 
 method:: loadSynth
 Loads the Sx SynthDef from the SynthDefs/Sx.scd file. This must be called before using Sx.
@@ -151,6 +162,17 @@ Sx.set(\pad, [0, 3, 5], 1);
 Sx.set(\degree, [0, 1, 2, 3].shuffle(71));
 ::
 
+method:: out
+Fades out the synthesizer.
+
+argument:: fadeTime
+Fade-out duration in beats. Default: 16.
+
+code::
+Sx.out;
+Sx.out(32);
+::
+
 method:: stop
 Stops the Ndef playback.
 
@@ -164,10 +186,10 @@ argument:: tempo
 The tempo value (beats per second, not BPM).
 
 method:: vol
-Gets or sets the volume of the Ndef.
+Gets or sets the amplitude of the synth.
 
 argument:: value
-If nil, prints current volume. Otherwise sets the volume (0-1 range).
+If nil, prints current amplitude. Otherwise sets the amplitude (0-1 range).
 
 code::
 Sx.vol;      // prints current volume
@@ -196,7 +218,7 @@ The following parameters can be set in the event or via the set method:
 
 definitionlist::
 ## amp
-|| Amplitude/volume of the synth (0-1 range). Default: 1
+|| Amplitude/volume of the synth (0-1 range). Default: 0.3
 
 ## degree
 || Array of scale degrees for the sequence. Default: [0]. Combined with octave for the full melodic pattern.

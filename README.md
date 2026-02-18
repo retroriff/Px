@@ -70,6 +70,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `seed`   | seed: integer \| symbol \| \rand                  | Generate a specific random seed or a `Pxrand` using `\rand`                                                                                                                                  |
 | `set`    | 1 (enable)                                        | Allows to add more pairs to an existing pattern when `i`, `loop` and `play` are not present. When we use drum machines, the value must be the instrument.                                    |
 | `solo`   | 1 (enable)                                        | Mutes all patterns that don't contain a solo method                                                                                                                                          |
+| `stop`   | beats: integer                                    | Stops and removes the pattern after the specified number of beats                                                                                                                            |
 | `unsolo` | None                                              | Restore all patterns that have been muted by solo method                                                                                                                                     |
 | `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
 | `weight` | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
@@ -138,7 +139,7 @@ Array extension methods that create pattern objects:
 
 | Method                  | Description                                                          |
 | ----------------------- | -------------------------------------------------------------------- |
-| `[0, 1].pseg(\exp, 16)` | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats (`inf`/`\inf`/integer) |
+| `[0, 1].pseg(\exp, 16)` | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats (`inf`/`\inf`) |
 | `[1, 2, 3].pseq`        | Creates a `Pseq` loop from the array                                 |
 | `[0, 1, 2, 3].shuffle(71)` | Scrambles the array with a random seed for reproducibility        |
 

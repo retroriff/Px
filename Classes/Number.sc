@@ -138,6 +138,10 @@
     PxDebouncer.current = PxDebouncer(this, Px.last[id]);
   }
 
+  stop { |value|
+    this.prDebouncer.enqueue([\stop, value]);
+  }
+
   solo { |value|
     var isSolo = value != 0;
     this.prDebouncer.enqueue([\solo, isSolo]);

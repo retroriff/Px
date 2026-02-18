@@ -17,9 +17,8 @@
     numSegs = levels.size - 1;
     segDur = beats / numSegs;
 
-    if (repeats.notNil) {
-      if (repeats == \inf) { repeats = inf };
-      ^Pseg(levels, segDur, curvesDict[curve], repeats);
+    if (repeats == inf or: { repeats == \inf }) {
+      ^Pseg(levels, segDur, curvesDict[curve], inf);
     };
 
     ^Pseg(

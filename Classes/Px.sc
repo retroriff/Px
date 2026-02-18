@@ -160,8 +160,10 @@ Px {
 
   *prCreatePdef { |pattern|
     var pbindef;
+    var stopBeats = pattern[\stop];
 
     pattern.removeAt(\repeat);
+    pattern.removeAt(\stop);
 
     if (this.prHasFX(pattern) == true)
     { pbindef = this.prCreatePbindFx(pattern) }
@@ -171,6 +173,9 @@ Px {
     { pbindef = this.prCreateFade(pbindef, pattern[\fade]) };
 
     pbindef = this.prCreateChop(pattern, pbindef);
+
+    if (stopBeats.notNil)
+    { pbindef = Pfindur(stopBeats, pbindef) };
 
     ^pbindef = Pdef(pattern[\id], pbindef).quant_(4);
   }
@@ -231,6 +236,7 @@ Px {
     var hasEmptyDur = pattern[\dur] == 0
     or: { pattern[\dur].isNil };
     var hasRepeat = pattern[\repeat].notNil;
+    var hasStop = pattern[\stop].notNil;
 
     case
     { hasFadeIn }
@@ -239,7 +245,7 @@ Px {
     { hasFadeOut }
     { last.removeAt(pattern[\id]) }
 
-    { hasRepeat or: hasEmptyDur } {
+    { hasRepeat or: hasEmptyDur or: hasStop } {
       last.removeAt(pattern[\id]);
       ndefList.removeAt(pattern[\id]);
     };

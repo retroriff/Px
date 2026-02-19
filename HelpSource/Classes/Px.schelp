@@ -399,26 +399,22 @@ Wet/dry mix (0-1).
 argument:: args
 Additional wah parameters.
 
-subsection:: Notes and Scales
+subsection:: Global Setters
 
-method:: root
-Sets the root note for all active patterns.
+method:: set
+Sets a parameter for all active patterns and reevaluates them.
 
-argument:: value
-Root note transposition in semitones.
-
-code::
-Px root: 3;
-::
-
-method:: scale
-Sets the scale for all active patterns.
+argument:: key
+Parameter name as Symbol.
 
 argument:: value
-Scale name as Symbol.
+The value to set.
 
 code::
-Px scale: \minor;
+Px.set(\root, 3);
+Px.set(\scale, \minor);
+Px.set(\ctranspose, 2);
+Px.set(\seed, 42);
 ::
 
 subsection:: MIDI

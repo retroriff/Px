@@ -105,9 +105,8 @@ The superclass that generates the patterns from an array of events with a simpli
 - `pause` (id: symbol): Pauses a specific pattern.
 - `release` (time: nil | number): Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.
 - `resume` (id: symbol): Resumes a paused pattern.
-- `root`: Sets a global root note to all patterns.
 - `save`: Saves a chorus.
-- `seed`: Sets a global seed for all patterns.
+- `set`: Sets a parameter for all active patterns.
 - `shuffle` (id: symbol): Generates a new random seed for a pattern, or all patterns when id is not provided.
 - `stop`: Stops all patterns. It can stop specific patterns if a single id or an array of ids is provided.
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.

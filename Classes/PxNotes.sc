@@ -1,28 +1,4 @@
 + Px {
-  *ctranspose { |value|
-    last do: { |pattern|
-      pattern[\ctranspose] = value;
-    };
-
-    this.prReevaluate;
-  }
-
-  *root { |value|
-    last do: { |pattern|
-      pattern[\root] = value;
-    };
-
-    this.prReevaluate;
-  }
-
-  *scale { |value|
-    last do: { |pattern|
-      pattern[\scale] = value;
-    };
-
-    this.prReevaluate;
-  }
-
   *prCreateDegrees { |pattern, midiratio|
     var createRandomDegrees = {
       var length, scale, scaleDegrees, randomDegrees;

@@ -64,5 +64,5 @@ Chromatic transposition in semitones. Works with both code::degree:: and code::n
 
 code::
 1 i: \sine dur: 0.5 note: [60, 64, 67].pseq octave: 1;
-Px.ctranspose(2);  // Adds 2 semitones on top of the octave shift
+Px.set(\ctranspose, 2);  // Adds 2 semitones on top of the octave shift
 ::

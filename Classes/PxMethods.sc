@@ -107,6 +107,14 @@
     chorusPatterns = last.copy;
   }
 
+  *set { |key, value|
+    last do: { |pattern|
+      pattern[key] = value;
+    };
+
+    this.prReevaluate;
+  }
+
   *solo { |soloIds, id2, id3, id4, id5|
     var hasCommon;
 

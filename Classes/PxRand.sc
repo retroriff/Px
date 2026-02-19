@@ -1,12 +1,4 @@
 + Px {
-  *seed { |value|
-    last do: { |pattern|
-      pattern[\seed] = value;
-    };
-
-    this.prReevaluate;
-  }
-
   *shuffle { |id|
     if (id.isNil) {
       seeds.order do: { |seedId|

@@ -15,7 +15,8 @@ Nx.set(\Em7);
 // Get chord properties
 Nx.degrees;    // scale degrees
 Nx.intervals;  // intervals
-Nx.root;       // root MIDI note
+Nx.root;       // root semitone offset (0-11)
+Nx.midiRoot;   // root MIDI note
 Nx.midinotes;  // all MIDI notes
 Nx.scale;      // scale type (\major, \minor, etc.)
 
@@ -178,11 +179,22 @@ Nx.chord;  // -> \Am7
 ::
 
 method:: root
-Returns the root MIDI note number of the current chord.
+Returns the root semitone offset (0-11) of the current chord. This value corresponds to SuperCollider's standard code::\root:: key in Pbind.
 
 code::
 Nx.set(\Em);
-Nx.root;  // -> 52
+Nx.root;  // -> 4
+::
+
+method:: midiRoot
+Returns the root MIDI note number of the current chord at the default octave (3).
+
+code::
+Nx.set(\Em);
+Nx.midiRoot;  // -> 52
+
+Nx.set(\C);
+Nx.midiRoot;  // -> 48
 ::
 
 method:: scale
@@ -204,7 +216,7 @@ Nx.loadChords;
 ::
 
 method:: tonics
-Class variable containing all loaded tonics (root notes) as a Dictionary.
+Class variable containing all loaded tonics as a Dictionary. Each entry maps a tonic Symbol to an Event with code::root:: (semitone offset 0-11) and code::midiRoot:: (MIDI note number at octave 3).
 
 code::
 Nx.tonics.keys;  // list all available tonics: C, Cs, Db, D, Ds, Eb, E, F, Fs, Gb, G, Gs, Ab, A, As, Bb, B

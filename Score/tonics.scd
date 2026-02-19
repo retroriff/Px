@@ -1,21 +1,21 @@
 (
 Dictionary[
-  \A  -> Dictionary[ \root -> 57 ],
-  \Ab -> Dictionary[ \root -> 56 ],
-  \As -> Dictionary[ \root -> 58 ],
-  \B  -> Dictionary[ \root -> 59 ],
-  \Bb -> Dictionary[ \root -> 58 ],
-  \C  -> Dictionary[ \root -> 48 ],
-  \Cs -> Dictionary[ \root -> 49 ],
-  \D  -> Dictionary[ \root -> 50 ],
-  \Db -> Dictionary[ \root -> 49 ],
-  \Ds -> Dictionary[ \root -> 51 ],
-  \E  -> Dictionary[ \root -> 52 ],
-  \Eb -> Dictionary[ \root -> 51 ],
-  \F  -> Dictionary[ \root -> 53 ],
-  \Fs -> Dictionary[ \root -> 54 ],
-  \G  -> Dictionary[ \root -> 55 ],
-  \Gb -> Dictionary[ \root -> 54 ],
-  \Gs -> Dictionary[ \root -> 56 ]
+  \C  -> (root: 0, midiRoot: 48),
+  \Cs -> (root: 1, midiRoot: 49),
+  \Db -> (root: 1, midiRoot: 49),
+  \D  -> (root: 2, midiRoot: 50),
+  \Ds -> (root: 3, midiRoot: 51),
+  \Eb -> (root: 3, midiRoot: 51),
+  \E  -> (root: 4, midiRoot: 52),
+  \F  -> (root: 5, midiRoot: 53),
+  \Fs -> (root: 6, midiRoot: 54),
+  \Gb -> (root: 6, midiRoot: 54),
+  \G  -> (root: 7, midiRoot: 55),
+  \Gs -> (root: 8, midiRoot: 56),
+  \Ab -> (root: 8, midiRoot: 56),
+  \A  -> (root: 9, midiRoot: 57),
+  \As -> (root: 10, midiRoot: 58),
+  \Bb -> (root: 10, midiRoot: 58),
+  \B  -> (root: 11, midiRoot: 59)
 ];
 )

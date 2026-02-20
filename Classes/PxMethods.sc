@@ -68,12 +68,12 @@
     };
 
     if (name.notNil) {
+      name = name.asSymbol;
       colors.removeAt(name);
       last.removeAt(name);
       lastFormatted.removeAt(name);
-      ndefList.removeAt(name);
-      Fx.clear(name.asSymbol);
-      ^Ndef(name.asSymbol).free(fadeTime)
+      Fx.clear(name);
+      ^Ndef(name).free(fadeTime)
     };
 
     Ndef(\px).free(fadeTime);

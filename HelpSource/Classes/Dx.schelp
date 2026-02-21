@@ -146,6 +146,17 @@ Dx.preset(\electro, 1);
 Dx.preset(\electro, 2, 0.5);  // Half volume
 ::
 
+method:: instruments
+Returns the list of available instruments for a drum machine.
+
+argument:: machine
+Optional drum machine identifier (e.g., \909). If omitted, returns instruments for the current drum machine.
+
+code::
+Dx.instruments;        // Instruments for the current drum machine
+Dx.instruments(\909);  // Instruments for 909
+::
+
 method:: loadPresets
 Reloads all drum machine presets from the Presets/yaml/ directory. Call this after editing YAML preset files.
 

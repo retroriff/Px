@@ -79,6 +79,13 @@ Dx : Px {
     this.prFadeDrums(\in, fadeTime);
   }
 
+  *instruments { |machine|
+    if (instrumentFolders.isEmpty)
+    { this.prGetInstrumentFolders };
+
+    ^instrumentFolders[(machine ? drumMachine).asSymbol];
+  }
+
   *loadPresets {
     hasLoadedPresets = true;
     this.prCreatePresetsDict;
@@ -323,7 +330,7 @@ Dx : Px {
           { entry.folderName.asSymbol };
         };
 
-        instrumentFolders[folder] = subFolders;
+        instrumentFolders[folder.asSymbol] = subFolders;
       };
     };
   }
@@ -340,7 +347,7 @@ Dx : Px {
   }
 
   *prHasInstrument { |instrument|
-    ^instrumentFolders[drumMachine.asString].any { |folder|
+    ^instrumentFolders[drumMachine.asSymbol].any { |folder|
       folder.asString.endsWith("-" ++ instrument.asString)
       or: { folder.asString == instrument.asString }
     };

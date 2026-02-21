@@ -38,20 +38,22 @@ Fx {
   *clear { |singleProxy|
     var fx = activeEffects[proxyName];
 
-    if (fx.isArray and: { fx.isEmpty.not } and: { singleProxy.isNil } )
+    if (fx.notNil and: { fx.size > 0 } and: { singleProxy.isNil })
     { this.prPrint("🌵 All effects have been disabled") };
 
     if (singleProxy.notNil) {
       proxyName = singleProxy.asSymbol;
       fx = activeEffects[proxyName];
 
-      ^fx do: { |fx, i|
-        this.prDisableFx(fx, noPostln: true);
+      ^fx.copy do: { |slotIndex, fxName|
+        this.prDisableFx(fxName, noPostln: true);
       }
     };
 
-    fx do: { |fx, i|
-      proxy[proxyName][i + 1] = nil;
+    if (fx.notNil) {
+      fx do: { |slotIndex, fxName|
+        proxy[proxyName][slotIndex] = nil;
+      };
     };
 
     activeArgs.clear;
@@ -104,7 +106,7 @@ Fx {
     if (pos == \wave)
     { pos = Ndef(\pan1, { SinOsc.kr(1/8).range(-1.0, 1.0) } ) };
 
-    if (pos == Nil)
+    if (pos.isNil)
     { pos = 0 };
 
     this.prAddEffect(\pan, 1, [pos], postArgs);
@@ -192,23 +194,23 @@ Fx {
     PxDebouncer.flush;
 
     if (activeEffects[proxyName].isNil)
-    { activeEffects[proxyName] = Array.new };
+    { activeEffects[proxyName] = Dictionary.new };
 
     if (activeArgs[proxyName].isNil)
     { activeArgs[proxyName] = Dictionary.new };
 
-    hasFx = activeEffects[proxyName].includes(fx);
+    hasFx = activeEffects[proxyName][fx].notNil;
 
-    if (hasFx == false and: (mix != Nil))
+    if (hasFx == false and: { mix.isNil.not } and: { mix != Nil })
     { this.prActivateEffect(args, fx, mix, postArgs) };
 
-    if (args != activeArgs[proxyName][fx] and: (mix != Nil))
+    if (args != activeArgs[proxyName][fx] and: { mix.isNil.not } and: { mix != Nil })
     { this.prUpdateEffect(args, fx) };
 
     if (fx == \vst and: (hasFx == false))
     { this.prActivateVst(args, fx) };
 
-    if (mix.isNil or: (mix == Nil))
+    if (mix.isNil or: { mix == Nil })
     { ^this.prDisableFx(fx) };
 
     this.prSetMixerValue(fx, mix.clip(0, 1));
@@ -216,9 +218,10 @@ Fx {
 
   *prActivateEffect { |args, fx, mix, postArgs|
     var index;
+
     proxy[proxyName] = Ndef(proxyName);
-    activeEffects[proxyName] = activeEffects[proxyName].add(fx);
-    index = this.prGetIndex(fx);
+    index = (activeEffects[proxyName].values.maxItem ?? 0) + 1;
+    activeEffects[proxyName][fx] = index;
 
     if (proxy[proxyName][index].isNil) {
       proxy[proxyName][index] = effects.at(fx).(*args);
@@ -227,8 +230,10 @@ Fx {
       { activeArgs[proxyName] = Dictionary.new };
 
       activeArgs[proxyName].add(fx -> args);
+
       if (postArgs.isNil)
       { postArgs = "no args" };
+
       this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs);
     };
   }
@@ -260,9 +265,7 @@ Fx {
 
     activeArgs[proxyName].removeAt(fx);
     mixer[proxyName].removeAt(fx);
-
-    if (activeEffects[proxyName].indexOf(fx).notNil)
-    { activeEffects[proxyName].removeAt(activeEffects[proxyName].indexOf(fx)) };
+    activeEffects[proxyName].removeAt(fx);
 
     this.prFadeOutFx(index, fx, wetIndex, noPostln);
   }
@@ -294,12 +297,9 @@ Fx {
   }
 
   *prGetIndex { |fx|
-    var index = activeEffects[proxyName].indexOf(fx);
+    if (activeEffects[proxyName].isNil) { ^nil };
 
-    if (index.notNil)
-    { index = index + 1 };
-
-    ^index;
+    ^activeEffects[proxyName][fx];
   }
 
   *prPrint { |value|

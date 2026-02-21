@@ -20,7 +20,7 @@ Dictionary[
 
             LocalOut.ar(loop);
 
-            loop;
+            in + loop;
         }
     };
 ]

@@ -10,7 +10,7 @@ Dictionary[
             decayTime = (log2(-60.dbamp) / log2(fb) * dt).clip(0, 20);
 
             signal = CombL.ar(in, maxDelayTime, dt.lag(1), decayTime);
-            LeakDC.ar(signal);
+            in + LeakDC.ar(signal);
         }
     }
 ];

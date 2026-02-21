@@ -112,7 +112,7 @@ Fx {
     this.prAddEffect(\pan, 1, [pos], postArgs);
   }
 
-  *reverb { |mix = 0.3, room = 0.7, size = 0.5|
+  *reverb { |mix = 1, room = 0.7, size = 0.5|
     var postArgs = "room:" +  room + "size:" + size;
     this.prAddEffect(\reverb, mix, [room, size], postArgs);
   }

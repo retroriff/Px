@@ -3,8 +3,8 @@
     AppClock.sched(0, { Fx(\px).blp(mix); nil });
   }
 
-  *delay { |mix, delaytime = 8, decaytime = 2|
-    AppClock.sched(0, { Fx(\px).delay(mix, delaytime, decaytime); nil });
+  *delay { |mix, delaytime = 0.5, delayfeedback = 0.5|
+    AppClock.sched(0, { Fx(\px).delay(mix, delaytime, delayfeedback); nil });
   }
 
   *flanger { |mix = 0.4|
@@ -23,8 +23,8 @@
     this.prFx(\lpf, mix, args);
   }
 
-  *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
-    AppClock.sched(0, { Fx(\px).reverb(mix, room, damp); nil });
+  *reverb { |mix = 0.3, room = 0.7, size = 0.5|
+    AppClock.sched(0, { Fx(\px).reverb(mix, room, size); nil });
   }
 
   *space { |mix = 1, fb = 0.95|

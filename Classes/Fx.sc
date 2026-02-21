@@ -59,9 +59,9 @@ Fx {
     mixer.clear;
   }
 
-  *delay { |mix = 0.4, delaytime = 8, decaytime = 2|
-    var postArgs = "delaytime:" +  delaytime + "decaytime:" + decaytime;
-    this.prAddEffect(\delay, mix, [delaytime, decaytime], postArgs);
+  *delay { |mix = 0.4, delaytime = 0.5, delayfeedback = 0.5|
+    var postArgs = "delaytime:" +  delaytime + "delayfeedback:" + delayfeedback;
+    this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
   }
 
   *flanger { |mix = 0.4|
@@ -110,9 +110,9 @@ Fx {
     this.prAddEffect(\pan, 1, [pos], postArgs);
   }
 
-  *reverb { |mix = 0.3, room = 0.7, damp = 0.7|
-    var postArgs = "room:" +  room + "damp:" + damp;
-    this.prAddEffect(\reverb, mix, [room, damp], postArgs);
+  *reverb { |mix = 0.3, room = 0.7, size = 0.5|
+    var postArgs = "room:" +  room + "size:" + size;
+    this.prAddEffect(\reverb, mix, [room, size], postArgs);
   }
 
   *setVstPresetsPath { |path|

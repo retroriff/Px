@@ -1,19 +1,18 @@
-(
+
 // https://roland50.studio
 // 1 i: \303
 // dur: 0.25
 // note: ([67, 67, Rest(), 67, 67, Rest(), Rest(), Rest(), Rest(), Rest(), 67, Rest(), 68, Rest(), 62, Rest()] - 24).pseq
 // amp: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.2, 0.2, 0.2].pseq
 // ctf: 1 res: 1 env: 1 dec: 1 acc: 1;
-)
 
 
-(
+
+
 /*~octave = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1] + 5;
 1 i: \303 amp: 0.5 dur: 0.25 octave: ~octave ctf: 1 env: 1 res: 1 dec: 1 acc: 1;
 Fx(\1).reverb.delay
 Dx.preset.use(\909)*/
-)
 
 
 (

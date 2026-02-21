@@ -1,12 +1,16 @@
 (
 Dictionary[
-    \delay -> { |delaytime = 8, decaytime = 2|
+    \delay -> { |delaytime = 0.5, delayfeedback = 0.5|
         \filterIn -> { |in|
-            in + CombN.ar(in,
-                maxdelaytime: TempoClock.tempo / 4,
-                delaytime: TempoClock.tempo / \delay1.kr(delaytime),
-                decaytime: \delay2.kr(decaytime),
-                mul: -12.dbamp);
+            var maxDelayTime = 4;
+            var dt, fb, decayTime, signal;
+
+            fb = \delay2.kr(delayfeedback).clip(0, 0.99);
+            dt = (\delay1.kr(delaytime) * TempoClock.tempo.reciprocal).clip(0, maxDelayTime);
+            decayTime = (log2(-60.dbamp) / log2(fb) * dt).clip(0, 20);
+
+            signal = CombL.ar(in, maxDelayTime, dt.lag(1), decayTime);
+            LeakDC.ar(signal);
         }
     }
 ];

@@ -1,7 +1,6 @@
 /*
 TODO: Fix delay wthout params disabled instead of enabled
 TODO: Fix when Ndef is reevaluated, proxy FXs stop
-TODO: Fix error when it is started with ".hpf(1, \wave)"
 */
 
 Fx {
@@ -66,7 +65,7 @@ Fx {
     this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
   }
 
-  *flanger { |mix = 0.4|
+  *flanger { |mix = 0.3|
     this.prAddEffect(\flanger, mix);
   }
 
@@ -77,11 +76,17 @@ Fx {
 
   *hpf { |mix = 1, freq = 1200|
     var postArgs = "freq:" +  freq;
-    
-    if (freq == \wave)
-    { freq = Ndef(\hpf1, { SinOsc.kr(1/8).range(400, 1200) } ) };
+    var wave;
+
+    if (freq == \wave) {
+      wave = Ndef(\hpfWave, { SinOsc.kr(1/8).range(400, 1200) });
+      freq = 1200;
+    };
 
     this.prAddEffect(\hpf, mix, [freq], postArgs);
+
+    if (wave.notNil)
+    { proxy[proxyName].map(\hpf1, wave) };
   }
 
   *loadEffects {
@@ -93,26 +98,38 @@ Fx {
 
   *lpf { |mix = 0.4, freq = 200|
     var postArgs = "freq:" +  freq;
+    var wave;
 
-    if (freq == \wave)
-    { freq = Ndef(\lpf1, { SinOsc.kr(1/8).range(200, 400) } ) };
+    if (freq == \wave) {
+      wave = Ndef(\lpfWave, { SinOsc.kr(1/8).range(200, 400) });
+      freq = 200;
+    };
 
     this.prAddEffect(\lpf, mix, [freq], postArgs);
+
+    if (wave.notNil)
+    { proxy[proxyName].map(\lpf1, wave) };
   }
 
   *pan { |pos = 0|
     var postArgs = "pos:" +  pos;
+    var wave;
 
-    if (pos == \wave)
-    { pos = Ndef(\pan1, { SinOsc.kr(1/8).range(-1.0, 1.0) } ) };
+    if (pos == \wave) {
+      wave = Ndef(\panWave, { SinOsc.kr(1/8).range(-1.0, 1.0) });
+      pos = 0;
+    };
 
     if (pos.isNil)
     { pos = 0 };
 
     this.prAddEffect(\pan, 1, [pos], postArgs);
+
+    if (wave.notNil)
+    { proxy[proxyName].map(\pan1, wave) };
   }
 
-  *reverb { |mix = 1, room = 0.7, size = 0.5|
+  *reverb { |mix = 0.5, room = 0.7, size = 0.5|
     var postArgs = "room:" +  room + "size:" + size;
     this.prAddEffect(\reverb, mix, [room, size], postArgs);
   }

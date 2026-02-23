@@ -2,7 +2,7 @@
 Dictionary[
     \hpf -> { |freq = 1200|
         \filterIn -> { |in|
-            RHPF.ar(in, \hpf1.kr(freq), rq: 0.1);
+            HPF.ar(in, \hpf1.kr(freq, 0.5));
         }
     }
 ];

@@ -4,11 +4,11 @@ Dictionary[
         \filterIn -> { |in|
             var loop, depth;
 
-            in = in * \reverb1.kr(room).lag(LFNoise1.kr(1).range(0.01, 0.02));
+            in = in * \reverb1.kr(room, 0.5).lag(LFNoise1.kr(1).range(0.01, 0.02));
 
             4.do { in = AllpassN.ar(in, 0.03, { Rand(0.005, 0.02) }.dup(2), 1) };
 
-            depth = \reverb2.kr(size).lag(0.02).linexp(0, 1, 0.01, 0.98);
+            depth = \reverb2.kr(size, 0.5).lag(0.02).linexp(0, 1, 0.01, 0.98);
             loop = LocalIn.ar(2) * { depth + Rand(0, 0.05) }.dup(2);
             loop = OnePole.ar(loop, 0.5);
             loop = AllpassN.ar(loop, 0.05, { Rand(0.01, 0.05) }.dup(2), 2);

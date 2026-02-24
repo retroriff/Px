@@ -1,4 +1,5 @@
 (
+// Based on SuperDirt's dirt_distort effect
 Dictionary[
     \distort -> { |drive = 0.5|
         \filterIn -> { |in|

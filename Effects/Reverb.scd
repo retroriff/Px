@@ -1,4 +1,5 @@
 (
+// Based on SuperDirt's dirt_reverb effect
 Dictionary[
     \reverb -> { |room = 0.7, size = 0.5|
         \filterIn -> { |in|

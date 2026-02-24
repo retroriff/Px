@@ -33,6 +33,11 @@ Fx {
     this.prAddEffect(\blp, mix);
   }
 
+  *crush { |mix = 0.5, bits = 8|
+    var postArgs = "bits:" + bits;
+    this.prAddEffect(\crush, mix, [bits], postArgs);
+  }
+
   *clear { |singleProxy|
     var fx = activeEffects[proxyName];
 
@@ -59,14 +64,14 @@ Fx {
     mixer.clear;
   }
 
-  *distort { |mix = 0.5, drive = 0.5|
-    var postArgs = "drive:" + drive;
-    this.prAddEffect(\distort, mix, [drive], postArgs);
-  }
-
   *delay { |mix = 0.4, delaytime = 0.5, delayfeedback = 0.5|
     var postArgs = "delaytime:" +  delaytime + "delayfeedback:" + delayfeedback;
     this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
+  }
+
+  *distort { |mix = 0.5, drive = 0.5|
+    var postArgs = "drive:" + drive;
+    this.prAddEffect(\distort, mix, [drive], postArgs);
   }
 
   *flanger { |mix = 0.3|
@@ -131,6 +136,11 @@ Fx {
 
     if (wave.notNil)
     { proxy[proxyName].map(\pan1, wave) };
+  }
+
+  *phaser { |mix = 0.5, rate = 1.0, depth = 0.5|
+    var postArgs = "rate:" + rate + "depth:" + depth;
+    this.prAddEffect(\phaser, mix, [rate, depth], postArgs);
   }
 
   *reverb { |mix = 0.5, room = 0.7, size = 0.5|

@@ -67,7 +67,7 @@
       var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
       var play = pattern[\play] !? { pattern[\play][0] };
       var loop = pattern[\loop] !? { pattern[\loop][0] };
-      var patternLabel = pattern[\name] ?? pattern[\instrument] ?? chan ?? play ?? loop ?? key;
+      var patternLabel = pattern[\instrument] ?? chan ?? play ?? loop ?? key;
       var amp = this.prGetAmp(patternFormatted[\amp]);
       var backgroundColor = Color.new255(26, 29, 34);
       var button, numberBox, slider, staticText;

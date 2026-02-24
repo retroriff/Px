@@ -1,44 +1,4 @@
 + Px {
-  *blp { |mix = 0.4|
-    AppClock.sched(0, { Fx(\px).blp(mix); nil });
-  }
-
-  *delay { |mix, delaytime = 0.5, delayfeedback = 0.5|
-    AppClock.sched(0, { Fx(\px).delay(mix, delaytime, delayfeedback); nil });
-  }
-
-  *flanger { |mix = 0.4|
-    AppClock.sched(0, { Fx(\px).flanger(mix); nil });
-  }
-
-  *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
-    AppClock.sched(0, { Fx(\px).gverb(mix, roomsize, revtime); nil });
-  }
-
-  *hpf { |mix = 1, freq = 1200|
-    AppClock.sched(0, { Fx(\px).hpf(mix, freq); nil });
-  }
-
-  *lpf { |mix, args|
-    this.prFx(\lpf, mix, args);
-  }
-
-  *reverb { |mix = 0.3, room = 0.7, size = 0.5|
-    AppClock.sched(0, { Fx(\px).reverb(mix, room, size); nil });
-  }
-
-  *space { |mix = 1, fb = 0.95|
-    AppClock.sched(0, { Fx(\px).space(mix, fb); nil });
-  }
-
-  *vst { |mix = 1, plugin|
-    AppClock.sched(0, { Fx(\px).vst(mix, plugin); nil });
-  }
-
-  *wah { |mix, args|
-    this.prFx(\wah, mix, args);
-  }
-
   *prCreateFx { |pattern|
     if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
       pattern[\fx].do { |fx, i|
@@ -59,14 +19,6 @@
     ^PbindFx(pattern.asPairs, *pattern[\fx]);
   }
 
-  *prFx { |fx, mix, args|
-    last[lastName].do { |pattern|
-      pattern.prFx(fx, mix, args);
-    };
-
-    this.prSend(last[lastName], lastName);
-  }
-
   *prHasFX { |pattern|
     ^pattern[\fx].notNil;
   }
@@ -75,6 +27,10 @@
 + Number {
   delay { |mix|
     this.prFx(\delay, mix);
+  }
+
+  distort { |mix|
+    this.prFx(\distort, mix);
   }
 
   hpf { |mix|
@@ -88,6 +44,7 @@
   reverb { |mix|
     this.prFx(\reverb, mix);
   }
+
 
   wah { |mix|
     this.prFx(\wah, mix);

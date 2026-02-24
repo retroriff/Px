@@ -294,111 +294,6 @@ Px.vol(0.5);         // Set master volume to 0.5
 Px.vol(0.3, \1);     // Set pattern 1 volume to 0.3
 ::
 
-subsection:: Global Effects
-
-These methods apply effects to the master output (Ndef(\px)). For individual pattern effects, use the DSL methods.
-
-method:: reverb
-Applies FreeVerb reverb to the master output.
-
-argument:: mix
-Wet/dry mix (0-1). Default: 0.3.
-
-argument:: room
-Room size (0-1). Default: 0.7.
-
-argument:: damp
-Damping (0-1). Default: 0.7.
-
-code::
-Px reverb: 0.5;
-::
-
-method:: delay
-Applies delay effect to the master output.
-
-argument:: mix
-Wet/dry mix (0-1).
-
-argument:: delaytime
-Delay time in beats. Default: 8.
-
-argument:: decaytime
-Decay time in seconds. Default: 2.
-
-method:: hpf
-Applies high-pass filter to the master output.
-
-argument:: mix
-Wet/dry mix (0-1). Default: 1.
-
-argument:: freq
-Cutoff frequency in Hz, or \wave for LFO modulation. Default: 1200.
-
-method:: lpf
-Applies low-pass filter to the master output.
-
-argument:: mix
-Wet/dry mix (0-1).
-
-argument:: args
-Frequency or additional arguments.
-
-method:: blp
-Applies band-limited low-pass filter to the master output.
-
-argument:: mix
-Wet/dry mix (0-1). Default: 0.4.
-
-method:: flanger
-Applies flanger effect to the master output.
-
-argument:: mix
-Wet/dry mix (0-1). Default: 0.4.
-
-method:: gverb
-Applies GVerb reverb to the master output.
-
-argument:: mix
-Wet/dry mix (0-1). Default: 0.4.
-
-argument:: roomsize
-Room size. Default: 200.
-
-argument:: revtime
-Reverb time. Default: 5.
-
-method:: space
-Applies spacious reverb with infinite sustain capability.
-
-argument:: mix
-Wet/dry mix (0-1). Default: 1.
-
-argument:: fb
-Feedback amount (0-0.99). Default: 0.95.
-
-method:: vst
-Loads and applies a VST plugin effect.
-
-argument:: mix
-Wet/dry mix (0-1). Default: 1.
-
-argument:: plugin
-VST plugin name.
-
-code::
-Px.vst(0.4, "ValhallaFreqEcho");
-::
-
-method:: wah
-Applies wah-wah effect to the master output.
-
-argument:: mix
-Wet/dry mix (0-1).
-
-argument:: args
-Additional wah parameters.
-
 subsection:: Global Setters
 
 method:: set
@@ -854,7 +749,7 @@ code::
 // TB-303 style
 (
 1 i: \303 dur: 0.25 degree: [0, 2, 4, 5].pseq octave: 5 ctf: 0.3 env: 0.8 res: 0.5;
-Px reverb: 0.2 delay: 0.1;
+Fx(\px).reverb(0.2).delay(0.1);
 )
 
 // Save and recall patterns

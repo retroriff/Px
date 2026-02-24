@@ -43,7 +43,7 @@ Px.shuffle;
 
 // We can play the buffer's rate with degree notes:
 2 play: "fm:rand" degree: \rand length: 3 beat: 0.7 dur: 0.25 amp: 0.5;
-Px.reverb(0.2).delay(0.2).blp;
+Fx(\px).reverb(0.2).delay(0.2).blp;
 
 // That's all
 Px.stop;

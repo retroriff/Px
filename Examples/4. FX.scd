@@ -10,7 +10,7 @@
 2 i: \sd dur: 2 off: 1 reverb: [\wrand, 0.2, 0.8, 0.4];
 
 // Filter them all together with global FX:
-Px reverb: 0.5;
+Fx(\px).reverb(0.5);
 
 // FX also can be loaded with the Fx class:
 Fx(\px).reverb(1, 1, 1);
@@ -36,7 +36,7 @@ Fx(\x).reverb(1, 1, 1);
 1 i: \bd dur: 1;
 2 i: \sd dur: 2 off: 1;
 3 i: \cy dur: 0.25 beat: 0.7;
-Px.vst(0.4, "ValhallaFreqEcho");
+Fx(\px).vst(0.4, "ValhallaFreqEcho");
 )
 
 // And we can control it using the Fx class:

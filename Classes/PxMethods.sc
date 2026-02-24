@@ -46,8 +46,8 @@
     Ndef(\px).play(fadeTime: fadeTime);
   }
 
-  *release { |time, name|
-    var anyParam = [name, time];
+  *release { |time, id|
+    var anyParam = [id, time];
     var fadeTime = time.isInteger.if(time, 10);
 
     if (anyParam.includes(\all)) {
@@ -67,13 +67,13 @@
       };
     };
 
-    if (name.notNil) {
-      name = name.asSymbol;
-      colors.removeAt(name);
-      last.removeAt(name);
-      lastFormatted.removeAt(name);
-      Fx.clear(name);
-      ^Ndef(name).free(fadeTime)
+    if (id.notNil) {
+      id = id.asSymbol;
+      colors.removeAt(id);
+      last.removeAt(id);
+      lastFormatted.removeAt(id);
+      Fx.clear(id);
+      ^Ndef(id).free(fadeTime)
     };
 
     Ndef(\px).free(fadeTime);
@@ -234,20 +234,20 @@
     ^this.loadSynthDefs;
   }
 
-  *trace { |name|
-    if (name.isNil)
-    { this.prPrint("🔴 Please specify a pattern name to trace") }
-    { Pdef(name).source = Pdef(name).source.trace };
+  *trace { |id|
+    if (id.isNil)
+    { this.prPrint("🔴 Please specify a pattern id to trace") }
+    { Pdef(id).source = Pdef(id).source.trace };
   }
 
-  *traceOff { |name|
-    if (name.isNil)
-    { ^this.prPrint("🔴 Please specify a pattern name to disable trace") }
-    { ^this.new(last[name]) };
+  *traceOff { |id|
+    if (id.isNil)
+    { ^this.prPrint("🔴 Please specify a pattern id to disable trace") }
+    { ^this.new(last[id]) };
   }
 
-  *vol { |value, name|
-    var ndef = name ?? \px;
+  *vol { |value, id|
+    var ndef = id ?? \px;
 
     if (value.isNil) {
       var vol = Ndef(ndef).vol;

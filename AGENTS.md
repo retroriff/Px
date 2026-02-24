@@ -59,6 +59,12 @@
 
 ---
 
+## Dependencies
+
+- **miSCellaneous_lib** — Provides `PbindFx`, which enables per-event effect chain sequencing. Px uses it to apply individual effects to patterns (the Number DSL `reverb:`, `delay:`, etc.). PbindFx SynthDefs are loaded from the user's startup file (external `Effects/` folder), not from this project. `Effects/*.scd` in this project are loaded by the `Fx` class for global NodeProxy effects only.
+- **Bjorklund** — Euclidean rhythm generation
+- **VSTPlugin** — VST plugin integration
+
 ## File Type Reference
 
 - `.sc` - SuperCollider class definitions (source code)

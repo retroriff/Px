@@ -11,28 +11,28 @@ Crossfader {
     this.fadeOut(a, fadeDuration);
   }
 
-  *fadeIn { |name, fadeTime|
+  *fadeIn { |id, fadeTime|
     var seconds = fadeTime ?? defaultFadeTime;
-    ~animatronNetAddr.sendMsg("/sc/start", name, seconds);
-    Ndef(name).play(fadeTime: seconds);
+    ~animatronNetAddr.sendMsg("/sc/start", id, seconds);
+    Ndef(id).play(fadeTime: seconds);
   }
 
-  *fadeOut { |name, fadeTime|
+  *fadeOut { |id, fadeTime|
     var seconds = fadeTime ?? defaultFadeTime;
-    ~animatronNetAddr.sendMsg("/sc/stop", name, seconds);
-    Ndef(name).clear(seconds);
+    ~animatronNetAddr.sendMsg("/sc/stop", id, seconds);
+    Ndef(id).clear(seconds);
   }
 }
 
 FadeIn {
-  *new { |name, fadeTime|
-    Crossfader.fadeIn(name, fadeTime);
+  *new { |id, fadeTime|
+    Crossfader.fadeIn(id, fadeTime);
   }
 }
 
 FadeOut {
-  *new { |name, fadeTime|
-    Crossfader.fadeOut(name, fadeTime);
+  *new { |id, fadeTime|
+    Crossfader.fadeOut(id, fadeTime);
   }
 }
 

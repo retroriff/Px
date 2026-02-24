@@ -67,7 +67,7 @@ Px.shuffle;
 3 i: \lc dur: 0.25 fill: 0.63 freq: 160;
 4 i: \lc dur: 0.25 fill: 0.62 freq: 180;
 5 i: \ht dur: 0.25 fill: 0.3;
-Px reverb: 0.1 delay: 0.1;
+Fx(\px).reverb(0.1).delay(0.1);
 )
 
 // Fill also accepts a rest argument:
@@ -75,7 +75,7 @@ Px reverb: 0.1 delay: 0.1;
 1 i: \bd dur: 0.25 beat: 0.7 seed: 857;
 2 i: \lt dur: 0.25 fill: 0.4 rest: 4;
 3 i: \sd dur: 0.25 fill: 0.2 seed: 405;
-Px reverb: 0.4;
+Fx(\px).reverb(0.4);
 )
 
 // We can keep our favorite beats providing a seed number:

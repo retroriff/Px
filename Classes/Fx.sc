@@ -1,5 +1,4 @@
 /*
-TODO: Fix delay wthout params disabled instead of enabled
 TODO: Fix when Ndef is reevaluated, proxy FXs stop
 */
 
@@ -58,6 +57,11 @@ Fx {
     activeArgs.clear;
     activeEffects.clear;
     mixer.clear;
+  }
+
+  *distort { |mix = 0.5, drive = 0.5|
+    var postArgs = "drive:" + drive;
+    this.prAddEffect(\distort, mix, [drive], postArgs);
   }
 
   *delay { |mix = 0.4, delaytime = 0.5, delayfeedback = 0.5|

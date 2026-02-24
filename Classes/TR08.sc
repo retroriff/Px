@@ -1,5 +1,5 @@
 /*
-TODO: We should be able to play TR08 using numbers like 8808 i: \bd
+TODO: We should be able to play TR08 using numbers like 8008 i: \bd
 */
 
 TR08 : Dx {

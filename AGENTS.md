@@ -43,10 +43,11 @@
 
 **Documentation conventions:**
 
-"Update documentation" means updating both:
-1. **Help files** (`HelpSource/Classes/<ClassName>.schelp`) - Detailed SCDoc format documentation
-2. **README.md** - Brief feature listing in the class methods tables
-
+- When creating a new feature or updating the functionality of an existing one, always update the documentation
+- Documentation must be updated in three places:
+  1. **Help files** (`HelpSource/Classes/<ClassName>.schelp`) - Detailed SCDoc format documentation
+  2. **README.md** - Brief feature listing in the class methods tables
+  3. **px-agent docs** (`~/icloud/Music/SuperCollider/px-agent/Docs/`) - Agent reference documentation
 - Private methods (starting with `pr`) are not documented
 - When adding new public methods, update the corresponding help file and add the method to the README table
 - Reference existing help files (Px.schelp, Fx.schelp, Sx.schelp) for format examples
@@ -77,6 +78,7 @@
 SuperCollider's `+ ClassName { }` syntax allows extending classes across multiple files. When investigating a class, search ALL files for extensions:
 
 **Number** (DSL entry point methods):
+
 - `Number.sc` - Core methods (play, loop, amp, dur, beat, etc.)
 - `PxNotes.sc` - Note methods (degree, arp, scale, sus)
 - `PxFx.sc` - Effect methods
@@ -84,6 +86,7 @@ SuperCollider's `+ ClassName { }` syntax allows extending classes across multipl
 - `PxMidi.sc` - MIDI methods
 
 **Px** (pattern generator):
+
 - `Px.sc` - Core pattern creation
 - `PxBeats.sc` - Beat generation
 - `PxNotes.sc` - Degree/scale processing

@@ -25,6 +25,10 @@
 }
 
 + Number {
+  crush { |mix|
+    this.prFx(\crush, mix);
+  }
+
   delay { |mix|
     this.prFx(\delay, mix);
   }
@@ -41,10 +45,13 @@
     this.prFx(\lpf, mix);
   }
 
+  phaser { |mix|
+    this.prFx(\phaser, mix);
+  }
+
   reverb { |mix|
     this.prFx(\reverb, mix);
   }
-
 
   wah { |mix|
     this.prFx(\wah, mix);

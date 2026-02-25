@@ -1,7 +1,7 @@
 (
 // Based on SuperDirt's effect
 Dictionary[
-    \crush -> { |bits = 8|
+    \crush -> { |bits = 4|
         \filterIn -> { |in|
             var b = \crush1.kr(bits, 0.5);
             var crushed = in.round(0.5 ** (b - 1));

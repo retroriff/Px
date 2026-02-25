@@ -33,7 +33,7 @@ Fx {
     this.prAddEffect(\blp, mix);
   }
 
-  *crush { |mix = 0.5, bits = 8|
+  *crush { |mix = 0.5, bits = 4|
     var postArgs = "bits:" + bits;
     this.prAddEffect(\crush, mix, [bits], postArgs);
   }
@@ -138,7 +138,7 @@ Fx {
     { proxy[proxyName].map(\pan1, wave) };
   }
 
-  *phaser { |mix = 0.5, rate = 1.0, depth = 0.5|
+  *phaser { |mix = 0.5, rate = 1.0, depth = 1|
     var postArgs = "rate:" + rate + "depth:" + depth;
     this.prAddEffect(\phaser, mix, [rate, depth], postArgs);
   }
@@ -152,7 +152,7 @@ Fx {
     presetsPath = path;
   }
 
-  *space { |mix = 0.4, fb = 0.95|
+  *space { |mix = 0.2, fb = 0.95|
     var postArgs = "fb:" + fb;
 
     if (fb == inf)

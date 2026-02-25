@@ -29,13 +29,23 @@
     if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.notNil })
     { currentInstrument = PxDebouncer.current.pattern[\instrument] };
 
-    if (currentInstrument.notNil and: { SynthDescLib.global[currentInstrument].notNil }) {
+    if (currentInstrument.notNil 
+      and: { currentInstrument.isKindOf(Pattern).not } 
+      and: { currentInstrument.isArray.not } 
+      and: { SynthDescLib.global[currentInstrument].notNil }) {
       synthDefControlNames = synthDefControlNames ++ SynthDescLib.global[currentInstrument].controlNames;
     };
 
     Px.last.do { |event|
-      if (event[\instrument].notNil and: (event[\play].isNil) and: (event[\loop].isNil)) {
-        var instrumentControlNames = SynthDescLib.global[event[\instrument]].controlNames;
+      var ins = event[\instrument];
+
+      if (ins.notNil and:
+         { ins.isKindOf(Pattern).not } and:
+         { ins.isArray.not } 
+         and: (event[\play].isNil) 
+         and: (event[\loop].isNil) 
+         and: { SynthDescLib.global[ins].notNil }) {
+        var instrumentControlNames = SynthDescLib.global[ins].controlNames;
         synthDefControlNames = synthDefControlNames ++ instrumentControlNames;
       };
     };
@@ -82,7 +92,9 @@
   }
 
   i { |value|
-    this.prPlay(i: value.asSymbol);
+    if (value.isKindOf(Pattern) || value.isArray)
+    { this.prPlay(i: value) }
+    { this.prPlay(i: value.asSymbol) };
   }
 
   in { |value|
@@ -251,18 +263,25 @@
   }
 
   prPlay { |i, play, loop|
-    var instrumentWithoutSufix = this.prRemoveSufix(i);
-    var oldPending;
+    var instrumentWithoutSufix, oldPending;
 
     var newPattern = (
-      id: this.createId(i),
-      instrument: instrumentWithoutSufix,
       loop: this.prCreateArrayFromSample(loop),
       play: this.prCreateArrayFromSample(play),
     );
 
-    if (i.asString != instrumentWithoutSufix.asString and: { this.prExtractSufix(i).notNil})
-    { newPattern.putAll([\file, this.prExtractSufix(i)]) };
+    if (i.isKindOf(Pattern) || i.isArray) {
+      newPattern[\id] = this.asSymbol;
+      newPattern[\instrument] = i;
+    } {
+      instrumentWithoutSufix = this.prRemoveSufix(i);
+      newPattern[\id] = this.createId(i);
+      newPattern[\instrument] = instrumentWithoutSufix;
+
+      if (i.asString != instrumentWithoutSufix.asString 
+        and: { this.prExtractSufix(i).notNil })
+      { newPattern.putAll([\file, this.prExtractSufix(i)]) };
+    };
 
     if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.isNil })
     { oldPending = PxDebouncer.current.prTakePending };

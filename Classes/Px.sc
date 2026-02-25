@@ -43,6 +43,7 @@ Px {
     this.prHandleSoloPattern(newPattern);
 
     pattern = this.prCreateBufInstruments(newPattern);
+    pattern = this.prCreateInstrument(pattern);
     pattern = this.prCreateLoops(pattern);
     pattern = this.prCreateAmp(pattern);
     pattern = this.prCreateDur(pattern);
@@ -120,6 +121,14 @@ Px {
     pattern[\dur] = dur;
 
     ^this.prHumanize(pattern);
+  }
+
+  *prCreateInstrument { |pattern|
+    if (pattern[\instrument].isArray) {
+      pattern[\instrument] = Pseq(pattern[\instrument], pattern[\repeat] ?? inf);
+    };
+
+    ^pattern;
   }
 
   *prCreateFade { |pbindef, fade|

@@ -121,11 +121,11 @@ The superclass that generates the patterns from an array of events with a simpli
 
 Array extension methods that create pattern objects:
 
-| Method                  | Description                                                          |
-| ----------------------- | -------------------------------------------------------------------- |
-| `[0, 1].pseg(\exp, 16)` | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats (`inf`/`\inf`) |
-| `[1, 2, 3].pseq`        | Creates a `Pseq` loop from the array                                 |
-| `[0, 1, 2, 3].shuffle(71)` | Scrambles the array with a random seed for reproducibility        |
+| Method                     | Description                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------- |
+| `[0, 1].pseg(\exp, 16)`    | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats (`inf`/`\inf`) |
+| `[1, 2, 3].pseq`           | Creates a `Pseq` loop from the array                                               |
+| `[0, 1, 2, 3].shuffle(71)` | Scrambles the array with a random seed for reproducibility                         |
 
 ## ✨ Fx: A Nodeproxy Effects Handler
 
@@ -188,7 +188,7 @@ We can simplify the usage of drum machine using shortcodes. The available drum m
 
 ```js
 707 i: \bd dur: 1;
-707 i: \sd dur: 2 off: 1;
+707 i: "sd:4" dur: 2 off: 1;
 
 // Stop all
 \707 i: \all
@@ -205,7 +205,7 @@ Dx.preset(\electro, 1);
 | Name          | Arguments                                         | Description                            |
 | ------------- | ------------------------------------------------- | -------------------------------------- |
 | `delay`       | mix?: range 0..1                                  | Adds delay FX to the preset patterns   |
-| `fill`        | instrument?: symbol, repeat?: integer              | One-shot random fill with crash accent |
+| `fill`        | instrument?: symbol, repeat?: integer             | One-shot random fill with crash accent |
 | `gui`         | None                                              | Opens a drum machine bank GUI          |
 | `instruments` | machine?: symbol                                  | Returns available instruments          |
 | `loadPresets` | None                                              | Reloads presets from YAML files        |
@@ -243,14 +243,14 @@ The synth must be previously loaded with `Sx.loadSynth`.
 
 We can update args independently: `Sx.set(\amp, 0.5, lag: 0)`
 
-| Name      | Arguments              | Description                                |
-| --------- | ---------------------- | ------------------------------------------ |
-| `in`      | fadeTime?: integer     | Fades in the synthesizer. Default: 16      |
-| `out`     | fadeTime?: integer     | Fades out the synthesizer. Default: 16     |
-| `release` | fadeTime?: integer     | Fades out and frees the synth. Default: 10 |
-| `set`     | key: symbol, value     | Sets a parameter with optional lag         |
-| `stop`    | fadeTime?: integer     | Stops the Ndef playback                    |
-| `vol`     | amp?: range 0..1       | Gets or sets the synth amplitude           |
+| Name      | Arguments          | Description                                |
+| --------- | ------------------ | ------------------------------------------ |
+| `in`      | fadeTime?: integer | Fades in the synthesizer. Default: 16      |
+| `out`     | fadeTime?: integer | Fades out the synthesizer. Default: 16     |
+| `release` | fadeTime?: integer | Fades out and frees the synth. Default: 10 |
+| `set`     | key: symbol, value | Sets a parameter with optional lag         |
+| `stop`    | fadeTime?: integer | Stops the Ndef playback                    |
+| `vol`     | amp?: range 0..1   | Gets or sets the synth amplitude           |
 
 **Tip**: The `shuffle` array method provides the capability to specify a random seed for the scramble method.
 

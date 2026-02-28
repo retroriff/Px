@@ -224,11 +224,22 @@ Dx : Px {
   *prAddDrumMachinePlayBuf { |pattern|
     var folder, sample, subfolder;
     var patternDrumMachine = pattern[\drumMachine].asString;
+    var ins = pattern[\instrument].asString;
+    var parts = ins.split($:);
     var file = pattern[\file] ?? 0;
 
-    subfolder = patternDrumMachine.toLower ++ "-" ++ pattern[\instrument].asString;
+    if (parts.size > 1) {
+      ins = parts[0];
+
+      if (file == 0) {
+        file = parts[1].asInteger;
+      };
+    };
+
+    subfolder = patternDrumMachine.toLower ++ "-" ++ ins;
     folder = (patternDrumMachine ++ "/" ++ subfolder);
-    pattern.putAll([\play: [folder, file]]);
+
+    pattern.putAll([\play, [folder, file]]);
     ^pattern;
   }
 

@@ -80,7 +80,9 @@
       };
 
       if (file.isInteger) {
-        numChannels = Px.samplesDict[folder][file].numChannels;
+        var resolvedBuf = this.buf(folder, file);
+        numChannels = resolvedBuf.numChannels;
+        pattern[\play] = resolvedBuf;
       };
 
       if (numChannels == 1) {

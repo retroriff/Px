@@ -92,7 +92,7 @@
   }
 
   i { |value|
-    if (value.isKindOf(Pattern) || value.isArray)
+    if (value.isString.not and: { value.isKindOf(Pattern) || value.isArray })
     { this.prPlay(i: value) }
     { this.prPlay(i: value.asSymbol) };
   }

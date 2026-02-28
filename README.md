@@ -129,7 +129,7 @@ Array extension methods that create pattern objects:
 
 ## ✨ Fx: A Nodeproxy Effects Handler
 
-The Fx class facilitates the addition of effects to the Px set classes, as well as to any other Ndef.
+The Fx class facilitates the addition of effects to the Px set classes, as well as to any other Ndef. Effect parameters support Function-based modulation — pass a `{ }` block containing UGens to create dynamic, moving effects (e.g., `Fx(\px).lpf(1, { SinOsc.kr(0.5).range(200, 4000) })`).
 
 To enable loading or saving of VST presets, initialize the class with the path to the presets folder:
 

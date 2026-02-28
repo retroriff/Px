@@ -84,18 +84,8 @@ Fx {
   }
 
   *hpf { |mix = 1, freq = 1200|
-    var postArgs = "freq:" +  freq;
-    var wave;
-
-    if (freq == \wave) {
-      wave = Ndef(\hpfWave, { SinOsc.kr(1/8).range(400, 1200) });
-      freq = 1200;
-    };
-
+    var postArgs = "freq:" + freq;
     this.prAddEffect(\hpf, mix, [freq], postArgs);
-
-    if (wave.notNil)
-    { proxy[proxyName].map(\hpf1, wave) };
   }
 
   *loadEffects {
@@ -106,36 +96,17 @@ Fx {
   }
 
   *lpf { |mix = 0.4, freq = 200|
-    var postArgs = "freq:" +  freq;
-    var wave;
-
-    if (freq == \wave) {
-      wave = Ndef(\lpfWave, { SinOsc.kr(1/8).range(200, 400) });
-      freq = 200;
-    };
-
+    var postArgs = "freq:" + freq;
     this.prAddEffect(\lpf, mix, [freq], postArgs);
-
-    if (wave.notNil)
-    { proxy[proxyName].map(\lpf1, wave) };
   }
 
   *pan { |pos = 0|
-    var postArgs = "pos:" +  pos;
-    var wave;
-
-    if (pos == \wave) {
-      wave = Ndef(\panWave, { SinOsc.kr(1/8).range(-1.0, 1.0) });
-      pos = 0;
-    };
+    var postArgs = "pos:" + pos;
 
     if (pos.isNil)
     { pos = 0 };
 
     this.prAddEffect(\pan, 1, [pos], postArgs);
-
-    if (wave.notNil)
-    { proxy[proxyName].map(\pan1, wave) };
   }
 
   *phaser { |mix = 0.5, rate = 1.0, depth = 1|
@@ -224,6 +195,22 @@ Fx {
 
     PxDebouncer.flush;
 
+    if (args.notNil) {
+      args.do { |value|
+
+        if (value.notNil and: { value.isNumber.not } and: { value.isFunction.not }) {
+          ^this.prPrint(
+            "🔴 Invalid argument type. Use numbers or wrap UGens in { }, 
+            e.g. { SinOsc.kr(t / 16).range(200, 4000) }"
+          );
+        };
+      };
+    };
+
+    if (mix.notNil and: { mix != Nil } and: { mix.isNumber.not }) {
+      ^this.prPrint("🔴 Invalid mix value. Must be a number (0-1) or Nil.");
+    };
+
     if (activeEffects[proxyName].isNil)
     { activeEffects[proxyName] = Dictionary.new };
 
@@ -244,18 +231,20 @@ Fx {
     if (mix.isNil or: { mix == Nil })
     { ^this.prDisableFx(fx) };
 
+    this.prMapModulationArgs(fx, args);
     this.prSetMixerValue(fx, mix.clip(0, 1));
   }
 
   *prActivateEffect { |args, fx, mix, postArgs|
-    var index;
+    var index, buildArgs;
 
     proxy[proxyName] = Ndef(proxyName);
     index = (activeEffects[proxyName].values.maxItem ?? 0) + 1;
     activeEffects[proxyName][fx] = index;
 
     if (proxy[proxyName][index].isNil) {
-      proxy[proxyName][index] = effects.at(fx).(*args);
+      buildArgs = args.collect { |v| if (v.isFunction) { 0 } { v } };
+      proxy[proxyName][index] = effects.at(fx).(*buildArgs);
 
       if (activeArgs[proxyName].isNil)
       { activeArgs[proxyName] = Dictionary.new };
@@ -293,6 +282,8 @@ Fx {
     if (index.isNil) {
       ^this.prPrint("🔴".scatArgs(("\\" ++ fx), "FX not found"));
     };
+
+    this.prFreeModulationNdefs(fx);
 
     activeArgs[proxyName].removeAt(fx);
     mixer[proxyName].removeAt(fx);
@@ -340,10 +331,39 @@ Fx {
 
   *prUpdateEffect { |args, fx|
     args do: { |value, i|
-      proxy[proxyName].set((fx ++ (i + 1)).asSymbol, value);
+      if (value.isFunction.not) {
+        proxy[proxyName].set((fx ++ (i + 1)).asSymbol, value);
+      };
+
       activeArgs[proxyName].add(fx -> args);
-      this.prPrint("🌶️ Updated".scatArgs(fx));
     }
+  }
+
+  *prFreeModulationNdefs { |fx|
+    var args = activeArgs[proxyName][fx];
+
+    if (args.isNil) { ^nil };
+
+    args.do { |value, i|
+      if (value.isFunction) {
+        var ndefName = (fx ++ "Mod" ++ (i + 1)).asSymbol;
+        Ndef(ndefName).clear;
+      };
+    };
+  }
+
+  *prMapModulationArgs { |fx, args|
+    if (args.isNil) { ^nil };
+
+    args.do { |value, i|
+      var controlName = (fx ++ (i + 1)).asSymbol;
+
+      if (value.isFunction) {
+        var ndefName = (fx ++ "Mod" ++ (i + 1)).asSymbol;
+        var ndef = Ndef(ndefName, value);
+        proxy[proxyName].map(controlName, ndef);
+      };
+    };
   }
 
   *prSetMixerValue { |fx, mix|

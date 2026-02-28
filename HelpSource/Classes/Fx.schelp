@@ -134,11 +134,11 @@ argument:: mix
 Wet/dry mix (0-1). Default: 1.
 
 argument:: freq
-Cutoff frequency in Hz, or \wave for LFO modulation. Default: 1200.
+Cutoff frequency in Hz, or a Function for modulation. Default: 1200.
 
 code::
 Fx(\px).hpf(1, 800);
-Fx(\px).hpf(1, \wave);  // LFO modulated
+Fx(\px).hpf(1, { SinOsc.kr(0.5).range(200, 4000) });
 ::
 
 method:: lpf
@@ -148,22 +148,22 @@ argument:: mix
 Wet/dry mix (0-1). Default: 0.4.
 
 argument:: freq
-Cutoff frequency in Hz, or \wave for LFO modulation. Default: 200.
+Cutoff frequency in Hz, or a Function for modulation. Default: 200.
 
 code::
 Fx(\px).lpf(0.5, 400);
-Fx(\px).lpf(0.5, \wave);  // LFO modulated
+Fx(\px).lpf(1, { SinOsc.kr(0.5).range(200, 4000) });
 ::
 
 method:: pan
 Stereo panning control.
 
 argument:: pos
-Pan position from -1 (left) to 1 (right), or \wave for LFO modulation. Default: 0.
+Pan position from -1 (left) to 1 (right), or a Function for modulation. Default: 0.
 
 code::
 Fx(\px).pan(-0.5);       // Pan left
-Fx(\px).pan(\wave);      // Auto-pan with LFO
+Fx(\px).pan({ SinOsc.kr(0.25).range(-1, 1) });  // Auto-pan
 ::
 
 method:: phaser
@@ -223,6 +223,25 @@ Rate multiplier (synced to tempo). Default: 1.
 
 code::
 Fx(\px).tremolo(0.5, 2);
+::
+
+subsection:: Modulation
+
+Effect parameters can be modulated using Functions that return UGens. Pass a Function (wrapped in code::{ }::) as any effect argument to create dynamic, moving effects.
+
+code::
+// Modulate filter frequency with a sine wave
+Fx(\px).lpf(1, { SinOsc.kr(0.5).range(200, 4000) });
+
+// Auto-pan with LFO
+Fx(\px).pan({ SinOsc.kr(0.25).range(-1, 1) });
+
+// Modulate delay feedback
+Fx(\px).delay(0.4, 0.5, { LFNoise1.kr(0.1).range(0.1, 0.9) });
+::
+
+note::
+Always wrap UGens in code::{ }:: (a Function). Passing a bare UGen like code::SinOsc.kr(0.5):: without curly braces will produce an error.
 ::
 
 subsection:: Management
@@ -329,8 +348,8 @@ code::
 Fx(\px).reverb(0.3);
 Fx(\px).delay(0.2, 4);
 
-// Chain effects
-Fx(\px).hpf(0.5, \wave).flanger(0.3);
+// Chain effects with modulation
+Fx(\px).hpf(1, { SinOsc.kr(0.5).range(200, 4000) }).flanger(0.3);
 
 // Use space for ambient textures
 (

@@ -633,9 +633,14 @@ Pdef(\def, Pbind(
 ::
 
 ## control
-|| Sends MIDI control change.
+|| Sends MIDI control change. Reads the channel from the stored pattern. Integer values are sent immediately; patterns create a separate Pdef that runs alongside the note pattern.
 code::
-2 control: [1, 64];  // Controller 1, value 64
+// Send a single CC value (immediate)
+1 control: [10, 0];    // CC 10 (pan) hard left
+1 control: [10, 127];  // CC 10 (pan) hard right
+
+// Send a CC pattern (creates a separate Pdef, inherits dur from note pattern)
+1 control: [10, Pseq([0, 127], inf)];  // pan alternates left/right
 ::
 
 ## device

@@ -177,7 +177,7 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 
 | Name      | Arguments                                                                                                                   | Description                                                           |
 | --------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `control` | number, number \| Pattern \| \rand \| \wrand \| [symbol: \rand \| \wrand, value1: number, value2?: number, weight?: number] | Sends a controller message                                            |
+| `control` | number, number \| Pattern | Sends a MIDI CC message. Integer values are sent immediately; patterns create a separate Pdef |
 | `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
 | `holdOff` | None                                                                                                                        | Releases holded notes                                                 |
 | `panic`   | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |

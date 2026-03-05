@@ -546,10 +546,10 @@ subsection:: Pattern Control
 
 definitionlist::
 ## set
-|| Updates an existing pattern without recreating it.
+|| Updates an existing pattern without recreating it. For regular patterns, parameters can be updated directly without code::set::. For drum machines, code::set:: is required to specify the instrument.
 code::
 1 play: "fm" dur: 1;
-1 set: true dur: 0.5;  // Update duration only
+1 dur: 0.5;  // Update duration only
 ::
 
 ## solo
@@ -664,6 +664,20 @@ code::
 
 // Send a CC pattern (creates a separate Pdef, inherits dur from note pattern)
 1 control: [10, Pseq([0, 127], inf)];  // pan alternates left/right
+
+// The pattern above generates:
+Pbind(
+  \type, \midi,
+  \midicmd, \control,
+  \midiout, Px.midiOut,
+  \chan, 1,
+  \instrument, \midi,
+  \ctlNum, 10,
+  \control, Pseq([0, 127], inf),
+  \dur, 0.25,
+  \id, \cc10_1,
+  \midiControl, 1,
+)
 ::
 
 ## device

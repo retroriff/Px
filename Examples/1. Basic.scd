@@ -130,7 +130,7 @@ Px.chorus;
 3 i: \303 dur: 0.25 octave: 5 ctf: [0, 1].pseg(\lin, 8)
 
 // Update an existing pattern when we omit i, play and loop
-3 set: 1 dur: 1
+3 dur: 1
 
 // Change the tempo
 Px.tempo(100);

@@ -63,7 +63,7 @@ Px {
 
     lastFormatted[newPattern[\id]] = pattern;
 
-    this.prRemoveFinitePatternFromLast(newPattern);
+    this.prRemoveFinitePatternFromLast(pattern);
   }
 
   *prCreateAmp { |pattern|

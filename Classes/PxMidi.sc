@@ -135,13 +135,13 @@ TODO: MIDIOut instances
   }
 
   *control { |chan, ctlNum, value|
-    var suffix = ("_cc" ++ ctlNum).asString;
+    var prefix = ("cc" ++ ctlNum ++ "_").asString;
 
     if (midiClient.isNil)
     { this.initMidi };
 
     ndefList.keys do: { |key|
-      if (key.asString.endsWith(suffix) and: { last[key].notNil and: { last[key][\chan] == chan } }) {
+      if (key.asString.beginsWith(prefix) and: { last[key].notNil and: { last[key][\chan] == chan } }) {
         Pdef(key).stop;
         Ndef(key).free;
         last.removeAt(key);
@@ -186,19 +186,19 @@ TODO: MIDIOut instances
     chan = previousPattern[\chan] ?? 0;
 
     if (control.isNumber) {
-      var controlId = (this.asString ++ "_cc" ++ ctlNum).asSymbol;
+      var controlId = ("cc" ++ ctlNum ++ "_" ++ this.asString).asSymbol;
 
       if (Px.ndefList[controlId].notNil) {
         Pdef(controlId).stop;
         Ndef(controlId).free;
-        this.last.removeAt(controlId);
-        this.ndefList.removeAt(controlId);
+        Px.last.removeAt(controlId);
+        Px.ndefList.removeAt(controlId);
         Ndef(\px)[0] = { Mix.new(Px.ndefList.values) };
       };
 
       Px.control(chan, ctlNum, control);
     } {
-      var controlId = (this.asString ++ "_cc" ++ ctlNum).asSymbol;
+      var controlId = ("cc" ++ ctlNum ++ "_" ++ this.asString).asSymbol;
 
       this.prPlayClass((
         id: controlId,

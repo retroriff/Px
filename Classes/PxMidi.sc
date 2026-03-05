@@ -134,6 +134,25 @@ TODO: MIDIOut instances
     ^pattern;
   }
 
+  *control { |chan, ctlNum, value|
+    var suffix = ("_cc" ++ ctlNum).asString;
+
+    if (midiClient.isNil)
+    { this.initMidi };
+
+    ndefList.keys do: { |key|
+      if (key.asString.endsWith(suffix) and: { last[key].notNil and: { last[key][\chan] == chan } }) {
+        Pdef(key).stop;
+        Ndef(key).free;
+        last.removeAt(key);
+        ndefList.removeAt(key);
+        Ndef(\px)[0] = { Mix.new(ndefList.values) };
+      };
+    };
+
+    midiOut.control(chan, ctlNum, value.clip(0, 127));
+  }
+
   *prDetectDevice { |name|
     ^MIDIClient.destinations.detect({ |endpoint|
       endpoint.name == name;
@@ -177,7 +196,7 @@ TODO: MIDIOut instances
         Ndef(\px)[0] = { Mix.new(Px.ndefList.values) };
       };
 
-      Px.midiOut.control(chan, ctlNum, control.clip(0, 127));
+      Px.control(chan, ctlNum, control);
     } {
       var controlId = (this.asString ++ "_cc" ++ ctlNum).asSymbol;
 

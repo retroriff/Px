@@ -101,6 +101,10 @@ SuperCollider's `+ ClassName { }` syntax allows extending classes across multipl
 
 When debugging or modifying behavior, always grep for `^\+ ClassName` to find all extensions.
 
+## Classvars in extension files
+
+Extension files like `PxMidi.sc` contain multiple `+ ClassName` blocks (e.g., `+ Px` and `+ Number`). Px classvars (`last`, `ndefList`, `midiOut`, etc.) are accessible via `this` from **any** block in the file — including `+ Number` methods — because the file is an extension of the Px class. Do **not** replace `this.last` or `this.ndefList` with `Px.last` or `Px.ndefList` in these files.
+
 # Variable definitions
 
 In SuperCollider, all `var` declarations in a scope must appear **before any executable statements**. Placing a `var` after an `if` or any other expression is a syntax error.

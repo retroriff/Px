@@ -198,7 +198,7 @@ Fx {
     if (args.notNil) {
       args.do { |value|
 
-        if (value.notNil and: { value.isNumber.not } and: { value.isFunction.not }) {
+        if (value.notNil and: { value.isNumber.not } and: { value.isFunction.not } and: { value.isString.not } and: { value.isKindOf(Symbol).not }) {
           ^this.prPrint(
             "🔴 Invalid argument type. Use numbers or wrap UGens in { }, 
             e.g. { SinOsc.kr(t / 16).range(200, 4000) }"

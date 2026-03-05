@@ -78,7 +78,7 @@
 
   gui { |value|
     if (value != 0) {
-      Px.gui
+      AppClock.sched(0, { Px.gui; nil })
     } {
       if (Px.window.notNil) {
         Px.window.close

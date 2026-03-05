@@ -65,8 +65,16 @@
       var pattern = patterns[key];
       var patternFormatted = patternsFormatted[key];
       var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
-      var play = pattern[\play] !? { pattern[\play][0] };
-      var loop = pattern[\loop] !? { pattern[\loop][0] };
+      var play = pattern[\play] !? {
+        if (pattern[\play].isArray)
+        { pattern[\play][0] }
+        { pattern[\play].asString }
+      };
+      var loop = pattern[\loop] !? {
+        if (pattern[\loop].isArray)
+        { pattern[\loop][0] }
+        { pattern[\loop].asString }
+      };
       var patternLabel = pattern[\instrument] ?? chan ?? play ?? loop ?? key;
       var amp = this.prGetAmp(patternFormatted[\amp]);
       var backgroundColor = Color.new255(26, 29, 34);

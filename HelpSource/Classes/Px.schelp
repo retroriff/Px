@@ -550,6 +550,9 @@ definitionlist::
 code::
 1 play: "fm" dur: 1;
 1 dur: 0.5;  // Update duration only
+
+707 i: \bd dur: 1 amp: 0.5;
+707 set: \bd amp: 0.2;
 ::
 
 ## solo

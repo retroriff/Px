@@ -193,6 +193,12 @@ Dx : Px {
     if (currentDrumMachine == newDrumMachine)
     { ^this.prPrint("🟢 Drum machine already selected") };
 
+    if (instrumentFolders.isEmpty)
+    { this.prGetInstrumentFolders };
+
+    if (instrumentFolders[newDrumMachine.asSymbol].isNil)
+    { ^this.prPrint("🔴 Drum machine not found:" + newDrumMachine) };
+
     drumMachine = newDrumMachine;
 
     this.prStopPreset;
@@ -358,7 +364,11 @@ Dx : Px {
   }
 
   *prHasInstrument { |instrument|
-    ^instrumentFolders[drumMachine.asSymbol].any { |folder|
+    var folders = instrumentFolders[drumMachine.asSymbol];
+
+    if (folders.isNil) { ^false };
+
+    ^folders.any { |folder|
       folder.asString.endsWith("-" ++ instrument.asString)
       or: { folder.asString == instrument.asString }
     };

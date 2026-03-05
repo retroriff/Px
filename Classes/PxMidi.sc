@@ -156,13 +156,13 @@ TODO: MIDIOut instances
   }
 
   control { |value|
+    var chan;
     var ctlNum = value[0];
     var control = value[1];
     var previousPattern = Px.last[this.asSymbol];
-    var chan;
 
     if (previousPattern.isNil)
-    { "Pattern % not found".format(this).warn; ^this };
+    { ^"Pattern % not found".format(this).warn; };
 
     chan = previousPattern[\chan] ?? 0;
 
@@ -172,8 +172,8 @@ TODO: MIDIOut instances
       if (Px.ndefList[controlId].notNil) {
         Pdef(controlId).stop;
         Ndef(controlId).free;
-        Px.last.removeAt(controlId);
-        Px.ndefList.removeAt(controlId);
+        this.last.removeAt(controlId);
+        this.ndefList.removeAt(controlId);
         Ndef(\px)[0] = { Mix.new(Px.ndefList.values) };
       };
 

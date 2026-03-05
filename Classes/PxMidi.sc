@@ -134,6 +134,25 @@ TODO: MIDIOut instances
     ^pattern;
   }
 
+  *control { |chan, ctlNum, value|
+    var suffix = ("_cc" ++ ctlNum).asString;
+
+    if (midiClient.isNil)
+    { this.initMidi };
+
+    ndefList.keys do: { |key|
+      if (key.asString.endsWith(suffix) and: { last[key].notNil and: { last[key][\chan] == chan } }) {
+        Pdef(key).stop;
+        Ndef(key).free;
+        last.removeAt(key);
+        ndefList.removeAt(key);
+        Ndef(\px)[0] = { Mix.new(ndefList.values) };
+      };
+    };
+
+    midiOut.control(chan, ctlNum, value.clip(0, 127));
+  }
+
   *prDetectDevice { |name|
     ^MIDIClient.destinations.detect({ |endpoint|
       endpoint.name == name;
@@ -156,21 +175,40 @@ TODO: MIDIOut instances
   }
 
   control { |value|
+    var chan;
     var ctlNum = value[0];
     var control = value[1];
+    var previousPattern = Px.last[this.asSymbol];
 
-    var controlEvent = (
-      \midicmd: \control,
-      \ctlNum: ctlNum,
-      \control: this.prCreateControl(control)
-    ).asPairs;
+    if (previousPattern.isNil)
+    { ^"Pattern % not found".format(this).warn; };
 
-    var previousPattern = Px.last[(this  - 1).asSymbol];
+    chan = previousPattern[\chan] ?? 0;
 
-    if (ctlNum.isInteger)
-    { controlEvent = controlEvent ++ this.prSendSingleMessage };
+    if (control.isNumber) {
+      var controlId = (this.asString ++ "_cc" ++ ctlNum).asSymbol;
 
-    ^this.chan(previousPattern[\chan], controlEvent);
+      if (Px.ndefList[controlId].notNil) {
+        Pdef(controlId).stop;
+        Ndef(controlId).free;
+        this.last.removeAt(controlId);
+        this.ndefList.removeAt(controlId);
+        Ndef(\px)[0] = { Mix.new(Px.ndefList.values) };
+      };
+
+      Px.control(chan, ctlNum, control);
+    } {
+      var controlId = (this.asString ++ "_cc" ++ ctlNum).asSymbol;
+
+      this.prPlayClass((
+        id: controlId,
+        chan: chan,
+        midicmd: \control,
+        ctlNum: ctlNum,
+        control: control,
+        dur: previousPattern[\dur] ?? 1,
+      ));
+    };
   }
 
   device { |value|
@@ -197,39 +235,6 @@ TODO: MIDIOut instances
 
   panic {
     this.prDebouncer.enqueue([\midicmd, \allNotesOff] ++ this.prSendSingleMessage);
-  }
-
-  prConvertToMidiValue { |value|
-    ^value.clip(0, 1) * 127 / 1;
-  }
-
-  prCreateControl { |value|
-    var createPwhite = { |lower, upper|
-      Pwhite(this.prConvertToMidiValue(lower), this.prConvertToMidiValue(upper));
-    };
-
-    var createPwrand = { |item1, item2, weight|
-      Pwrand(
-        list: [this.prConvertToMidiValue(item1), this.prConvertToMidiValue(item2)],
-        weights: [1 - weight, weight],
-        repeats: inf
-      );
-    };
-
-    case
-    { value == \rand }
-    { ^createPwhite.(0, 1) }
-
-    { value.isArray and: { value[0] == \rand } }
-    { ^createPwhite.(value[1], value[2]) }
-
-    { value.isArray and: { value[0] == \wrand } }
-    { ^createPwrand.(value[1], value[2], value[3].clip(0, 1)) }
-
-    { value.isNumber }
-    { ^this.prConvertToMidiValue(value) };
-
-    ^value ?? 0;
   }
 
   prSendSingleMessage {

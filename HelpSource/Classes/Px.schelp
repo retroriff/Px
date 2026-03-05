@@ -330,6 +330,25 @@ code::
 Px.initMidi(0.1);
 ::
 
+method:: control
+Sends a MIDI CC message immediately.
+
+argument:: chan
+MIDI channel (0-15).
+
+argument:: ctlNum
+CC number (0-127).
+
+argument:: value
+CC value (0-127).
+
+code::
+Px.control(0, 10, 64);   // CC 10 (pan) center on channel 0
+Px.control(1, 7, 100);   // CC 7 (volume) on channel 1
+::
+
+Note: The DSL code::1 control: [10, 64]:: delegates to this method for integer values, reading the channel from the stored pattern.
+
 method:: panic
 Sends all notes off message.
 
@@ -633,9 +652,18 @@ Pdef(\def, Pbind(
 ::
 
 ## control
-|| Sends MIDI control change.
+|| Sends MIDI control change. Reads the channel from the stored pattern. Integer values are sent immediately; patterns create a separate Pdef that runs alongside the note pattern.
 code::
-2 control: [1, 64];  // Controller 1, value 64
+// Define a MIDI pattern first
+1 chan: 1 note: ([0, 0, 0, 0, 0, 3, 0, 5] + Nx.midiRoot).pseq dur: 0.25 amp: 1 octave: -2;
+
+// Send a single CC value (immediate)
+// Equivalent to m.control(1, 10, 0) where chan is read from the stored pattern
+1 control: [10, 0];    // CC 10 (pan) hard left
+1 control: [10, 127];  // CC 10 (pan) hard right
+
+// Send a CC pattern (creates a separate Pdef, inherits dur from note pattern)
+1 control: [10, Pseq([0, 127], inf)];  // pan alternates left/right
 ::
 
 ## device

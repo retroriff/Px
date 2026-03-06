@@ -64,9 +64,6 @@ Px {
     lastFormatted[newPattern[\id]] = pattern;
 
     this.prRemoveFinitePatternFromLast(pattern);
-
-    if (window.notNil)
-    { this.prUpdateGui };
   }
 
   *prCreateAmp { |pattern|

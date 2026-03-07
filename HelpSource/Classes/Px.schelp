@@ -666,7 +666,8 @@ code::
 1 control: [10, 127];  // CC 10 (pan) hard right
 
 // Send a CC pattern (creates a separate Pdef, inherits dur from note pattern)
-1 control: [10, Pseq([0, 127], inf)];  // pan alternates left/right
+1 control: [10, [0, 127].pseq]; // pan alternates left/right
+1 control: [10, Pseq([0, 127], inf)];
 
 // The pattern above generates:
 Pbind(

@@ -1,5 +1,4 @@
 /*
-TODO: Bug when a holded note with same note is reevaluated
 TODO: Channel + 1 to match receiver number. Ex. chan: 1 instead of chan: 0
 TODO: Controls [\rand, 0, 0.1] i [\wrand, 0, 0.1, 0.9]
 TODO: MIDIOut instances
@@ -91,7 +90,7 @@ TODO: MIDIOut instances
 
     if (pattern[\hasGate] == false) {
       var hasSameNotes = { |holdedPattern|
-        [\degreeRaw, \midinote, \octave, \root, \scale] every: { |key|
+        [\degreeRaw, \midinote, \octave, \ctranspose, \root, \scale] every: { |key|
           holdedPattern[key] == pattern[key]
         }
       };

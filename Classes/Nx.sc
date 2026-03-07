@@ -23,7 +23,7 @@ Nx {
     tonics = Dictionary.new;
 
     this.loadChords;
-    this.set(\EmAdd9);
+    this.set(\DsmAdd9);
   }
 
   *new { |chordName, octaveArg|

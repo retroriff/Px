@@ -8,18 +8,18 @@ TR08((i: \bd, dur: 1));
 // Let's sync the device with SC setting up a different latency:
 (
 TR08.init(0.195);
-/* TODO: 8808 i: \bd dur: 1; */
+/* TODO: 8080 i: \bd dur: 1; */
 1 i: \bd dur: 1;
 )
 
 // TODO: Now we can start to play with our TR-08:
 /*
 (
-8808 i: \bd dur: 1;
-8808 i: \rs dur: 0.25 beat: 0.4;
-8808 i: \sd dur: 0.25 fill: 0.42;
-8808 i: \hh dur: 0.25 beat: 0.82;
-8808 i: \ma dur: 0.25 fill: 0.82;
+8080 i: \bd dur: 1;
+8080 i: \rs dur: 0.25 beat: 0.4;
+8080  i: \sd dur: 0.25 fill: 0.42;
+8080 i: \hh dur: 0.25 beat: 0.82;
+8080 i: \ma dur: 0.25 fill: 0.82;
 )
 */
 

@@ -1,5 +1,3 @@
-// TODO: Routine Boing fill doesn't work as expected
-
 Dx : Px {
   classvar <>drumMachine;
   classvar <>dxAmp;

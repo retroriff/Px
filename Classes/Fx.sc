@@ -177,7 +177,10 @@ Fx {
 
   // Animatron
   *vstSet { |param, value|
-    ~animatronNetAddr.sendMsg("/sc/vst", value);
+
+    if (~isAnimatronEnabled == true)
+    { ~animatronNetAddr.sendMsg("/sc/vst", value) };
+
     vstController.set(param, value);
   }
 

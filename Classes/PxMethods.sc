@@ -54,7 +54,8 @@
       var tdefs = Tdef.all.select { |t| t.isPlaying }.keys;
       tdefs do: { |key| Tdef(key).stop };
 
-      ~animatronNetAddr.sendMsg("/sc/hush", fadeTime);
+      if (~isAnimatronEnabled == true)
+      { ~animatronNetAddr.sendMsg("/sc/hush", fadeTime) };
 
       if (fadeTime == \all)
       { fadeTime = fadeTime };

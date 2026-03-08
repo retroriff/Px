@@ -6,7 +6,9 @@
   doesNotUnderstand {}
 
   free {
-    ~animatronNetAddr.sendMsg("/sc/stop", this, 0);
+    if (~isAnimatronEnabled == true)
+    { ~animatronNetAddr.sendMsg("/sc/stop", this, 0) };
+
     Ndef(this).free;
   }
 
@@ -43,7 +45,8 @@
 
   play { |value|
     if (value.isNil) {
-      ~animatronNetAddr.sendMsg("/sc/start", this, 0);
+      if (~isAnimatronEnabled == true)
+      { ~animatronNetAddr.sendMsg("/sc/start", this, 0) };
 
       ^Ndef(this).play(fadeTime: 0);
     } {
@@ -73,7 +76,9 @@
   }
 
   stop { |fadeTime|
-    ~animatronNetAddr.sendMsg("/sc/stop", this, fadeTime ?? 0);
+    if (~isAnimatronEnabled == true)
+    { ~animatronNetAddr.sendMsg("/sc/stop", this, fadeTime ?? 0) };
+
     Ndef(this).stop(fadeTime ?? 0);
   }
 

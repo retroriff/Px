@@ -13,13 +13,19 @@ Crossfader {
 
   *fadeIn { |id, fadeTime|
     var seconds = fadeTime ?? defaultFadeTime;
-    ~animatronNetAddr.sendMsg("/sc/start", id, seconds);
+
+    if (~isAnimatronEnabled == true)
+    { ~animatronNetAddr.sendMsg("/sc/start", id, seconds) };
+
     Ndef(id).play(fadeTime: seconds);
   }
 
   *fadeOut { |id, fadeTime|
     var seconds = fadeTime ?? defaultFadeTime;
-    ~animatronNetAddr.sendMsg("/sc/stop", id, seconds);
+
+    if (~isAnimatronEnabled == true)
+    { ~animatronNetAddr.sendMsg("/sc/stop", id, seconds) }; 
+
     Ndef(id).clear(seconds);
   }
 }

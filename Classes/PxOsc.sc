@@ -1,6 +1,8 @@
 +Px {
   *listen {
     if (OSCdef.all[\px].isNil) {
+      var printExcludedReceivers = ["animatron", "pxAgentReceiver"];
+
       NetAddr("127.0.0.1", 57120);
 
       OSCdef.new(\px, { |msg|
@@ -9,21 +11,21 @@
 
         { code.interpret }.defer;
 
-        if (receiver != "animatron")
+        if (printExcludedReceivers.includesEqual(receiver) == false)
         { this.prPrint(("🤖 " ++ code)) };
       }, '/px');
 
-      ^this.prPrint("📡 Listening OSC");
+       ^this.prPrint("📡 Listening OSC");
     };
 
-    ^this.prPrint("📡 Listener already enabled");
+    ^("📡 Listener already enabled");
   }
 
   *listenOff {
     OSCdef.all[\px].free;
     NetAddr.disconnectAll;
 
-    ^this.prPrint("🙉 Listener disabled");
+    ^("🙉 Listener disabled");
   }
 
   *oscTest {
@@ -31,9 +33,9 @@
       var addr = NetAddr("127.0.0.1", 57120);
       addr.sendMsg("/px", "\"OSC received\"");
 
-      ^this.prPrint("🚀 Test sent");
+      ^("🚀 Test sent");
     }
 
-    ^this.prPrint("🙉 Listener is disabled");
+    ^("🙉 Listener is disabled");
   }
 }

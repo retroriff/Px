@@ -14,7 +14,7 @@ TODO: MIDIOut instances
 
     if (deviceName.notNil and: (this.prDetectDevice(deviceName) == false)) {
       this.prPrint("🔴 Device not detected");
-      ^this.prPrint("✅ Playing SynthDefs");
+      ^("✅ Playing SynthDefs");
     };
 
     if (deviceName.notNil) {

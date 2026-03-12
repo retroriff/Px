@@ -277,6 +277,7 @@ Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (
 
 | Name             | Arguments                   | Returns    | Description                                         |
 | ---------------- | --------------------------- | ---------- | --------------------------------------------------- |
+| `all`            | None                        | Dictionary | Returns all chord data in a single Dictionary       |
 | `chord`          | None                        | Symbol     | Returns current chord name                          |
 | `chordQualities` | None                        | Dictionary | Returns all loaded chord qualities                  |
 | `degrees`        | None                        | Array      | Returns scale degrees array                         |

@@ -143,7 +143,7 @@ Dx : Px {
     var hasCommon, lastInstruments, soloIds;
 
     if (instruments.isNil)
-    { ^this.prPrint("🟡 Provide at least one instrument to solo") };
+    { ^("🟡 Provide at least one instrument to solo") };
 
     if (instruments.isArray == false) {
       instruments = [instruments, ins2, ins3, ins4, ins5];
@@ -167,7 +167,7 @@ Dx : Px {
     hasCommon = lastInstruments.any { |id| instruments.includes(id) };
 
     if (hasCommon == false)
-    { ^this.prPrint("🔴 No matching instruments to solo") };
+    { ^("🔴 No matching instruments to solo") };
 
     last.copy do: { |pattern|
       if (soloIds.includes(pattern[\id]) == false
@@ -189,13 +189,13 @@ Dx : Px {
     { ^currentDrumMachine };
 
     if (currentDrumMachine == newDrumMachine)
-    { ^this.prPrint("🟢 Drum machine already selected") };
+    { ^("🟢 Drum machine already selected") };
 
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
 
     if (instrumentFolders[newDrumMachine.asSymbol].isNil)
-    { ^this.prPrint("🔴 Drum machine not found:" + newDrumMachine) };
+    { ^("🔴 Drum machine not found:" + newDrumMachine) };
 
     drumMachine = newDrumMachine;
 

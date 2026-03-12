@@ -9,7 +9,7 @@
 
   *chorus {
     if (chorusPatterns.isNil) {
-      ^this.prPrint("💩 Chorus is empty. Please run \"save\"");
+      ^("💩 Chorus is empty. Please run \"save\"");
     };
 
     this.prReevaluate(chorusPatterns);
@@ -123,7 +123,7 @@
     { ^this.unsolo };
 
     if (soloIds.isNil)
-    { ^this.prPrint("🟡 Provide at least one instrument to solo") };
+    { ^("🟡 Provide at least one instrument to solo") };
 
     if (soloIds.isArray == false) {
       soloIds = [soloIds, id2, id3, id4, id5];
@@ -134,7 +134,7 @@
     hasCommon = soloIds.any { |id| last.keys.includes(id) };
 
     if (hasCommon == false)
-    { ^this.prPrint("🔴 No matching instruments to solo") };
+    { ^("🔴 No matching instruments to solo") };
 
     last.copy do: { |event|
       if (soloIds.includes(event[\id]) == false) {
@@ -151,7 +151,7 @@
 
   *unsolo {
     if (mutedPatterns.isNil || mutedPatterns.isEmpty) {
-      ^this.prPrint("🟡 No muted patterns to restore");
+      ^("🟡 No muted patterns to restore");
     };
 
     mutedPatterns.keysValuesDo { |id, event|
@@ -213,7 +213,7 @@
 
   *tempo { |tempo, withNdef|
     if (tempo.isNil) {
-      ^this.prPrint("🕰️ Current tempo is" + (TempoClock.tempo * 60));
+      ^("🕰️ Current tempo is" + (TempoClock.tempo * 60));
     };
 
     tempo = tempo.clip(1, 300) / 60;
@@ -243,7 +243,7 @@
 
   *traceOff { |id|
     if (id.isNil)
-    { ^this.prPrint("🔴 Please specify a pattern id to disable trace") }
+    { ^("🔴 Please specify a pattern id to disable trace") }
     { ^this.new(last[id]) };
   }
 

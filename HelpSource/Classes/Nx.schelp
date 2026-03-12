@@ -137,6 +137,24 @@ Nx.shuffle(\E, \minor);      // random E minor chord
 Nx.shuffle(\A, \lydian);     // random A lydian chord
 ::
 
+method:: all
+Returns a Dictionary with all chord data for the current chord.
+
+code::
+Nx.set(\Em7);
+Nx.all;
+// -> Dictionary[
+//   \chord -> \Em7,
+//   \degrees -> [0, 2, 4, 6],
+//   \guitarDegrees -> nil,
+//   \intervals -> [0, 3, 7, 10],
+//   \midiRoot -> 52,
+//   \midinotes -> [52, 55, 59, 62],
+//   \root -> 4,
+//   \scale -> \minor
+// ]
+::
+
 method:: intervals
 Returns the intervals array of the current chord.
 

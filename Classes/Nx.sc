@@ -23,11 +23,24 @@ Nx {
     tonics = Dictionary.new;
 
     this.loadChords;
-    this.set(\DsmAdd9);
+    this.set(\D7sus4Add13);
   }
 
   *new { |chordName, octaveArg|
     ^this.set(chordName, nil, octaveArg);
+  }
+
+  *all {
+    ^Dictionary[
+      \chord -> currentChordName,
+      \degrees -> currentChord[\degree],
+      \guitarDegrees -> currentChord[\guitarDegree],
+      \intervals -> currentChord[\intervals],
+      \midiRoot -> currentChord[\midiRoot],
+      \midinotes -> this.midinotes,
+      \root -> currentChord[\root],
+      \scale -> currentChord[\scale]
+    ];
   }
 
   *chord {
@@ -74,7 +87,7 @@ Nx {
     // Validate octave range if provided
     if (octaveArg.notNil) {
       if ((octaveArg < -1) or: { octaveArg > 9 }) {
-        ^this.prPrint("Octave must be between -1 and 9");
+        ^("Octave must be between -1 and 9");
       };
     };
 
@@ -111,13 +124,13 @@ Nx {
       tonicData = tonics[chordNameOrTonic.asSymbol];
 
       if (tonicData.isNil) {
-        ^this.prPrint("Tonic not found:" + chordNameOrTonic);
+        ^("Tonic not found:" + chordNameOrTonic);
       };
 
       qualityData = chords[qualityStr];
 
       if (qualityData.isNil) {
-        ^this.prPrint("Chord quality not found:" + qualityStr);
+        ^("Chord quality not found:" + qualityStr);
       };
 
       tonic = chordNameOrTonic.asSymbol;
@@ -128,19 +141,19 @@ Nx {
       parsed = this.prParseChordName(chordNameOrTonic.asSymbol);
 
       if (parsed.isNil) {
-        ^this.prPrint("Invalid chord name:" + chordNameOrTonic);
+        ^("Invalid chord name:" + chordNameOrTonic);
       };
 
       tonicData = tonics[parsed[\tonic]];
 
       if (tonicData.isNil) {
-        ^this.prPrint("Tonic not found:" + parsed[\tonic]);
+        ^("Tonic not found:" + parsed[\tonic]);
       };
 
       qualityData = chords[parsed[\quality]];
 
       if (qualityData.isNil) {
-        ^this.prPrint("Chord quality not found:" + parsed[\quality]);
+        ^("Chord quality not found:" + parsed[\quality]);
       };
 
       tonic = parsed[\tonic];
@@ -167,7 +180,7 @@ Nx {
     // Build tonic pool
     if (tonicArg.notNil) {
       if (tonics.includesKey(tonicArg.asSymbol).not) {
-        ^this.prPrint("Invalid tonic:" + tonicArg);
+        ^("Invalid tonic:" + tonicArg);
       };
 
       tonicPool = [tonicArg.asSymbol];
@@ -182,7 +195,7 @@ Nx {
       }.keys.asArray;
 
       if (qualityPool.isEmpty) {
-        ^this.prPrint("No chord qualities found for scale:" + scale);
+        ^("No chord qualities found for scale:" + scale);
       };
     } {
       qualityPool = chords.keys.asArray;
@@ -206,7 +219,7 @@ Nx {
     { tonicArg = circleOfFifths.choose };
 
     if (tonics.includesKey(tonicArg.asSymbol).not)
-    { ^this.prPrint("Invalid tonic:" + tonicArg) };
+    { ^("Invalid tonic:" + tonicArg) };
 
     startIndex = circleOfFifths.indexOf(tonicArg.asSymbol);
 
@@ -214,7 +227,7 @@ Nx {
       startIndex = this.prEnharmonicIndex(tonicArg.asSymbol);
 
       if (startIndex.isNil) {
-        ^this.prPrint("Tonic not in circle of fifths:" + tonicArg);
+        ^("Tonic not in circle of fifths:" + tonicArg);
       };
     };
 
@@ -229,7 +242,7 @@ Nx {
     qualityStr = this.prFifthQuality(quality);
 
     if (qualityStr.isNil) {
-      ^this.prPrint("Invalid quality:" + quality ++ ". Use" + (qualityAliases.keys.asArray ++ \rand));
+      ^("Invalid quality:" + quality ++ ". Use" + (qualityAliases.keys.asArray ++ \rand));
     };
 
     chordName = this.prBuildChordName(targetTonic, qualityStr);

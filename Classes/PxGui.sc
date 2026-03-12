@@ -187,7 +187,7 @@
     var bounds;
 
     if (window.isNil or: { window.visible != true }) {
-      ^this.prPrint("🔴 Window is closed");
+      ^("🔴 Window is closed");
     };
 
     bounds = window.bounds;

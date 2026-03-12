@@ -75,7 +75,7 @@
         { pattern[\loop][0] }
         { pattern[\loop].asString }
       };
-      var patternLabel = pattern[\instrument] ?? chan ?? play ?? loop ?? key;
+      var patternLabel = pattern[\name] ?? pattern[\instrument] ?? chan ?? play ?? loop ?? key;
       var amp = this.prGetAmp(patternFormatted[\amp]);
       var backgroundColor = Color.new255(26, 29, 34);
       var button, numberBox, slider, staticText;

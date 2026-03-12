@@ -162,6 +162,7 @@ TODO: MIDIOut instances
 + Number {
   chan { |value, midiControlEvent|
     var id = this.asSymbol;
+    var oldPending;
     var newPattern = (
       chan: value,
       id: id,
@@ -170,7 +171,13 @@ TODO: MIDIOut instances
     if (midiControlEvent.notNil)
     { newPattern = newPattern.putPairs(midiControlEvent) };
 
+    if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.isNil })
+    { oldPending = PxDebouncer.current.prTakePending };
+
     PxDebouncer.current = PxDebouncer(this, newPattern);
+
+    if (oldPending.notNil)
+    { oldPending.do { |p| PxDebouncer.current.enqueue(p) } };
   }
 
   control { |value|

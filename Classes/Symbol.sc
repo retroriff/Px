@@ -13,7 +13,7 @@
   }
 
   get { |key|
-    Ndef(this).get(key);
+    ^Ndef(this).get(key);
   }
 
   gui { |value|

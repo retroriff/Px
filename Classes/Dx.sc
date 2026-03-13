@@ -36,7 +36,7 @@ Dx : Px {
   }
 
   *fill { |instrument = \sd, repeat = 1|
-    var hasCrashInstrument, savedBeat, sdPattern;
+    var hasCrashInstrument;
 
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
@@ -55,7 +55,6 @@ Dx : Px {
 
     if (instrument.asSymbol != \cr and: { this.prHasInstrument(\cr) })
     { hasCrashInstrument = true };
-
 
     fork {
       (repeat * 4).wait;

@@ -179,7 +179,7 @@
     idArray do: { |id|
       id = id.asSymbol;
       
-      if(last[id].notNil) {
+      if (last[id].notNil) {
         if (last[id][\hasGate] == false) {
           this.prChannelNoteOff(last[id][\chan]);
         };

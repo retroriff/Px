@@ -174,7 +174,7 @@
   }
 
   *prTruncateText { |text|
-    var maxChars = 8;
+    var maxChars = 9;
 
     if (text.size > maxChars) {
       text = text.copyRange(0, maxChars - 1) ++ "…";

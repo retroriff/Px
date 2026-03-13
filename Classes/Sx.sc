@@ -263,23 +263,14 @@ Sx {
   }
 
   *prGenerateWave { |value|
-    var pairs = Array.new;
-
     if (waveList.includes(value).not) {
       this.prPrint("🔴 Wave not valid. Use:" + waveList);
-      ^pairs;
+      ^Array.new;
     };
 
-    waveList do: { |wave|
-      var waveValue = 0;
-
-      if (value == wave)
-      { waveValue = 1 };
-
-      pairs = pairs ++ [wave, waveValue];
-    };
-
-    ^pairs;
+    ^waveList.collect { |wave|
+      [wave, if (value == wave) { 1 } { 0 }];
+    }.flatten;
   }
 
   *prPrint { |value|

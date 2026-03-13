@@ -33,7 +33,7 @@
       and: { currentInstrument.isKindOf(Pattern).not } 
       and: { currentInstrument.isArray.not } 
       and: { SynthDescLib.global[currentInstrument].notNil }) {
-      synthDefControlNames = synthDefControlNames ++ SynthDescLib.global[currentInstrument].controlNames;
+      synthDefControlNames.addAll(SynthDescLib.global[currentInstrument].controlNames);
     };
 
     Px.last.do { |event|
@@ -41,12 +41,11 @@
 
       if (ins.notNil and:
          { ins.isKindOf(Pattern).not } and:
-         { ins.isArray.not } 
-         and: (event[\play].isNil) 
-         and: (event[\loop].isNil) 
+         { ins.isArray.not }
+         and: (event[\play].isNil)
+         and: (event[\loop].isNil)
          and: { SynthDescLib.global[ins].notNil }) {
-        var instrumentControlNames = SynthDescLib.global[ins].controlNames;
-        synthDefControlNames = synthDefControlNames ++ instrumentControlNames;
+        synthDefControlNames.addAll(SynthDescLib.global[ins].controlNames);
       };
     };
 

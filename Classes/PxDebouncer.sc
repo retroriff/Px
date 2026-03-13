@@ -33,7 +33,7 @@ PxDebouncer {
     if (pending.size == 0)
     { ^this };
 
-    pending.do { |p| pairs = pairs ++ p };
+    pairs = pending.flatten;
     original.prUpdatePattern(pairs, pattern);
     pending.clear;
     queue.remove(this);

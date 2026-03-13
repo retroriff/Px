@@ -4,6 +4,7 @@ Dx : Px {
   classvar <fx;
   classvar hasLoadedPresets;
   classvar <instrumentFolders;
+  classvar instrumentNames;
   classvar <>lastPreset;
   classvar <presetsDict;
   classvar <presetPatterns;
@@ -14,6 +15,7 @@ Dx : Px {
 
     fx = Dictionary.new;
     instrumentFolders = Dictionary.new;
+    instrumentNames = Dictionary.new;
     lastPreset = Array.new;
     this.prCreatePresetsDict;
 
@@ -140,7 +142,7 @@ Dx : Px {
 
 
   *solo { |instruments, ins2, ins3, ins4, ins5|
-    var hasCommon, lastInstruments, soloIds;
+    var soloIds;
 
     if (instruments.isNil)
     { ^("🟡 Provide at least one instrument to solo") };
@@ -157,16 +159,7 @@ Dx : Px {
     }
     .collect { |pattern| pattern[\id] };
 
-    lastInstruments = last.asArray
-    .select { |pattern|
-      pattern[\dx] == true
-      and: (instruments.includes(pattern[\instrument].asSymbol))
-    }
-    .collect { |pattern| pattern[\instrument].asSymbol };
-
-    hasCommon = lastInstruments.any { |id| instruments.includes(id) };
-
-    if (hasCommon == false)
+    if (soloIds.isEmpty)
     { ^("🔴 No matching instruments to solo") };
 
     last.copy do: { |pattern|
@@ -254,7 +247,7 @@ Dx : Px {
       fx keysValuesDo: { |key, value|
         if ([0, Nil].includes(value))
         { fx.removeAt(key) }
-        { allFx = allFx ++ [[\fx, key, \mix, value]]; };
+        { allFx = allFx.add([\fx, key, \mix, value]) };
       };
 
       if (allFx.size > 0) {
@@ -263,6 +256,11 @@ Dx : Px {
     };
 
     ^pattern;
+  }
+
+  *prClearInstrumentFolders {
+    instrumentFolders = Dictionary.new;
+    instrumentNames = Dictionary.new;
   }
 
   *prCreateId { |instrument|
@@ -336,7 +334,7 @@ Dx : Px {
       .collect { |entry| entry.folderName };
 
       drumMachinesFolders do: { |folder|
-        var folderPath, subFolders;
+        var folderPath, names, subFolders;
 
         folderPath = PathName(drumMachinesPath ++ folder);
 
@@ -346,6 +344,19 @@ Dx : Px {
         };
 
         instrumentFolders[folder.asSymbol] = subFolders;
+
+        names = Set.new;
+
+        subFolders.do { |sf|
+          var str = sf.asString;
+          var dashIndex = str.indexOf($-);
+
+          if (dashIndex.notNil)
+          { names.add(str[(dashIndex + 1)..]) }
+          { names.add(str) };
+        };
+
+        instrumentNames[folder.asSymbol] = names;
       };
     };
   }
@@ -362,14 +373,11 @@ Dx : Px {
   }
 
   *prHasInstrument { |instrument|
-    var folders = instrumentFolders[drumMachine.asSymbol];
+    var names = instrumentNames[drumMachine.asSymbol];
 
-    if (folders.isNil) { ^false };
+    if (names.isNil) { ^false };
 
-    ^folders.any { |folder|
-      folder.asString.endsWith("-" ++ instrument.asString)
-      or: { folder.asString == instrument.asString }
-    };
+    ^names.includes(instrument.asString);
   }
 
   *prStopPreset {

@@ -35,6 +35,7 @@
     pathsArray = [pxPath, drumMachinesPath];
     samplesDict = Dictionary.new;
     samplesPath = pxPath;
+    Dx.prClearInstrumentFolders;
 
     pathsArray.do { |path|
       var root = PathName(path.standardizePath);

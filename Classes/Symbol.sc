@@ -1,6 +1,8 @@
 + Symbol {
   clear {
-    Ndef(this).clear;
+    if (Ndef.all.at(this).notNil)
+    { Ndef(this).clear }
+    { ^this.prNdefNotFound };
   }
 
   doesNotUnderstand {}
@@ -9,11 +11,15 @@
     if (~isAnimatronEnabled == true)
     { ~animatronNetAddr.sendMsg("/sc/stop", this, 0) };
 
-    Ndef(this).free;
+    if (Ndef.all.at(this).notNil)
+    { Ndef(this).free }
+    { ^this.prNdefNotFound };
   }
 
   get { |key|
-    ^Ndef(this).get(key);
+    if (Ndef.all.at(this).notNil)
+    { ^Ndef(this).get(key)}
+    { ^this.prNdefNotFound };
   }
 
   gui { |value|
@@ -72,14 +78,25 @@
   }
 
   set { |key, value|
-    Ndef(this).set(key, value);
+    if (Ndef.all.at(this).notNil)
+    { Ndef(this).set(key, value) }
+    { ^this.prNdefNotFound };
   }
 
   stop { |fadeTime|
+    var isNdef = Ndef.all.at(this).notNil;
+    var isTdef = Tdef.all.at(this).notNil;
+
     if (~isAnimatronEnabled == true)
     { ~animatronNetAddr.sendMsg("/sc/stop", this, fadeTime ?? 0) };
 
-    Ndef(this).stop(fadeTime ?? 0);
+    if (isNdef == "true")
+    { ^Ndef(this).stop(fadeTime ?? 0) };
+
+    if (isTdef == "true")
+    { ^Tdef(this).stop };
+
+    ^this.prNdefNotFound;
   }
 
   to { |b|
@@ -87,9 +104,15 @@
   }
 
   xset { |key, value|
-    Ndef(this).xset(key, value);
+    if (Ndef.all.at(this).notNil)
+    { Ndef(this).xset(key, value) }
+    { ^this.prNdefNotFound };
   }
  
+  prNdefNotFound {
+    ^("🟠 Ndef" + this + "doesn't exist");
+  }
+
   prHasDrumMachine {
     var drumMachines = [505, 606, 626, 707, 727, 808, 909];
     ^drumMachines.includes(this.asInteger);

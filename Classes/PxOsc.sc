@@ -1,15 +1,23 @@
 +Px {
   *listen {
     if (OSCdef.all[\px].isNil) {
-      var printExcludedReceivers = ["animatron", "pxAgentReceiver"];
+      var printExcludedReceivers = ["animatron"];
 
       NetAddr("127.0.0.1", 57120);
 
       OSCdef.new(\px, { |msg|
         var code = msg[1].asString;
         var receiver = msg[2].asString;
+        var replyPort = msg[3];
 
-        { code.interpret }.defer;
+        {
+            var result = code.interpret;
+
+            if (replyPort.notNil) {
+                NetAddr("127.0.0.1", replyPort.asInteger)
+                    .sendMsg("/result", result.asString);
+            };
+        }.defer;
 
         if (printExcludedReceivers.includesEqual(receiver) == false)
         { this.prPrint(("🤖 " ++ code)) };

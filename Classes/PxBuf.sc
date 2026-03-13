@@ -122,7 +122,7 @@
 
             rest.do({
               var newBuf = (this.buf(pattern[\buf][0]).size).rand;
-              buf = buf ++ Array.fill(minLength, newBuf);
+              buf = buf.addAll(Array.fill(minLength, newBuf));
             });
 
             buf;

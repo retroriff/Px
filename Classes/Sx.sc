@@ -205,9 +205,6 @@ Sx {
       var oct = octave[octIndex].clip(-2, 2);
 
       result = result.add(deg + (oct * 12));
-      if (oct == -0)
-      { oct = 0 };
-
       degIndex = (degIndex + 1) % degree.size;
       octIndex = (octIndex + 1) % octave.size;
     };

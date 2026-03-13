@@ -4,7 +4,6 @@
     var weight = pattern[\weight] ?? defaultWeight;
     var rhythmWeight = (weight * 10).floor / 10;
     var pseqWeight = weight - rhythmWeight * 10;
-    var test;
 
     var rhythmSeq = { |weight|
       Array.fill(16, { [min, max].wchoose([1 - weight, weight]) });

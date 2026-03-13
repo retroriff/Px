@@ -4,7 +4,7 @@
   *gui {
     var drumMachinesList;
     var folders = this.prGetDrumMachinesFolders;
-    var firstCol, secondCol, thirdCol, mainView, row, knob, knobColor;
+    var firstCol, secondCol, thirdCol, mainView, row;
     var width = 420, height = 350;
     var linkColor = Color.new255(31, 41, 55);
 
@@ -66,40 +66,9 @@
       { drumMachinesList.value = idx };
     };
 
-    // 📶 Amp Knob
-    knob = Knob(secondCol, 80@80)
-    .mode_(\vert)
-    .value_(Dx.vol)
-    .mouseUpAction_({ |v| Dx.vol(v.value) });
-    knobColor = knob.color;
-    knobColor[1] = Color.cyan;
-    knob.color = knobColor;
-
-    // ✨ Delay Knob
-    StaticText(secondCol, 80@20)
-    .align_(\center)
-    .string_("Delay")
-    .stringColor_(Color.white);
-    knob = Knob(secondCol, 80@80)
-    .mode_(\vert)
-    .value_(Dx.fx[\delay])
-    .mouseUpAction_({ |v| Dx.delay(v.value) });
-    knobColor = knob.color;
-    knobColor[1] = Color.cyan;
-    knob.color = knobColor;
-
-    // ✨ Reverb Knob
-    StaticText(secondCol, 80@20)
-    .align_(\center)
-    .string_("Reverb")
-    .stringColor_(Color.white);
-    knob = Knob(secondCol, 80@80)
-    .mode_(\vert)
-    .value_(Dx.fx[\reverb])
-    .mouseUpAction_({ |v| Dx.reverb(v.value) });
-    knobColor = knob.color;
-    knobColor[1] = Color.cyan;
-    knob.color = knobColor;
+    this.prCreateKnob(secondCol, nil, Dx.vol, { |v| Dx.vol(v.value) });
+    this.prCreateKnob(secondCol, "Delay", Dx.fx[\delay], { |v| Dx.delay(v.value) });
+    this.prCreateKnob(secondCol, "Reverb", Dx.fx[\reverb], { |v| Dx.reverb(v.value) });
 
     // 🔀 Random button
     Button(thirdCol, 80@145)
@@ -132,6 +101,25 @@
     });
 
     w.front;
+  }
+
+  *prCreateKnob { |parent, label, value, action|
+    var knob, knobColor;
+
+    if (label.notNil) {
+      StaticText(parent, 80@20)
+      .align_(\center)
+      .string_(label)
+      .stringColor_(Color.white);
+    };
+
+    knob = Knob(parent, 80@80)
+    .mode_(\vert)
+    .value_(value)
+    .mouseUpAction_(action);
+    knobColor = knob.color;
+    knobColor[1] = Color.cyan;
+    knob.color = knobColor;
   }
 
   *prGetDrumMachinesFolders {

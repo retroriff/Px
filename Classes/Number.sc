@@ -17,43 +17,51 @@
   }
 
   doesNotUnderstand { |selector, args|
+    var allKeys = this.prCollectEventKeys ++ this.prCollectSynthDefKeys ++ [\callback, \finish, \length, \name];
+
+    if (allKeys.includes(selector))
+    { this.prDebouncer.enqueue([selector, args]) }
+    { ("🔴 Method not understood:" + selector).postln };
+  }
+
+  prCollectEventKeys {
     var parentEventsKeys = Event.parentEvents.keys.collect { |key| Event.parentEvents[key].keys.asArray };
     var partialEventsKeys = Event.partialEvents.keys.collect { |key| Event.partialEvents[key].keys.asArray };
-    var allEventKeys = parentEventsKeys ++ partialEventsKeys;
+
+    ^(parentEventsKeys ++ partialEventsKeys).asArray.flat;
+  }
+
+  prCollectSynthDefKeys {
     var loopKeys = SynthDescLib.global[\loop].controlNames.asSet;
     var playbufKeys = SynthDescLib.global[\playbuf].controlNames.asSet;
-    var synthDefControlNames = (loopKeys ++ playbufKeys);
-    var customMethods = [\callback, \finish, \length, \name];
+    var keys = loopKeys ++ playbufKeys;
     var currentInstrument;
 
     if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.notNil })
     { currentInstrument = PxDebouncer.current.pattern[\instrument] };
 
-    if (currentInstrument.notNil 
-      and: { currentInstrument.isKindOf(Pattern).not } 
-      and: { currentInstrument.isArray.not } 
-      and: { SynthDescLib.global[currentInstrument].notNil }) {
-      synthDefControlNames.addAll(SynthDescLib.global[currentInstrument].controlNames);
+    if (this.prIsValidInstrument(currentInstrument)) {
+      keys.addAll(SynthDescLib.global[currentInstrument].controlNames);
     };
 
     Px.last.do { |event|
       var ins = event[\instrument];
 
-      if (ins.notNil and:
-         { ins.isKindOf(Pattern).not } and:
-         { ins.isArray.not }
-         and: (event[\play].isNil)
-         and: (event[\loop].isNil)
-         and: { SynthDescLib.global[ins].notNil }) {
-        synthDefControlNames.addAll(SynthDescLib.global[ins].controlNames);
+      if (this.prIsValidInstrument(ins)
+        and: (event[\play].isNil)
+        and: (event[\loop].isNil)) {
+        keys.addAll(SynthDescLib.global[ins].controlNames);
       };
     };
 
-    allEventKeys = (allEventKeys ++ synthDefControlNames).asArray.flat ++ customMethods;
+    ^keys.asArray;
+  }
 
-    if (allEventKeys.includes(selector))
-    { this.prDebouncer.enqueue([selector, args]) }
-    { ("🔴 Method not understood:" + selector).postln };
+  prIsValidInstrument { |ins|
+    ^ins.notNil
+    and: { ins.isKindOf(Pattern).not }
+    and: { ins.isArray.not }
+    and: { SynthDescLib.global[ins].notNil };
   }
 
   dur { |value|

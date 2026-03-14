@@ -69,6 +69,16 @@ Fx {
     this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
   }
 
+  *duck { |mix = 0.5|
+    if (mix.isNil or: { mix == Nil })
+    { ^this.prAddEffect(\duck, nil) };
+
+    if (Ndef(\px).isPlaying.not)
+    { ^this.prPrint("🔴 No patterns playing") };
+
+    this.prAddEffect(\duck, mix, [Ndef(\px).bus.index]);
+  }
+
   *distort { |mix = 0.5, drive = 0.5|
     var postArgs = "drive:" + drive;
     this.prAddEffect(\distort, mix, [drive], postArgs);

@@ -72,6 +72,21 @@ code::
 Fx(\px).crush(0.5, 4);
 ::
 
+method:: duck
+Sidechain compression — ducks the target when kick energy is detected from the master Px output.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.5.
+
+argument:: thresh
+Compander threshold. Lower values make the ducking more sensitive. Default: 0.005.
+
+code::
+Fx(\myNdef).duck(1);
+Fx(\myNdef).duck(1, 0.05);   // Less sensitive ducking
+Fx(\myNdef).duck(Nil);       // Disable
+::
+
 method:: delay
 Delay effect with tempo-synced delay time.
 

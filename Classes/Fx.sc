@@ -69,14 +69,14 @@ Fx {
     this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
   }
 
-  *duck { |mix = 0.5|
+  *duck { |mix = 0.5, thresh = 0.005|
     if (mix.isNil or: { mix == Nil })
     { ^this.prAddEffect(\duck, nil) };
 
     if (Ndef(\px).isPlaying.not)
     { ^this.prPrint("🔴 No patterns playing") };
 
-    this.prAddEffect(\duck, mix, [Ndef(\px).bus.index]);
+    this.prAddEffect(\duck, mix, [Ndef(\px).bus.index, thresh]);
   }
 
   *distort { |mix = 0.5, drive = 0.5|
@@ -211,7 +211,11 @@ Fx {
     if (args.notNil) {
       args.do { |value|
 
-        if (value.notNil and: { value.isNumber.not } and: { value.isFunction.not } and: { value.isString.not } and: { value.isKindOf(Symbol).not }) {
+        if (value.notNil 
+          and: { value.isNumber.not }
+          and: { value.isFunction.not }
+          and: { value.isString.not }
+          and: { value.isKindOf(Symbol).not }) {
           ^(
             "🔴 Invalid argument type. Use numbers or wrap UGens in { }, 
             e.g. { SinOsc.kr(t / 16).range(200, 4000) }"
@@ -390,6 +394,7 @@ Fx {
     { mixer[proxyName] = Dictionary.new };
 
     if (mix != mixer[proxyName][fx]) {
+      proxy[proxyName].lag(wetIndex, 1);
       proxy[proxyName].set(wetIndex, mix);
       mixer[proxyName][fx] = mix;
     };

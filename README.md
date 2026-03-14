@@ -144,7 +144,7 @@ It offers the same [class methods as Px](#px-class-methods), with the following 
 
 - `activeEffects`: Checks the active proxy filters
 - `clear`: Clears all effects
-- `duck` (mix): Sidechain compression — ducks the target when kick energy is detected from the master output
+- `duck` (mix, thresh): Sidechain compression — ducks the target when kick energy is detected from the master output
 - `loadEffects`: Allows to reload the effect files.
 - `vstReadProgram` (preset: string): Loads a VST preset from the default presets folder
 - `vstWriteProgram` (preset: string): Write a VST preset to the default presets folder
@@ -328,6 +328,7 @@ They can be used directly with symbols methods and binary operator syntax:
 And we can get and set synth controls:
 
 ```
+\a.edit; // open NdefGui editor
 \a.get; // show user-facing controls
 \a.get(\amp); // get a specific control value
 \a.set(\amp, 1); // non-quantified set

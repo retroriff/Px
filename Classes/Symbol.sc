@@ -141,7 +141,7 @@
 
     filtered = filtered.sort { |a, b| a.name < b.name };
 
-    ^"Controls:" + filtered.collect { |ctrl|
+    ^"🎛️ Controls:" + filtered.collect { |ctrl|
       ctrl.name.asString + ctrl.defaultValue
     }.join(", ");
   }

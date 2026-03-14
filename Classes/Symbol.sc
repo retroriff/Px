@@ -7,6 +7,12 @@
 
   doesNotUnderstand {}
 
+  edit {
+    if (this.prNdefExists)
+    { Ndef(this).edit }
+    { ^this.prNdefNotFound };
+  }
+
   free {
     if (~isAnimatronEnabled == true)
     { ~animatronNetAddr.sendMsg("/sc/stop", this, 0) };

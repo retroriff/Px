@@ -1,6 +1,6 @@
 + Symbol {
   clear {
-    if (Ndef.all.at(this).notNil)
+    if (this.prNdefExists)
     { Ndef(this).clear }
     { ^this.prNdefNotFound };
   }
@@ -11,14 +11,17 @@
     if (~isAnimatronEnabled == true)
     { ~animatronNetAddr.sendMsg("/sc/stop", this, 0) };
 
-    if (Ndef.all.at(this).notNil)
+    if (this.prNdefExists)
     { Ndef(this).free }
     { ^this.prNdefNotFound };
   }
 
   get { |key|
-    if (Ndef.all.at(this).notNil)
-    { ^Ndef(this).get(key)}
+    if (this.prNdefExists) {
+      if (key.notNil)
+      { ^Ndef(this).get(key) }
+      { ^this.prGetControls };
+    }
     { ^this.prNdefNotFound };
   }
 
@@ -78,22 +81,22 @@
   }
 
   set { |key, value|
-    if (Ndef.all.at(this).notNil)
+    if (this.prNdefExists)
     { Ndef(this).set(key, value) }
     { ^this.prNdefNotFound };
   }
 
   stop { |fadeTime|
-    var isNdef = Ndef.all.at(this).notNil;
+    var isNdef = this.prNdefExists;
     var isTdef = Tdef.all.at(this).notNil;
 
     if (~isAnimatronEnabled == true)
     { ~animatronNetAddr.sendMsg("/sc/stop", this, fadeTime ?? 0) };
 
-    if (isNdef == "true")
+    if (isNdef)
     { ^Ndef(this).stop(fadeTime ?? 0) };
 
-    if (isTdef == "true")
+    if (isTdef)
     { ^Tdef(this).stop };
 
     ^this.prNdefNotFound;
@@ -104,11 +107,15 @@
   }
 
   xset { |key, value|
-    if (Ndef.all.at(this).notNil)
+    if (this.prNdefExists)
     { Ndef(this).xset(key, value) }
     { ^this.prNdefNotFound };
   }
  
+  prNdefExists {
+    ^Ndef.dictFor(Server.default).at(this).notNil;
+  }
+
   prNdefNotFound {
     ^("🟠 Ndef" + this + "doesn't exist");
   }
@@ -116,6 +123,27 @@
   prHasDrumMachine {
     var drumMachines = [505, 606, 626, 707, 727, 808, 909];
     ^drumMachines.includes(this.asInteger);
+  }
+
+  prGetControls {
+    var controls = Ndef(this).controlNames;
+    var fxNames = Fx.effects.keys;
+    var filtered;
+
+    if (controls.isNil) { ^"No controls" };
+
+    filtered = controls.reject { |ctrl|
+      var name = ctrl.name.asString;
+
+      name.beginsWith("wet") or:
+      { fxNames.any { |fx| name.beginsWith(fx.asString) } }
+    };
+
+    filtered = filtered.sort { |a, b| a.name < b.name };
+
+    ^"Controls:" + filtered.collect { |ctrl|
+      ctrl.name.asString + ctrl.defaultValue
+    }.join(", ");
   }
 
   prStopDrumMachineInstruments {

@@ -119,7 +119,9 @@
   }
  
   prNdefExists {
-    ^Ndef.dictFor(Server.default).at(this).notNil;
+    var ndef = Ndef.dictFor(Server.default).at(this);
+
+    ^ndef.notNil and: { ndef.source.notNil };
   }
 
   prNdefNotFound {
@@ -132,9 +134,12 @@
   }
 
   prGetControls {
-    var controls = Ndef(this).controlNames;
-    var fxNames = Fx.effects.keys;
-    var filtered;
+    var controls, fxNames, filtered;
+
+    if (this.prNdefExists.not) { ^this.prNdefNotFound };
+
+    controls = Ndef(this).controlNames;
+    fxNames = Fx.effects.keys;
 
     if (controls.isNil) { ^"No controls" };
 
@@ -147,8 +152,10 @@
 
     filtered = filtered.sort { |a, b| a.name < b.name };
 
-    ^"🎛️ Controls:" + filtered.collect { |ctrl|
-      ctrl.name.asString + ctrl.defaultValue
+    if (filtered.isEmpty) { ^"🟠 \\" ++ this + "has no controls" };
+
+    ^"🎛️" + "\\" ++ this + "controls:" + filtered.collect { |ctrl|
+      ctrl.name.asString + "=" + ctrl.defaultValue
     }.join(", ");
   }
 

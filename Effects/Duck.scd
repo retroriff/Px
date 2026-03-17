@@ -7,9 +7,9 @@ Dictionary[
         numChannels: 2
       );
 
-      var ctrl = LPF.ar(pxAudio, 150).sum;
-
-      Compander.ar(in, ctrl,
+      Compander.ar(
+        in,
+        control: LPF.ar(pxAudio, 150).sum,
         thresh: \duck2.kr(duckThresh, 2),
         slopeBelow: 1,
         slopeAbove: 0.01,

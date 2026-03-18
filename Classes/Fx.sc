@@ -148,7 +148,7 @@ Fx {
     this.prAddEffect(\tremolo, mix, [rate], postArgs);
   }
 
-  *vst { |mix = 1, plugin|
+  *vst { |mix = 0.4, plugin|
     var defaultPlugin = "ValhallaFreqEcho";
 
     this.prAddEffect(\vst, mix, [plugin ?? defaultPlugin]);
@@ -163,7 +163,7 @@ Fx {
     };
 
     if (preset.isInteger) {
-      var folder = PathName.new(presetsPath ++ this.prGetVstPluginName ++ "/");
+      var folder = PathName.new(presetsPath +/+ this.prGetVstPluginName);
 
       var files = folder.entries select: { |file|
         file.extension == "fxp";
@@ -177,7 +177,7 @@ Fx {
       path = files[preset].fullPath;
       presetName = files[preset].fileNameWithoutExtension;
     } {
-      path = presetsPath ++ this.prGetVstPluginName ++ "/" ++ preset ++ ".fxp";
+      path = presetsPath +/+ this.prGetVstPluginName +/+ preset ++ ".fxp";
       presetName = preset;
     };
 
@@ -195,7 +195,7 @@ Fx {
   }
 
   *vstWriteProgram { |preset|
-    var path = presetsPath ++ this.prGetVstPluginName ++ "-" ++ preset ++ ".fxp";
+    var path = presetsPath +/+ this.prGetVstPluginName +/+ preset ++ ".fxp";
     vstController.writeProgram(path);
   }
 
@@ -283,13 +283,15 @@ Fx {
       ^"🔴 VST is not enabled";
     };
 
-    vstController = VSTPluginNodeProxyController(proxy[proxyName], index).open(
-      plugin,
-      editor: true
-    );
+    {
+      vstController = VSTPluginNodeProxyController(proxy[proxyName], index).open(
+        plugin,
+        editor: true
+      );
 
-    this.prPrint("👉 Open VST Editor: Fx.vstController.editor;");
-    this.prPrint("👉 Set VST parameter: Fx.vstSet(1, 1);");
+      this.prPrint("👉 Open VST Editor: Fx.vstController.editor;");
+      this.prPrint("👉 Set VST parameter: Fx.vstSet(1, 1);");
+    }.defer(1);
   }
 
   *prDisableFx { |fx, noPostln|
@@ -394,7 +396,10 @@ Fx {
     { mixer[proxyName] = Dictionary.new };
 
     if (mix != mixer[proxyName][fx]) {
-      proxy[proxyName].lag(wetIndex, 1);
+
+      if (fx != \vst)
+      { proxy[proxyName].lag(wetIndex, 1) };
+
       proxy[proxyName].set(wetIndex, mix);
       mixer[proxyName][fx] = mix;
     };

@@ -281,17 +281,31 @@ Fx.loadEffects;
 
 subsection:: VST Plugins
 
+Fx wraps the link::Classes/VSTPluginNodeProxyController:: to integrate VST plugins as NodeProxy filter slots. Under the hood, each VST method corresponds to a VSTPluginNodeProxyController operation:
+
+code::
+// What Fx does internally (equivalent raw VSTPlugin code):
+Ndef(\px).play;
+Ndef(\px)[0] = { /* your sound source */ };
+Ndef(\px)[1] = \vstFilter -> { |in| VSTPlugin.ar(in, 2) };
+~vst = VSTPluginNodeProxyController(Ndef(\px), 1).open("ValhallaFreqEcho", editor: true);
+~vst.editor;
+~vst.readProgram("~/icloud/Music/SuperCollider/VST/presets/ValhallaFreqEcho/mdosc.fxp");
+~vst.writeProgram("~/icloud/Music/SuperCollider/VST/presets/ValhallaFreqEcho/myPreset.fxp");
+~vst.set(1, 0.5);
+::
+
 method:: vst
-Loads and applies a VST plugin effect.
+Adds a VST plugin as a filter slot on the proxy and opens it via VSTPluginNodeProxyController.
 
 argument:: mix
-Wet/dry mix (0-1). Default: 1.
+Wet/dry mix (0-1). Default: 0.4.
 
 argument:: plugin
 VST plugin name as String. Default: "ValhallaFreqEcho".
 
 code::
-Fx(\px).vst(0.5, "ValhallaFreqEcho");
+Fx(\px).vst(0.5);
 ::
 
 method:: setVstPresetsPath
@@ -339,7 +353,7 @@ Fx.vstSet(1, 0.5);
 ::
 
 method:: vstController
-Class variable providing access to the VSTPluginNodeProxyController for advanced VST control.
+Class variable providing access to the link::Classes/VSTPluginNodeProxyController:: for advanced VST control.
 
 code::
 // Open VST editor GUI
@@ -380,7 +394,7 @@ Fx.clear;
 
 // VST plugin workflow
 Fx.setVstPresetsPath("../VST/presets/".resolveRelative);
-Fx(\px).vst(0.4, "ValhallaFreqEcho");
+Fx(\px).vst(0.4);
 Fx.vstController.editor;
 Fx.vstReadProgram(\myPreset);
 Fx.vstWriteProgram(\myPreset2);

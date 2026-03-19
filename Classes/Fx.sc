@@ -53,6 +53,11 @@ Fx {
       }
     };
 
+    if (vstController.notNil) {
+      vstController.close;
+      vstController = nil;
+    };
+
     if (fx.notNil) {
       fx do: { |slotIndex, fxName|
         proxy[proxyName][slotIndex] = nil;
@@ -236,6 +241,16 @@ Fx {
 
     hasFx = activeEffects[proxyName][fx].notNil;
 
+    if (fx == \vst 
+      and: { vstController.notNil } 
+      and: { mix.notNil }
+      and: { mix != Nil }) {
+      proxy[proxyName].set(\vstBypass, 0);
+      this.prSetMixerValue(fx, mix.clip(0, 1));
+      this.prPrint("✨ Enabled" + "\\vst" + "mix:" + mix);
+      ^this;
+    };
+
     if (hasFx == false and: { mix.isNil.not } and: { mix != Nil })
     { this.prActivateEffect(args, fx, mix, postArgs) };
 
@@ -245,8 +260,14 @@ Fx {
     if (fx == \vst and: (hasFx == false))
     { this.prActivateVst(args, fx) };
 
-    if (mix.isNil or: { mix == Nil })
-    { ^this.prDisableFx(fx) };
+    if (mix.isNil or: { mix == Nil }) {
+      if (fx == \vst and: { vstController.notNil }) {
+        this.prFadeOutVst;
+        ^this;
+      };
+
+      ^this.prDisableFx(fx);
+    };
 
     this.prMapModulationArgs(fx, args);
     this.prSetMixerValue(fx, mix.clip(0, 1));
@@ -278,19 +299,25 @@ Fx {
   *prActivateVst { |args, fx|
     var plugin = args[0];
     var index = this.prGetIndex(fx);
+    var vstProxyName = proxyName;
 
     if (index.isNil) {
       ^"🔴 VST is not enabled";
     };
 
     {
-      vstController = VSTPluginNodeProxyController(proxy[proxyName], index).open(
+      vstController = VSTPluginNodeProxyController(proxy[vstProxyName], index).open(
         plugin,
-        editor: true
-      );
+        editor: true,
+        action: { |ctrl, ok|
 
-      this.prPrint("👉 Open VST Editor: Fx.vstController.editor;");
-      this.prPrint("👉 Set VST parameter: Fx.vstSet(1, 1);");
+          if (ok) {
+            proxy[vstProxyName].set(\vstBypass, 0);
+            this.prPrint("👉 Open VST Editor: Fx.vstController.editor;");
+            this.prPrint("👉 Set VST parameter: Fx.vstSet(1, 1);");
+          };
+        }
+      );
     }.defer(1);
   }
 
@@ -311,30 +338,27 @@ Fx {
     this.prFadeOutFx(index, fx, wetIndex, noPostln);
   }
 
-  *prFadeOutFx { |index, fx, wetIndex, noPostln|
-    var wet = proxy[proxyName].get(wetIndex, { |f| f });
-    var fadeOut = wet / 25;
+  *prFadeOutVst {
+    var index = this.prGetIndex(\vst);
+    var wetIndex = (\wet ++ index).asSymbol;
     var fadedProxyName = proxyName;
+    var fadeTime = 1;
 
-    fork {
-      while { wet > 0.0 } {
-        wet = wet - fadeOut;
+    mixer[proxyName].removeAt(\vst);
+    proxy[proxyName].lag(wetIndex, fadeTime);
+    proxy[proxyName].set(wetIndex, 0);
 
-        if (wet > 0)
-        { proxy[fadedProxyName].set(wetIndex, wet) }
-        {
-          proxy[fadedProxyName][index] = nil;
+    { proxy[fadedProxyName].set(\vstBypass, 1) }.defer(fadeTime);
+  }
 
-          if (vstController.notNil)
-          { vstController.close };
+  *prFadeOutFx { |index, fx, wetIndex, noPostln|
+    var fadedProxyName = proxyName;
+    var fadeTime = 1;
 
-          if (proxy[fadedProxyName].isPlaying and: (noPostln != true))
-          { this.prPrint("🔇 Disabled".scatArgs(("\\" ++ fx), "FX")) };
-        };
+    proxy[proxyName].lag(wetIndex, fadeTime);
+    proxy[proxyName].set(wetIndex, 0);
 
-        0.25.wait;
-      }
-    }
+    { proxy[fadedProxyName][index] = nil }.defer(fadeTime);
   }
 
   *prGetIndex { |fx|
@@ -397,8 +421,7 @@ Fx {
 
     if (mix != mixer[proxyName][fx]) {
 
-      if (fx != \vst)
-      { proxy[proxyName].lag(wetIndex, 1) };
+      proxy[proxyName].lag(wetIndex, 1);
 
       proxy[proxyName].set(wetIndex, mix);
       mixer[proxyName][fx] = mix;

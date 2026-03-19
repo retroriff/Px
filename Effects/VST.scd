@@ -1,8 +1,8 @@
 (
 Dictionary[
     \vst -> {
-        \vstFilter -> { |in|
-            VSTPlugin.ar(in, 2);
+        \vstFilter -> { |in, vstBypass = 1|
+            VSTPlugin.ar(in, 2, vstBypass);
         }
     };
 ]

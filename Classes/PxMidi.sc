@@ -1,5 +1,4 @@
 /*
-TODO: Channel + 1 to match receiver number. Ex. chan: 1 instead of chan: 0
 TODO: Controls [\rand, 0, 0.1] i [\wrand, 0, 0.1, 0.9]
 TODO: MIDIOut instances
 */
@@ -48,7 +47,7 @@ TODO: MIDIOut instances
     { chans = [chan] };
 
     if (chans.size == 0)
-    { chans = (0..15) };
+    { chans = (1..16) };
 
     if (chans.isArray) {
       ^chans do: { |ch|
@@ -69,7 +68,7 @@ TODO: MIDIOut instances
 
   *prChannelNoteOff { |chan|
     (0..127) do: { |note|
-      Px.midiOut.noteOff(chan, note);
+      Px.midiOut.noteOff(chan - 1, note);
     };
   }
 
@@ -118,7 +117,7 @@ TODO: MIDIOut instances
         \type: \midi,
         \midicmd: pattern[\midicmd] ?? \noteOn,
         \midiout: midiClient[midiout],
-        \chan, pattern[\chan] ?? 0,
+        \chan, (pattern[\chan] ?? 1) - 1,
         \instrument: \midi,
       ]);
     };
@@ -149,7 +148,7 @@ TODO: MIDIOut instances
       };
     };
 
-    midiOut.control(chan, ctlNum, value.clip(0, 127));
+    midiOut.control(chan - 1, ctlNum, value.clip(0, 127));
   }
 
   *prDetectDevice { |name|
@@ -189,7 +188,7 @@ TODO: MIDIOut instances
     if (previousPattern.isNil)
     { ^"Pattern % not found".format(this).warn; };
 
-    chan = previousPattern[\chan] ?? 0;
+    chan = previousPattern[\chan] ?? 1;
 
     if (control.isNumber) {
       var controlId = ("cc" ++ ctlNum ++ "_" ++ this.asString).asSymbol;

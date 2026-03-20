@@ -94,10 +94,10 @@ argument:: mix
 Wet/dry mix (0-1). Default: 0.4.
 
 argument:: delaytime
-Delay time in beats. Default: 8.
+Delay time in beats. Default: 0.5.
 
-argument:: decaytime
-Decay time in seconds. Default: 2.
+argument:: delayfeedback
+Feedback amount (0-1). Default: 0.5.
 
 code::
 Fx(\px).delay(0.3, 4, 3);
@@ -206,8 +206,8 @@ Wet/dry mix (0-1). Default: 0.3.
 argument:: room
 Room size (0-1). Default: 0.7.
 
-argument:: damp
-High frequency damping (0-1). Default: 0.7.
+argument:: size
+Damping/size (0-1). Default: 0.5.
 
 code::
 Fx(\px).reverb(0.5, 0.8, 0.5);
@@ -293,6 +293,8 @@ Ndef(\px)[1] = \vstFilter -> { |in| VSTPlugin.ar(in, 2) };
 ~vst.readProgram("~/icloud/Music/SuperCollider/VST/presets/ValhallaFreqEcho/mdosc.fxp");
 ~vst.writeProgram("~/icloud/Music/SuperCollider/VST/presets/ValhallaFreqEcho/myPreset.fxp");
 ~vst.set(1, 0.5);
+Ndef(\px).set(\vstBypass, 1);  // Bypass VST
+Ndef(\px).set(\vstBypass, 0);  // Re-enable VST
 ::
 
 method:: vst

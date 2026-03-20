@@ -168,12 +168,12 @@ Custom pattern player designed to handle degrees, and can send MIDI messages bas
 
 ### MIDI
 
-When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\midi` event type. All the necessary default commands are added automatically, like `\midicmd`, `\allNotesOff`, `\control`, or `\noteOn`.
+When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\midi` event type. MIDI channels use 1-16 numbering to match DAWs and hardware. All the necessary default commands are added automatically, like `\midicmd`, `\allNotesOff`, `\control`, or `\noteOn`.
 
 #### MIDI methods
 
 - `Pmidi.init`: Initializes the MIDIClient. Latency can be passed as argument.
-- `Px.panic`: Silences all active notes across channels, or channel-specific (`Px.panic(0)`).
+- `Px.panic`: Silences all active notes across channels, or channel-specific (`Px.panic(1)`).
 
 #### MIDI event methods
 

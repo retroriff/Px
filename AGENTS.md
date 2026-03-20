@@ -48,8 +48,9 @@
   1. **Help files** (`HelpSource/Classes/<ClassName>.schelp`) - Detailed SCDoc format documentation
   2. **README.md** - Brief feature listing in the class methods tables
   3. **px-agent docs** (`~/icloud/Music/SuperCollider/px-agent/Docs/`) - Agent reference documentation
+- Help files are only maintained for **project-defined classes** (Px, Fx, Sx, Dx, Nx). Do NOT create or update help files for SC built-in classes extended by this project (Array, Symbol, Number, etc.)
 - Private methods (starting with `pr`) are not documented
-- When adding new public methods, update the corresponding help file and add the method to the README table
+- When adding new public methods to project-defined classes, update the corresponding help file and add the method to the README table
 - Reference existing help files (Px.schelp, Fx.schelp, Sx.schelp) for format examples
 - README entries should be concise (one-line description); help files contain full details and examples
 

@@ -61,18 +61,6 @@
     if (value == \rand)
     { ^Pwhite(0.0, 1) };
 
-    if (value.isArray) {
-      if (value[0] == \wrand) {
-        var item1 = value[1].clip(-1, 1);
-        var item2 = value[2].clip(-1, 1);
-        var weight = value[3].clip(0, 1);
-        ^Pwrand([item1, item2], [1 - weight, weight], inf);
-      };
-      if (value[0] == \rand) {
-        ^Pwhite(value[1], value[2])
-      };
-    };
-
     if (value.isNumber)
     { ^value.clip(-1, 1) };
 

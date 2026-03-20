@@ -28,6 +28,30 @@
     );
   }
 
+  prand { |repeats|
+    ^Prand(this, repeats ?? inf);
+  }
+
+  pxrand { |repeats|
+    ^Pxrand(this, repeats ?? inf);
+  }
+
+  pwhite { |repeats|
+    if (this.size != 2) {
+      Error("pwhite requires an Array of exactly 2 elements [lo, hi]").throw;
+    };
+
+    ^Pwhite(this[0], this[1], repeats ?? inf);
+  }
+
+  pwrand { |weights, repeats|
+    if (weights.isArray.not) {
+      Error("pwrand requires an Array of weights").throw;
+    };
+
+    ^Pwrand(this, weights.normalizeSum, repeats ?? inf);
+  }
+
   shuffle { |seed|
     if (seed.isNil)
     { thisThread.randSeed = this.prGenerateRandNumber }

@@ -124,9 +124,13 @@ Array extension methods that create pattern objects:
 
 | Method                     | Description                                                                        |
 | -------------------------- | ---------------------------------------------------------------------------------- |
-| `[0, 1].pseg(\exp, 16)`    | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats (`inf`/`\inf`) |
-| `[1, 2, 3].pseq`           | Creates a `Pseq` loop from the array                                               |
-| `[0, 1, 2, 3].shuffle(71)` | Scrambles the array with a random seed for reproducibility                         |
+| `[0, 1].pseg(\exp, 16)`            | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats (`inf`/`\inf`) |
+| `[1, 2, 3].pseq`                   | Creates a `Pseq` loop from the array                                               |
+| `[0, 1, 2].prand`                  | Creates a `Prand` (random selection with repeats). Optional: repeats (default `inf`) |
+| `[0, 1, 2].pxrand`                 | Creates a `Pxrand` (random, no immediate repeats). Optional: repeats (default `inf`) |
+| `[0, 1].pwhite`                    | Creates a `Pwhite` (random range). Array must have exactly 2 elements `[lo, hi]`    |
+| `[1, 2, 4].pwrand([10, 2, 3])`     | Creates a `Pwrand` (weighted random). Weights array is required and auto-normalized |
+| `[0, 1, 2, 3].shuffle(71)`         | Scrambles the array with a random seed for reproducibility                         |
 
 ## ✨ Fx: A Nodeproxy Effects Handler
 

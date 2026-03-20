@@ -334,7 +334,7 @@ method:: control
 Sends a MIDI CC message immediately.
 
 argument:: chan
-MIDI channel (0-15).
+MIDI channel (1-16). Matches the channel number displayed in DAWs and hardware.
 
 argument:: ctlNum
 CC number (0-127).
@@ -343,8 +343,8 @@ argument:: value
 CC value (0-127).
 
 code::
-Px.control(0, 10, 64);   // CC 10 (pan) center on channel 0
-Px.control(1, 7, 100);   // CC 7 (volume) on channel 1
+Px.control(1, 10, 64);   // CC 10 (pan) center on channel 1
+Px.control(2, 7, 100);   // CC 7 (volume) on channel 2
 ::
 
 Note: The DSL code::1 control: [10, 64]:: delegates to this method for integer values, reading the channel from the stored pattern.
@@ -595,19 +595,19 @@ subsection:: MIDI Methods
 
 definitionlist::
 ## chan
-|| Routes pattern to MIDI channel. When the code::chan:: parameter is present, the pattern is automatically configured as a MIDI event.
+|| Routes pattern to MIDI channel (1-16). Matches the channel number displayed in DAWs and hardware. When the code::chan:: parameter is present, the pattern is automatically configured as a MIDI event.
 
 Behind the scenes, the following events are added to the pattern:
 list::
 ## code::\type: \midi:: - Marks the event as a MIDI type
 ## code::\midicmd: \noteOn:: - MIDI command (default is code::\noteOn::, can be code::\noteOff:: or code::\control::)
 ## code::\midiout: midiClient[deviceName]:: - MIDIOut instance (uses device set in code::Px.initMidi::)
-## code::\chan: 0:: - MIDI channel (defaults to 0 if not specified)
+## code::\chan: 1:: - MIDI channel (defaults to 1 if not specified)
 ## code::\instrument: \midi:: - Sets instrument to MIDI
 ::
 
 code::
-1 chan: 0 dur: 1 degree: 0;  // MIDI channel 1
+1 chan: 1 dur: 1 degree: 0;  // MIDI channel 1
 ::
 
 strong::MIDI DSL to Pbind Translation Examples::
@@ -623,7 +623,7 @@ code::
 (
 Pdef(\def, Pbind(
   \type, \midi,
-  \chan, 5,
+  \chan, 4,
   \midinote, Pseq([57, 60, 64], inf),
   \midicmd, \noteOn,
   \midiout, Px.midiOut,
@@ -642,7 +642,7 @@ code::
 (
 Pdef(\def, Pbind(
   \type, \midi,
-  \chan, 5,
+  \chan, 4,
   \midicmd, \noteOn,
   \midiout, Px.midiOut,
   \amp, 1,
@@ -674,7 +674,7 @@ Pbind(
   \type, \midi,
   \midicmd, \control,
   \midiout, Px.midiOut,
-  \chan, 1,
+  \chan, 0,
   \instrument, \midi,
   \ctlNum, 10,
   \control, Pseq([0, 127], inf),

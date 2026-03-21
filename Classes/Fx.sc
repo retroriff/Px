@@ -289,8 +289,12 @@ Fx {
 
       activeArgs[proxyName].add(fx -> args);
 
-      if (postArgs.isNil)
-      { postArgs = "no args" };
+      if (fx == \vst) {
+        postArgs = args[0];
+      } {
+        if (postArgs.isNil)
+        { postArgs = "no args" };
+      };
 
       this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs);
     };
@@ -312,9 +316,19 @@ Fx {
         action: { |ctrl, ok|
 
           if (ok) {
+            var folder = PathName.new(presetsPath +/+ plugin);
+            var files = folder.entries select: { |file| file.extension == "fxp" };
+
             proxy[vstProxyName].set(\vstBypass, 0);
             this.prPrint("👉 Open VST Editor: Fx.vstController.editor;");
             this.prPrint("👉 Set VST parameter: Fx.vstSet(1, 1);");
+
+            if (files.size > 0) {
+              this.prPrint("📋 Available presets:");
+              files.do { |file, i|
+                this.prPrint("   " ++ i ++ ":" + file.fileNameWithoutExtension);
+              };
+            };
           };
         }
       );

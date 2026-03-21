@@ -1,5 +1,5 @@
 /*
-TODO: Fix when Ndef is reevaluated, proxy FXs stop
+TODO: When we enable an effect, there is a silent. It happens since the last update to replace fork with defer
 */
 
 Fx {

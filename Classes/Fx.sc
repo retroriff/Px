@@ -241,8 +241,8 @@ Fx {
 
     hasFx = activeEffects[proxyName][fx].notNil;
 
-    if (fx == \vst 
-      and: { vstController.notNil } 
+    if (fx == \vst
+      and: { vstController.notNil }
       and: { mix.notNil }
       and: { mix != Nil }) {
       proxy[proxyName].set(\vstBypass, 0);
@@ -342,9 +342,14 @@ Fx {
     var index = this.prGetIndex(\vst);
     var wetIndex = (\wet ++ index).asSymbol;
 
+    activeArgs[proxyName].removeAt(\vst);
+    activeEffects[proxyName].removeAt(\vst);
     mixer[proxyName].removeAt(\vst);
+    vstController.close;
+    vstController = nil;
     this.prRampWet(wetIndex, mixer[proxyName][\vst] ? 1, 0, { |p|
       p.set(\vstBypass, 1);
+      p[index] = nil;
     });
   }
 

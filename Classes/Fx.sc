@@ -341,24 +341,31 @@ Fx {
   *prFadeOutVst {
     var index = this.prGetIndex(\vst);
     var wetIndex = (\wet ++ index).asSymbol;
-    var fadedProxyName = proxyName;
-    var fadeTime = 1;
 
     mixer[proxyName].removeAt(\vst);
-    proxy[proxyName].lag(wetIndex, fadeTime);
-    proxy[proxyName].set(wetIndex, 0);
-
-    { proxy[fadedProxyName].set(\vstBypass, 1) }.defer(fadeTime);
+    this.prRampWet(wetIndex, mixer[proxyName][\vst] ? 1, 0, { |p|
+      p.set(\vstBypass, 1);
+    });
   }
 
   *prFadeOutFx { |index, fx, wetIndex, noPostln|
-    var fadedProxyName = proxyName;
-    var fadeTime = 1;
+    this.prRampWet(wetIndex, mixer[proxyName][fx] ? 1, 0, { |p|
+      p[index] = nil;
+    });
+  }
 
-    proxy[proxyName].lag(wetIndex, fadeTime);
-    proxy[proxyName].set(wetIndex, 0);
+  *prRampWet { |wetIndex, from, to, onComplete|
+    var targetProxy = proxy[proxyName];
+    var steps = 30;
 
-    { proxy[fadedProxyName][index] = nil }.defer(fadeTime);
+    fork {
+      steps.do { |i|
+        targetProxy.set(wetIndex, from.blend(to, (i + 1) / steps));
+        (1/steps).wait;
+      };
+
+      if (onComplete.notNil) { onComplete.value(targetProxy) };
+    };
   }
 
   *prGetIndex { |fx|
@@ -420,11 +427,10 @@ Fx {
     { mixer[proxyName] = Dictionary.new };
 
     if (mix != mixer[proxyName][fx]) {
+      var from = mixer[proxyName][fx] ? 1;
 
-      proxy[proxyName].lag(wetIndex, 1);
-
-      proxy[proxyName].set(wetIndex, mix);
       mixer[proxyName][fx] = mix;
+      this.prRampWet(wetIndex, from, mix);
     };
   }
 }

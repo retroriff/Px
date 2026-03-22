@@ -62,7 +62,7 @@ Px {
   }
 
   *prCreateAmp { |pattern|
-    var amp = pattern[\amp] ?? 1;
+    var amp = pattern[\amp] ?? 0.3;
 
     if (pattern[\beat].notNil)
     { amp = this.prCreateRhythmBeat(amp, pattern) };
@@ -218,8 +218,7 @@ Px {
   }
 
   *prPrint { |value|
-    if (~isUnitTestRunning != true)
-    { value.postln };
+    value.postln;
   }
 
   *prReevaluate { |patterns|

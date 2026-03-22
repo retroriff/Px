@@ -252,7 +252,7 @@
 
     if (value.isNil) {
       var vol = Ndef(ndef).vol;
-      this.prPrint("Px vol is" + vol);
+      ^("🔈 Px vol is" + vol);
     } {
       ^Ndef(ndef).vol_(value.clip(0, 3));
     }

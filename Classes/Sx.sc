@@ -271,8 +271,7 @@ Sx {
   }
 
   *prPrint { |value|
-    if (~isUnitTestRunning != true)
-    { value.postln };
+    value.postln;
   }
 
   *prSet { |pairs|

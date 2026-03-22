@@ -1,7 +1,3 @@
-/*
-TODO: When we enable an effect, there is a silent. It happens since the last update to replace fork with defer
-*/
-
 Fx {
   classvar <activeArgs;
   classvar <>activeEffects;
@@ -11,6 +7,7 @@ Fx {
   classvar <proxy;
   classvar <proxyName;
   classvar <vstController;
+  classvar <vstPresets;
 
   *initClass {
     activeArgs = Dictionary.new;
@@ -18,6 +15,7 @@ Fx {
     effects = Dictionary.new;
     mixer = Dictionary.new;
     proxy = Dictionary.new;
+    vstPresets = Dictionary.new;
 
     this.loadEffects;
   }
@@ -156,7 +154,8 @@ Fx {
   *vst { |mix = 0.4, plugin|
     var defaultPlugin = "ValhallaFreqEcho";
 
-    this.prAddEffect(\vst, mix, [plugin ?? defaultPlugin]);
+    plugin = plugin ?? defaultPlugin;
+    this.prAddEffect(\vst, mix, [plugin], plugin);
   }
 
   *vstReadProgram { |preset = 0|
@@ -247,8 +246,7 @@ Fx {
       and: { mix != Nil }) {
       proxy[proxyName].set(\vstBypass, 0);
       this.prSetMixerValue(fx, mix.clip(0, 1));
-      this.prPrint("✨ Enabled" + "\\vst" + "mix:" + mix);
-      ^this;
+      this.prPrint("✨ Enabled" + "\\vst" + "mix:" + mix + this.prGetVstPluginName);
     };
 
     if (hasFx == false and: { mix.isNil.not } and: { mix != Nil })
@@ -271,6 +269,9 @@ Fx {
 
     this.prMapModulationArgs(fx, args);
     this.prSetMixerValue(fx, mix.clip(0, 1));
+
+    if (fx == \vst)
+    { this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs) };
   }
 
   *prActivateEffect { |args, fx, mix, postArgs|
@@ -289,14 +290,12 @@ Fx {
 
       activeArgs[proxyName].add(fx -> args);
 
-      if (fx == \vst) {
-        postArgs = args[0];
-      } {
+      if (fx == \vst) { postArgs = args[0] } {
         if (postArgs.isNil)
         { postArgs = "no args" };
-      };
 
-      this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs);
+        this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs);
+      };
     };
   }
 
@@ -323,10 +322,12 @@ Fx {
             this.prPrint("👉 Open VST Editor: Fx.vstController.editor;");
             this.prPrint("👉 Set VST parameter: Fx.vstSet(1, 1);");
 
-            if (files.size > 0) {
+            vstPresets[plugin] = files.collect { |file| file.fileNameWithoutExtension };
+
+            if (vstPresets[plugin].size > 0) {
               this.prPrint("📋 Available presets:");
-              files.do { |file, i|
-                this.prPrint("   " ++ i ++ ":" + file.fileNameWithoutExtension);
+              vstPresets[plugin].do { |name, i|
+                this.prPrint("   " ++ i ++ ":" + name);
               };
             };
           };
@@ -394,9 +395,9 @@ Fx {
   }
 
   *prPrint { |value|
-    if (~isUnitTestRunning != true)
-    { value.postln };
+    value.postln;
   }
+
 
   *prUpdateEffect { |args, fx|
     args do: { |value, i|

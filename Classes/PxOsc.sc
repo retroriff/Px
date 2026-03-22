@@ -21,9 +21,9 @@
 
         if (printExcludedReceivers.includesEqual(receiver) == false)
         { this.prPrint(("🤖 " ++ code)) };
-      }, '/px');
+      }, '/px').permanent_(true);
 
-       ^this.prPrint("📡 Listening OSC");
+       ^("📡 Listening OSC");
     };
 
     ^("📡 Listener already enabled");

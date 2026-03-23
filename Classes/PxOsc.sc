@@ -11,7 +11,13 @@
         var replyPort = msg[3];
 
         {
-            var result = code.interpret;
+            var result;
+            try {
+                result = code.interpret;
+            } { |err|
+                result = "ERROR: " ++ err.errorString;
+                err.reportError;
+            };
 
             if (replyPort.notNil) {
                 NetAddr("127.0.0.1", replyPort.asInteger)

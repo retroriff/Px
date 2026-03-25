@@ -89,6 +89,10 @@ Fx {
     this.prAddEffect(\distort, mix, [drive], postArgs);
   }
 
+  *effectNames {
+    ^effects.keys.asArray.sort;
+  }
+
   *flanger { |mix = 0.3|
     this.prAddEffect(\flanger, mix);
   }

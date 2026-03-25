@@ -289,6 +289,13 @@ Fx.clear(\px);   // Clear effects from \px only
 Fx.clear;        // Clear all effects
 ::
 
+method:: effectNames
+Returns a sorted array of all available effect names.
+
+code::
+Fx.effectNames;  // [ blp, crush, delay, distort, duck, ... ]
+::
+
 method:: loadEffects
 Reloads all effect definitions from the Effects/*.scd files. Useful after editing effect files.
 

@@ -1,6 +1,8 @@
 PxDebouncer {
   classvar <>current;
   classvar <queue;
+  var <>fxList;
+  var <>isFullDeclaration;
   var <original;
   var <pattern;
   var pending;
@@ -11,6 +13,8 @@ PxDebouncer {
   }
 
   init { |number, capturedPattern|
+    fxList = List.new;
+    isFullDeclaration = false;
     original = number;
     pattern = capturedPattern;
     pending = List.new;
@@ -29,21 +33,40 @@ PxDebouncer {
 
   commit {
     var pairs = [];
+    var capturedFxList, capturedIsFullDeclaration;
 
-    if (pending.size == 0)
+    if (pending.size == 0 and: { fxList.size == 0 })
     { ^this };
 
     pairs = pending.flatten;
-    original.prUpdatePattern(pairs, pattern);
+    capturedFxList = fxList;
+    capturedIsFullDeclaration = isFullDeclaration;
+
     pending.clear;
+    fxList = List.new;
     queue.remove(this);
 
     if (this === current)
     { current = nil };
+
+    original.prUpdatePattern(pairs, pattern);
+
+    if (pattern.notNil) {
+      var capturedId = pattern[\id];
+
+      fork {
+        Server.default.sync;
+        Px.prApplyFx(capturedId, capturedFxList, capturedIsFullDeclaration);
+      };
+    };
   }
 
   enqueue { |pair|
     pending.add(pair);
+    this.prSchedule;
+  }
+
+  prSchedule {
     queue.add(this);
 
     if (scheduled.not) {

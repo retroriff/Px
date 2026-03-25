@@ -240,6 +240,23 @@ code::
 Fx(\px).tremolo(0.5, 2);
 ::
 
+method:: wah
+Auto-wah effect with LFO-modulated resonant filter.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.5.
+
+argument:: rate
+LFO rate in Hz. Default: 1.5.
+
+argument:: depth
+Filter resonance depth (0-1). Default: 0.8.
+
+code::
+Fx(\px).wah(0.5);
+Fx(\px).wah(0.6, 2, 0.9);
+::
+
 subsection:: Modulation
 
 Effect parameters can be modulated using Functions that return UGens. Pass a Function (wrapped in code::{ }::) as any effect argument to create dynamic, moving effects.
@@ -363,6 +380,31 @@ Fx.vstController.editor;
 
 // Set parameter directly
 Fx.vstController.set(1, 0.9);
+::
+
+subsection:: Inline Pattern Effects
+
+Effects can be added directly in pattern declarations using the Number DSL. This applies the effect to the pattern's own proxy, not globally.
+
+code::
+// Add reverb to pattern 1
+1 i: \piano dur: 2 reverb: 0.5;
+
+// Method chain syntax with extra arguments
+1.i(\piano).dur(2).reverb(0.5, 0.8, 0.5);
+
+// Multiple effects
+1 i: \piano dur: 2 reverb: 0.3 delay: 0.5;
+
+// Effects are removed when omitted from a full declaration
+1 i: \piano dur: 2;  // reverb and delay are disabled
+
+// Partial updates do not affect effects
+1 amp: 0.5;  // reverb stays active if previously set
+::
+
+note::
+The key-value syntax (code::reverb: 0.5::) only accepts the mix argument. For additional parameters, use the method chain syntax or code::Fx:: directly.
 ::
 
 examples::

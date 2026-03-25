@@ -2,6 +2,7 @@ Px {
   classvar <>chorusPatterns;
   classvar <>colors;
   classvar <drumMachinesPath;
+  classvar <>fxState;
   classvar <>last;
   classvar <>lastFormatted;
   classvar <midiClient;
@@ -18,9 +19,9 @@ Px {
   classvar <windowHeight;
 
   *initClass {
-    // CmdPeriod.add { Px.clear };
     chorusPatterns = Dictionary.new;
     colors = Dictionary.new;
+    fxState = Dictionary.new;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
     midiHoldedNotes = Dictionary.new;
@@ -32,7 +33,7 @@ Px {
   }
 
   *new { |newPattern|
-    var pattern, pdef, playList;
+    var pattern, pdef, playList, isNewNdef;
 
     this.prInitializeDictionaries(newPattern);
     this.prHandleSoloPattern(newPattern);
@@ -46,15 +47,16 @@ Px {
     pattern = this.prCreateDegrees(pattern);
     pattern = this.prCreateOctaves(pattern);
     pattern = this.prCreateMidi(pattern);
-    pattern = this.prCreateFx(pattern);
 
+    isNewNdef = ndefList[pattern[\id]].isNil;
     pdef = this.prCreatePdef(pattern);
     playList = this.prCreatePlayList(pattern[\id], pdef);
 
     if (Ndef(\px).isPlaying.not)
     { Ndef(\px).quant_(4).play };
 
-    Ndef(\px)[0] = { Mix.new(playList.values) };
+    if (isNewNdef)
+    { Ndef(\px)[0] = { Mix.new(playList.values) } };
 
     lastFormatted[newPattern[\id]] = pattern;
 
@@ -167,9 +169,7 @@ Px {
     pattern.removeAt(\repeat);
     pattern.removeAt(\stop);
 
-    if (this.prHasFX(pattern) == true)
-    { pbindef = this.prCreatePbindFx(pattern) }
-    { pbindef = Pbind(*pattern.asPairs) };
+    pbindef = Pbind(*pattern.asPairs);
 
     if (pattern[\midiControl] != 1)
     { pbindef = this.prCreateFade(pbindef, pattern[\fade]) };

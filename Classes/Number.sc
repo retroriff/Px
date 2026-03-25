@@ -294,6 +294,7 @@
     { oldPending = PxDebouncer.current.prTakePending };
 
     PxDebouncer.current = PxDebouncer(this, newPattern);
+    PxDebouncer.current.isFullDeclaration = true;
 
     if (oldPending.notNil)
     { oldPending.do { |p| PxDebouncer.current.enqueue(p) } };

@@ -1,86 +1,106 @@
 + Px {
-  *prCreateFx { |pattern|
-    if (pattern[\fx].notNil and: { pattern[\fx].size > 0 }) {
-      pattern[\fx].do { |fx, i|
-        if (SynthDescLib.global[fx[1]].notNil) {
-          if (fx[1] == \reverb)
-          { fx = fx ++ [\decayTime, pattern[\decayTime] ?? 7, \cleanupDelay, 1] };
+  *prApplyFx { |id, fxList, isFullDeclaration|
+    var currentFxNames;
 
-          pattern[\fx][i] = fx;
-          pattern = pattern ++ [\fxOrder, (1..pattern[\fx].size)];
-        }
+    if (id.isNil) { ^this };
+
+    Fx.skipFlush = true;
+
+    if (fxList.isNil or: { fxList.size == 0 }) {
+
+      if (isFullDeclaration and: { fxState[id].notNil }) {
+        Fx(id);
+        fxState[id].do { |fxName| Fx.perform(fxName, nil) };
+        fxState[id] = nil;
+      };
+
+      Fx.skipFlush = false;
+      ^this;
+    };
+
+    Fx(id);
+    currentFxNames = fxList.collect { |entry| entry[0] }.asSet;
+
+    if (isFullDeclaration and: { fxState[id].notNil }) {
+      (fxState[id] -- currentFxNames).do { |fxName|
+        Fx.prDisableFx(fxName, immediate: true);
       };
     };
 
-    ^pattern;
-  }
+    fxList.do { |entry|
+      Fx.perform(entry[0], *entry[1]);
+    };
 
-  *prCreatePbindFx { |pattern|
-    ^PbindFx(pattern.asPairs, *pattern[\fx]);
-  }
-
-  *prHasFX { |pattern|
-    ^pattern[\fx].notNil;
+    fxState[id] = currentFxNames;
+    Fx.skipFlush = false;
   }
 }
 
 + Number {
-  crush { |mix|
-    this.prFx(\crush, mix);
+  blp { |mix|
+    this.prFx(\blp, [mix]);
   }
 
-  delay { |mix|
-    this.prFx(\delay, mix);
+  crush { |mix, bits|
+    this.prFx(\crush, [mix, bits]);
   }
 
-  distort { |mix|
-    this.prFx(\distort, mix);
+  delay { |mix, delaytime, delayfeedback|
+    this.prFx(\delay, [mix, delaytime, delayfeedback]);
   }
 
-  hpf { |mix|
-    this.prFx(\hpf, mix);
+  distort { |mix, drive|
+    this.prFx(\distort, [mix, drive]);
   }
 
-  lpf { |mix|
-    this.prFx(\lpf, mix);
+  duck { |mix, thresh|
+    this.prFx(\duck, [mix, thresh]);
   }
 
-  phaser { |mix|
-    this.prFx(\phaser, mix);
+  flanger { |mix|
+    this.prFx(\flanger, [mix]);
   }
 
-  reverb { |mix|
-    this.prFx(\reverb, mix);
+  gverb { |mix, roomsize, revtime|
+    this.prFx(\gverb, [mix, roomsize, revtime]);
   }
 
-  wah { |mix|
-    this.prFx(\wah, mix);
+  hpf { |mix, freq|
+    this.prFx(\hpf, [mix, freq]);
   }
 
-  prCreatePatternKey { |value|
-    if (value == \rand)
-    { ^Pwhite(0.0, 1) };
-
-    if (value.isNumber)
-    { ^value.clip(-1, 1) };
-
-    ^value ?? 1;
+  lpf { |mix, freq|
+    this.prFx(\lpf, [mix, freq]);
   }
 
-  prFx { |fx, mix|
+  phaser { |mix, rate, depth|
+    this.prFx(\phaser, [mix, rate, depth]);
+  }
+
+  reverb { |mix, room, size|
+    this.prFx(\reverb, [mix, room, size]);
+  }
+
+  space { |mix, fb|
+    this.prFx(\space, [mix, fb]);
+  }
+
+  tremolo { |mix, rate|
+    this.prFx(\tremolo, [mix, rate]);
+  }
+
+  vst { |mix, plugin|
+    this.prFx(\vst, [mix, plugin]);
+  }
+
+  wah { |mix, rate, depth|
+    this.prFx(\wah, [mix, rate, depth]);
+  }
+
+  prFx { |fx, args|
     var debouncer = this.prDebouncer;
-    var lastFx = [];
-    var allFx;
-
-    if (debouncer.pattern.notNil and: { debouncer.pattern[\fx].notNil })
-    { lastFx = debouncer.pattern[\fx] };
-
-    allFx = lastFx ++ [[\fx, fx, \mix, this.prCreatePatternKey(mix)]];
-
-    if (debouncer.pattern.notNil)
-    { debouncer.pattern[\fx] = allFx };
-
-    debouncer.enqueue([\fx, allFx]);
+    args = args.reject { |v| v.isNil };
+    debouncer.fxList.add([fx, args]);
+    debouncer.prSchedule;
   }
 }
-

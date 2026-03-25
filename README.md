@@ -159,6 +159,7 @@ It offers the same [class methods as Px](#px-class-methods), with the following 
 - `activeEffects`: Checks the active proxy filters
 - `clear`: Clears all effects
 - `duck` (mix, thresh): Sidechain compression — ducks the target when kick energy is detected from the master output
+- `effectNames`: Returns a sorted array of all available effect names
 - `loadEffects`: Allows to reload the effect files.
 - `vstReadProgram` (preset: string): Loads a VST preset from the default presets folder
 - `vstWriteProgram` (preset: string): Write a VST preset to the default presets folder

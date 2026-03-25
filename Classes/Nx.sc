@@ -118,7 +118,6 @@ Nx {
     };
 
     if (qualityArg.notNil) {
-      // 2-arg or 3-arg form: tonic + quality (+ octave)
       qualityStr = qualityAliases[qualityArg.asSymbol] ?? { qualityArg.asString };
 
       tonicData = tonics[chordNameOrTonic.asSymbol];
@@ -267,7 +266,7 @@ Nx {
   }
 
   *prParseChordName { |chordSymbol|
-    var input, qualityStr, qualitySym, tonicSym;
+    var input, qualityStr, tonicSym;
 
     input = chordSymbol.asString;
 
@@ -276,9 +275,9 @@ Nx {
       tonicSym = input[0..1].asSymbol;
       if (tonics.includesKey(tonicSym)) {
         qualityStr = input[2..];
-        qualitySym = this.prMapQuality(qualityStr);
-        if (chords.includesKey(qualitySym)) {
-          ^Dictionary[\tonic -> tonicSym, \quality -> qualitySym];
+        qualityStr = this.prMapQuality(qualityStr);
+        if (chords.includesKey(qualityStr)) {
+          ^Dictionary[\tonic -> tonicSym, \quality -> qualityStr];
         };
       };
     };
@@ -288,8 +287,8 @@ Nx {
       tonicSym = input[0].asSymbol;
       if (tonics.includesKey(tonicSym)) {
         qualityStr = input[1..];
-        qualitySym = this.prMapQuality(qualityStr);
-        ^Dictionary[\tonic -> tonicSym, \quality -> qualitySym];
+        qualityStr = this.prMapQuality(qualityStr);
+        ^Dictionary[\tonic -> tonicSym, \quality -> qualityStr];
       };
     };
 
@@ -297,10 +296,8 @@ Nx {
   }
 
   *prMapQuality { |qualityStr|
-    // Empty = major default (only special case)
     if (qualityStr.isEmpty) { ^"maj" };
 
-    // Everything else: return as string
     ^qualityStr;
   }
 

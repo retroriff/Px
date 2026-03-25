@@ -6,6 +6,7 @@ Fx {
   classvar <>presetsPath;
   classvar <proxy;
   classvar <proxyName;
+  classvar <>skipFlush;
   classvar <vstController;
   classvar <vstPresets;
 
@@ -15,6 +16,7 @@ Fx {
     effects = Dictionary.new;
     mixer = Dictionary.new;
     proxy = Dictionary.new;
+    skipFlush = false;
     vstPresets = Dictionary.new;
 
     this.loadEffects;
@@ -158,6 +160,11 @@ Fx {
     this.prAddEffect(\vst, mix, [plugin], plugin);
   }
 
+  *wah { |mix = 0.5, rate = 1.5, depth = 0.8|
+    var postArgs = "rate:" + rate + "depth:" + depth;
+    this.prAddEffect(\wah, mix, [rate, depth], postArgs);
+  }
+
   *vstReadProgram { |preset = 0|
     var index = this.prGetIndex(\vst);
     var path, presetName;
@@ -210,7 +217,8 @@ Fx {
   *prAddEffect { |fx, mix, args, postArgs|
     var hasFx = false;
 
-    PxDebouncer.flush;
+    if (skipFlush.not)
+    { PxDebouncer.flush };
 
     if (args.notNil) {
       args.do { |value|
@@ -291,10 +299,7 @@ Fx {
       activeArgs[proxyName].add(fx -> args);
 
       if (fx == \vst) { postArgs = args[0] } {
-        if (postArgs.isNil)
-        { postArgs = "no args" };
-
-        this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs);
+        this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + (postArgs ?? ""));
       };
     };
   }
@@ -336,11 +341,12 @@ Fx {
     }.defer(1);
   }
 
-  *prDisableFx { |fx, noPostln|
+  *prDisableFx { |fx, noPostln, immediate = false|
     var index = this.prGetIndex(fx);
     var wetIndex = (\wet ++ index).asSymbol;
 
     if (index.isNil) {
+      if (immediate) { ^nil };
       ^("🔴".scatArgs(("\\" ++ fx), "FX not found"));
     };
 
@@ -350,7 +356,9 @@ Fx {
     mixer[proxyName].removeAt(fx);
     activeEffects[proxyName].removeAt(fx);
 
-    this.prFadeOutFx(index, fx, wetIndex, noPostln);
+    if (immediate)
+    { proxy[proxyName][index] = nil }
+    { this.prFadeOutFx(index, fx, wetIndex, noPostln) };
   }
 
   *prFadeOutVst {

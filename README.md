@@ -1,6 +1,6 @@
 # Px: A DSL for Live Coding in SuperCollider
 
-An embedded domain-specific language (DSL) built on SuperCollider for live coding music. Px extends the Number and Symbol classes to provide a fluent, declarative syntax for creating patterns, drum machines, and effects on NodeProxy — replacing manual Pbind/Ndef/PbindFx construction with concise one-liners. Below is a basic example:
+An embedded domain-specific language (DSL) built on SuperCollider for live coding music. Px extends the Number and Symbol classes to provide a fluent, declarative syntax for creating patterns, drum machines, and effects on NodeProxy — replacing manual Pbind/Ndef construction with concise one-liners. Below is a basic example:
 
 ```js
 // Play
@@ -27,8 +27,7 @@ Additional code examples can be found [here](/Examples/).
 ## 🛠️ Installation
 
 1. Install `Quarks.install("https://github.com/retroriff/sc-px");` and recompile.
-2. Install the [MiSCellaneous](https://github.com/dkmayer/miSCellaneous_lib) extension (needed for `PbindFx`)
-3. Install [Tidal Drum Machines](https://github.com/geikha/tidal-drum-machines)
+2. Install [Tidal Drum Machines](https://github.com/geikha/tidal-drum-machines)
 4. Load SynthDefs and audio files by running:
 
 ```
@@ -77,15 +76,26 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ### FX integer pattern methods
 
-| Name     | Arguments                                                                   | Description              |
-| -------- | --------------------------------------------------------------------------- | ------------------------ |
-| `crush`  | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a bit crusher       |
-| `delay`  | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a delay effect      |
-| `hpf`    | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a high pass filter  |
-| `lpf`    | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a lower pass filter |
-| `phaser` | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a phaser effect     |
-| `reverb` | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a reverb effect     |
-| `wah`    | mix?: range 0..1 \| \rand \| [\wrand, item1, item2, weight], args?: pairs[] | Adds a wah effect        |
+These methods add effects directly to a pattern's proxy via the Fx class. They accept the same arguments as the corresponding `Fx` methods. Effects are automatically disabled when removed from a full pattern declaration.
+
+| Name      | Arguments                         | Description                    |
+| --------- | --------------------------------- | ------------------------------ |
+| `blp`     | mix?: range 0..1                  | Band-limited low-pass filter   |
+| `crush`   | mix?: range 0..1, bits?: number   | Bit crusher                    |
+| `delay`   | mix?: range 0..1, delaytime?, delayfeedback? | Delay effect          |
+| `distort` | mix?: range 0..1, drive?: number  | Distortion                     |
+| `duck`    | mix?: range 0..1, thresh?: number | Sidechain compression          |
+| `flanger` | mix?: range 0..1                  | Flanger effect                 |
+| `gverb`   | mix?: range 0..1, roomsize?, revtime? | Granular reverb            |
+| `hpf`     | mix?: range 0..1, freq?: number   | High pass filter               |
+| `lpf`     | mix?: range 0..1, freq?: number   | Low pass filter                |
+| `pan`     | pos?: range -1..1                 | Stereo panning                 |
+| `phaser`  | mix?: range 0..1, rate?, depth?   | Phaser effect                  |
+| `reverb`  | mix?: range 0..1, room?, size?    | Reverb effect                  |
+| `space`   | mix?: range 0..1, fb?: number     | Spatial reverb                 |
+| `tremolo` | mix?: range 0..1, rate?: number   | Tremolo effect                 |
+| `vst`     | mix?: range 0..1, plugin?: string | VST plugin effect              |
+| `wah`     | mix?: range 0..1, rate?, depth?   | Auto-wah effect                |
 
 ### Instrument methods
 

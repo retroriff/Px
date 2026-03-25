@@ -10,7 +10,7 @@ This file provides guidance to LLM agents when working with code in this reposit
 
 - **SuperCollider**: Audio synthesis platform
 - **File types**: `.sc` (class definitions), `.scd` (code/effect definitions)
-- **Dependencies**: Bjorklund, miSCellaneous_lib, VSTPlugin
+- **Dependencies**: Bjorklund, VSTPlugin
 
 ## Architecture
 

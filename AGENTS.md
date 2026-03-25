@@ -35,7 +35,7 @@
 
 **Common development tasks:**
 
-- Add effect → Edit `Effects/*.scd` + `Classes/Fx.sc`
+- Add effect → Edit `Effects/*.scd` + `Classes/Fx.sc` + `Classes/PxFx.sc` (Number DSL method mirrors Fx method, excluding `pan`)
 - Add pattern parameter → Edit `Classes/Number.sc` + `Classes/Px.sc`
 - Add drum preset → Create `Presets/yaml/*.yaml`
 - Add chord → Edit `Score/*.scd`
@@ -63,7 +63,6 @@
 
 ## Dependencies
 
-- **miSCellaneous_lib** — Provides `PbindFx`, which enables per-event effect chain sequencing. Px uses it to apply individual effects to patterns (the Number DSL `reverb:`, `delay:`, etc.). PbindFx SynthDefs are loaded from the user's startup file (external `Effects/` folder), not from this project. `Effects/*.scd` in this project are loaded by the `Fx` class for global NodeProxy effects only.
 - **Bjorklund** — Euclidean rhythm generation
 - **VSTPlugin** — VST plugin integration
 

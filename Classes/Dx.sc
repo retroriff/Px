@@ -68,7 +68,7 @@ Dx : Px {
           amp: dxAmp,
           drumMachine: drumMachine,
           dx: true,
-          id: (instrument.asString ++ "FillIn" ++ drumMachine.asString).asSymbol,
+          id: (instrument.asString ++ "FillInDx").asSymbol,
         ));
       };
     };
@@ -100,6 +100,7 @@ Dx : Px {
 
   *preset { |name = \core, number, amp|
     var newPreset = [name.asSymbol, number, amp];
+    var newIds;
 
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
@@ -108,9 +109,13 @@ Dx : Px {
       this.prCreatePatternFromPreset(newPreset);
     };
 
-    presetPatterns do: { |pattern, i|
+    newIds = Set.new;
+
+    presetPatterns do: { |pattern|
+
       if (this.prHasInstrument(pattern[\instrument]) == true) {
         var id = this.prCreateId(pattern[\instrument]);
+        newIds.add(id);
 
         this.new(pattern.putAll([
           \id, id,
@@ -120,7 +125,8 @@ Dx : Px {
       }
     };
 
-    this.prReapplyFx;
+    this.prStopRemovedPatterns(newIds);
+    this.prApplyActiveFx;
   }
 
   *release { |fadeTime = 10|
@@ -161,23 +167,28 @@ Dx : Px {
     last.copy do: { |pattern|
       if (soloIds.includes(pattern[\id]) == false
         and: { pattern[\dx] == true }) {
-        Px.stop(pattern[\id]);
+        last.removeAt(pattern[\id]);
+        Pdef(pattern[\id]).source = nil;
       }
     };
   }
 
   *stop {
-    ^this.prStopPreset;
+    last.copy do: { |pattern|
+
+      if (pattern[\dx] == true)
+      { Fx.prClearProxy(pattern[\id]) };
+    };
+
+    this.prStopPreset;
+    activeFx.clear;
   }
 
   *use { |newDrumMachine|
-    var currentDrumMachine = drumMachine;
-    var lastPatterns = Px.last.copy;
-
     if (newDrumMachine.isNil)
-    { ^currentDrumMachine };
+    { ^drumMachine };
 
-    if (currentDrumMachine == newDrumMachine)
+    if (drumMachine == newDrumMachine)
     { ^("🟢 Drum machine already selected") };
 
     if (instrumentFolders.isEmpty)
@@ -188,22 +199,19 @@ Dx : Px {
 
     drumMachine = newDrumMachine;
 
-    this.prStopPreset;
+    last.copy do: { |pattern|
 
-    lastPatterns do: { |pattern, i|
       if (pattern[\dx] == true) {
         if (this.prHasInstrument(pattern[\instrument]) == true) {
-          pattern[\id] = this.prCreateId(pattern[\instrument]);
-
           pattern[\drumMachine] = newDrumMachine;
           this.new(pattern);
         } {
-          last[pattern[\id]] = pattern;
+          Px.stop(pattern[\id]);
         }
       };
     };
 
-    this.prReapplyFx;
+    this.prApplyActiveFx;
   }
 
   *vol { |amp|
@@ -238,7 +246,7 @@ Dx : Px {
     ^pattern;
   }
 
-  *prReapplyFx {
+  *prApplyActiveFx {
     if (activeFx.size > 0) {
       fork {
         Server.default.sync;
@@ -256,7 +264,6 @@ Dx : Px {
 
   *prApplyFxToAll { |fxName, value|
     var fxValue = if ([0, nil].includes(value)) { nil } { value };
-    var savedSuppressPrint = Fx.prSuppressPrint;
     var isFirst = true;
 
     last.keysValuesDo { |id, pattern|
@@ -270,7 +277,7 @@ Dx : Px {
       };
     };
 
-    Fx.prSuppressPrint = savedSuppressPrint;
+    Fx.prSuppressPrint = false;
   }
 
   *prClearInstrumentFolders {
@@ -279,7 +286,7 @@ Dx : Px {
   }
 
   *prCreateId { |instrument|
-    ^(instrument.asString ++ drumMachine.asString).asSymbol;
+    ^(instrument.asString ++ "Dx").asSymbol;
   }
 
   *prCreatePatternFromPreset { |newPreset|
@@ -300,10 +307,6 @@ Dx : Px {
 
     if (newNumber > presetGroup.size) {
       super.prPrint("🧩 This set has".scatArgs(presetGroup.size, "presets"));
-    };
-
-    if (lastPreset.notNil) {
-      this.prStopPreset;
     };
 
     if (preset.notNil) {
@@ -395,19 +398,24 @@ Dx : Px {
     ^names.includes(instrument.asString);
   }
 
-  *prStopPreset {
-    // Px.stop has a fork that kills the Ndefs
-    var stopPattern = { |id|
-      last.removeAt(id);
-      ndefList.removeAt(id);
-      Pdef(id).source = nil;
-      Fx.prClearProxy(id);
+  *prStopRemovedPatterns { |keepIds|
+    last.copy do: { |pattern|
+
+      if (pattern[\dx] == true and: { keepIds.includes(pattern[\id]).not }) {
+        last.removeAt(pattern[\id]);
+        Pdef(pattern[\id]).source = nil;
+      };
     };
+  }
 
-    last.copy do: { |pattern, i|
+  *prStopPreset {
+    last.copy do: { |pattern|
 
-      if (pattern[\dx] == true)
-      { stopPattern.(pattern[\id]) };
+      if (pattern[\dx] == true) {
+        last.removeAt(pattern[\id]);
+        ndefList.removeAt(pattern[\id]);
+        Pdef(pattern[\id]).source = nil;
+      };
     };
   }
 }

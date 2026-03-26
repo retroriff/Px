@@ -82,7 +82,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | --------- | --------------------------------- | ------------------------------ |
 | `blp`     | mix?: range 0..1                  | Band-limited low-pass filter   |
 | `compressor` | mix?: range 0..1, thresh?, ratio?, gain? | Dynamic range compressor |
-| `crush`   | mix?: range 0..1, bits?: number   | Bit crusher                    |
+| `crush`   | mix?: range 0..1, bits?: number, rate?: number | Bit crusher             |
 | `delay`   | mix?: range 0..1, delaytime?, delayfeedback? | Delay effect          |
 | `distort` | mix?: range 0..1, drive?: number  | Distortion                     |
 | `duck`    | mix?: range 0..1, thresh?: number | Sidechain compression          |

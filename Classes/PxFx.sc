@@ -45,8 +45,8 @@
     this.prFx(\compressor, [mix, thresh, ratio, gain]);
   }
 
-  crush { |mix, bits|
-    this.prFx(\crush, [mix, bits]);
+  crush { |mix, bits, rate|
+    this.prFx(\crush, [mix, bits, rate]);
   }
 
   delay { |mix, delaytime, delayfeedback|

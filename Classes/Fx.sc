@@ -40,9 +40,9 @@ Fx {
     this.prAddEffect(\compressor, mix, [thresh, ratio, gain], postArgs);
   }
 
-  *crush { |mix = 0.5, bits = 4|
-    var postArgs = "bits:" + bits;
-    this.prAddEffect(\crush, mix, [bits], postArgs);
+  *crush { |mix = 0.5, bits = 4, rate = 10000|
+    var postArgs = "bits:" + bits + "rate:" + rate;
+    this.prAddEffect(\crush, mix, [bits, rate], postArgs);
   }
 
   *clear { |singleProxy|

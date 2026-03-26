@@ -6,6 +6,7 @@ Fx {
   classvar <>presetsPath;
   classvar <proxy;
   classvar <proxyName;
+  classvar <>prSuppressPrint;
   classvar <>skipFlush;
   classvar <vstController;
   classvar <vstPresets;
@@ -16,6 +17,7 @@ Fx {
     effects = Dictionary.new;
     mixer = Dictionary.new;
     proxy = Dictionary.new;
+    prSuppressPrint = false;
     skipFlush = false;
     vstPresets = Dictionary.new;
 
@@ -31,6 +33,11 @@ Fx {
 
   *blp { |mix = 0.4|
     this.prAddEffect(\blp, mix);
+  }
+
+  *compressor { |mix = 0.5, thresh = 0.1, ratio = 4, gain = 1|
+    var postArgs = "thresh:" + thresh + "ratio:" + ratio + "gain:" + gain;
+    this.prAddEffect(\compressor, mix, [thresh, ratio, gain], postArgs);
   }
 
   *crush { |mix = 0.5, bits = 4|
@@ -97,6 +104,11 @@ Fx {
     this.prAddEffect(\flanger, mix);
   }
 
+  *freqShift { |mix = 0.5, freq = 0, phase = 0|
+    var postArgs = "freq:" + freq + "phase:" + phase;
+    this.prAddEffect(\freqShift, mix, [freq, phase], postArgs);
+  }
+
   *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
     var postArgs = "roomsize:" +  roomsize + "revtime:" + revtime;
     this.prAddEffect(\gverb, mix, [roomsize, revtime], postArgs);
@@ -155,6 +167,11 @@ Fx {
   *tremolo { |mix = 0.6, rate = 1|
     var postArgs = "rate:" + rate;
     this.prAddEffect(\tremolo, mix, [rate], postArgs);
+  }
+
+  *vibrato { |mix = 0.5, rate = 4, depth = 0.2|
+    var postArgs = "rate:" + rate + "depth:" + depth;
+    this.prAddEffect(\vibrato, mix, [rate, depth], postArgs);
   }
 
   *vst { |mix = 0.4, plugin|
@@ -216,6 +233,12 @@ Fx {
 
   *prGetVstPluginName {
     ^activeArgs[proxyName][\vst][0];
+  }
+
+  *prClearProxy { |name|
+    activeArgs.removeAt(name);
+    activeEffects.removeAt(name);
+    mixer.removeAt(name);
   }
 
   *prAddEffect { |fx, mix, args, postArgs|
@@ -407,7 +430,8 @@ Fx {
   }
 
   *prPrint { |value|
-    value.postln;
+    if (prSuppressPrint.not)
+    { value.postln };
   }
 
 

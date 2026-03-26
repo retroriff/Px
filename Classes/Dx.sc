@@ -1,7 +1,7 @@
 Dx : Px {
   classvar <>drumMachine;
   classvar <>dxAmp;
-  classvar <fx;
+  classvar <activeFx;
   classvar hasLoadedPresets;
   classvar <instrumentFolders;
   classvar instrumentNames;
@@ -13,7 +13,7 @@ Dx : Px {
     drumMachine = 808;
     dxAmp = 0.3;
 
-    fx = Dictionary.new;
+    activeFx = Dictionary.new;
     instrumentFolders = Dictionary.new;
     instrumentNames = Dictionary.new;
     lastPreset = Array.new;
@@ -30,9 +30,9 @@ Dx : Px {
     ^super.new(newPattern);
   }
 
-  *delay { |value = 0.3|
-    fx.put(\delay, value);
-    this.preset(lastPreset[0], lastPreset[1], dxAmp);
+  *fx { |name, value|
+    activeFx.put(name, value);
+    this.prApplyFxToAll(name, value);
   }
 
   *fill { |instrument = \sd, repeat = 1|
@@ -111,25 +111,22 @@ Dx : Px {
     presetPatterns do: { |pattern, i|
       if (this.prHasInstrument(pattern[\instrument]) == true) {
         var id = this.prCreateId(pattern[\instrument]);
-        var newPattern = this.prAddFxToPattern(pattern);
 
-        this.new(newPattern.putAll([
+        this.new(pattern.putAll([
           \id, id,
           \drumMachine, drumMachine,
           \dx, true,
         ]));
       }
-    }
+    };
+
+    this.prReapplyFx;
   }
 
   *release { |fadeTime = 10|
     this.prFadeDrums(\out, fadeTime);
   }
 
-  *reverb { |value = 0.3|
-    fx.put(\reverb, value);
-    this.preset(lastPreset[0], lastPreset[1], dxAmp);
-  }
 
   *shuffle {
     var folders = this.prGetDrumMachinesFolders;
@@ -204,7 +201,9 @@ Dx : Px {
           last[pattern[\id]] = pattern;
         }
       };
-    }
+    };
+
+    this.prReapplyFx;
   }
 
   *vol { |amp|
@@ -239,22 +238,39 @@ Dx : Px {
     ^pattern;
   }
 
-  *prAddFxToPattern { |pattern|
-    var allFx = Array.new;
+  *prReapplyFx {
+    if (activeFx.size > 0) {
+      fork {
+        Server.default.sync;
 
-    if (fx.notNil and: { fx.size > 0 }) {
-      fx keysValuesDo: { |key, value|
-        if ([0, Nil].includes(value))
-        { fx.removeAt(key) }
-        { allFx = allFx.add([\fx, key, \mix, value]) };
+        Fx.prSuppressPrint = true;
+
+        activeFx.keysValuesDo { |fxName, value|
+          this.prApplyFxToAll(fxName, value);
+        };
+
+        Fx.prSuppressPrint = false;
       };
+    };
+  }
 
-      if (allFx.size > 0) {
-        pattern.put(\fx, allFx);
+  *prApplyFxToAll { |fxName, value|
+    var fxValue = if ([0, nil].includes(value)) { nil } { value };
+    var savedSuppressPrint = Fx.prSuppressPrint;
+    var isFirst = true;
+
+    last.keysValuesDo { |id, pattern|
+
+      if (pattern[\dx] == true) {
+        if (isFirst.not)
+        { Fx.prSuppressPrint = true };
+
+        Fx(id).perform(fxName, fxValue);
+        isFirst = false;
       };
     };
 
-    ^pattern;
+    Fx.prSuppressPrint = savedSuppressPrint;
   }
 
   *prClearInstrumentFolders {
@@ -385,12 +401,13 @@ Dx : Px {
       last.removeAt(id);
       ndefList.removeAt(id);
       Pdef(id).source = nil;
+      Fx.prClearProxy(id);
     };
 
     last.copy do: { |pattern, i|
-      if (pattern[\dx] == true) {
-        stopPattern.(pattern[\id]);
-      }
+
+      if (pattern[\dx] == true)
+      { stopPattern.(pattern[\id]) };
     };
   }
 }

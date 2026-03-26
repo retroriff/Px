@@ -67,8 +67,8 @@
     };
 
     this.prCreateKnob(secondCol, nil, Dx.vol, { |v| Dx.vol(v.value) });
-    this.prCreateKnob(secondCol, "Delay", Dx.fx[\delay], { |v| Dx.delay(v.value) });
-    this.prCreateKnob(secondCol, "Reverb", Dx.fx[\reverb], { |v| Dx.reverb(v.value) });
+    this.prCreateKnob(secondCol, "Delay", Dx.activeFx[\delay], { |v| Dx.fx(\delay, v.value) });
+    this.prCreateKnob(secondCol, "Reverb", Dx.activeFx[\reverb], { |v| Dx.fx(\reverb, v.value) });
 
     // 🔀 Random button
     Button(thirdCol, 80@145)

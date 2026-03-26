@@ -41,6 +41,10 @@
     this.prFx(\blp, [mix]);
   }
 
+  compressor { |mix, thresh, ratio, gain|
+    this.prFx(\compressor, [mix, thresh, ratio, gain]);
+  }
+
   crush { |mix, bits|
     this.prFx(\crush, [mix, bits]);
   }
@@ -59,6 +63,10 @@
 
   flanger { |mix|
     this.prFx(\flanger, [mix]);
+  }
+
+  freqShift { |mix, freq, phase|
+    this.prFx(\freqShift, [mix, freq, phase]);
   }
 
   gverb { |mix, roomsize, revtime|
@@ -87,6 +95,10 @@
 
   tremolo { |mix, rate|
     this.prFx(\tremolo, [mix, rate]);
+  }
+
+  vibrato { |mix, rate, depth|
+    this.prFx(\vibrato, [mix, rate, depth]);
   }
 
   vst { |mix, plugin|

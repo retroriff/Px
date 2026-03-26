@@ -59,6 +59,26 @@ code::
 Fx(\px).blp(0.6);
 ::
 
+method:: compressor
+Dynamic range compressor. Reduces the volume of loud parts above the threshold, then optionally boosts the output with makeup gain for a fatter, more present sound.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.5.
+
+argument:: thresh
+Amplitude threshold (0-1). Signals above this level get compressed. Lower values compress more of the signal. Default: 0.1.
+
+argument:: ratio
+Compression ratio. Higher values mean stronger compression. Default: 4.
+
+argument:: gain
+Makeup gain multiplier. Boosts the compressed signal to compensate for volume reduction. Default: 1.
+
+code::
+Fx(\px).compressor(0.5);
+Fx(\px).compressor(0.8, 0.05, 8, 2);  // Heavy compression with makeup gain
+::
+
 method:: crush
 Bit crusher effect that reduces bit depth for lo-fi distortion.
 
@@ -124,6 +144,23 @@ Wet/dry mix (0-1). Default: 0.4.
 
 code::
 Fx(\px).flanger(0.5);
+::
+
+method:: freqShift
+Frequency shifter effect. Shifts all frequencies by a fixed amount in Hz, creating inharmonic, metallic, or robotic textures.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.5.
+
+argument:: freq
+Shift amount in Hz. Positive values shift up, negative shift down. Default: 0.
+
+argument:: phase
+Phase of the shifting oscillator. Default: 0.
+
+code::
+Fx(\px).freqShift(0.5, 100);    // Subtle upward shift
+Fx(\px).freqShift(0.8, -200);   // Downward metallic shift
 ::
 
 method:: gverb
@@ -238,6 +275,23 @@ Rate multiplier (synced to tempo). Default: 1.
 
 code::
 Fx(\px).tremolo(0.5, 2);
+::
+
+method:: vibrato
+Pitch modulation effect that creates a warbling, expressive wobble by modulating delay time with a sine wave.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.5.
+
+argument:: rate
+Modulation rate in Hz. Default: 4.
+
+argument:: depth
+Modulation depth (0-1). Default: 0.2.
+
+code::
+Fx(\px).vibrato(0.5);
+Fx(\px).vibrato(0.6, 6, 0.4);  // Faster, deeper vibrato
 ::
 
 method:: wah

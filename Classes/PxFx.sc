@@ -10,7 +10,9 @@
 
       if (isFullDeclaration and: { fxState[id].notNil }) {
         Fx(id);
+        Fx.prSuppressPrint = true;
         fxState[id].do { |fxName| Fx.perform(fxName, nil) };
+        Fx.prSuppressPrint = false;
         fxState[id] = nil;
       };
 
@@ -27,9 +29,11 @@
       };
     };
 
+    Fx.prSuppressPrint = true;
     fxList.do { |entry|
       Fx.perform(entry[0], *entry[1]);
     };
+    Fx.prSuppressPrint = false;
 
     fxState[id] = currentFxNames;
     Fx.skipFlush = false;

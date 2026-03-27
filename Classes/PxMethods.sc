@@ -219,7 +219,7 @@
     tempo = tempo.clip(1, 300) / 60;
     TempoClock.default.tempo = tempo;
     Sx.tempo(tempo);
-    ~updateSingleLetterTempoVariable.(tempo);
+    thisProcess.interpreter.t = tempo;
 
     if (withNdef == true) {
       Ndef.all do: { |ndefs|

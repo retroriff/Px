@@ -49,6 +49,7 @@ Px {
     ServerBoot.add {
       this.listen;
       this.loadSynthDefs;
+      thisProcess.interpreter.t = TempoClock.default.tempo;
     };
   }
 

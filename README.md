@@ -26,23 +26,13 @@ Additional code examples can be found [here](/Examples/).
 
 ## 🛠️ Installation
 
-1. Install `Quarks.install("https://github.com/retroriff/sc-px");` and recompile.
-2. Install [Tidal Drum Machines](https://github.com/geikha/tidal-drum-machines)
-4. Load SynthDefs and audio files by running:
+Install `Quarks.install("https://github.com/retroriff/sc-px");` and recompile.
 
-```
-Px.loadSynthDefs;
-Px.loadSamples(<YOUR_SAMPLES_FOLDER_PATH>);
-```
+**Optional:**
 
-**VST Plugins:**
-
-1. Install the [VSTPlugin](https://github.com/Spacechild1/vstplugin) extension
-2. Set a presets folder by running:
-
-```
-Fx.setVstPresetsPath("../VST/presets/".resolveRelative);
-```
+- Load audio samples: `Px.loadSamples(<YOUR_SAMPLES_FOLDER_PATH>);`
+- Install [Tidal Drum Machines](https://github.com/geikha/tidal-drum-machines) to use drum machines and `Dx`
+- Install [VSTPlugin](https://github.com/Spacechild1/vstplugin) and set a presets path: `Fx.setVstPresetsPath("../VST/presets/".resolveRelative);`
 
 ## ⚡️ Px: A Pattern Shortcuts Generator
 
@@ -67,7 +57,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `r`      | number \| \rand \| [\wrand, item1, item2, weight] | Rate value. The term rate was discarded because it was an existing Integer method                                                                                                            |
 | `rest`   | beats: integer                                    | Rests muted for a specific amount of beats                                                                                                                                                   |
 | `seed`   | seed: integer \| symbol \| \rand                  | Generate a specific random seed or a `Pxrand` using `\rand`                                                                                                                                  |
-| `set`    | 1 (enable)                                        | Updates an existing pattern. Not needed for regular patterns (parameters can be set directly). Required for drum machines where the value must be the instrument.                             |
+| `set`    | 1 (enable)                                        | Updates an existing pattern. Not needed for regular patterns (parameters can be set directly). Required for drum machines where the value must be the instrument.                            |
 | `solo`   | 1 (enable)                                        | Mutes all patterns that don't contain a solo method                                                                                                                                          |
 | `stop`   | beats: integer                                    | Stops and removes the pattern after the specified number of beats                                                                                                                            |
 | `unsolo` | None                                              | Restore all patterns that have been muted by solo method                                                                                                                                     |
@@ -78,27 +68,27 @@ The superclass that generates the patterns from an array of events with a simpli
 
 These methods add effects directly to a pattern's proxy via the Fx class. They accept the same arguments as the corresponding `Fx` methods. Effects are automatically disabled when removed from a full pattern declaration.
 
-| Name      | Arguments                         | Description                    |
-| --------- | --------------------------------- | ------------------------------ |
-| `blp`     | mix?: range 0..1                  | Band-limited low-pass filter   |
-| `compressor` | mix?: range 0..1, thresh?, ratio?, gain? | Dynamic range compressor |
-| `crush`   | mix?: range 0..1, bits?: number, rate?: number | Bit crusher             |
-| `delay`   | mix?: range 0..1, delaytime?, delayfeedback? | Delay effect          |
-| `distort` | mix?: range 0..1, drive?: number  | Distortion                     |
-| `duck`    | mix?: range 0..1, thresh?: number | Sidechain compression          |
-| `flanger` | mix?: range 0..1                  | Flanger effect                 |
-| `freqShift` | mix?: range 0..1, freq?, phase? | Frequency shifter              |
-| `gverb`   | mix?: range 0..1, roomsize?, revtime? | Granular reverb            |
-| `hpf`     | mix?: range 0..1, freq?: number   | High pass filter               |
-| `lpf`     | mix?: range 0..1, freq?: number   | Low pass filter                |
-| `pan`     | pos?: range -1..1                 | Stereo panning                 |
-| `phaser`  | mix?: range 0..1, rate?, depth?   | Phaser effect                  |
-| `reverb`  | mix?: range 0..1, room?, size?    | Reverb effect                  |
-| `space`   | mix?: range 0..1, fb?: number     | Spatial reverb                 |
-| `tremolo` | mix?: range 0..1, rate?: number   | Tremolo effect                 |
-| `vibrato` | mix?: range 0..1, rate?, depth?   | Pitch modulation vibrato       |
-| `vst`     | mix?: range 0..1, plugin?: string | VST plugin effect              |
-| `wah`     | mix?: range 0..1, rate?, depth?   | Auto-wah effect                |
+| Name         | Arguments                                      | Description                  |
+| ------------ | ---------------------------------------------- | ---------------------------- |
+| `blp`        | mix?: range 0..1                               | Band-limited low-pass filter |
+| `compressor` | mix?: range 0..1, thresh?, ratio?, gain?       | Dynamic range compressor     |
+| `crush`      | mix?: range 0..1, bits?: number, rate?: number | Bit crusher                  |
+| `delay`      | mix?: range 0..1, delaytime?, delayfeedback?   | Delay effect                 |
+| `distort`    | mix?: range 0..1, drive?: number               | Distortion                   |
+| `duck`       | mix?: range 0..1, thresh?: number              | Sidechain compression        |
+| `flanger`    | mix?: range 0..1                               | Flanger effect               |
+| `freqShift`  | mix?: range 0..1, freq?, phase?                | Frequency shifter            |
+| `gverb`      | mix?: range 0..1, roomsize?, revtime?          | Granular reverb              |
+| `hpf`        | mix?: range 0..1, freq?: number                | High pass filter             |
+| `lpf`        | mix?: range 0..1, freq?: number                | Low pass filter              |
+| `pan`        | pos?: range -1..1                              | Stereo panning               |
+| `phaser`     | mix?: range 0..1, rate?, depth?                | Phaser effect                |
+| `reverb`     | mix?: range 0..1, room?, size?                 | Reverb effect                |
+| `space`      | mix?: range 0..1, fb?: number                  | Spatial reverb               |
+| `tremolo`    | mix?: range 0..1, rate?: number                | Tremolo effect               |
+| `vibrato`    | mix?: range 0..1, rate?, depth?                | Pitch modulation vibrato     |
+| `vst`        | mix?: range 0..1, plugin?: string              | VST plugin effect            |
+| `wah`        | mix?: range 0..1, rate?, depth?                | Auto-wah effect              |
 
 ### Instrument methods
 
@@ -135,15 +125,15 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 
 Array extension methods that create pattern objects:
 
-| Method                     | Description                                                                        |
-| -------------------------- | ---------------------------------------------------------------------------------- |
-| `[0, 1].pseg(\exp, 16)`            | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats (`inf`/`\inf`) |
-| `[1, 2, 3].pseq`                   | Creates a `Pseq` loop from the array                                               |
-| `[0, 1, 2].prand`                  | Creates a `Prand` (random selection with repeats). Optional: repeats (default `inf`) |
-| `[0, 1, 2].pxrand`                 | Creates a `Pxrand` (random, no immediate repeats). Optional: repeats (default `inf`) |
-| `[0, 1].pwhite`                    | Creates a `Pwhite` (random range). Array must have exactly 2 elements `[lo, hi]`    |
-| `[1, 2, 4].pwrand([10, 2, 3])`     | Creates a `Pwrand` (weighted random). Weights array is required and auto-normalized |
-| `[0, 1, 2, 3].shuffle(71)`         | Scrambles the array with a random seed for reproducibility                         |
+| Method                         | Description                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------------ |
+| `[0, 1].pseg(\exp, 16)`        | Creates a `Pseg` curve. Args: curve (`\lin`/`\exp`), beats, repeats (`inf`/`\inf`)   |
+| `[1, 2, 3].pseq`               | Creates a `Pseq` loop from the array                                                 |
+| `[0, 1, 2].prand`              | Creates a `Prand` (random selection with repeats). Optional: repeats (default `inf`) |
+| `[0, 1, 2].pxrand`             | Creates a `Pxrand` (random, no immediate repeats). Optional: repeats (default `inf`) |
+| `[0, 1].pwhite`                | Creates a `Pwhite` (random range). Array must have exactly 2 elements `[lo, hi]`     |
+| `[1, 2, 4].pwrand([10, 2, 3])` | Creates a `Pwrand` (weighted random). Weights array is required and auto-normalized  |
+| `[0, 1, 2, 3].shuffle(71)`     | Scrambles the array with a random seed for reproducibility                           |
 
 ## ✨ Fx: A Nodeproxy Effects Handler
 
@@ -195,12 +185,12 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 
 #### MIDI event methods
 
-| Name      | Arguments                                                                                                                   | Description                                                           |
-| --------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Name      | Arguments                 | Description                                                                                   |
+| --------- | ------------------------- | --------------------------------------------------------------------------------------------- |
 | `control` | number, number \| Pattern | Sends a MIDI CC message. Integer values are sent immediately; patterns create a separate Pdef |
-| `hold`    | None                                                                                                                        | The note off message will not be sent and will keep the notes pressed |
-| `holdOff` | None                                                                                                                        | Releases holded notes                                                 |
-| `panic`   | None                                                                                                                        | "Panic" message, kills all notes on the channel pattern               |
+| `hold`    | None                      | The note off message will not be sent and will keep the notes pressed                         |
+| `holdOff` | None                      | Releases holded notes                                                                         |
+| `panic`   | None                      | "Panic" message, kills all notes on the channel pattern                                       |
 
 ## 🛢️ Drum Machines
 

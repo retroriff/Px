@@ -45,6 +45,11 @@ Px {
     seeds = Dictionary.new;
     windowWidth = 68;
     windowHeight = 350.min(Window.screenBounds.height / 4);
+
+    ServerBoot.add {
+      this.listen;
+      this.loadSynthDefs;
+    };
   }
 
   *new { |newPattern|

@@ -146,8 +146,9 @@
     var id = this.asSymbol;
 
     if (this.prHasDrumMachine and: { setId != true }) {
+      var resolved = Dx.prResolveAlias(this);
       var pattern = Px.last.detect { |p|
-        (p[\drumMachine] == this) and: { p[\instrument].asSymbol == setId }
+        (p[\drumMachine] == resolved) and: { p[\instrument].asSymbol == setId }
       };
 
       if (pattern.notNil)
@@ -212,9 +213,9 @@
 
   prGenerateDrumMachineId { |ins|
     var drumMachineId = (ins.asString ++ this.asString).asSymbol;
-
+    var resolved = Dx.prResolveAlias(this);
     var findExistingPatternForIns = Px.last.detect({ |pattern|
-      pattern[\drumMachine] == this and: (pattern[\instrument] == ins);
+      pattern[\drumMachine] == resolved and: (pattern[\instrument] == ins);
     });
 
     if (findExistingPatternForIns.isNil)
@@ -223,12 +224,13 @@
   }
 
   prGenerateDrumMachineIntegerId { |drumMachineNumber, patternId|
+    var resolved = Dx.prResolveAlias(drumMachineNumber);
     var existingPattern = Px.last.detect({ |pattern|
-      pattern[\drumMachine] == drumMachineNumber and: (pattern[\id] == patternId)
+      pattern[\drumMachine] == resolved and: (pattern[\id] == patternId)
     });
 
     var existingIds = Px.last
-      .select({ |pattern| pattern[\drumMachine] == drumMachineNumber })
+      .select({ |pattern| pattern[\drumMachine] == resolved })
       .collect({ |pattern| pattern[\drumMachineIntegerId] })
       .reject(_.isNil);
 
@@ -251,12 +253,11 @@
   }
 
   prHasDrumMachine {
-    var drumMachines = [505, 606, 626, 707, 727, 808, 909];
     var isDxPreset = Px.last.any { |pattern|
       pattern[\drumMachine].notNil and: (pattern[\id] == this)
     };
 
-    ^drumMachines.includes(this) or: (isDxPreset == true);
+    ^Dx.prResolveAlias(this) != this or: (isDxPreset == true);
   }
 
   prFade { |direction, time|
@@ -311,7 +312,7 @@
     };
 
     if (drumMachinePattern.notNil) {
-      drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(drumMachinePattern[\drumMachine], newPattern[\id]);
+      drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(this, newPattern[\id]);
 
       newPattern.putAll([
         \drumMachine, drumMachinePattern[\drumMachine],
@@ -322,10 +323,11 @@
     };
 
     if (this.prHasDrumMachine) {
+      var resolvedMachine = Dx.prResolveAlias(this);
       drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(this, newPattern[\id]);
 
       newPattern.putAll([
-        \drumMachine, this,
+        \drumMachine, resolvedMachine,
         \drumMachineIntegerId, drumMachineIntegerId
       ]);
 

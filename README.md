@@ -204,7 +204,7 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 
 ## 🛢️ Drum Machines
 
-We can simplify the usage of drum machine using shortcodes. The available drum machines are 505, 606, 707, 808 and 909. Here's an example:
+We can simplify the usage of drum machine using shortcodes. Short aliases (505, 606, 626, 707, 727, 808, 909) resolve to their RolandTR equivalents. Many more machines are available via `Dx.gui`. Here's an example:
 
 ```js
 707 i: \bd dur: 1;

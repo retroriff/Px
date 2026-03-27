@@ -129,8 +129,7 @@
   }
 
   prHasDrumMachine {
-    var drumMachines = [505, 606, 626, 707, 727, 808, 909];
-    ^drumMachines.includes(this.asInteger);
+    ^Dx.prResolveAlias(this.asInteger) != this.asInteger;
   }
 
   prGetControls {
@@ -163,7 +162,7 @@
     var patterns = Px.last.copy;
 
     patterns.do({ |pattern|
-      if (pattern[\drumMachine] == this.asInteger)
+      if (pattern[\drumMachine] == Dx.prResolveAlias(this.asInteger))
       { Px.stop(pattern[\id]) };
     });
   }

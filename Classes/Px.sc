@@ -1,3 +1,18 @@
+/*
+TODO: This works
+(
+* 1 play: "fm:2" dur: 2 out: 20;2 play: "fm:5" dur: 2 off: 1 out: 20;
+3 play: "fm:8" dur: 2 off: 0.5 out: 20;
+)
+
+But this doesn't:
+(
+1 out: 20;
+2 out: 20;
+3 out: 20;
+)
+*/
+
 Px {
   classvar <>chorusPatterns;
   classvar <>colors;

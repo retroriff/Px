@@ -8,30 +8,29 @@ Dx extends link::Classes/Px:: to provide drum machine functionality with preset 
 
 subsection:: Available Drum Machines
 
-The following drum machines are available:
+The following drum machines are available (short aliases in parentheses):
 
 definitionlist::
-## 505
+## RolandTR505 (505)
 || Roland TR-505 emulation
 
-## 606
+## RolandTR606 (606)
 || Roland TR-606 emulation
 
-## 626
+## RolandTR626 (626)
 || Roland TR-626 emulation
 
-## 707
+## RolandTR707 (707)
 || Roland TR-707 emulation
 
-## 727
-|| Roland TR-727 emulation
-
-## 808
+## RolandTR808 (808)
 || Roland TR-808 emulation (default)
 
-## 909
+## RolandTR909 (909)
 || Roland TR-909 emulation
 ::
+
+Many more drum machines are available from the tidal-drum-machines quark. Use code::Dx.gui:: to see the full list.
 
 subsection:: Basic Usage
 
@@ -168,10 +167,11 @@ method:: use
 Switches to a different drum machine type. Existing patterns are migrated to the new machine.
 
 argument:: newDrumMachine
-Drum machine number (505, 606, 626, 707, 727, 808, or 909).
+Drum machine folder name or short alias (e.g., 909 or \RolandTR909).
 
 code::
-Dx use: 909;  // Switch from 808 to 909
+Dx use: 909;           // Switch using short alias
+Dx use: \RolandTR909;  // Switch using full name
 ::
 
 subsection:: Effects

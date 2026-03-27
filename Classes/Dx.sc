@@ -8,9 +8,19 @@ Dx : Px {
   classvar <>lastPreset;
   classvar <presetsDict;
   classvar <presetPatterns;
+  classvar aliases;
 
   *initClass {
-    drumMachine = 808;
+    aliases = Dictionary[
+      \505 -> \RolandTR505,
+      \606 -> \RolandTR606,
+      \626 -> \RolandTR626,
+      \707 -> \RolandTR707,
+      \727 -> \RolandTR727,
+      \808 -> \RolandTR808,
+      \909 -> \RolandTR909,
+    ];
+    drumMachine = \RolandTR808;
     dxAmp = 0.3;
 
     activeFx = Dictionary.new;
@@ -79,10 +89,12 @@ Dx : Px {
   }
 
   *instruments { |machine|
+    machine = this.prResolveAlias(machine ? drumMachine);
+
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
 
-    ^instrumentFolders[(machine ? drumMachine).asSymbol];
+    ^instrumentFolders[machine.asSymbol];
   }
 
   *loadPresets {
@@ -187,6 +199,8 @@ Dx : Px {
   *use { |newDrumMachine|
     if (newDrumMachine.isNil)
     { ^drumMachine };
+
+    newDrumMachine = this.prResolveAlias(newDrumMachine);
 
     if (drumMachine == newDrumMachine)
     { ^("🟢 Drum machine already selected") };
@@ -342,6 +356,10 @@ Dx : Px {
       var filePath = File.readAllString(file.fullPath);
       presetsDict.put(fileName, PresetsFromYAML(filePath.parseYAML))
     };
+  }
+
+  *prResolveAlias { |name|
+    ^(aliases[name.asSymbol] ? name);
   }
 
   *prGetInstrumentFolders {

@@ -37,7 +37,7 @@ TR08 : Dx {
   }
 
   *init { |latency, drumMachine|
-    if (drumMachine == 808)
+    if (drumMachine == \RolandTR808)
     { Px.initMidi(latency, deviceName: "TR-08") };
   }
 

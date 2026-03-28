@@ -365,7 +365,8 @@
   }
 
   prDebouncer {
-    if (PxDebouncer.current.isNil)
+    if (PxDebouncer.current.isNil
+      or: { PxDebouncer.current.original != this })
     { PxDebouncer.current = PxDebouncer(this, Px.last[this.asSymbol]) };
 
     ^PxDebouncer.current;

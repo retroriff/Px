@@ -40,6 +40,7 @@ Px {
 
   *new { |newPattern|
     var pattern, pdef, playList, isNewNdef;
+    var prevSize = last.size;
 
     this.prInitializeDictionaries(newPattern);
     this.prHandleSoloPattern(newPattern);
@@ -67,6 +68,10 @@ Px {
     lastFormatted[newPattern[\id]] = pattern;
 
     this.prRemoveFinitePatternFromLast(pattern);
+
+    if (last.size != prevSize) {
+      this.prAutoRefreshGui;
+    };
   }
 
   *prCreateAmp { |pattern|

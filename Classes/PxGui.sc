@@ -93,7 +93,8 @@
       };
 
       var slideAction = { |value|
-        pattern[\id].asInteger.set(1).amp(value);
+        var newAmp = this.prSetAmp(patternFormatted[\amp], value);
+        pattern[\id].asInteger.set(1).amp(newAmp);
         numberBox.value_(value);
       };
 
@@ -112,7 +113,7 @@
       // NumberBox
       numberBox = NumberBox()
       .action_({
-        pattern[\id].asInteger.set(1).amp(numberBox.value);
+        slideAction.(numberBox.value);
         slider.value_(numberBox.value);
       })
       .backColor_(backgroundColor)
@@ -125,7 +126,7 @@
       // Slider
       slider = Slider()
       .action_({
-        slideAction.(slider.value);
+        numberBox.value_(slider.value);
       })
       .backColor_(backgroundColor)
       .mouseUpAction_({
@@ -171,6 +172,28 @@
     { ^amp.list.reject { |x| x.isKindOf(Rest) }.maxItem }
 
     { ^amp };
+  }
+
+  *prSetAmp { |originalAmp, newMax|
+    var oldMax = this.prGetAmp(originalAmp);
+    var ratio;
+
+    if (oldMax == 0 or: { newMax == 0 }) { ^newMax };
+
+    ratio = newMax / oldMax;
+
+    if (originalAmp.isKindOf(Pwhite)) {
+      ^Pwhite(originalAmp.lo * ratio, originalAmp.hi * ratio)
+    };
+
+    if (originalAmp.isKindOf(Pattern)) {
+      originalAmp.list = originalAmp.list.collect { |x|
+        if (x.isKindOf(Rest)) { x } { x * ratio }
+      };
+      ^originalAmp
+    };
+
+    ^newMax;
   }
 
   *prTruncateText { |text|

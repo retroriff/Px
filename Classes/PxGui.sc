@@ -196,6 +196,16 @@
     ^newMax;
   }
 
+  *prAutoRefreshGui {
+    if (window.notNil and: { window.visible == true }) {
+      if (last.size == 0) {
+        AppClock.sched(0, { window.close; nil });
+      } {
+        AppClock.sched(0, { this.prUpdateGui; nil });
+      };
+    };
+  }
+
   *prTruncateText { |text|
     var maxChars = 9;
 

@@ -74,6 +74,7 @@
       last.removeAt(id);
       lastFormatted.removeAt(id);
       Fx.clear(id);
+      this.prAutoRefreshGui;
       ^Ndef(id).free(fadeTime)
     };
 
@@ -81,6 +82,7 @@
     colors = Dictionary.new;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
+    this.prAutoRefreshGui;
 
     fork {
       (fadeTime * 2).wait;
@@ -170,6 +172,7 @@
       };
 
       ndefList = Dictionary.new;
+      this.prAutoRefreshGui;
       ^Ndef(\px).free
     };
 
@@ -178,7 +181,7 @@
 
     idArray do: { |id|
       id = id.asSymbol;
-      
+
       if (last[id].notNil) {
         if (last[id][\hasGate] == false) {
           this.prChannelNoteOff(last[id][\chan]);
@@ -192,6 +195,8 @@
         this.prPrint("🔴 Pattern" + id + "does not exist");
       };
     };
+
+    this.prAutoRefreshGui;
 
     idArray.do { |id|
       if (last.size > 0) {

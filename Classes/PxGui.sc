@@ -142,9 +142,12 @@
       ])
       .action_({ |btn|
         if (btn.value == 0)
-        { Px.new(pattern) }
-        { Px.stop(pattern[\id]) };
+        { Px.resume(pattern[\id]) }
+        { Px.pause(pattern[\id]) };
       });
+
+      if (pausedPatterns.includes(pattern[\id].asSymbol))
+      { button.value_(1) };
 
       VLayout(staticText, slider, numberBox, button);
     };

@@ -11,6 +11,8 @@ Px {
   classvar <>mutedPatterns;
   classvar <>ndefList;
   classvar <>patternState;
+  classvar <>pausedPatterns;
+  classvar <>quant;
   classvar <samplesDict;
   classvar <samplesPath;
   classvar <seeds;
@@ -27,6 +29,8 @@ Px {
     midiHoldedNotes = Dictionary.new;
     mutedPatterns = Dictionary.new;
     ndefList = Dictionary.new;
+    pausedPatterns = IdentitySet.new;
+    quant = 4;
     seeds = Dictionary.new;
     windowWidth = 68;
     windowHeight = 350.min(Window.screenBounds.height / 4);
@@ -60,7 +64,7 @@ Px {
     playList = this.prCreatePlayList(pattern[\id], pdef);
 
     if (Ndef(\px).isPlaying.not)
-    { Ndef(\px).quant_(4).play };
+    { Ndef(\px).quant_(quant).play };
 
     if (isNewNdef)
     { Ndef(\px)[0] = { Mix.new(playList.values) } };
@@ -190,7 +194,7 @@ Px {
     if (stopBeats.notNil)
     { pbindef = Pfindur(stopBeats, pbindef) };
 
-    ^pbindef = Pdef(pattern[\id], pbindef).quant_(4);
+    ^pbindef = Pdef(pattern[\id], pbindef).quant_(quant);
   }
 
   *prHandleSoloPattern { |pattern|
@@ -223,7 +227,7 @@ Px {
 
   *prCreatePlayList { |id, pdef|
     if (ndefList[id].isNil)
-    { ndefList.put(id, Ndef(id, pdef).quant_(4)) };
+    { ndefList.put(id, Ndef(id, pdef).quant_(quant)) };
 
     ^ndefList.copy;
   }

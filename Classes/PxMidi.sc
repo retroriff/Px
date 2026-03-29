@@ -99,7 +99,7 @@ TODO: MIDIOut instances
 
           if (hasSameNotes.(holdedPattern) == false) {
             holdedPattern.putAll([\dur, Pseq([1], 1), \midicmd, \noteOff]);
-            Pbind(*holdedPattern.asPairs).play(quant: 4);
+            Pbind(*holdedPattern.asPairs).play(quant: this.quant);
           };
         };
       };

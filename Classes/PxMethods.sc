@@ -39,7 +39,12 @@
   }
 
   *pause { |id|
-    Ndef(id).pause;
+    id = id.asSymbol;
+    pausedPatterns.add(id);
+    fork {
+      TempoClock.default.timeToNextBeat(quant).wait;
+      Ndef(id).pause;
+    };
   }
 
   *play { |fadeTime|
@@ -73,6 +78,7 @@
       colors.removeAt(id);
       last.removeAt(id);
       lastFormatted.removeAt(id);
+      pausedPatterns.remove(id);
       Fx.clear(id);
       this.prAutoRefreshGui;
       ^Ndef(id).free(fadeTime)
@@ -82,6 +88,7 @@
     colors = Dictionary.new;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
+    pausedPatterns = IdentitySet.new;
     this.prAutoRefreshGui;
 
     fork {
@@ -103,6 +110,8 @@
   }
 
   *resume { |id|
+    id = id.asSymbol;
+    pausedPatterns.remove(id);
     Ndef(id).resume;
   }
 
@@ -172,6 +181,7 @@
       };
 
       ndefList = Dictionary.new;
+      pausedPatterns = IdentitySet.new;
       this.prAutoRefreshGui;
       ^Ndef(\px).free
     };
@@ -190,6 +200,7 @@
         last.removeAt(id);
         lastFormatted.removeAt(id);
         ndefList.removeAt(id);
+        pausedPatterns.remove(id);
         Pdef(id).source = nil;
       } {
         this.prPrint("🔴 Pattern" + id + "does not exist");

@@ -97,7 +97,9 @@ Fx(\px).crush(0.5, 4, 5000);
 ::
 
 method:: duck
-Sidechain compression — ducks the target when kick energy is detected from the master Px output.
+Sidechain compression — ducks the target when energy is detected from a source Ndef.
+
+By default, uses the master Px output as the sidechain source with a 150 Hz low-pass filter (kick detection). When a custom source is specified via code::src::, the full frequency spectrum is used instead, making it respond to any signal (noise, pads, etc.).
 
 argument:: mix
 Wet/dry mix (0-1). Default: 0.5.
@@ -105,10 +107,14 @@ Wet/dry mix (0-1). Default: 0.5.
 argument:: thresh
 Compander threshold. Lower values make the ducking more sensitive. Default: 0.005.
 
+argument:: src
+Optional Ndef name (Symbol) to use as the sidechain source. The source Ndef should be evaluated but not code::.play::'d — this way it produces signal on its internal bus without being audible on speakers. When omitted, ducks from the master Px output.
+
 code::
 Fx(\myNdef).duck(1);
-Fx(\myNdef).duck(1, 0.05);   // Less sensitive ducking
-Fx(\myNdef).duck(Nil);       // Disable
+Fx(\myNdef).duck(1, 0.05);          // Less sensitive ducking
+Fx(\myNdef).duck(0.5, 0.005, \n14); // Duck from Ndef(\n14)
+Fx(\myNdef).duck(Nil);              // Disable
 ::
 
 method:: delay

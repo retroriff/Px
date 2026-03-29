@@ -75,7 +75,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | `crush`      | mix?: range 0..1, bits?: number, rate?: number | Bit crusher                  |
 | `delay`      | mix?: range 0..1, delaytime?, delayfeedback?   | Delay effect                 |
 | `distort`    | mix?: range 0..1, drive?: number               | Distortion                   |
-| `duck`       | mix?: range 0..1, thresh?: number              | Sidechain compression        |
+| `duck`       | mix?: range 0..1, thresh?: number, src?: Symbol | Sidechain compression        |
 | `flanger`    | mix?: range 0..1                               | Flanger effect               |
 | `freqShift`  | mix?: range 0..1, freq?, phase?                | Frequency shifter            |
 | `gverb`      | mix?: range 0..1, roomsize?, revtime?          | Granular reverb              |
@@ -151,7 +151,7 @@ It offers the same [class methods as Px](#px-class-methods), with the following 
 
 - `activeEffects`: Checks the active proxy filters
 - `clear`: Clears all effects
-- `duck` (mix, thresh): Sidechain compression — ducks the target when kick energy is detected from the master output
+- `duck` (mix, thresh, bus): Sidechain compression — ducks from the master output or a specific Ndef
 - `effectNames`: Returns a sorted array of all available effect names
 - `loadEffects`: Allows to reload the effect files.
 - `vstReadProgram` (preset: string): Loads a VST preset from the default presets folder

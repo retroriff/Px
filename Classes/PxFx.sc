@@ -61,8 +61,8 @@
     this.prFx(\distort, [mix, drive]);
   }
 
-  duck { |mix, thresh|
-    this.prFx(\duck, [mix, thresh]);
+  duck { |mix, thresh, src|
+    this.prFx(\duck, [mix, thresh, src]);
   }
 
   flanger { |mix|

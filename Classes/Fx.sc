@@ -81,14 +81,26 @@ Fx {
     this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
   }
 
-  *duck { |mix = 0.5, thresh = 0.005|
+  *duck { |mix = 0.5, thresh = 0.005, src|
+    var busIndex, lpf = 150;
+    var postArgs = "thresh:" + thresh;
+
     if (mix.isNil or: { mix == Nil })
     { ^this.prAddEffect(\duck, nil) };
 
-    if (Ndef(\px).isPlaying.not)
-    { ^this.prPrint("🔴 No patterns playing") };
+    if (src.notNil) {
+      busIndex = Ndef(src).bus.index;
+      lpf = 20000;
+      postArgs = postArgs + "src:" + src;
+    } {
 
-    this.prAddEffect(\duck, mix, [Ndef(\px).bus.index, thresh]);
+      if (Ndef(\px).isPlaying.not)
+      { ^this.prPrint("🔴 No patterns playing") };
+
+      busIndex = Ndef(\px).bus.index;
+    };
+
+    this.prAddEffect(\duck, mix, [busIndex, thresh, lpf], postArgs);
   }
 
   *distort { |mix = 0.5, drive = 0.5|

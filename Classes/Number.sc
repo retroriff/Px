@@ -270,6 +270,15 @@
     this.prDebouncer.enqueue([\fade, fade]);
   }
 
+  prPreventFadeInWhenPatternExists { |pattern|
+    var fadeDirection = if (pattern[\fade].isArray)
+    { pattern[\fade][0] }
+    { pattern[\fade] };
+
+    if (fadeDirection == \in and: { Px.last[pattern[\id]].notNil })
+    { pattern.removeAt(\fade) };
+  }
+
   prPlay { |i, play, loop|
     var instrumentWithoutSufix, oldPending;
 
@@ -303,6 +312,8 @@
 
   prPlayClass { |newPattern|
     var drumMachinePattern, drumMachineIntegerId;
+
+    this.prPreventFadeInWhenPatternExists(newPattern);
 
     if (newPattern[\drumMachine].notNil)
     { ^Dx(newPattern) };

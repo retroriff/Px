@@ -23,7 +23,7 @@ Lx : Px {
     ^super.initClass;
   }
 
-  *loadSamples { |path|
+  *loadSamples { |path, verbose = true|
     var root = PathName(path.standardizePath);
     var folders;
 
@@ -55,7 +55,8 @@ Lx : Px {
     };
 
     channelCount = bufs.size;
-    this.prPrint("🔄 Lx with" + channelCount + "channels");
+    if (verbose)
+    { this.prPrint("🔄 Lx with" + channelCount + "channels") };
   }
 
   *amp { |channel, value = 0.3|

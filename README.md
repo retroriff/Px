@@ -17,7 +17,7 @@ Additional code examples can be found [here](/Examples/).
 1. ⚡️ [Px: A Pattern Shortcuts Generator](#️-px-a-pattern-shortcuts-generator)
 2. ✨ [Fx: A Nodeproxy Effects Handler](#-fx-a-nodeproxy-effects-handler)
 3. 🛢️ [Dx: Drum Machines](#️-drum-machines)
-4. 🔁 [Lx: Multi-Track Sample Looper](#-lx-multi-track-sample-looper)
+4. 🔄 [Lx: Multi-Track Sample Looper](#-lx-multi-track-sample-looper)
 5. 🌊 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
 6. 🎹 [Nx: Musical Chord Data](#-nx-musical-chord-data)
 7. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
@@ -69,27 +69,27 @@ The superclass that generates the patterns from an array of events with a simpli
 
 These methods add effects directly to a pattern's proxy via the Fx class. They accept the same arguments as the corresponding `Fx` methods. Effects are automatically disabled when removed from a full pattern declaration.
 
-| Name         | Arguments                                      | Description                  |
-| ------------ | ---------------------------------------------- | ---------------------------- |
-| `blp`        | mix?: range 0..1                               | Band-limited low-pass filter |
-| `compressor` | mix?: range 0..1, thresh?, ratio?, gain?       | Dynamic range compressor     |
-| `crush`      | mix?: range 0..1, bits?: number, rate?: number | Bit crusher                  |
-| `delay`      | mix?: range 0..1, delaytime?, delayfeedback?   | Delay effect                 |
-| `distort`    | mix?: range 0..1, drive?: number               | Distortion                   |
+| Name         | Arguments                                       | Description                  |
+| ------------ | ----------------------------------------------- | ---------------------------- |
+| `blp`        | mix?: range 0..1                                | Band-limited low-pass filter |
+| `compressor` | mix?: range 0..1, thresh?, ratio?, gain?        | Dynamic range compressor     |
+| `crush`      | mix?: range 0..1, bits?: number, rate?: number  | Bit crusher                  |
+| `delay`      | mix?: range 0..1, delaytime?, delayfeedback?    | Delay effect                 |
+| `distort`    | mix?: range 0..1, drive?: number                | Distortion                   |
 | `duck`       | mix?: range 0..1, thresh?: number, src?: Symbol | Sidechain compression        |
-| `flanger`    | mix?: range 0..1                               | Flanger effect               |
-| `freqShift`  | mix?: range 0..1, freq?, phase?                | Frequency shifter            |
-| `gverb`      | mix?: range 0..1, roomsize?, revtime?          | Granular reverb              |
-| `hpf`        | mix?: range 0..1, freq?: number                | High pass filter             |
-| `lpf`        | mix?: range 0..1, freq?: number                | Low pass filter              |
-| `pan`        | pos?: range -1..1                              | Stereo panning               |
-| `phaser`     | mix?: range 0..1, rate?, depth?                | Phaser effect                |
-| `reverb`     | mix?: range 0..1, room?, size?                 | Reverb effect                |
-| `space`      | mix?: range 0..1, fb?: number                  | Spatial reverb               |
-| `tremolo`    | mix?: range 0..1, rate?: number                | Tremolo effect               |
-| `vibrato`    | mix?: range 0..1, rate?, depth?                | Pitch modulation vibrato     |
-| `vst`        | mix?: range 0..1, plugin?: string              | VST plugin effect            |
-| `wah`        | mix?: range 0..1, rate?, depth?                | Auto-wah effect              |
+| `flanger`    | mix?: range 0..1                                | Flanger effect               |
+| `freqShift`  | mix?: range 0..1, freq?, phase?                 | Frequency shifter            |
+| `gverb`      | mix?: range 0..1, roomsize?, revtime?           | Granular reverb              |
+| `hpf`        | mix?: range 0..1, freq?: number                 | High pass filter             |
+| `lpf`        | mix?: range 0..1, freq?: number                 | Low pass filter              |
+| `pan`        | pos?: range -1..1                               | Stereo panning               |
+| `phaser`     | mix?: range 0..1, rate?, depth?                 | Phaser effect                |
+| `reverb`     | mix?: range 0..1, room?, size?                  | Reverb effect                |
+| `space`      | mix?: range 0..1, fb?: number                   | Spatial reverb               |
+| `tremolo`    | mix?: range 0..1, rate?: number                 | Tremolo effect               |
+| `vibrato`    | mix?: range 0..1, rate?, depth?                 | Pitch modulation vibrato     |
+| `vst`        | mix?: range 0..1, plugin?: string               | VST plugin effect            |
+| `wah`        | mix?: range 0..1, rate?, depth?                 | Auto-wah effect              |
 
 ### Instrument methods
 
@@ -227,37 +227,37 @@ Dx.preset(\electro, 1);
 | `stop`        | None                                              | Same as `\808 i: \all`                 |
 | `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns    |
 
-## 🔁 Lx: Multi-Track Sample Looper
+## 🔄 Lx: Multi-Track Sample Looper
 
 Lx extends Px to provide multi-track sample looping. Each subfolder in a given path becomes a loop channel, playing tempo-synced audio through the Px pattern system.
 
 ```js
 // Load samples — each subfolder becomes a channel
-Lx.loadSamples("~/Music/loops/");
+Lx.loadSamples("~/Music/loops/")
 
 // Play all channels
-Lx.play;
+Lx.play
 
 // Stop all
-Lx.stop;
+Lx.stop
 ```
 
 ### Lx class methods
 
-| Name          | Arguments                          | Description                              |
-| ------------- | ---------------------------------- | ---------------------------------------- |
-| `amp`         | channel: integer, value?: number   | Sets amplitude for a channel             |
-| `buf`         | channel: integer, index: integer   | Switches sample in a channel             |
-| `dur`         | channel: integer, value?: number   | Sets duration (beats) for a channel      |
-| `gui`         | None                               | Opens multi-channel control GUI          |
-| `loadSamples` | path: string                       | Loads subfolders as loop channels        |
-| `next`        | channel: integer                   | Next sample in channel (wraps)           |
+| Name          | Arguments                            | Description                             |
+| ------------- | ------------------------------------ | --------------------------------------- |
+| `amp`         | channel: integer, value?: number     | Sets amplitude for a channel            |
+| `buf`         | channel: integer, index: integer     | Switches sample in a channel            |
+| `dur`         | channel: integer, value?: number     | Sets duration (beats) for a channel     |
+| `gui`         | None                                 | Opens multi-channel control GUI         |
+| `loadSamples` | path: string                         | Loads subfolders as loop channels       |
+| `next`        | channel: integer                     | Next sample in channel (wraps)          |
 | `play`        | channel?: integer, fadeTime?: number | Plays one or all channels               |
-| `prev`        | channel: integer                   | Previous sample in channel (wraps)       |
-| `rate`        | channel: integer, value?: number   | Sets playback rate for a channel         |
-| `start`       | channel: integer, value?: number   | Sets start position (0-1) for a channel  |
-| `stop`        | channel?: integer                  | Stops one or all Lx patterns             |
-| `vol`         | value: number                      | Sets amplitude for all playing channels  |
+| `prev`        | channel: integer                     | Previous sample in channel (wraps)      |
+| `rate`        | channel: integer, value?: number     | Sets playback rate for a channel        |
+| `start`       | channel: integer, value?: number     | Sets start position (0-1) for a channel |
+| `stop`        | channel?: integer                    | Stops one or all Lx patterns            |
+| `vol`         | value: number                        | Sets amplitude for all playing channels |
 
 ## 🌊 Sx: A Sequenced Synth
 

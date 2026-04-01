@@ -4,12 +4,16 @@ Lx : Px {
   classvar <channelNames;
   classvar <folderPath;
   classvar <tracks;
+  classvar <mutedChannels;
+  classvar <soloedChannels;
   classvar <window;
 
   *initClass {
     bufs = Dictionary.new;
     channelCount = 0;
     channelNames = Array.new;
+    mutedChannels = IdentitySet.new;
+    soloedChannels = IdentitySet.new;
     tracks = Array.new;
 
     CmdPeriod.add {
@@ -51,7 +55,7 @@ Lx : Px {
     };
 
     channelCount = bufs.size;
-    this.prPrint("🔁 Lx: loaded" + channelCount + "channels from" + path);
+    this.prPrint("🔄 Lx with" + channelCount + "channels");
   }
 
   *amp { |channel, value = 0.3|
@@ -150,6 +154,24 @@ Lx : Px {
 
     last[this.prCreateId(channel)][\start] = value;
     this.prCreatePattern(channel);
+  }
+
+  *shuffle {
+    channelCount.do { |i|
+      var id = this.prCreateId(i);
+
+      tracks[i] = bufs[i].size.rand;
+
+      if (last[id].notNil) {
+        last[id][\rate] = rrand(-1.0, 2.0);
+        last[id][\start] = 1.0.rand;
+        last[id][\dur] = rrand(0.25, 16.0);
+      };
+
+      this.prCreatePattern(i);
+    };
+
+    this.prRefreshGui;
   }
 
   *stop { |channel|

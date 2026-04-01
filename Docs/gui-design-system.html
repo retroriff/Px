@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GUI Design System</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #161616; color: #f2f4f8; font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', monospace; padding: 48px; }
+  h1 { font-size: 32px; font-weight: 600; margin-bottom: 8px; }
+  .subtitle { color: #6e7681; margin-bottom: 48px; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-bottom: 64px; }
+  .swatch { border-radius: 12px; overflow: hidden; background: #1e1e1e; }
+  .swatch-color { height: 120px; display: flex; align-items: flex-end; padding: 16px; }
+  .swatch-info { padding: 16px; }
+  .swatch-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .swatch-hex { font-size: 13px; color: #6e7681; font-family: 'SF Mono', monospace; }
+  .swatch-usage { font-size: 12px; color: #6e7681; margin-top: 8px; }
+  .contrast-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .section { margin-bottom: 64px; }
+  .section h2 { font-size: 20px; font-weight: 600; margin-bottom: 24px; border-bottom: 1px solid #2a2a2a; padding-bottom: 12px; }
+  .type-row { display: flex; align-items: baseline; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
+  .type-sample { font-size: 24px; font-weight: 500; }
+  .type-label { font-size: 12px; color: #6e7681; min-width: 120px; }
+  .code-block { background: #1e1e1e; border-radius: 8px; padding: 24px; font-family: 'SF Mono', monospace; font-size: 14px; line-height: 1.8; overflow-x: auto; }
+  .combo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .combo { border-radius: 8px; padding: 20px; font-size: 14px; font-weight: 500; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>GUI Design System</h1>
+<p class="subtitle">Carbonfox color palette reference for SuperCollider GUI elements &mdash; inspired by IBM Carbon Design System</p>
+
+<div class="grid">
+  <div class="swatch">
+    <div class="swatch-color" style="background:#161616">
+      <span class="contrast-badge" style="background:#f2f4f8;color:#161616">BG</span>
+    </div>
+    <div class="swatch-info">
+      <div class="swatch-name">Background</div>
+      <div class="swatch-hex">#161616</div>
+      <div class="swatch-usage">Base background</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#f2f4f8">
+      <span class="contrast-badge" style="background:#161616;color:#f2f4f8">FG</span>
+    </div>
+    <div class="swatch-info">
+      <div class="swatch-name">Foreground</div>
+      <div class="swatch-hex">#f2f4f8</div>
+      <div class="swatch-usage">Primary text</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#78a9ff"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Blue</div>
+      <div class="swatch-hex">#78a9ff</div>
+      <div class="swatch-usage">Keywords, functions</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#be95ff"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Purple</div>
+      <div class="swatch-hex">#be95ff</div>
+      <div class="swatch-usage">Constants, special keywords</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#08bdba"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Teal</div>
+      <div class="swatch-hex">#08bdba</div>
+      <div class="swatch-usage">Strings, types</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#ff7eb6"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Pink</div>
+      <div class="swatch-hex">#ff7eb6</div>
+      <div class="swatch-usage">Operators, tags</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#25be6a"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Green</div>
+      <div class="swatch-hex">#25be6a</div>
+      <div class="swatch-usage">Strings, success indicators</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#3ddbd9"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Cyan</div>
+      <div class="swatch-hex">#3ddbd9</div>
+      <div class="swatch-usage">Numbers, parameters</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#ee5396"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Red</div>
+      <div class="swatch-hex">#ee5396</div>
+      <div class="swatch-usage">Errors, deletions</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Typography on Background</h2>
+  <div class="type-row">
+    <span class="type-label">Foreground</span>
+    <span class="type-sample" style="color:#f2f4f8">SinOsc brings warm pads, Pbind sequences every note with joyful rhythm</span>
+  </div>
+  <div class="type-row">
+    <span class="type-label">Blue</span>
+    <span class="type-sample" style="color:#78a9ff">SinOsc brings warm pads, Pbind sequences every note with joyful rhythm</span>
+  </div>
+  <div class="type-row">
+    <span class="type-label">Purple</span>
+    <span class="type-sample" style="color:#be95ff">SinOsc brings warm pads, Pbind sequences every note with joyful rhythm</span>
+  </div>
+  <div class="type-row">
+    <span class="type-label">Teal</span>
+    <span class="type-sample" style="color:#08bdba">SinOsc brings warm pads, Pbind sequences every note with joyful rhythm</span>
+  </div>
+  <div class="type-row">
+    <span class="type-label">Pink</span>
+    <span class="type-sample" style="color:#ff7eb6">SinOsc brings warm pads, Pbind sequences every note with joyful rhythm</span>
+  </div>
+  <div class="type-row">
+    <span class="type-label">Green</span>
+    <span class="type-sample" style="color:#25be6a">SinOsc brings warm pads, Pbind sequences every note with joyful rhythm</span>
+  </div>
+  <div class="type-row">
+    <span class="type-label">Cyan</span>
+    <span class="type-sample" style="color:#3ddbd9">SinOsc brings warm pads, Pbind sequences every note with joyful rhythm</span>
+  </div>
+  <div class="type-row">
+    <span class="type-label">Red</span>
+    <span class="type-sample" style="color:#ee5396">SinOsc brings warm pads, Pbind sequences every note with joyful rhythm</span>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Code Preview</h2>
+  <div class="code-block">
+    <span style="color:#78a9ff">SynthDef</span><span style="color:#f2f4f8">(</span><span style="color:#08bdba">\pad</span><span style="color:#f2f4f8">, {</span> <span style="color:#ff7eb6">|</span><span style="color:#3ddbd9">freq</span> <span style="color:#ff7eb6">=</span> <span style="color:#3ddbd9">440</span><span style="color:#f2f4f8">,</span> <span style="color:#3ddbd9">amp</span> <span style="color:#ff7eb6">=</span> <span style="color:#3ddbd9">0.3</span><span style="color:#f2f4f8">,</span> <span style="color:#3ddbd9">gate</span> <span style="color:#ff7eb6">=</span> <span style="color:#3ddbd9">1</span><span style="color:#ff7eb6">|</span><br>
+    <span style="color:#f2f4f8">&nbsp;&nbsp;</span><span style="color:#78a9ff">var</span> <span style="color:#f2f4f8">sig, env;</span><br>
+    <span style="color:#f2f4f8">&nbsp;&nbsp;env </span><span style="color:#ff7eb6">=</span> <span style="color:#78a9ff">EnvGen</span><span style="color:#f2f4f8">.kr(</span><span style="color:#78a9ff">Env</span><span style="color:#f2f4f8">.adsr(</span><span style="color:#3ddbd9">0.1</span><span style="color:#f2f4f8">,</span> <span style="color:#3ddbd9">0.3</span><span style="color:#f2f4f8">,</span> <span style="color:#3ddbd9">0.7</span><span style="color:#f2f4f8">,</span> <span style="color:#3ddbd9">1</span><span style="color:#f2f4f8">), gate, </span><span style="color:#3ddbd9">doneAction: 2</span><span style="color:#f2f4f8">);</span><br>
+    <span style="color:#f2f4f8">&nbsp;&nbsp;sig </span><span style="color:#ff7eb6">=</span> <span style="color:#78a9ff">LFSaw</span><span style="color:#f2f4f8">.ar(freq </span><span style="color:#ff7eb6">*</span> <span style="color:#f2f4f8">[</span><span style="color:#3ddbd9">1</span><span style="color:#f2f4f8">,</span> <span style="color:#3ddbd9">1.01</span><span style="color:#f2f4f8">]);</span><br>
+    <span style="color:#f2f4f8">&nbsp;&nbsp;sig </span><span style="color:#ff7eb6">=</span> <span style="color:#78a9ff">LPF</span><span style="color:#f2f4f8">.ar(sig,</span> <span style="color:#3ddbd9">2000</span><span style="color:#f2f4f8">);</span><br>
+    <span style="color:#f2f4f8">&nbsp;&nbsp;</span><span style="color:#78a9ff">Out</span><span style="color:#f2f4f8">.ar(</span><span style="color:#3ddbd9">0</span><span style="color:#f2f4f8">, sig </span><span style="color:#ff7eb6">*</span><span style="color:#f2f4f8"> env </span><span style="color:#ff7eb6">*</span><span style="color:#f2f4f8"> amp);</span><br>
+    <span style="color:#f2f4f8">}).add;</span>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Color Combinations</h2>
+  <div class="combo-grid">
+    <div class="combo" style="background:#78a9ff;color:#161616">Blue on Dark</div>
+    <div class="combo" style="background:#be95ff;color:#161616">Purple on Dark</div>
+    <div class="combo" style="background:#08bdba;color:#161616">Teal on Dark</div>
+    <div class="combo" style="background:#ff7eb6;color:#161616">Pink on Dark</div>
+    <div class="combo" style="background:#25be6a;color:#161616">Green on Dark</div>
+    <div class="combo" style="background:#3ddbd9;color:#161616">Cyan on Dark</div>
+    <div class="combo" style="background:#ee5396;color:#161616">Red on Dark</div>
+    <div class="combo" style="background:#1e1e1e;color:#f2f4f8;border:1px solid #2a2a2a">Foreground on Surface</div>
+  </div>
+</div>
+
+</body>
+</html>

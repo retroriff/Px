@@ -5,7 +5,7 @@
     var margin = 10, gap = 5;
     var width = (colWidth * channelCount) + (gap * (channelCount - 1)) + (margin * 2);
     var colHeight = 450;
-    var height = colHeight + 55;
+    var height = colHeight + 75;
     var bgColor = Color.new255(26, 29, 34);
     var linkColor = Color.new255(31, 41, 55);
 
@@ -16,7 +16,7 @@
     { window.close };
 
     window = Window(
-      name: "🔁 Lx Loops",
+      name: "🔄 Repeat Or Die",
       bounds: Rect(
         left: Window.screenBounds.width - width,
         top: Window.screenBounds.height - height,
@@ -39,35 +39,52 @@
       col = CompositeView(mainView, colWidth@colHeight);
       col.decorator = FlowLayout(col.bounds, 5@5, 2@2);
 
-      StaticText(col, (colWidth - 10)@20)
-      .align_(\center)
-      .string_(channelNames[i])
-      .stringColor_(Color.white)
-      .font_(Font.default.boldVariant);
+      if (colors[id].isNil)
+      { colors[id] = Color.rand };
 
-      sampleRow = CompositeView(col, (colWidth - 10)@25);
-      sampleRow.decorator = FlowLayout(sampleRow.bounds, 0@0, 2@0);
+      UserView(col, (colWidth - 10)@20)
+      .drawFunc_({
+        var bounds = Rect(0, 0, colWidth - 10, 20);
 
-      Button(sampleRow, 20@20)
-      .states_([["<", Color.white, linkColor]])
-      .action_({ Lx.prev(i) });
+        Pen.fillColor = colors[id];
+        Pen.addRoundedRect(bounds, 4, 4);
+        Pen.fill;
+        Pen.color = Color.white;
+        Pen.font = Font.default.boldVariant;
+        Pen.stringCenteredIn(channelNames[i], bounds);
+      });
 
-      StaticText(sampleRow, 40@20)
-      .align_(\center)
-      .string_(tracks[i].asString)
-      .stringColor_(Color.white)
-      .background_(linkColor);
+      CompositeView(col, (colWidth - 10)@3);
 
-      Button(sampleRow, 20@20)
-      .states_([[">", Color.white, linkColor]])
-      .action_({ Lx.next(i) });
+      {
+        var contentWidth = colWidth - 10;
+        var btnWidth = 20;
+        var textWidth = contentWidth - (btnWidth * 2) - 4;
+
+        sampleRow = CompositeView(col, contentWidth@25);
+        sampleRow.decorator = FlowLayout(sampleRow.bounds, 0@0, 2@0);
+
+        Button(sampleRow, btnWidth@20)
+        .states_([["<", Color.white, linkColor]])
+        .action_({ Lx.prev(i) });
+
+        StaticText(sampleRow, textWidth@20)
+        .align_(\center)
+        .string_(tracks[i].asString ++ "/" ++ bufs[i].size)
+        .stringColor_(Color.white)
+        .background_(linkColor);
+
+        Button(sampleRow, btnWidth@20)
+        .states_([[">", Color.white, linkColor]])
+        .action_({ Lx.next(i) });
+      }.value;
 
       this.prCreateGuiKnob(col, "Amp",
         existing !? { existing[\amp] } ?? 0.3,
         { |v| Lx.amp(i, v.value) });
 
       this.prCreateGuiKnob(col, "Rate",
-        existing !? { (existing[\rate] + 1) / 3 } ?? (2/3),
+        (existing !? { existing[\rate] } ?? 1 + 1) / 3,
         { |v| Lx.rate(i, (v.value * 3) - 1) });
 
       this.prCreateGuiKnob(col, "Start",
@@ -75,33 +92,102 @@
         { |v| Lx.start(i, v.value) });
 
       this.prCreateGuiKnob(col, "Dur",
-        existing !? { existing[\dur] } ?? 4 / 16,
+        (existing !? { existing[\dur] } ?? 4) / 16,
         { |v| Lx.dur(i, (v.value * 16).max(0.25)) });
 
-      Button(col, (colWidth - 10)@25)
-      .states_([
-        ["Mute", Color.white, linkColor],
-        ["Unmute", Color.white, Color.red(0.7)],
-      ])
-      .action_({ |butt|
-        var id = ("lx" ++ i).asSymbol;
+      {
+        var buttonRow, halfWidth;
 
-        if (butt.value == 1)
-        { Px.pause(id) }
-        { Px.resume(id) };
-      });
+        buttonRow = CompositeView(col, (colWidth - 10)@30);
+        buttonRow.decorator = FlowLayout(buttonRow.bounds, 0@5, 2@0);
+        halfWidth = ((colWidth - 10 - 2) / 2).floor;
+
+        Button(buttonRow, halfWidth@25)
+        .states_([
+          ["🟢", Color.white, Color.new255(32, 42, 55)],
+          ["⬜️", Color.grey, Color.new255(32, 42, 55)],
+        ])
+        .action_({ |btn|
+          var id = ("lx" ++ i).asSymbol;
+
+          if (btn.value == 1)
+          { mutedChannels.add(i); Px.pause(id) }
+          { mutedChannels.remove(i); Px.resume(id) };
+        })
+        .value_(
+          if (mutedChannels.includes(i)) { 1 } { 0 }
+        );
+
+        Button(buttonRow, halfWidth@25)
+        .states_([
+          ["S", Color.white, Color.new255(32, 42, 55)],
+          ["S", Color.new255(32, 42, 55), Color.white],
+        ])
+        .action_({ |btn|
+          if (btn.value == 1)
+          { soloedChannels.add(i) }
+          { soloedChannels.remove(i) };
+
+          channelCount.do { |j|
+            var otherId = ("lx" ++ j).asSymbol;
+
+            if (soloedChannels.isEmpty) {
+              if (mutedChannels.includes(j).not)
+              { Px.resume(otherId) };
+            } {
+              if (soloedChannels.includes(j) and: { mutedChannels.includes(j).not })
+              { Px.resume(otherId) }
+              { Px.pause(otherId) };
+            };
+          };
+        })
+        .value_(
+          if (soloedChannels.includes(i)) { 1 } { 0 }
+        );
+      }.value;
     };
 
-    bottomRow = CompositeView(mainView, (width - 30)@35);
-    bottomRow.decorator = FlowLayout(bottomRow.bounds, 0@5, 10@0);
+    {
+      var rowWidth = width - (margin * 2);
+      var buttonGap = 5;
+      var buttonWidth = ((rowWidth - (buttonGap * 2)) / 3).floor;
 
-    Button(bottomRow, 100@30)
-    .states_([["Play All", Color.white, Color.new255(0, 193, 137)]])
-    .action_({ Lx.play });
+      bottomRow = CompositeView(mainView, rowWidth@50);
+      bottomRow.decorator = FlowLayout(bottomRow.bounds, 0@0, buttonGap@0);
 
-    Button(bottomRow, 100@30)
-    .states_([["Stop All", Color.white, Color.red(0.8)]])
-    .action_({ Lx.stop });
+      {
+        var playBtn;
+
+        playBtn = Button(bottomRow, buttonWidth@50)
+        .states_([
+          ["Play", Color.white, linkColor],
+          ["Play", bgColor, Color.new255(37, 190, 106)],
+        ])
+        .action_({ |btn|
+          if (btn.value == 1)
+          { Lx.play };
+        });
+
+        Button(bottomRow, buttonWidth@50)
+        .states_([
+          ["Stop", Color.white, linkColor],
+          ["Stop", Color.white, Color.new255(238, 83, 150)],
+        ])
+        .mouseDownAction_({ |btn| btn.value_(1) })
+        .action_({
+          Lx.stop;
+          playBtn.value_(0);
+        });
+      }.value;
+
+      Button(bottomRow, buttonWidth@50)
+      .states_([
+        ["Shuffle", Color.white, linkColor],
+        ["Shuffle", bgColor, Color.new255(61, 219, 217)],
+      ])
+      .mouseDownAction_({ |btn| btn.value_(1) })
+      .action_({ Lx.shuffle });
+    }.value;
 
     window.front;
   }

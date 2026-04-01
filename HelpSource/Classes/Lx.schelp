@@ -1,0 +1,229 @@
+class:: Lx
+summary:: Multi-Track Sample Looper
+categories:: Live Coding, Loops
+related:: Classes/Px, Classes/Fx, Classes/Dx
+
+description::
+Lx extends link::Classes/Px:: to provide multi-track sample looping. Each subfolder in a given path becomes a loop channel, playing tempo-synced audio through the Px pattern system. Loops integrate with Fx effects, quantization, and the Ndef mixer automatically.
+
+subsection:: Setup
+
+code::
+// Boot server and load SynthDefs
+Px.loadSynthDefs;
+
+// Load samples — each subfolder becomes a channel
+Lx.loadSamples("~/path/to/loop/folders/");
+::
+
+subsection:: Basic Usage
+
+code::
+// Play all channels
+Lx.play;
+
+// Play a single channel
+Lx.play(0);
+
+// Stop a channel
+Lx.stop(0);
+
+// Stop all
+Lx.stop;
+::
+
+ClassMethods::
+
+subsection:: Sample Loading
+
+method:: loadSamples
+Scans a directory for subfolders. Each subfolder becomes a loop channel. All .wav and .aiff files in each subfolder become the sample pool for that channel.
+
+argument:: path
+Path to the parent directory containing subfolders of audio files.
+
+code::
+Lx.loadSamples("~/Music/loops/");
+::
+
+subsection:: Playback Control
+
+method:: play
+Plays one channel or all channels. Creates Px loop patterns internally.
+
+argument:: channel
+Channel index (0-based). If omitted, plays all channels.
+
+argument:: fadeTime
+Optional fade-in duration in beats.
+
+code::
+Lx.play;        // All channels
+Lx.play(0);     // Single channel
+Lx.play(0, 16); // Fade in over 16 beats
+::
+
+method:: stop
+Stops one channel or all channels.
+
+argument:: channel
+Channel index (0-based). If omitted, stops all Lx patterns.
+
+code::
+Lx.stop;     // Stop all
+Lx.stop(0);  // Stop channel 0
+::
+
+subsection:: Parameter Control
+
+method:: amp
+Sets the amplitude for a channel.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Amplitude value (0-1). Default: 0.3.
+
+code::
+Lx.amp(0, 0.8);
+::
+
+method:: buf
+Switches to a specific sample in a channel's pool.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: index
+Sample index within the channel's buffer pool.
+
+code::
+Lx.buf(0, 2);  // Switch channel 0 to sample 2
+::
+
+method:: dur
+Sets the duration (in beats) for a channel.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Duration in beats. Default: 4.
+
+code::
+Lx.dur(0, 8);
+::
+
+method:: next
+Advances to the next sample in a channel's pool (wraps around).
+
+argument:: channel
+Channel index (0-based).
+
+code::
+Lx.next(0);
+::
+
+method:: prev
+Goes to the previous sample in a channel's pool (wraps around).
+
+argument:: channel
+Channel index (0-based).
+
+code::
+Lx.prev(0);
+::
+
+method:: rate
+Sets the playback rate for a channel.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Rate value. 1 = normal, 0.5 = half speed, 2 = double speed. Default: 1.
+
+code::
+Lx.rate(0, 0.5);
+::
+
+method:: start
+Sets the start position within the sample.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Start position (0-1). Default: 0.
+
+code::
+Lx.start(0, 0.25);  // Start at 25%
+::
+
+method:: vol
+Sets amplitude for all playing channels.
+
+argument:: value
+Amplitude value (0-1).
+
+code::
+Lx.vol(0.5);
+::
+
+subsection:: GUI
+
+method:: gui
+Opens a GUI window with per-channel controls: sample navigation, amplitude, rate, start position, duration knobs, and mute buttons.
+
+code::
+Lx.gui;
+::
+
+subsection:: State
+
+method:: bufs
+Returns the Dictionary of loaded buffers (channel index to Array of Buffers).
+
+method:: channelCount
+Returns the number of loaded channels.
+
+method:: channelNames
+Returns an Array of subfolder names (one per channel).
+
+method:: tracks
+Returns an Array of current sample indices per channel.
+
+examples::
+
+code::
+// Setup
+Px.loadSynthDefs;
+Lx.loadSamples("~/Music/loops/");
+
+// Play all loops
+Lx.play;
+
+// Adjust parameters
+Lx.amp(0, 0.8);
+Lx.rate(1, 0.5);
+Lx.start(0, 0.25);
+Lx.dur(2, 8);
+
+// Navigate samples
+Lx.next(0);
+Lx.prev(1);
+
+// Add effects via Fx
+Fx(\lx0).reverb(0.3);
+Fx(\lx1).delay(0.2);
+
+// Open GUI
+Lx.gui;
+
+// Fade in
+Lx.play(0, 16);
+
+// Stop
+Lx.stop;
+::

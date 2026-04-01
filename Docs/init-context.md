@@ -49,7 +49,14 @@ The extension uses **method chaining on Integer and Symbol classes** to enable c
    - Shorthand syntax: `808 i: \bd dur: 1` routes through drum machine
    - Maps instrument symbols to PlayBuf-based sample playback
 
-5. **Sx** (Classes/Sx.sc) - Sequenced synthesizer
+5. **Lx** (Classes/Lx.sc) - Multi-track sample looper (extends Px)
+
+   - Scans subfolders to create loop channels
+   - Each channel plays a tempo-synced `\loop` SynthDef via `super.new()`
+   - Pattern IDs: `\lx0`, `\lx1`, `\lx2`, etc.
+   - Per-channel controls: amp, rate, start, dur, sample navigation
+
+6. **Sx** (Classes/Sx.sc) - Sequenced synthesizer
    - Single instance polyphonic synth with built-in sequencer
    - Different from Px: plays one synth vs. multiple pattern instances
 
@@ -121,6 +128,8 @@ Classes/           - Core class definitions (.sc files)
   PxMidi.sc       - MIDI functionality
   Fx.sc           - Effects handler
   Dx.sc           - Drum machines
+  Lx.sc           - Multi-track sample looper
+  LxGui.sc        - Lx GUI extension
   Number.sc       - Integer method extensions
   Symbol.sc       - Symbol method extensions
 

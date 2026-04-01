@@ -5,13 +5,14 @@ SynthDef(\loop, {
 
     var env, sig;
     var frames = BufFrames.kr(buf);
+    var userRate = rate;
     var isRewind = (rate < 0);
     var startPos = abs((frames * isRewind) - (frames * start)) - (2 * isRewind);
 
     // Rate & tempo
     beats = Select.kr((beats > 0), [dur, beats]);
     tempo = Select.kr((tempo > 0), [TempoClock.default.tempo, tempo]);
-    rate = ((BufFrames.ir(buf) / s.sampleRate) * tempo / beats);
+    rate = ((BufFrames.ir(buf) / s.sampleRate) * tempo / beats) * userRate.abs;
     rate = Select.kr((isRewind < 1), [rate.neg, rate]);
 
     // Sustain

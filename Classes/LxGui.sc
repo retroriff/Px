@@ -67,8 +67,8 @@
         { |v| Lx.amp(i, v.value) });
 
       this.prCreateGuiKnob(col, "Rate",
-        existing !? { existing[\rate] } ?? 1 / 2,
-        { |v| Lx.rate(i, v.value * 2) });
+        existing !? { (existing[\rate] + 1) / 3 } ?? (2/3),
+        { |v| Lx.rate(i, (v.value * 3) - 1) });
 
       this.prCreateGuiKnob(col, "Start",
         existing !? { existing[\start] } ?? 0,

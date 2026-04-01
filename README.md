@@ -17,12 +17,13 @@ Additional code examples can be found [here](/Examples/).
 1. ⚡️ [Px: A Pattern Shortcuts Generator](#️-px-a-pattern-shortcuts-generator)
 2. ✨ [Fx: A Nodeproxy Effects Handler](#-fx-a-nodeproxy-effects-handler)
 3. 🛢️ [Dx: Drum Machines](#️-drum-machines)
-4. 🌊 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
-5. 🎹 [Nx: Musical Chord Data](#-nx-musical-chord-data)
-6. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
-7. 📡 [OSC Communication](#-osc-communication)
-8. 🎚️ [Mixer](#️-mixer)
-9. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#️-tr08-a-roland-tr-08-midi-controller)
+4. 🔁 [Lx: Multi-Track Sample Looper](#-lx-multi-track-sample-looper)
+5. 🌊 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
+6. 🎹 [Nx: Musical Chord Data](#-nx-musical-chord-data)
+7. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
+8. 📡 [OSC Communication](#-osc-communication)
+9. 🎚️ [Mixer](#️-mixer)
+10. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#️-tr08-a-roland-tr-08-midi-controller)
 
 ## 🛠️ Installation
 
@@ -225,6 +226,38 @@ Dx.preset(\electro, 1);
 | `shuffle`     | None                                              | Shuffles the drum machines bank        |
 | `stop`        | None                                              | Same as `\808 i: \all`                 |
 | `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns    |
+
+## 🔁 Lx: Multi-Track Sample Looper
+
+Lx extends Px to provide multi-track sample looping. Each subfolder in a given path becomes a loop channel, playing tempo-synced audio through the Px pattern system.
+
+```js
+// Load samples — each subfolder becomes a channel
+Lx.loadSamples("~/Music/loops/");
+
+// Play all channels
+Lx.play;
+
+// Stop all
+Lx.stop;
+```
+
+### Lx class methods
+
+| Name          | Arguments                          | Description                              |
+| ------------- | ---------------------------------- | ---------------------------------------- |
+| `amp`         | channel: integer, value?: number   | Sets amplitude for a channel             |
+| `buf`         | channel: integer, index: integer   | Switches sample in a channel             |
+| `dur`         | channel: integer, value?: number   | Sets duration (beats) for a channel      |
+| `gui`         | None                               | Opens multi-channel control GUI          |
+| `loadSamples` | path: string                       | Loads subfolders as loop channels        |
+| `next`        | channel: integer                   | Next sample in channel (wraps)           |
+| `play`        | channel?: integer, fadeTime?: number | Plays one or all channels               |
+| `prev`        | channel: integer                   | Previous sample in channel (wraps)       |
+| `rate`        | channel: integer, value?: number   | Sets playback rate for a channel         |
+| `start`       | channel: integer, value?: number   | Sets start position (0-1) for a channel  |
+| `stop`        | channel?: integer                  | Stops one or all Lx patterns             |
+| `vol`         | value: number                      | Sets amplitude for all playing channels  |
 
 ## 🌊 Sx: A Sequenced Synth
 

@@ -244,6 +244,23 @@ code::
 Fx(\px).phaser(0.5, 2, 0.7);
 ::
 
+method:: reverse
+Beat-synced reverse reverb effect. Captures audio into a buffer, reads it backwards with reverb applied, creating a ghostly swell that rises before each hit — like a guitar pedal reverse reverb. The effect introduces a one-cycle latency: you hear the reversed reverb of the previous cycle.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 0.4.
+
+argument:: beats
+Cycle length in beats. Controls how many beats of audio are captured before reversing. Build-time parameter — changing it requires disabling and re-enabling the effect. Default: 2.
+
+argument:: decay
+Reverb density on the reversed signal (0-1). Higher values produce a denser, more diffuse tail. Default: 0.5.
+
+code::
+Fx(\px).reverse(0.5);
+Fx(\px).reverse(0.6, 4, 0.8);  // 4-beat cycle, dense reverb
+::
+
 method:: reverb
 FreeVerb reverb with room and damping controls.
 

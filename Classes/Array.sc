@@ -1,4 +1,8 @@
 + Array {
+  pexprand { |repeats|
+    ^Pexprand(this[0], this[1], repeats ?? inf);
+  }
+
   pseq { |dur|
     ^Pseq(this, dur ?? inf);
   }

@@ -10,7 +10,7 @@
     };
 
     if (pattern[\seed] == \rand) {
-      var amp = pattern[\amp] ?? 1;
+      var amp = max;
       var repeats = inf;
 
       if (pattern[\repeat].notNil)

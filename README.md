@@ -76,19 +76,20 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | `delay`      | mix?: range 0..1, delaytime?, delayfeedback?   | Delay effect                 |
 | `distort`    | mix?: range 0..1, drive?: number               | Distortion                   |
 | `duck`       | mix?: range 0..1, thresh?: number, src?: Symbol | Sidechain compression        |
-| `flanger`    | mix?: range 0..1                               | Flanger effect               |
-| `freqShift`  | mix?: range 0..1, freq?, phase?                | Frequency shifter            |
-| `gverb`      | mix?: range 0..1, roomsize?, revtime?          | Granular reverb              |
-| `hpf`        | mix?: range 0..1, freq?: number                | High pass filter             |
-| `lpf`        | mix?: range 0..1, freq?: number                | Low pass filter              |
-| `pan`        | pos?: range -1..1                              | Stereo panning               |
-| `phaser`     | mix?: range 0..1, rate?, depth?                | Phaser effect                |
-| `reverb`     | mix?: range 0..1, room?, size?                 | Reverb effect                |
-| `space`      | mix?: range 0..1, fb?: number                  | Spatial reverb               |
-| `tremolo`    | mix?: range 0..1, rate?: number                | Tremolo effect               |
-| `vibrato`    | mix?: range 0..1, rate?, depth?                | Pitch modulation vibrato     |
-| `vst`        | mix?: range 0..1, plugin?: string              | VST plugin effect            |
-| `wah`        | mix?: range 0..1, rate?, depth?                | Auto-wah effect              |
+| `flanger`    | mix?: range 0..1                                | Flanger effect               |
+| `freqShift`  | mix?: range 0..1, freq?, phase?                 | Frequency shifter            |
+| `gverb`      | mix?: range 0..1, roomsize?, revtime?           | Granular reverb              |
+| `hpf`        | mix?: range 0..1, freq?: number                 | High pass filter             |
+| `lpf`        | mix?: range 0..1, freq?: number                 | Low pass filter              |
+| `pan`        | pos?: range -1..1                               | Stereo panning               |
+| `phaser`     | mix?: range 0..1, rate?, depth?                 | Phaser effect                |
+| `reverse`    | mix?: range 0..1                                | Beat-synced reverse reverb   |
+| `reverb`     | mix?: range 0..1, room?, size?                  | Reverb effect                |
+| `space`      | mix?: range 0..1, fb?: number                   | Spatial reverb               |
+| `tremolo`    | mix?: range 0..1, rate?: number                 | Tremolo effect               |
+| `vibrato`    | mix?: range 0..1, rate?, depth?                 | Pitch modulation vibrato     |
+| `vst`        | mix?: range 0..1, plugin?: string               | VST plugin effect            |
+| `wah`        | mix?: range 0..1, rate?, depth?                 | Auto-wah effect              |
 
 ### Instrument methods
 

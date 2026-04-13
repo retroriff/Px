@@ -162,6 +162,10 @@ Fx {
     this.prAddEffect(\reverb, mix, [room, size], postArgs);
   }
 
+  *reverse { |mix = 0.4|
+    this.prAddEffect(\reverse, mix);
+  }
+
   *setVstPresetsPath { |path|
     presetsPath = path;
   }

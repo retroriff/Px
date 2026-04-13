@@ -21,7 +21,7 @@
 
     if (allKeys.includes(selector))
     { this.prDebouncer.enqueue([selector, args]) }
-    { ("🔴 Method not understood:" + selector).postln };
+    { ^super.doesNotUnderstand(selector, args) };
   }
 
   prCollectEventKeys {
@@ -110,6 +110,10 @@
 
   ins { |value|
     this.i(value);
+  }
+
+  latency { |value|
+    this.prDebouncer.enqueue([\lag, value]);
   }
 
   off { |value|
@@ -383,3 +387,4 @@
     ^PxDebouncer.current;
   }
 }
+

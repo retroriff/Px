@@ -21,7 +21,8 @@
 
     if (allKeys.includes(selector))
     { this.prDebouncer.enqueue([selector, args]) }
-    { ^super.doesNotUnderstand(selector, args) };
+    // { ^super.doesNotUnderstand(selector, args) };
+    { ("🔴 Method not understood:" + selector).postln };
   }
 
   prCollectEventKeys {

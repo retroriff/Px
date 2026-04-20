@@ -57,10 +57,6 @@
     this.prFx(\delay, [mix, delaytime, delayfeedback]);
   }
 
-  delay2 { |mix, delaytime, delayfeedback|
-    this.prFx(\delay2, [mix, delaytime, delayfeedback]);
-  }
-
   distort { |mix, drive|
     this.prFx(\distort, [mix, drive]);
   }

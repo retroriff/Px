@@ -35,7 +35,7 @@ PxDebouncer {
     var pairs = [];
     var capturedFxList, capturedIsFullDeclaration;
 
-    if (pending.size == 0 and: { fxList.size == 0 })
+    if (pending.size == 0 and: { fxList.size == 0 } and: { isFullDeclaration.not })
     { ^this };
 
     pairs = pending.flatten;

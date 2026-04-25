@@ -117,7 +117,7 @@ Px {
     var dur = pattern[\dur];
 
     if (dur.isNil or: (dur == 0))
-    { dur = Pseq([8], 1) };
+    { dur = Pseq([8], pattern[\repeat] ?? 1) };
 
     if (dur.isArray) {
       var containsString = dur any: { |item| item.isString };

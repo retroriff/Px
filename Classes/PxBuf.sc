@@ -154,8 +154,19 @@
 
         if (pattern[\instrument] == \loop) {
           var sampleLength = pattern[\buf][0].split($-);
+          var folderBeats = 1;
+
           if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
-          { pattern[\dur] = pattern[\dur] ?? sampleLength[1].asInteger };
+          { folderBeats = sampleLength[1].asInteger };
+
+          if (pattern[\length].notNil) {
+            pattern[\beats] = pattern[\dur] ?? folderBeats;
+            pattern[\dur] = pattern[\length];
+            pattern.removeAt(\length);
+          } {
+            if (pattern[\dur].isNil)
+            { pattern[\dur] = Pseq([folderBeats], pattern[\repeat] ?? 1) };
+          };
         };
 
         if (pattern[\degree].notNil) {

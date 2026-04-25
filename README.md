@@ -51,7 +51,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `gui`    | nil (open or update) \| 0 (close)                 | Open or refresh a patterns gui window. A 0 value closes the window. pattern                                                                                                                  |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
 | `in`     | seconds: integer                                  | Fades in the pattern.                                                                                                                                                                        |
-| `length` | number                                            | Number of random degrees generated with `degree: \rand` (default: 1)                                                                                                                         |
+| `length` | number                                            | With `degree: \rand`: number of random degrees (default: 1). With `loop:`: plays at natural rate for N beats, auto-extracting beat count from folder name                                    |
 | `off`    | beats: integer                                    | Offset value                                                                                                                                                                                 |
 | `out`    | seconds: integer                                  | Fades out the pattern.                                                                                                                                                                       |
 | `pan`    | range -1..1 \| \rand \| \rotate \| Pattern        | A pan controller                                                                                                                                                                             |
@@ -84,6 +84,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | `lpf`        | mix?: range 0..1, freq?: number                 | Low pass filter              |
 | `pan`        | pos?: range -1..1                               | Stereo panning               |
 | `phaser`     | mix?: range 0..1, rate?, depth?                 | Phaser effect                |
+| `reverse`    | mix?: range 0..1                                | Beat-synced reverse reverb   |
 | `reverb`     | mix?: range 0..1, room?, size?                  | Reverb effect                |
 | `space`      | mix?: range 0..1, fb?: number                   | Spatial reverb               |
 | `tremolo`    | mix?: range 0..1, rate?: number                 | Tremolo effect               |

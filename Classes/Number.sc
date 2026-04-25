@@ -21,6 +21,7 @@
 
     if (allKeys.includes(selector))
     { this.prDebouncer.enqueue([selector, args]) }
+    // { ^super.doesNotUnderstand(selector, args) };
     { ("🔴 Method not understood:" + selector).postln };
   }
 
@@ -102,6 +103,7 @@
     if (value.isString.not and: { value.isKindOf(Pattern) || value.isArray })
     { this.prPlay(i: value) }
     { this.prPlay(i: value.asSymbol) };
+    PxDebouncer.current.prSchedule;
   }
 
   in { |value|
@@ -112,12 +114,17 @@
     this.i(value);
   }
 
+  latency { |value|
+    this.prDebouncer.enqueue([\lag, value]);
+  }
+
   off { |value|
     this.prDebouncer.enqueue([\timingOffset, value]);
   }
 
   loop { |value|
     this.prPlay(loop: value);
+    PxDebouncer.current.prSchedule;
   }
 
   out { |value|
@@ -128,6 +135,7 @@
 
   play { |value|
     this.prPlay(play: value);
+    PxDebouncer.current.prSchedule;
   }
 
   repeat { |value|
@@ -383,3 +391,4 @@
     ^PxDebouncer.current;
   }
 }
+

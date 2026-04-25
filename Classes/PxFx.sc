@@ -93,6 +93,10 @@
     this.prFx(\reverb, [mix, room, size]);
   }
 
+  reverse { |mix|
+    this.prFx(\reverse, [mix]);
+  }
+
   space { |mix, fb|
     this.prFx(\space, [mix, fb]);
   }

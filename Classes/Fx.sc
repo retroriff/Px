@@ -22,6 +22,12 @@ Fx {
     vstPresets = Dictionary.new;
 
     this.loadEffects;
+
+    CmdPeriod.add { 
+      Fx.prSuppressPrint = true;
+      this.clear;
+      Fx.prSuppressPrint = false;
+    };
   }
 
   *new { |name|
@@ -76,9 +82,14 @@ Fx {
     mixer.clear;
   }
 
-  *delay { |mix = 0.4, delaytime = 0.5, delayfeedback = 0.5|
+  *delay { |mix = 0.3, delaytime = 0.25, delayfeedback = 0.4|
     var postArgs = "delaytime:" +  delaytime + "delayfeedback:" + delayfeedback;
     this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
+  }
+
+  *delay2 { |mix = 0.4, delaytime = 0.5, delayfeedback = 0.5|
+    var postArgs = "delaytime:" +  delaytime + "delayfeedback:" + delayfeedback;
+    this.prAddEffect(\delay2, mix, [delaytime, delayfeedback], postArgs);
   }
 
   *duck { |mix = 0.5, thresh = 0.005, src|

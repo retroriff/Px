@@ -103,6 +103,7 @@
     if (value.isString.not and: { value.isKindOf(Pattern) || value.isArray })
     { this.prPlay(i: value) }
     { this.prPlay(i: value.asSymbol) };
+    PxDebouncer.current.prSchedule;
   }
 
   in { |value|

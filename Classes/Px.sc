@@ -104,6 +104,13 @@ Px {
       var drop = pattern[\chop][1];
 
       if (dur != 0 and: (dur != Nil)) {
+        if (pattern[\instrument] == \loop) {
+          pbindef = Pbindf(pbindef,
+            \beats, pattern[\beats] ?? pattern[\dur],
+            \dur, dur
+          );
+        };
+
         pbindef = Pseq([
           Pfindur(dur.max(0.25), Pdrop(drop, pbindef))
         ], inf);
@@ -117,7 +124,7 @@ Px {
     var dur = pattern[\dur];
 
     if (dur.isNil or: (dur == 0))
-    { dur = Pseq([8], 1) };
+    { dur = Pseq([8], pattern[\repeat] ?? 1) };
 
     if (dur.isArray) {
       var containsString = dur any: { |item| item.isString };

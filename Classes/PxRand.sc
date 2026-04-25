@@ -5,14 +5,15 @@
         this.prCreateNewSeeds(seedId)
       };
 
-      ^this.prReevaluate;
+      this.prReevaluate;
+      ^this;
     };
 
     id = id.asSymbol;
 
     if (last.keys.includes(id)) {
       this.prCreateNewSeeds(id);
-      ^this.prReevaluate([last[id]]);
+      this.prReevaluate([last[id]]);
     }
   }
 

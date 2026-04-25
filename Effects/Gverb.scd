@@ -4,8 +4,8 @@ Dictionary[
         \filterIn -> { |in|
             GVerb.ar(
                 in,
-                \gverb1.kr(roomsize, 0.5),
-                \gverb2.kr(revtime, 0.5)
+                \gverb1.kr(roomsize, 0.5, spec: ControlSpec(1, 300, \lin)),
+                \gverb2.kr(revtime, 0.5, spec: ControlSpec(0.5, 100, \exp))
             );
         }
     }

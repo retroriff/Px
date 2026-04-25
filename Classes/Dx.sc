@@ -20,7 +20,7 @@ Dx : Px {
       \808 -> \RolandTR808,
       \909 -> \RolandTR909,
     ];
-    drumMachine = \RolandTR808;
+    drumMachine = \RolandTR909;
     dxAmp = 0.3;
 
     activeFx = Dictionary.new;

@@ -99,6 +99,11 @@
       pattern.removeAt(\loop);
     };
 
+    if (pattern[\dur].isNumber and: { pattern[\dur] < 0 }) {
+      pattern[\rate] = -1;
+      pattern[\dur] = pattern[\dur].abs;
+    };
+
     ^pattern ++ (fix: 1);
 
   }

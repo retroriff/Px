@@ -123,6 +123,7 @@
 
   loop { |value|
     this.prPlay(loop: value);
+    PxDebouncer.current.prSchedule;
   }
 
   out { |value|
@@ -133,6 +134,7 @@
 
   play { |value|
     this.prPlay(play: value);
+    PxDebouncer.current.prSchedule;
   }
 
   repeat { |value|

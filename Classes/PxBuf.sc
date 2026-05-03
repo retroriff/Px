@@ -95,7 +95,7 @@
     };
 
     if (pattern[\loop].notNil) {
-      pattern = pattern ++ (instrument: \loop, buf: pattern[\loop]);
+      pattern = pattern ++ (instrument: \loop, buf: pattern[\loop], sendGate: false);
       pattern.removeAt(\loop);
     };
 

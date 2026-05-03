@@ -4,10 +4,11 @@
     var colWidth = 100;
     var margin = 10, gap = 5;
     var width = (colWidth * channelCount) + (gap * (channelCount - 1)) + (margin * 2);
-    var colHeight = 450;
+    var colHeight = 510;
     var height = colHeight + 75;
     var bgColor = Color.new255(26, 29, 34);
     var linkColor = Color.new255(31, 41, 55);
+    var durSteps = [-16, -8, -4, -2, -1, -0.5, -0.25, -0.125, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
 
     if (bufs.isEmpty)
     { ^this.prPrint("🔴 No samples loaded. Call Lx.loadSamples first") };
@@ -35,6 +36,7 @@
       var col, sampleRow;
       var id = this.prCreateId(i);
       var existing = last[id];
+      var maxBeats = bufs[i][tracks[i]].duration * TempoClock.default.tempo;
 
       col = CompositeView(mainView, colWidth@colHeight);
       col.decorator = FlowLayout(col.bounds, 5@5, 2@2);
@@ -81,19 +83,39 @@
 
       this.prCreateGuiKnob(col, "Amp",
         existing !? { existing[\amp] } ?? 0.3,
-        { |v| Lx.amp(i, v.value) });
+        existing !? { existing[\amp] } ?? 0.3,
+        { |v| Lx.amp(i, v.value) },
+        { |v| v.value });
 
-      this.prCreateGuiKnob(col, "Rate",
-        (existing !? { existing[\rate] } ?? 1 + 1) / 3,
-        { |v| Lx.rate(i, (v.value * 3) - 1) });
+      this.prCreateGuiKnob(col, "Dur",
+        this.prDurToKnob(existing !? { existing[\dur] } ?? 4, durSteps),
+        existing !? { existing[\dur] } ?? 4,
+        { |v|
+          var index = (v.value * (durSteps.size - 1)).round.asInteger;
+          var durValue = durSteps[index];
+          Lx.dur(i, durValue);
+        },
+        { |v|
+          var index = (v.value * (durSteps.size - 1)).round.asInteger;
+          durSteps[index];
+        });
 
       this.prCreateGuiKnob(col, "Start",
         existing !? { existing[\start] } ?? 0,
-        { |v| Lx.start(i, v.value) });
+        existing !? { existing[\start] } ?? 0,
+        { |v| Lx.start(i, v.value) },
+        { |v| v.value.round(0.01) });
 
-      this.prCreateGuiKnob(col, "Dur",
-        (existing !? { existing[\dur] } ?? 4) / 16,
-        { |v| Lx.dur(i, (v.value * 16).max(0.25)) });
+      this.prCreateGuiKnob(col, "Trim",
+        this.prTrimToKnob(existing !? { existing[\trim] } ?? maxBeats, maxBeats),
+        existing !? { existing[\trim] } ?? maxBeats,
+        { |v|
+          var trimValue = ((v.value * (maxBeats - 0.125)) + 0.125).round(0.125);
+          Lx.trim(i, trimValue);
+        },
+        { |v|
+          ((v.value * (maxBeats - 0.125)) + 0.125).round(0.125);
+        });
 
       {
         var buttonRow, halfWidth;
@@ -130,15 +152,13 @@
 
           channelCount.do { |j|
             var otherId = ("lx" ++ j).asSymbol;
-
-            if (soloedChannels.isEmpty) {
-              if (mutedChannels.includes(j).not)
-              { Px.resume(otherId) };
-            } {
-              if (soloedChannels.includes(j) and: { mutedChannels.includes(j).not })
-              { Px.resume(otherId) }
-              { Px.pause(otherId) };
+            var shouldBeSilent = mutedChannels.includes(j) or: {
+              soloedChannels.notEmpty and: { soloedChannels.includes(j).not }
             };
+
+            if (shouldBeSilent)
+            { Ndef(otherId).pause }
+            { Ndef(otherId).resume };
           };
         })
         .value_(
@@ -192,10 +212,10 @@
     window.front;
   }
 
-  *prCreateGuiKnob { |parent, label, value, action|
-    var knob, knobColor, knobRow;
+  *prCreateGuiKnob { |parent, label, knobValue, displayValue, action, displayFunc|
+    var knob, knobColor, knobRow, valueBox;
     var colWidth = 100;
-    var knobSize = colWidth - 30;
+    var knobSize = colWidth - 40;
 
     StaticText(parent, (colWidth - 10)@15)
     .align_(\center)
@@ -208,10 +228,28 @@
 
     knob = Knob(knobRow, knobSize@knobSize)
     .mode_(\vert)
-    .value_(value)
+    .value_(knobValue)
+    .action_({ |v|
+      valueBox.string_(displayFunc.(v).asString);
+    })
     .mouseUpAction_(action);
     knobColor = knob.color;
     knobColor[1] = Color.cyan;
     knob.color = knobColor;
+
+    valueBox = StaticText(parent, (colWidth - 10)@16)
+    .align_(\center)
+    .string_(displayValue.asString)
+    .stringColor_(Color.grey(0.6))
+    .font_(Font.default.size_(9));
+  }
+
+  *prDurToKnob { |dur, steps|
+    var closest = steps.collect { |s| (s - dur).abs }.minIndex;
+    ^closest / (steps.size - 1);
+  }
+
+  *prTrimToKnob { |trim, maxBeats|
+    ^((trim - 0.125) / (maxBeats - 0.125)).clip(0, 1);
   }
 }

@@ -135,14 +135,14 @@ Lx : Px {
     this.prRefreshGui;
   }
 
-  *rate { |channel, value = 1|
+  *trim { |channel, value|
     if (channel.isNil)
     { ^this.prPrint("🟡 Provide a channel number") };
 
     if (last[this.prCreateId(channel)].isNil)
     { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
 
-    last[this.prCreateId(channel)][\rate] = value;
+    last[this.prCreateId(channel)][\trim] = value;
     this.prCreatePattern(channel);
   }
 
@@ -158,16 +158,22 @@ Lx : Px {
   }
 
   *shuffle {
+    var durSteps = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
+
     channelCount.do { |i|
       var id = this.prCreateId(i);
+      var dur = durSteps.choose * [-1, 1].choose;
+      var maxBeats;
 
       tracks[i] = bufs[i].size.rand;
+      maxBeats = bufs[i][tracks[i]].duration * TempoClock.default.tempo;
 
-      if (last[id].notNil) {
-        last[id][\rate] = rrand(-1.0, 2.0);
-        last[id][\start] = 1.0.rand;
-        last[id][\dur] = rrand(0.25, 16.0);
-      };
+      if (last[id].isNil)
+      { last[id] = () };
+
+      last[id][\start] = 1.0.rand;
+      last[id][\dur] = dur;
+      last[id][\trim] = (1.0.rand.pow(0.7) * (maxBeats - 0.125) + 0.125).round(0.125);
 
       this.prCreatePattern(i);
     };
@@ -211,24 +217,38 @@ Lx : Px {
   *prCreatePattern { |channel, fadeTime|
     var id = this.prCreateId(channel);
     var existing = last[id];
+    var dur = existing !? { existing[\dur] } ?? 4;
     var pattern = (
       amp: existing !? { existing[\amp] } ?? 0.3,
-      dur: existing !? { existing[\dur] } ?? 4,
+      dur: dur,
       id: id,
       loop: bufs[channel][tracks[channel]],
       lx: true,
     );
 
-    if (existing.notNil and: { existing[\rate].notNil })
-    { pattern[\rate] = existing[\rate] };
-
     if (existing.notNil and: { existing[\start].notNil })
     { pattern[\start] = existing[\start] };
+
+    if (existing.notNil and: { existing[\trim].notNil }) {
+      pattern[\sus] = existing[\trim] / dur.abs;
+      pattern[\trim] = existing[\trim];
+    };
 
     if (fadeTime.notNil)
     { pattern[\fade] = [\in, fadeTime] };
 
     super.new(pattern);
+    this.prApplyMuteState(channel);
+  }
+
+  *prApplyMuteState { |channel|
+    var id = this.prCreateId(channel);
+    var shouldBeSilent = mutedChannels.includes(channel) or: {
+      soloedChannels.notEmpty and: { soloedChannels.includes(channel).not }
+    };
+
+    if (shouldBeSilent)
+    { Ndef(id).pause };
   }
 
   *prStopAll {

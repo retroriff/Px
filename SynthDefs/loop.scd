@@ -31,7 +31,7 @@ SynthDef(\loop, {
             bufnum: buf,
             rate: rate,
             startPos: startPos,
-            doneAction: 2,
+            doneAction: 0,
     ));
 
     sig = (sig * env) * amp;

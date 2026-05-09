@@ -11,6 +11,10 @@ Lx : Px {
   classvar <window;
   classvar <isPlaying;
   classvar pausedByState;
+  classvar <meterLevels;
+  classvar meterFunc;
+  classvar <meterViews;
+  classvar <meterRoutine;
 
   *initClass {
     bufs = Dictionary.new;
@@ -23,6 +27,17 @@ Lx : Px {
     tracks = Array.new;
     isPlaying = false;
     pausedByState = IdentitySet.new;
+    meterLevels = Array.new;
+    meterViews = Array.new;
+
+    meterFunc = OSCFunc({ |msg|
+      var channel = msg[2].asInteger;
+      var peakL = msg[3];
+      var peakR = msg[5];
+
+      if (channel >= 0 and: { channel < meterLevels.size })
+      { meterLevels[channel] = max(peakL, peakR) };
+    }, '/lxMeter');
 
     CmdPeriod.add {
       this.prStopAll;
@@ -69,6 +84,7 @@ Lx : Px {
 
     channelCount = bufs.size;
     shuffleAmounts = Array.fill(channelCount, { 1 });
+    meterLevels = Array.fill(channelCount, { 0 });
 
     if (verbose)
     { this.prPrint("🔄 Lx with" + channelCount + "channels") };
@@ -106,6 +122,7 @@ Lx : Px {
     { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
 
     last[this.prCreateId(channel)][\dur] = value;
+    last[this.prCreateId(channel)].removeAt(\beats);
     this.prCreatePattern(channel);
   }
 
@@ -175,6 +192,9 @@ Lx : Px {
   }
 
   *shuffle { |channel, amount|
+    if (isPlaying.not)
+    { isPlaying = true };
+
     if (channel.notNil) {
       this.prShuffleChannel(channel, amount ?? shuffleAmounts[channel]);
     } {
@@ -187,11 +207,12 @@ Lx : Px {
   }
 
   *prShuffleChannel { |i, amount|
-    var currentDur, currentHz, densitySteps, durSteps, grainDurSteps, id, spreadSteps;
+    var currentDur, currentHz, densitySteps, durSteps, grainDurSteps, id, lengthSteps, spreadSteps;
 
     durSteps = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
     densitySteps = [0.5, 1, 2, 3, 4, 6, 8, 12, 16];
     grainDurSteps = [0.01, 0.03, 0.05, 0.1, 0.15, 0.2, 0.3];
+    lengthSteps = [0.125, 0.25, 0.5, 1, 2, 4, 8];
     spreadSteps = [0, 0, 0.02, 0.05, 0.1, 0.3];
 
     if (amount <= 0)
@@ -233,6 +254,8 @@ Lx : Px {
 
     last[id][\spread] = this.prPickNearby(spreadSteps, last[id][\spread] ?? 0, amount);
 
+    last[id][\length] = this.prPickNearby(lengthSteps, last[id][\length] ?? 4, amount).max(last[id][\dur].abs);
+
     this.prCreatePattern(i);
   }
 
@@ -250,6 +273,10 @@ Lx : Px {
   *stop { |channel|
     if (channel.notNil) {
       var id = this.prCreateId(channel);
+
+      if (channel < meterLevels.size)
+      { meterLevels[channel] = 0 };
+
       Fx.prClearProxy(id);
       Px.stop(id);
     } {
@@ -349,9 +376,10 @@ Lx : Px {
   *prCreatePattern { |channel, fadeTime|
     var id = this.prCreateId(channel);
     var existing = last[id];
+    var dur = existing !? { existing[\beats] ?? existing[\dur] } ?? 4;
     var pattern = (
       amp: existing !? { existing[\amp] } ?? 0.3,
-      dur: existing !? { existing[\dur] } ?? 4,
+      dur: dur,
       id: id,
       lx: true,
     );
@@ -366,14 +394,27 @@ Lx : Px {
     if (existing.notNil and: { existing[\start].notNil })
     { pattern[\start] = existing[\start] };
 
-    if (existing.notNil and: { existing[\length].notNil })
-    { pattern[\length] = existing[\length] };
+    if (existing.notNil and: { existing[\length].notNil }) {
+      if (dur < 0) { pattern[\rate] = -1 };
+      pattern[\beats] = dur.abs;
+      pattern[\dur] = existing[\length];
+      pattern[\length] = existing[\length];
+    };
 
     if (fadeTime.notNil)
     { pattern[\fade] = [\in, fadeTime] };
 
     super.new(pattern);
     this.prApplyMuteState(channel);
+
+    fork {
+      Server.default.sync;
+
+      Ndef(id).filter(100, { |in|
+        SendPeakRMS.kr(in, 20, 0.3, "/lxMeter", channel);
+        in;
+      });
+    };
   }
 
   *prApplyMuteState { |channel|
@@ -396,6 +437,7 @@ Lx : Px {
   *prStopAll {
     isPlaying = false;
     pausedByState = IdentitySet.new;
+    meterLevels = Array.fill(channelCount.max(0), { 0 });
 
     last.copy do: { |pattern|
 
@@ -404,5 +446,6 @@ Lx : Px {
         Px.stop(pattern[\id]);
       };
     };
+
   }
 }

@@ -4,7 +4,7 @@
     var colWidth = 100;
     var margin = 10, gap = 5;
     var width = (colWidth * channelCount) + (gap * (channelCount - 1)) + (margin * 2);
-    var colHeight = 617;
+    var colHeight = 694;
     var height = colHeight + 75;
     var bgColor = Color.new255(26, 29, 34);
     var linkColor = Color.new255(31, 41, 55);
@@ -13,21 +13,27 @@
     if (bufs.isEmpty)
     { ^this.prPrint("🔴 No samples loaded. Call Lx.loadSamples first") };
 
-    if (window.notNil and: { window.isClosed.not })
-    { window.close };
+    if (meterRoutine.notNil)
+    { meterRoutine.stop; meterRoutine = nil };
 
-    window = Window(
-      name: "🪓 Repeat Or Die",
-      bounds: Rect(
-        left: Window.screenBounds.width - width,
-        top: Window.screenBounds.height - height,
-        width: width,
-        height: height
+    meterViews = Array.new;
+
+    if (window.notNil and: { window.isClosed.not }) {
+      window.view.removeAll;
+    } {
+      window = Window(
+        name: "🪓 Repeat Or Die",
+        bounds: Rect(
+          left: Window.screenBounds.width - width,
+          top: Window.screenBounds.height - height,
+          width: width,
+          height: height
+        )
       )
-    )
-    .alwaysOnTop_(true)
-    .background_(bgColor)
-    .front;
+      .alwaysOnTop_(true)
+      .background_(bgColor)
+      .front;
+    };
 
     mainView = CompositeView(window, window.view.bounds);
     mainView.decorator = FlowLayout(mainView.bounds, margin@margin, gap@gap);
@@ -55,6 +61,40 @@
       CompositeView(col, (colWidth - 10)@3);
 
       {
+        var meterView;
+        var meterColor = Color.new255(37, 190, 106);
+
+        meterView = UserView(col, (colWidth - 10)@26)
+        .drawFunc_({ |v|
+          var bounds = v.bounds.moveTo(0, 0);
+          var level = if (i < meterLevels.size) { meterLevels[i] } { 0 };
+          var normalized = level.ampdb.linlin(-40, 0, 0, 1).clip(0, 1);
+          var fillWidth = normalized * bounds.width;
+
+          Pen.fillColor = Color.new255(31, 41, 55);
+          Pen.addRoundedRect(bounds, 3, 3);
+          Pen.fill;
+
+          if (fillWidth > 0) {
+            Pen.push;
+            Pen.addRoundedRect(bounds, 3, 3);
+            Pen.clip;
+            Pen.fillColor = meterColor;
+            Pen.fillRect(Rect(0, 0, fillWidth, bounds.height));
+            Pen.pop;
+          };
+
+          Pen.strokeColor = Color.grey(0.3);
+          Pen.addRoundedRect(bounds, 3, 3);
+          Pen.stroke;
+        });
+
+        meterViews = meterViews.add(meterView);
+      }.value;
+
+      CompositeView(col, (colWidth - 10)@3);
+
+      {
         var contentWidth = colWidth - 10;
         var btnWidth = 20;
         var textWidth = contentWidth - (btnWidth * 2) - 4;
@@ -76,12 +116,6 @@
         .states_([[">", Color.white, linkColor]])
         .action_({ Lx.next(i) });
       }.value;
-
-      this.prCreateGuiSlider(col, "Amp",
-        existing !? { existing[\amp] } ?? 0.3,
-        (existing !? { existing[\amp] } ?? 0.3).round(0.01),
-        { |val| Lx.amp(i, val) },
-        { |val| val.round(0.01) });
 
       this.prCreateGuiSlider(col, "Dur",
         this.prDurToSlider(existing !? { existing[\dur] } ?? 4, durSteps),
@@ -164,6 +198,27 @@
           });
       }.value;
 
+      CompositeView(col, (colWidth - 10)@5);
+
+      {
+        var randomLabel;
+
+        randomLabel = StaticText(col, (colWidth - 10)@21)
+        .align_(\left)
+        .string_("Random: " ++ shuffleAmounts[i].round(0.01))
+        .stringColor_(Color.grey(0.7))
+        .font_(Font.default.size_(12));
+
+        Slider(col, (colWidth - 10)@26)
+        .value_(shuffleAmounts[i].linlin(0.05, 1, 0, 1))
+        .background_(bgColor)
+        .action_({ |v|
+          var val = v.value.linlin(0, 1, 0.05, 1);
+          shuffleAmounts.put(i, val);
+          randomLabel.string_("Random: " ++ val.round(0.01));
+        });
+      }.value;
+
       {
         var buttonRow, btnWidth;
 
@@ -213,22 +268,34 @@
       CompositeView(col, (colWidth - 10)@5);
 
       {
-        var randomLabel;
+        var ampLabel, currentAmp;
+        var contentWidth = colWidth - 10;
 
-        randomLabel = StaticText(col, (colWidth - 10)@21)
-        .align_(\left)
-        .string_("Random: " ++ shuffleAmounts[i].round(0.01))
+        currentAmp = existing !? { existing[\amp] } ?? 0.3;
+
+        ampLabel = StaticText(col, contentWidth@21)
+        .align_(\center)
+        .string_("Amp: " ++ currentAmp.round(0.01))
         .stringColor_(Color.grey(0.7))
         .font_(Font.default.size_(12));
 
-        Slider(col, (colWidth - 10)@26)
-        .value_(shuffleAmounts[i].linlin(0.05, 1, 0, 1))
-        .background_(bgColor)
-        .action_({ |v|
-          var val = v.value.linlin(0, 1, 0.05, 1);
-          shuffleAmounts.put(i, val);
-          randomLabel.string_("Random: " ++ val.round(0.01));
-        });
+        {
+          var knob, knobColor;
+
+          knob = Knob(col, contentWidth@60)
+          .mode_(\vert)
+          .value_(currentAmp)
+          .action_({ |k|
+            ampLabel.string_("Amp: " ++ k.value.round(0.01));
+          })
+          .mouseUpAction_({ |v|
+            Lx.amp(i, v.value);
+          });
+
+          knobColor = knob.color;
+          knobColor[1] = Color.cyan;
+          knob.color = knobColor;
+        }.value;
       }.value;
     };
 
@@ -276,6 +343,26 @@
       .mouseDownAction_({ |btn| btn.value_(1) })
       .action_({ Lx.shuffle });
     }.value;
+
+    window.onClose_({
+      if (meterRoutine.notNil)
+      { meterRoutine.stop; meterRoutine = nil };
+
+      meterViews = Array.new;
+    });
+
+    meterRoutine = Routine({
+      inf.do {
+        meterLevels.size.do { |i| meterLevels[i] = meterLevels[i] * 0.7 };
+
+        meterViews.do { |v|
+
+          if (v.isClosed.not)
+          { v.refresh };
+        };
+        0.05.wait;
+      };
+    }).play(AppClock);
 
     window.front;
   }

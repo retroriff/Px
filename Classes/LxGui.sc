@@ -101,11 +101,11 @@
         { |val| Lx.start(i, val) },
         { |val| val.round(0.01) });
 
-      this.prCreateGuiSlider(col, "Freeze",
-        existing !? { existing[\freeze] } ?? 0,
-        (existing !? { existing[\freeze] } ?? 0).round(0.01),
-        { |val| Lx.freeze(i, val.round(0.01)) },
-        { |val| val.round(0.01) });
+      this.prCreateGuiSlider(col, "GrainDur",
+        existing !? { existing[\grainDur] } ?? 0.1,
+        (existing !? { existing[\grainDur] } ?? 0.1).round(0.005),
+        { |val| Lx.grainDur(i, val.max(0.005).round(0.005)) },
+        { |val| val.max(0.005).round(0.005) });
 
       {
         var densitySteps = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 24, 32];
@@ -126,11 +126,11 @@
           });
       }.value;
 
-      this.prCreateGuiSlider(col, "GrainDur",
-        existing !? { existing[\grainDur] } ?? 0.1,
-        (existing !? { existing[\grainDur] } ?? 0.1).round(0.005),
-        { |val| Lx.grainDur(i, val.max(0.005).round(0.005)) },
-        { |val| val.max(0.005).round(0.005) });
+      this.prCreateGuiSlider(col, "Freeze",
+        existing !? { existing[\freeze] } ?? 0,
+        (existing !? { existing[\freeze] } ?? 0).round(0.01),
+        { |val| Lx.freeze(i, val.round(0.01)) },
+        { |val| val.round(0.01) });
 
       this.prCreateGuiSlider(col, "Scatter",
         existing !? { existing[\scatter] } ?? 0,

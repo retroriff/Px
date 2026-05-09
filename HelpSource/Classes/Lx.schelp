@@ -171,18 +171,25 @@ code::
 Lx.vol(0.5);
 ::
 
-subsection:: Granular Synthesis
+subsection:: Shuffle
 
-method:: grain
-Toggles granular synthesis mode for a channel. In grain mode, the sample is played through a cloud of tiny overlapping grains (GrainBuf) instead of a continuous loop (PlayBuf). Calling again toggles back to loop mode.
+method:: shuffle
+Randomizes parameters for one or all channels. The amount parameter controls how far values drift from their current state: low values produce subtle variation, high values approach full randomization. Samples only change when amount exceeds 0.7.
 
 argument:: channel
-Channel index (0-based).
+Channel index (0-based). If omitted, shuffles all channels.
+
+argument:: amount
+Shuffle intensity (0-1). Default: uses per-channel amount set via GUI slider (initially 1).
 
 code::
-Lx.grain(0);  // Switch to grain mode
-Lx.grain(0);  // Switch back to loop mode
+Lx.shuffle;            // All channels, full random
+Lx.shuffle(0);         // Channel 0, full random
+Lx.shuffle(0, 0.3);   // Channel 0, gentle nudge
+Lx.shuffle(amount: 0.2); // All channels, subtle drift
 ::
+
+subsection:: Granular Synthesis
 
 method:: density
 Sets the grain density (grains per second). Higher values produce smoother, denser textures. Lower values produce sparse, rhythmic grains.
@@ -256,7 +263,7 @@ Lx.freeze(0, 0);  // Resume scanning
 subsection:: GUI
 
 method:: gui
-Opens a GUI window with per-channel controls: sample navigation, amplitude, rate, start position, duration knobs, and mute buttons.
+Opens a GUI window with per-channel controls: sample navigation, granular parameter knobs, shuffle with amount slider, and mute/solo buttons.
 
 code::
 Lx.gui;
@@ -272,9 +279,6 @@ Returns the number of loaded channels.
 
 method:: channelNames
 Returns an Array of subfolder names (one per channel).
-
-method:: modes
-Returns an Array of current mode per channel (\loop or \grain).
 
 method:: tracks
 Returns an Array of current sample indices per channel.
@@ -309,8 +313,7 @@ Lx.gui;
 // Fade in
 Lx.play(0, 16);
 
-// Granular synthesis mode
-Lx.grain(0);
+// Granular parameters
 Lx.density(0, 30);
 Lx.grainDur(0, 0.2);
 Lx.scatter(0, 0.3);
@@ -319,6 +322,10 @@ Lx.spread(0, 0.02);
 // Frozen texture
 Lx.freeze(0, 1);
 Lx.freeze(0, 0);
+
+// Shuffle with amount control
+Lx.shuffle;              // Full random, all channels
+Lx.shuffle(0, 0.3);     // Gentle nudge on channel 0
 
 // Granular via Number DSL
 1.grain("fm-2:4").dur(4).density(20).scatter(0.3).spread(0.02);

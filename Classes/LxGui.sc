@@ -4,8 +4,7 @@
     var colWidth = 100;
     var margin = 10, gap = 5;
     var width = (colWidth * channelCount) + (gap * (channelCount - 1)) + (margin * 2);
-    var hasGrain = modes.any { |m| m == \grain };
-    var colHeight = if (hasGrain) { 985 } { 510 };
+    var colHeight = 617;
     var height = colHeight + 75;
     var bgColor = Color.new255(26, 29, 34);
     var linkColor = Color.new255(31, 41, 55);
@@ -18,7 +17,7 @@
     { window.close };
 
     window = Window(
-      name: "🔄 Repeat Or Die",
+      name: "🪓 Repeat Or Die",
       bounds: Rect(
         left: Window.screenBounds.width - width,
         top: Window.screenBounds.height - height,
@@ -37,22 +36,18 @@
       var col, sampleRow;
       var id = this.prCreateId(i);
       var existing = last[id];
-      var maxBeats = bufs[i][tracks[i]].duration * TempoClock.default.tempo;
 
       col = CompositeView(mainView, colWidth@colHeight);
       col.decorator = FlowLayout(col.bounds, 5@5, 2@2);
 
-      if (colors[id].isNil)
-      { colors[id] = Color.rand };
-
-      UserView(col, (colWidth - 10)@20)
+      UserView(col, (colWidth - 10)@26)
       .drawFunc_({
-        var bounds = Rect(0, 0, colWidth - 10, 20);
+        var bounds = Rect(0, 0, colWidth - 10, 26);
 
-        Pen.fillColor = colors[id];
+        Pen.fillColor = Color.white;
         Pen.addRoundedRect(bounds, 4, 4);
         Pen.fill;
-        Pen.color = Color.white;
+        Pen.color = bgColor;
         Pen.font = Font.default.boldVariant;
         Pen.stringCenteredIn(channelNames[i], bounds);
       });
@@ -82,109 +77,92 @@
         .action_({ Lx.next(i) });
       }.value;
 
-      this.prCreateGuiKnob(col, "Amp",
+      this.prCreateGuiSlider(col, "Amp",
         existing !? { existing[\amp] } ?? 0.3,
-        existing !? { existing[\amp] } ?? 0.3,
-        { |v| Lx.amp(i, v.value) },
-        { |v| v.value });
+        (existing !? { existing[\amp] } ?? 0.3).round(0.01),
+        { |val| Lx.amp(i, val) },
+        { |val| val.round(0.01) });
 
-      this.prCreateGuiKnob(col, "Dur",
-        this.prDurToKnob(existing !? { existing[\dur] } ?? 4, durSteps),
+      this.prCreateGuiSlider(col, "Dur",
+        this.prDurToSlider(existing !? { existing[\dur] } ?? 4, durSteps),
         existing !? { existing[\dur] } ?? 4,
-        { |v|
-          var index = (v.value * (durSteps.size - 1)).round.asInteger;
-          var durValue = durSteps[index];
-          Lx.dur(i, durValue);
+        { |val|
+          var index = (val * (durSteps.size - 1)).round.asInteger;
+          Lx.dur(i, durSteps[index]);
         },
-        { |v|
-          var index = (v.value * (durSteps.size - 1)).round.asInteger;
+        { |val|
+          var index = (val * (durSteps.size - 1)).round.asInteger;
           durSteps[index];
         });
 
-      this.prCreateGuiKnob(col, "Start",
+      this.prCreateGuiSlider(col, "Start",
         existing !? { existing[\start] } ?? 0,
-        existing !? { existing[\start] } ?? 0,
-        { |v| Lx.start(i, v.value) },
-        { |v| v.value.round(0.01) });
+        (existing !? { existing[\start] } ?? 0).round(0.01),
+        { |val| Lx.start(i, val) },
+        { |val| val.round(0.01) });
 
-      if (modes[i] == \grain) {
-        this.prCreateGuiKnob(col, "Freeze",
-          existing !? { existing[\freeze] } ?? 0,
-          existing !? { existing[\freeze] } ?? 0,
-          { |v| Lx.freeze(i, v.value.round(0.01)) },
-          { |v| v.value.round(0.01) });
-      } {
-        this.prCreateGuiKnob(col, "Trim",
-          this.prTrimToKnob(existing !? { existing[\trim] } ?? maxBeats, maxBeats),
-          existing !? { existing[\trim] } ?? maxBeats,
-          { |v|
-            var trimValue = ((v.value * (maxBeats - 0.125)) + 0.125).round(0.125);
-            Lx.trim(i, trimValue);
+      this.prCreateGuiSlider(col, "Freeze",
+        existing !? { existing[\freeze] } ?? 0,
+        (existing !? { existing[\freeze] } ?? 0).round(0.01),
+        { |val| Lx.freeze(i, val.round(0.01)) },
+        { |val| val.round(0.01) });
+
+      {
+        var densitySteps = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 24, 32];
+        var currentHz = existing !? { existing[\density] } ?? 10;
+        var currentBeats = currentHz / TempoClock.default.tempo;
+        var closestIndex = densitySteps.collect { |s| (s - currentBeats).abs }.minIndex;
+
+        this.prCreateGuiSlider(col, "Density",
+          closestIndex / (densitySteps.size - 1),
+          densitySteps[closestIndex],
+          { |val|
+            var index = (val * (densitySteps.size - 1)).round.asInteger;
+            Lx.density(i, densitySteps[index] * TempoClock.default.tempo);
           },
-          { |v|
-            ((v.value * (maxBeats - 0.125)) + 0.125).round(0.125);
+          { |val|
+            var index = (val * (densitySteps.size - 1)).round.asInteger;
+            densitySteps[index];
           });
-      };
+      }.value;
 
-      if (modes[i] == \grain) {
-        {
-          var densitySteps = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 24, 32];
-          var currentHz = existing !? { existing[\density] } ?? 10;
-          var currentBeats = currentHz / TempoClock.default.tempo;
-          var closestIndex = densitySteps.collect { |s| (s - currentBeats).abs }.minIndex;
+      this.prCreateGuiSlider(col, "GrainDur",
+        existing !? { existing[\grainDur] } ?? 0.1,
+        (existing !? { existing[\grainDur] } ?? 0.1).round(0.005),
+        { |val| Lx.grainDur(i, val.max(0.005).round(0.005)) },
+        { |val| val.max(0.005).round(0.005) });
 
-          this.prCreateGuiKnob(col, "Density",
-            closestIndex / (densitySteps.size - 1),
-            densitySteps[closestIndex],
-            { |v|
-              var index = (v.value * (densitySteps.size - 1)).round.asInteger;
-              var hz = densitySteps[index] * TempoClock.default.tempo;
-              Lx.density(i, hz);
-            },
-            { |v|
-              var index = (v.value * (densitySteps.size - 1)).round.asInteger;
-              densitySteps[index];
-            });
-        }.value;
+      this.prCreateGuiSlider(col, "Scatter",
+        existing !? { existing[\scatter] } ?? 0,
+        (existing !? { existing[\scatter] } ?? 0).round(0.01),
+        { |val| Lx.scatter(i, val.round(0.01)) },
+        { |val| val.round(0.01) });
 
-        this.prCreateGuiKnob(col, "GrainDur",
-          existing !? { existing[\grainDur] } ?? 0.1,
-          existing !? { existing[\grainDur] } ?? 0.1,
-          { |v| Lx.grainDur(i, v.value.max(0.005).round(0.005)) },
-          { |v| v.value.max(0.005).round(0.005) });
+      this.prCreateGuiSlider(col, "Spread",
+        existing !? { existing[\spread] } ?? 0,
+        (existing !? { existing[\spread] } ?? 0).round(0.01),
+        { |val| Lx.spread(i, val.round(0.01)) },
+        { |val| val.round(0.01) });
 
-        this.prCreateGuiKnob(col, "Scatter",
-          existing !? { existing[\scatter] } ?? 0,
-          existing !? { existing[\scatter] } ?? 0,
-          { |v| Lx.scatter(i, v.value.round(0.01)) },
-          { |v| v.value.round(0.01) });
+      {
+        var lengthSteps = [0.25, 0.5, 1, 2, 4, 8, 16];
+        var currentLength = existing !? { existing[\length] };
+        var closestIndex = if (currentLength.notNil) {
+          lengthSteps.collect { |s| (s - currentLength).abs }.minIndex;
+        } { 0 };
 
-        this.prCreateGuiKnob(col, "Spread",
-          existing !? { existing[\spread] } ?? 0,
-          existing !? { existing[\spread] } ?? 0,
-          { |v| Lx.spread(i, v.value.round(0.01)) },
-          { |v| v.value.round(0.01) });
-
-        {
-          var lengthSteps = [0.25, 0.5, 1, 2, 4, 8, 16];
-          var currentLength = existing !? { existing[\length] };
-          var closestIndex = if (currentLength.notNil) {
-            lengthSteps.collect { |s| (s - currentLength).abs }.minIndex;
-          } { 0 };
-
-          this.prCreateGuiKnob(col, "Length",
-            closestIndex / (lengthSteps.size - 1),
-            if (currentLength.notNil) { lengthSteps[closestIndex] } { "off" },
-            { |v|
-              var index = (v.value * (lengthSteps.size - 1)).round.asInteger;
-              Lx.length(i, lengthSteps[index]);
-            },
-            { |v|
-              var index = (v.value * (lengthSteps.size - 1)).round.asInteger;
-              lengthSteps[index];
-            });
-        }.value;
-      };
+        this.prCreateGuiSlider(col, "Length",
+          closestIndex / (lengthSteps.size - 1),
+          if (currentLength.notNil) { lengthSteps[closestIndex] } { "off" },
+          { |val|
+            var index = (val * (lengthSteps.size - 1)).round.asInteger;
+            Lx.length(i, lengthSteps[index]);
+          },
+          { |val|
+            var index = (val * (lengthSteps.size - 1)).round.asInteger;
+            lengthSteps[index];
+          });
+      }.value;
 
       {
         var buttonRow, btnWidth;
@@ -228,14 +206,29 @@
         );
 
         Button(buttonRow, btnWidth@25)
-        .states_([
-          ["G", Color.white, Color.new255(32, 42, 55)],
-          ["G", Color.new255(32, 42, 55), Color.new255(61, 219, 217)],
-        ])
-        .action_({ Lx.grain(i) })
-        .value_(
-          if (modes[i] == \grain) { 1 } { 0 }
-        );
+        .states_([["R", Color.white, Color.new255(32, 42, 55)]])
+        .action_({ Lx.shuffle(i) });
+      }.value;
+
+      CompositeView(col, (colWidth - 10)@5);
+
+      {
+        var randomLabel;
+
+        randomLabel = StaticText(col, (colWidth - 10)@21)
+        .align_(\left)
+        .string_("Random: " ++ shuffleAmounts[i].round(0.01))
+        .stringColor_(Color.grey(0.7))
+        .font_(Font.default.size_(12));
+
+        Slider(col, (colWidth - 10)@26)
+        .value_(shuffleAmounts[i].linlin(0.05, 1, 0, 1))
+        .background_(bgColor)
+        .action_({ |v|
+          var val = v.value.linlin(0, 1, 0.05, 1);
+          shuffleAmounts.put(i, val);
+          randomLabel.string_("Random: " ++ val.round(0.01));
+        });
       }.value;
     };
 
@@ -287,44 +280,61 @@
     window.front;
   }
 
-  *prCreateGuiKnob { |parent, label, knobValue, displayValue, action, displayFunc|
-    var knob, knobColor, knobRow, valueBox;
+  *prCreateGuiSlider { |parent, label, sliderValue, displayValue, action, displayFunc|
+    var labelView, slider, currentValue;
     var colWidth = 100;
-    var knobSize = colWidth - 40;
+    var contentWidth = colWidth - 10;
+    var fillColor = Color.cyan;
+    var bgSliderColor = Color.new255(31, 41, 55);
 
-    StaticText(parent, (colWidth - 10)@15)
-    .align_(\center)
-    .string_(label)
+    currentValue = sliderValue;
+
+    labelView = StaticText(parent, contentWidth@21)
+    .align_(\left)
+    .string_(label ++ ": " ++ displayValue.asString)
     .stringColor_(Color.grey(0.7))
-    .font_(Font.default.size_(10));
+    .font_(Font.default.size_(12));
 
-    knobRow = CompositeView(parent, (colWidth - 10)@knobSize);
-    knobRow.decorator = FlowLayout(knobRow.bounds, ((colWidth - 10 - knobSize) / 2)@0, 0@0);
+    slider = UserView(parent, contentWidth@26)
+    .drawFunc_({ |v|
+      var bounds = v.bounds.moveTo(0, 0);
+      var fillWidth = currentValue * bounds.width;
 
-    knob = Knob(knobRow, knobSize@knobSize)
-    .mode_(\vert)
-    .value_(knobValue)
-    .action_({ |v|
-      valueBox.string_(displayFunc.(v).asString);
+      Pen.fillColor = bgSliderColor;
+      Pen.addRoundedRect(bounds, 4, 4);
+      Pen.fill;
+
+      if (fillWidth > 0) {
+        Pen.push;
+        Pen.addRoundedRect(bounds, 4, 4);
+        Pen.clip;
+        Pen.fillColor = fillColor;
+        Pen.fillRect(Rect(0, 0, fillWidth, bounds.height));
+        Pen.pop;
+      };
+
+      Pen.strokeColor = Color.grey(0.45);
+      Pen.addRoundedRect(bounds, 4, 4);
+      Pen.stroke;
     })
-    .mouseUpAction_(action);
-    knobColor = knob.color;
-    knobColor[1] = Color.cyan;
-    knob.color = knobColor;
-
-    valueBox = StaticText(parent, (colWidth - 10)@16)
-    .align_(\center)
-    .string_(displayValue.asString)
-    .stringColor_(Color.grey(0.6))
-    .font_(Font.default.size_(9));
+    .mouseDownAction_({ |v, x|
+      currentValue = (x / v.bounds.width).clip(0, 1);
+      labelView.string_(label ++ ": " ++ displayFunc.(currentValue).asString);
+      v.refresh;
+    })
+    .mouseMoveAction_({ |v, x|
+      currentValue = (x / v.bounds.width).clip(0, 1);
+      labelView.string_(label ++ ": " ++ displayFunc.(currentValue).asString);
+      v.refresh;
+    })
+    .mouseUpAction_({ |v|
+      action.(currentValue);
+    });
   }
 
-  *prDurToKnob { |dur, steps|
+  *prDurToSlider { |dur, steps|
     var closest = steps.collect { |s| (s - dur).abs }.minIndex;
     ^closest / (steps.size - 1);
   }
 
-  *prTrimToKnob { |trim, maxBeats|
-    ^((trim - 0.125) / (maxBeats - 0.125)).clip(0, 1);
-  }
 }

@@ -50,7 +50,7 @@
   }
 
   *prGenerateSliders {
-    var patterns = last;
+    var patterns = last.reject { |pattern| pattern[\lx] == true };
     var patternsFormatted = lastFormatted;
 
     var drumMachinePatterns = patterns.select { |pattern|
@@ -154,7 +154,7 @@
   }
 
   *prGenerateWindowWidth {
-    if (Px.last.size > 0)
+    if (Px.last.reject { |pattern| pattern[\lx] == true }.size > 0)
     { ^windowWidth }
     { ^windowHeight }
   }

@@ -54,6 +54,10 @@
     FadeIn(this, fadeTime);
   }
 
+  grain { |value|
+    Px.stop(this);
+  }
+
   loop { |value|
     Px.stop(this);
   }

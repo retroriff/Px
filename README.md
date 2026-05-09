@@ -96,6 +96,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 
 | Name   | Arguments                                          | Description                            |
 | ------ | -------------------------------------------------- | -------------------------------------- |
+| `grain` | [folder: string, file: number \| \jump \| \rand]\* | Plays a granular texture from a buffer |
 | `i`    | name: string                                       | Plays a Synthdef. Same as `instrument` |
 | `loop` | [folder: string, file: number \| \jump \| \rand]\* | Plays a loop from a buffer             |
 | `play` | [folder: string, file: number \| array \| \rand]\* | Plays a buffer                         |
@@ -259,6 +260,12 @@ Lx.stop
 | `start`       | channel: integer, value?: number     | Sets start position (0-1) for a channel |
 | `stop`        | channel?: integer                    | Stops one or all Lx patterns            |
 | `vol`         | value: number                        | Sets amplitude for all playing channels |
+| `grain`       | channel: integer                     | Toggles granular synthesis mode         |
+| `density`     | channel: integer, value?: number     | Sets grain density (grains/sec)         |
+| `grainDur`    | channel: integer, value?: number     | Sets grain size (seconds)               |
+| `scatter`     | channel: integer, value?: number     | Sets position randomness (0-1)          |
+| `spread`      | channel: integer, value?: number     | Sets pitch variation per grain (0-1)    |
+| `freeze`      | channel: integer, value?: number     | Stops position scanning (0/1)           |
 
 ## 🌊 Sx: A Sequenced Synth
 

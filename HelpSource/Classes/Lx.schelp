@@ -171,6 +171,88 @@ code::
 Lx.vol(0.5);
 ::
 
+subsection:: Granular Synthesis
+
+method:: grain
+Toggles granular synthesis mode for a channel. In grain mode, the sample is played through a cloud of tiny overlapping grains (GrainBuf) instead of a continuous loop (PlayBuf). Calling again toggles back to loop mode.
+
+argument:: channel
+Channel index (0-based).
+
+code::
+Lx.grain(0);  // Switch to grain mode
+Lx.grain(0);  // Switch back to loop mode
+::
+
+method:: density
+Sets the grain density (grains per second). Higher values produce smoother, denser textures. Lower values produce sparse, rhythmic grains.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Grains per second. Default: 10. Range: 1-50+.
+
+code::
+Lx.density(0, 30);  // Dense, smooth texture
+Lx.density(0, 4);   // Sparse, rhythmic grains
+::
+
+method:: grainDur
+Sets the duration of each grain in seconds. Smaller grains create clicky, glitchy textures. Larger grains create smooth, overlapping sounds.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Grain duration in seconds. Default: 0.1.
+
+code::
+Lx.grainDur(0, 0.01);  // Micro grains, glitchy
+Lx.grainDur(0, 0.3);   // Large grains, smooth
+::
+
+method:: scatter
+Sets position randomness. At 0, grains scan linearly through the buffer. Higher values add random position jitter, making each grain come from a slightly different position.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Scatter amount (0-1). Default: 0.
+
+code::
+Lx.scatter(0, 0.3);  // Organic variation
+::
+
+method:: spread
+Sets pitch variation between grains. Small values add chorus-like warmth. Larger values create abstract, detuned textures.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Pitch spread amount (0-1). Default: 0.
+
+code::
+Lx.spread(0, 0.02);  // Subtle chorus/shimmer
+Lx.spread(0, 0.2);   // Abstract detuning
+::
+
+method:: freeze
+Stops position scanning. All grains play from the current position, creating a sustained frozen texture.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Freeze state (0 or 1). Default: 0.
+
+code::
+Lx.freeze(0, 1);  // Freeze at current position
+Lx.freeze(0, 0);  // Resume scanning
+::
+
 subsection:: GUI
 
 method:: gui
@@ -190,6 +272,9 @@ Returns the number of loaded channels.
 
 method:: channelNames
 Returns an Array of subfolder names (one per channel).
+
+method:: modes
+Returns an Array of current mode per channel (\loop or \grain).
 
 method:: tracks
 Returns an Array of current sample indices per channel.
@@ -223,6 +308,20 @@ Lx.gui;
 
 // Fade in
 Lx.play(0, 16);
+
+// Granular synthesis mode
+Lx.grain(0);
+Lx.density(0, 30);
+Lx.grainDur(0, 0.2);
+Lx.scatter(0, 0.3);
+Lx.spread(0, 0.02);
+
+// Frozen texture
+Lx.freeze(0, 1);
+Lx.freeze(0, 0);
+
+// Granular via Number DSL
+1.grain("fm-2:4").dur(4).density(20).scatter(0.3).spread(0.02);
 
 // Stop
 Lx.stop;

@@ -4,7 +4,8 @@
     var colWidth = 100;
     var margin = 10, gap = 5;
     var width = (colWidth * channelCount) + (gap * (channelCount - 1)) + (margin * 2);
-    var colHeight = 510;
+    var hasGrain = modes.any { |m| m == \grain };
+    var colHeight = if (hasGrain) { 985 } { 510 };
     var height = colHeight + 75;
     var bgColor = Color.new255(26, 29, 34);
     var linkColor = Color.new255(31, 41, 55);
@@ -106,41 +107,109 @@
         { |v| Lx.start(i, v.value) },
         { |v| v.value.round(0.01) });
 
-      this.prCreateGuiKnob(col, "Trim",
-        this.prTrimToKnob(existing !? { existing[\trim] } ?? maxBeats, maxBeats),
-        existing !? { existing[\trim] } ?? maxBeats,
-        { |v|
-          var trimValue = ((v.value * (maxBeats - 0.125)) + 0.125).round(0.125);
-          Lx.trim(i, trimValue);
-        },
-        { |v|
-          ((v.value * (maxBeats - 0.125)) + 0.125).round(0.125);
-        });
+      if (modes[i] == \grain) {
+        this.prCreateGuiKnob(col, "Freeze",
+          existing !? { existing[\freeze] } ?? 0,
+          existing !? { existing[\freeze] } ?? 0,
+          { |v| Lx.freeze(i, v.value.round(0.01)) },
+          { |v| v.value.round(0.01) });
+      } {
+        this.prCreateGuiKnob(col, "Trim",
+          this.prTrimToKnob(existing !? { existing[\trim] } ?? maxBeats, maxBeats),
+          existing !? { existing[\trim] } ?? maxBeats,
+          { |v|
+            var trimValue = ((v.value * (maxBeats - 0.125)) + 0.125).round(0.125);
+            Lx.trim(i, trimValue);
+          },
+          { |v|
+            ((v.value * (maxBeats - 0.125)) + 0.125).round(0.125);
+          });
+      };
+
+      if (modes[i] == \grain) {
+        {
+          var densitySteps = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 24, 32];
+          var currentHz = existing !? { existing[\density] } ?? 10;
+          var currentBeats = currentHz / TempoClock.default.tempo;
+          var closestIndex = densitySteps.collect { |s| (s - currentBeats).abs }.minIndex;
+
+          this.prCreateGuiKnob(col, "Density",
+            closestIndex / (densitySteps.size - 1),
+            densitySteps[closestIndex],
+            { |v|
+              var index = (v.value * (densitySteps.size - 1)).round.asInteger;
+              var hz = densitySteps[index] * TempoClock.default.tempo;
+              Lx.density(i, hz);
+            },
+            { |v|
+              var index = (v.value * (densitySteps.size - 1)).round.asInteger;
+              densitySteps[index];
+            });
+        }.value;
+
+        this.prCreateGuiKnob(col, "GrainDur",
+          existing !? { existing[\grainDur] } ?? 0.1,
+          existing !? { existing[\grainDur] } ?? 0.1,
+          { |v| Lx.grainDur(i, v.value.max(0.005).round(0.005)) },
+          { |v| v.value.max(0.005).round(0.005) });
+
+        this.prCreateGuiKnob(col, "Scatter",
+          existing !? { existing[\scatter] } ?? 0,
+          existing !? { existing[\scatter] } ?? 0,
+          { |v| Lx.scatter(i, v.value.round(0.01)) },
+          { |v| v.value.round(0.01) });
+
+        this.prCreateGuiKnob(col, "Spread",
+          existing !? { existing[\spread] } ?? 0,
+          existing !? { existing[\spread] } ?? 0,
+          { |v| Lx.spread(i, v.value.round(0.01)) },
+          { |v| v.value.round(0.01) });
+
+        {
+          var lengthSteps = [0.25, 0.5, 1, 2, 4, 8, 16];
+          var currentLength = existing !? { existing[\length] };
+          var closestIndex = if (currentLength.notNil) {
+            lengthSteps.collect { |s| (s - currentLength).abs }.minIndex;
+          } { 0 };
+
+          this.prCreateGuiKnob(col, "Length",
+            closestIndex / (lengthSteps.size - 1),
+            if (currentLength.notNil) { lengthSteps[closestIndex] } { "off" },
+            { |v|
+              var index = (v.value * (lengthSteps.size - 1)).round.asInteger;
+              Lx.length(i, lengthSteps[index]);
+            },
+            { |v|
+              var index = (v.value * (lengthSteps.size - 1)).round.asInteger;
+              lengthSteps[index];
+            });
+        }.value;
+      };
 
       {
-        var buttonRow, halfWidth;
+        var buttonRow, btnWidth;
 
         buttonRow = CompositeView(col, (colWidth - 10)@30);
         buttonRow.decorator = FlowLayout(buttonRow.bounds, 0@5, 2@0);
-        halfWidth = ((colWidth - 10 - 2) / 2).floor;
+        btnWidth = ((colWidth - 10 - 4) / 3).floor;
 
-        Button(buttonRow, halfWidth@25)
+        Button(buttonRow, btnWidth@25)
         .states_([
           ["🟢", Color.white, Color.new255(32, 42, 55)],
           ["⬜️", Color.grey, Color.new255(32, 42, 55)],
         ])
         .action_({ |btn|
-          var id = ("lx" ++ i).asSymbol;
-
           if (btn.value == 1)
-          { mutedChannels.add(i); Px.pause(id) }
-          { mutedChannels.remove(i); Px.resume(id) };
+          { mutedChannels.add(i) }
+          { mutedChannels.remove(i) };
+
+          Lx.prApplyMuteState(i);
         })
         .value_(
           if (mutedChannels.includes(i)) { 1 } { 0 }
         );
 
-        Button(buttonRow, halfWidth@25)
+        Button(buttonRow, btnWidth@25)
         .states_([
           ["S", Color.white, Color.new255(32, 42, 55)],
           ["S", Color.new255(32, 42, 55), Color.white],
@@ -151,18 +220,21 @@
           { soloedChannels.remove(i) };
 
           channelCount.do { |j|
-            var otherId = ("lx" ++ j).asSymbol;
-            var shouldBeSilent = mutedChannels.includes(j) or: {
-              soloedChannels.notEmpty and: { soloedChannels.includes(j).not }
-            };
-
-            if (shouldBeSilent)
-            { Ndef(otherId).pause }
-            { Ndef(otherId).resume };
+            Lx.prApplyMuteState(j);
           };
         })
         .value_(
           if (soloedChannels.includes(i)) { 1 } { 0 }
+        );
+
+        Button(buttonRow, btnWidth@25)
+        .states_([
+          ["G", Color.white, Color.new255(32, 42, 55)],
+          ["G", Color.new255(32, 42, 55), Color.new255(61, 219, 217)],
+        ])
+        .action_({ Lx.grain(i) })
+        .value_(
+          if (modes[i] == \grain) { 1 } { 0 }
         );
       }.value;
     };
@@ -183,10 +255,13 @@
           ["Play", Color.white, linkColor],
           ["Play", bgColor, Color.new255(37, 190, 106)],
         ])
-        .action_({ |btn|
-          if (btn.value == 1)
-          { Lx.play };
-        });
+        .action_({
+          if (isPlaying.not) { Lx.play };
+          playBtn.value_(if (isPlaying) { 1 } { 0 });
+        })
+        .value_(
+          if (isPlaying) { 1 } { 0 }
+        );
 
         Button(bottomRow, buttonWidth@50)
         .states_([

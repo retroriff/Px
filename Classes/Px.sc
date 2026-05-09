@@ -104,7 +104,7 @@ Px {
       var drop = pattern[\chop][1];
 
       if (dur != 0 and: (dur != Nil)) {
-        if (pattern[\instrument] == \loop) {
+        if (pattern[\instrument] == \loop or: { pattern[\instrument] == \grainLoop }) {
           pbindef = Pbindf(pbindef,
             \beats, pattern[\beats] ?? pattern[\dur],
             \dur, dur

@@ -258,9 +258,9 @@ Lx.stop
 | `prev`        | channel: integer                     | Previous sample in channel (wraps)      |
 | `rate`        | channel: integer, value?: number     | Sets playback rate for a channel        |
 | `start`       | channel: integer, value?: number     | Sets start position (0-1) for a channel |
+| `shuffle`     | channel?: integer, amount?: number   | Randomizes parameters with drift control |
 | `stop`        | channel?: integer                    | Stops one or all Lx patterns            |
 | `vol`         | value: number                        | Sets amplitude for all playing channels |
-| `grain`       | channel: integer                     | Toggles granular synthesis mode         |
 | `density`     | channel: integer, value?: number     | Sets grain density (grains/sec)         |
 | `grainDur`    | channel: integer, value?: number     | Sets grain size (seconds)               |
 | `scatter`     | channel: integer, value?: number     | Sets position randomness (0-1)          |

@@ -5,8 +5,8 @@ Lx : Px {
   classvar <folderPath;
   classvar <monoBufs;
   classvar <tracks;
-  classvar <modes;
   classvar <mutedChannels;
+  classvar <shuffleAmounts;
   classvar <soloedChannels;
   classvar <window;
   classvar <isPlaying;
@@ -17,8 +17,8 @@ Lx : Px {
     channelCount = 0;
     channelNames = Array.new;
     monoBufs = Dictionary.new;
-    modes = Array.new;
     mutedChannels = IdentitySet.new;
+    shuffleAmounts = Array.new;
     soloedChannels = IdentitySet.new;
     tracks = Array.new;
     isPlaying = false;
@@ -46,7 +46,6 @@ Lx : Px {
     bufs = Dictionary.new;
     monoBufs = Dictionary.new;
     channelNames = Array.new;
-    modes = Array.new;
     tracks = Array.new;
     folderPath = path;
 
@@ -64,12 +63,13 @@ Lx : Px {
           Buffer.readChannel(Server.default, file.fullPath, channels: [0])
         };
         channelNames = channelNames.add(folder.folderName);
-        modes = modes.add(\loop);
         tracks = tracks.add(0);
       };
     };
 
     channelCount = bufs.size;
+    shuffleAmounts = Array.fill(channelCount, { 1 });
+
     if (verbose)
     { this.prPrint("🔄 Lx with" + channelCount + "channels") };
   }
@@ -174,36 +174,77 @@ Lx : Px {
     this.prCreatePattern(channel);
   }
 
-  *shuffle {
-    var durSteps = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
-
-    channelCount.do { |i|
-      var id = this.prCreateId(i);
-      var dur = durSteps.choose * [-1, 1].choose;
-      var maxBeats;
-
-      tracks[i] = bufs[i].size.rand;
-      maxBeats = bufs[i][tracks[i]].duration * TempoClock.default.tempo;
-
-      if (last[id].isNil)
-      { last[id] = () };
-
-      last[id][\start] = 1.0.rand;
-      last[id][\dur] = dur;
-      last[id][\trim] = (1.0.rand.pow(0.7) * (maxBeats - 0.125) + 0.125).round(0.125);
-
-      if (modes[i] == \grain) {
-        var densitySteps = [0.5, 1, 2, 3, 4, 6, 8, 12, 16];
-        last[id][\density] = densitySteps.choose * TempoClock.default.tempo;
-        last[id][\grainDur] = [0.01, 0.03, 0.05, 0.1, 0.15, 0.2, 0.3].choose;
-        last[id][\scatter] = 1.0.rand;
-        last[id][\spread] = [0, 0, 0.02, 0.05, 0.1, 0.3].choose;
+  *shuffle { |channel, amount|
+    if (channel.notNil) {
+      this.prShuffleChannel(channel, amount ?? shuffleAmounts[channel]);
+    } {
+      channelCount.do { |i|
+        this.prShuffleChannel(i, amount ?? shuffleAmounts[i]);
       };
-
-      this.prCreatePattern(i);
     };
 
     this.prRefreshGui;
+  }
+
+  *prShuffleChannel { |i, amount|
+    var currentDur, currentHz, densitySteps, durSteps, grainDurSteps, id, spreadSteps;
+
+    durSteps = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
+    densitySteps = [0.5, 1, 2, 3, 4, 6, 8, 12, 16];
+    grainDurSteps = [0.01, 0.03, 0.05, 0.1, 0.15, 0.2, 0.3];
+    spreadSteps = [0, 0, 0.02, 0.05, 0.1, 0.3];
+
+    if (amount <= 0)
+    { ^nil };
+
+    if (bufs[i].isNil)
+    { ^this.prPrint("🔴 Channel" + i + "not found") };
+
+    id = this.prCreateId(i);
+
+    if (amount > 0.7) {
+
+      if (amount > 0.85)
+      { tracks[i] = bufs[i].size.rand }
+      { tracks[i] = (tracks[i] + [-1, 1].choose) % bufs[i].size };
+    };
+
+    if (last[id].isNil)
+    { last[id] = () };
+
+    if (last[id][\start].notNil)
+    { last[id][\start] = (last[id][\start] + (rrand(-1.0, 1.0) * amount)).clip(0, 1) }
+    { last[id][\start] = 1.0.rand * amount };
+
+    currentDur = last[id][\dur] ?? 4;
+    last[id][\dur] = this.prPickNearby(durSteps, currentDur.abs, amount);
+
+    if (amount >= 0.5)
+    { last[id][\dur] = last[id][\dur] * [-1, 1].choose }
+    { last[id][\dur] = last[id][\dur] * currentDur.sign };
+
+    currentHz = last[id][\density] ?? 10;
+    last[id][\density] = this.prPickNearby(densitySteps, currentHz / TempoClock.default.tempo, amount) * TempoClock.default.tempo;
+    last[id][\grainDur] = this.prPickNearby(grainDurSteps, last[id][\grainDur] ?? 0.1, amount);
+
+    if (last[id][\scatter].notNil)
+    { last[id][\scatter] = (last[id][\scatter] + (rrand(-1.0, 1.0) * amount)).clip(0, 1) }
+    { last[id][\scatter] = 1.0.rand * amount };
+
+    last[id][\spread] = this.prPickNearby(spreadSteps, last[id][\spread] ?? 0, amount);
+
+    this.prCreatePattern(i);
+  }
+
+  *prPickNearby { |steps, currentVal, amount|
+    var currentIndex, maxIdx, minIdx, windowSize;
+
+    currentIndex = steps.collect { |s| (s - currentVal).abs }.minIndex;
+    windowSize = (steps.size * amount).ceil.asInteger.max(1);
+    minIdx = (currentIndex - windowSize).max(0);
+    maxIdx = (currentIndex + windowSize).min(steps.size - 1);
+
+    ^steps[rrand(minIdx, maxIdx)];
   }
 
   *stop { |channel|
@@ -228,18 +269,6 @@ Lx : Px {
         this.prCreatePattern(i);
       };
     };
-  }
-
-  *grain { |channel|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (bufs[channel].isNil)
-    { ^this.prPrint("🔴 Channel" + channel + "not found") };
-
-    modes[channel] = if (modes[channel] == \grain) { \loop } { \grain };
-    this.prCreatePattern(channel);
-    this.prRefreshGui;
   }
 
   *density { |channel, value = 10|
@@ -320,36 +349,25 @@ Lx : Px {
   *prCreatePattern { |channel, fadeTime|
     var id = this.prCreateId(channel);
     var existing = last[id];
-    var dur = existing !? { existing[\dur] } ?? 4;
-    var isGrain = modes[channel] == \grain;
     var pattern = (
       amp: existing !? { existing[\amp] } ?? 0.3,
-      dur: dur,
+      dur: existing !? { existing[\dur] } ?? 4,
       id: id,
       lx: true,
     );
 
-    if (isGrain) {
-      pattern[\grain] = monoBufs[channel][tracks[channel]];
-      pattern[\density] = existing !? { existing[\density] } ?? 10;
-      pattern[\grainDur] = existing !? { existing[\grainDur] } ?? 0.1;
-      pattern[\scatter] = existing !? { existing[\scatter] } ?? 0;
-      pattern[\spread] = existing !? { existing[\spread] } ?? 0;
-      pattern[\freeze] = existing !? { existing[\freeze] } ?? 0;
-    } {
-      pattern[\loop] = bufs[channel][tracks[channel]];
-    };
+    pattern[\grain] = monoBufs[channel][tracks[channel]];
+    pattern[\density] = existing !? { existing[\density] } ?? 10;
+    pattern[\grainDur] = existing !? { existing[\grainDur] } ?? 0.1;
+    pattern[\scatter] = existing !? { existing[\scatter] } ?? 0;
+    pattern[\spread] = existing !? { existing[\spread] } ?? 0;
+    pattern[\freeze] = existing !? { existing[\freeze] } ?? 0;
 
     if (existing.notNil and: { existing[\start].notNil })
     { pattern[\start] = existing[\start] };
 
     if (existing.notNil and: { existing[\length].notNil })
     { pattern[\length] = existing[\length] };
-
-    if (isGrain.not and: { existing.notNil } and: { existing[\trim].notNil }) {
-      pattern[\sus] = existing[\trim] / dur.abs;
-      pattern[\trim] = existing[\trim];
-    };
 
     if (fadeTime.notNil)
     { pattern[\fade] = [\in, fadeTime] };

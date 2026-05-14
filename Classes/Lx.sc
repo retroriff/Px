@@ -91,22 +91,14 @@ Lx : Px {
   }
 
   *amp { |channel, value = 0.3|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (last[this.prCreateId(channel)].isNil)
-    { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
 
     last[this.prCreateId(channel)][\amp] = value;
     this.prCreatePattern(channel);
   }
 
   *buf { |channel, index|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (bufs[channel].isNil)
-    { ^this.prPrint("🔴 Channel" + channel + "not found") };
+    if (this.prValidateChannel(channel).notNil) { ^nil };
 
     index = index.clip(0, bufs[channel].size - 1);
     tracks[channel] = index;
@@ -115,11 +107,7 @@ Lx : Px {
   }
 
   *dur { |channel, value = 4|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (last[this.prCreateId(channel)].isNil)
-    { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
 
     last[this.prCreateId(channel)][\dur] = value;
     last[this.prCreateId(channel)].removeAt(\beats);
@@ -127,11 +115,7 @@ Lx : Px {
   }
 
   *next { |channel|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (bufs[channel].isNil)
-    { ^this.prPrint("🔴 Channel" + channel + "not found") };
+    if (this.prValidateChannel(channel).notNil) { ^nil };
 
     tracks[channel] = (tracks[channel] + 1) % bufs[channel].size;
     this.prCreatePattern(channel);
@@ -145,9 +129,7 @@ Lx : Px {
     isPlaying = true;
 
     if (channel.notNil) {
-
-      if (bufs[channel].isNil)
-      { ^this.prPrint("🔴 Channel" + channel + "not found") };
+      if (this.prValidateChannel(channel).notNil) { ^nil };
 
       this.prCreatePattern(channel, fadeTime);
     } {
@@ -158,11 +140,7 @@ Lx : Px {
   }
 
   *prev { |channel|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (bufs[channel].isNil)
-    { ^this.prPrint("🔴 Channel" + channel + "not found") };
+    if (this.prValidateChannel(channel).notNil) { ^nil };
 
     tracks[channel] = (tracks[channel] - 1) % bufs[channel].size;
     this.prCreatePattern(channel);
@@ -170,22 +148,14 @@ Lx : Px {
   }
 
   *trim { |channel, value|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (last[this.prCreateId(channel)].isNil)
-    { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
 
     last[this.prCreateId(channel)][\trim] = value;
     this.prCreatePattern(channel);
   }
 
   *start { |channel, value = 0|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (last[this.prCreateId(channel)].isNil)
-    { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
 
     last[this.prCreateId(channel)][\start] = value;
     this.prCreatePattern(channel);
@@ -218,8 +188,7 @@ Lx : Px {
     if (amount <= 0)
     { ^nil };
 
-    if (bufs[i].isNil)
-    { ^this.prPrint("🔴 Channel" + i + "not found") };
+    if (this.prValidateChannel(i).notNil) { ^nil };
 
     id = this.prCreateId(i);
 
@@ -299,69 +268,67 @@ Lx : Px {
   }
 
   *density { |channel, value = 10|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (last[this.prCreateId(channel)].isNil)
-    { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
 
     last[this.prCreateId(channel)][\density] = value;
     this.prCreatePattern(channel);
   }
 
   *grainDur { |channel, value = 0.1|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (last[this.prCreateId(channel)].isNil)
-    { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
 
     last[this.prCreateId(channel)][\grainDur] = value;
     this.prCreatePattern(channel);
   }
 
   *scatter { |channel, value = 0|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (last[this.prCreateId(channel)].isNil)
-    { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
 
     last[this.prCreateId(channel)][\scatter] = value;
     this.prCreatePattern(channel);
   }
 
   *spread { |channel, value = 0|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (last[this.prCreateId(channel)].isNil)
-    { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
 
     last[this.prCreateId(channel)][\spread] = value;
     this.prCreatePattern(channel);
   }
 
   *length { |channel, value|
-    if (channel.isNil)
-    { ^this.prPrint("🟡 Provide a channel number") };
-
-    if (last[this.prCreateId(channel)].isNil)
-    { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
 
     last[this.prCreateId(channel)][\length] = value;
     this.prCreatePattern(channel);
   }
 
   *freeze { |channel, value = 0|
+    if (this.prValidatePlayingChannel(channel).notNil) { ^nil };
+
+    last[this.prCreateId(channel)][\freeze] = value;
+    this.prCreatePattern(channel);
+  }
+
+  *prValidateChannel { |channel|
     if (channel.isNil)
     { ^this.prPrint("🟡 Provide a channel number") };
+
+    if (bufs[channel].isNil)
+    { ^this.prPrint("🔴 Channel" + channel + "not found") };
+
+    ^nil;
+  }
+
+  *prValidatePlayingChannel { |channel|
+    var error = this.prValidateChannel(channel);
+
+    if (error.notNil)
+    { ^error };
 
     if (last[this.prCreateId(channel)].isNil)
     { ^this.prPrint("🟡 Channel" + channel + "is not playing") };
 
-    last[this.prCreateId(channel)][\freeze] = value;
-    this.prCreatePattern(channel);
+    ^nil;
   }
 
   *prRefreshGui {
@@ -440,7 +407,6 @@ Lx : Px {
     meterLevels = Array.fill(channelCount.max(0), { 0 });
 
     last.copy do: { |pattern|
-
       if (pattern[\lx] == true) {
         Fx.prClearProxy(pattern[\id]);
         Px.stop(pattern[\id]);

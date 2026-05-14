@@ -17,12 +17,13 @@ Additional code examples can be found [here](/Examples/).
 1. ⚡️ [Px: A Pattern Shortcuts Generator](#️-px-a-pattern-shortcuts-generator)
 2. ✨ [Fx: A Nodeproxy Effects Handler](#-fx-a-nodeproxy-effects-handler)
 3. 🛢️ [Dx: Drum Machines](#️-drum-machines)
-4. 🌊 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
-5. 🎹 [Nx: Musical Chord Data](#-nx-musical-chord-data)
-6. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
-7. 📡 [OSC Communication](#-osc-communication)
-8. 🎚️ [Mixer](#️-mixer)
-9. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#️-tr08-a-roland-tr-08-midi-controller)
+4. 🔄 [Lx: Multi-Track Sample Looper](#-lx-multi-track-sample-looper)
+5. 🌊 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
+6. 🎹 [Nx: Musical Chord Data](#-nx-musical-chord-data)
+7. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
+8. 📡 [OSC Communication](#-osc-communication)
+9. 🎚️ [Mixer](#️-mixer)
+10. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#️-tr08-a-roland-tr-08-midi-controller)
 
 ## 🛠️ Installation
 
@@ -68,20 +69,20 @@ The superclass that generates the patterns from an array of events with a simpli
 
 These methods add effects directly to a pattern's proxy via the Fx class. They accept the same arguments as the corresponding `Fx` methods. Effects are automatically disabled when removed from a full pattern declaration.
 
-| Name         | Arguments                                      | Description                  |
-| ------------ | ---------------------------------------------- | ---------------------------- |
-| `blp`        | mix?: range 0..1                               | Band-limited low-pass filter |
-| `compressor` | mix?: range 0..1, thresh?, ratio?, gain?       | Dynamic range compressor     |
-| `crush`      | mix?: range 0..1, bits?: number, rate?: number | Bit crusher                  |
-| `delay`      | mix?: range 0..1, delaytime?, delayfeedback?   | Delay effect                 |
-| `distort`    | mix?: range 0..1, drive?: number               | Distortion                   |
+| Name         | Arguments                                       | Description                  |
+| ------------ | ----------------------------------------------- | ---------------------------- |
+| `blp`        | mix?: range 0..1                                | Band-limited low-pass filter |
+| `compressor` | mix?: range 0..1, thresh?, ratio?, gain?        | Dynamic range compressor     |
+| `crush`      | mix?: range 0..1, bits?: number, rate?: number  | Bit crusher                  |
+| `delay`      | mix?: range 0..1, delaytime?, delayfeedback?    | Delay effect                 |
+| `distort`    | mix?: range 0..1, drive?: number                | Distortion                   |
 | `duck`       | mix?: range 0..1, thresh?: number, src?: Symbol | Sidechain compression        |
 | `flanger`    | mix?: range 0..1                                | Flanger effect               |
 | `freqShift`  | mix?: range 0..1, freq?, phase?                 | Frequency shifter            |
 | `gverb`      | mix?: range 0..1, roomsize?, revtime?           | Granular reverb              |
 | `hpf`        | mix?: range 0..1, freq?: number                 | High pass filter             |
 | `lpf`        | mix?: range 0..1, freq?: number                 | Low pass filter              |
-| `pan`        | pos?: range -1..1                               | Stereo panning               |
+| `pan`        | pos?: range -1..1 \| \rand                      | Stereo panning               |
 | `phaser`     | mix?: range 0..1, rate?, depth?                 | Phaser effect                |
 | `reverse`    | mix?: range 0..1                                | Beat-synced reverse reverb   |
 | `reverb`     | mix?: range 0..1, room?, size?                  | Reverb effect                |
@@ -95,6 +96,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 
 | Name   | Arguments                                          | Description                            |
 | ------ | -------------------------------------------------- | -------------------------------------- |
+| `grain` | [folder: string, file: number \| \jump \| \rand]\* | Plays a granular texture from a buffer |
 | `i`    | name: string                                       | Plays a Synthdef. Same as `instrument` |
 | `loop` | [folder: string, file: number \| \jump \| \rand]\* | Plays a loop from a buffer             |
 | `play` | [folder: string, file: number \| array \| \rand]\* | Plays a buffer                         |
@@ -226,6 +228,44 @@ Dx.preset(\electro, 1);
 | `shuffle`     | None                                              | Shuffles the drum machines bank        |
 | `stop`        | None                                              | Same as `\808 i: \all`                 |
 | `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns    |
+
+## 🔄 Lx: Multi-Track Sample Looper
+
+Lx extends Px to provide multi-track sample looping. Each subfolder in a given path becomes a loop channel, playing tempo-synced audio through the Px pattern system.
+
+```js
+// Load samples — each subfolder becomes a channel
+Lx.loadSamples("~/Music/loops/")
+
+// Play all channels
+Lx.play
+
+// Stop all
+Lx.stop
+```
+
+### Lx class methods
+
+| Name          | Arguments                            | Description                             |
+| ------------- | ------------------------------------ | --------------------------------------- |
+| `amp`         | channel: integer, value?: number     | Sets amplitude for a channel            |
+| `buf`         | channel: integer, index: integer     | Switches sample in a channel            |
+| `dur`         | channel: integer, value?: number     | Sets duration (beats) for a channel     |
+| `gui`         | None                                 | Opens multi-channel control GUI         |
+| `loadSamples` | path: string                         | Loads subfolders as loop channels       |
+| `next`        | channel: integer                     | Next sample in channel (wraps)          |
+| `play`        | channel?: integer, fadeTime?: number | Plays one or all channels               |
+| `prev`        | channel: integer                     | Previous sample in channel (wraps)      |
+| `start`       | channel: integer, value?: number     | Sets start position (0-1) for a channel |
+| `trim`        | channel: integer, value?: number     | Sets trim position for a channel        |
+| `shuffle`     | channel?: integer, amount?: number   | Randomizes parameters with drift control |
+| `stop`        | channel?: integer                    | Stops one or all Lx patterns            |
+| `vol`         | value: number                        | Sets amplitude for all playing channels |
+| `density`     | channel: integer, value?: number     | Sets grain density (grains/sec)         |
+| `grainDur`    | channel: integer, value?: number     | Sets grain size (seconds)               |
+| `scatter`     | channel: integer, value?: number     | Sets position randomness (0-1)          |
+| `spread`      | channel: integer, value?: number     | Sets pitch variation per grain (0-1)    |
+| `freeze`      | channel: integer, value?: number     | Stops position scanning (0/1)           |
 
 ## 🌊 Sx: A Sequenced Synth
 

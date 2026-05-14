@@ -35,6 +35,9 @@ Dx : Px {
   }
 
   *new { | newPattern|
+    if (this == Dx and: { TR08.prShouldHandle(newPattern) })
+    { ^TR08(newPattern) };
+
     newPattern = this.prAddDrumMachinePlayBuf(newPattern);
 
     ^super.new(newPattern);

@@ -1,11 +1,9 @@
-/*
-TODO: We should be able to play TR08 using numbers like 8008 i: \bd
-*/
-
 TR08 : Dx {
   classvar <drumKit;
+  classvar <>latency;
 
   *initClass {
+    latency = 0.195;
     drumKit = Dictionary[
       \bd -> 36,
       \sd -> 38,
@@ -26,6 +24,10 @@ TR08 : Dx {
     ];
   }
 
+  *prShouldHandle { |pattern|
+    ^pattern[\drumMachine] == \RolandTR808 and: { this.prIsTR08Detected.value == true };
+  }
+
   *new { | newPattern|
     this.prInitializeMIDIDevice(newPattern);
 
@@ -36,9 +38,16 @@ TR08 : Dx {
     ^super.new(newPattern);
   }
 
-  *init { |latency, drumMachine|
-    if (drumMachine == \RolandTR808)
-    { Px.initMidi(latency, deviceName: "TR-08") };
+  *init { |argLatency, drumMachine|
+    if (argLatency.notNil)
+    { latency = argLatency };
+
+    Px.initMidi(latency, deviceName: "TR-08");
+  }
+
+  *preset { |name, number, amp|
+    drumMachine = \RolandTR808;
+    ^super.preset(name, number, amp);
   }
 
   *play {
@@ -62,8 +71,8 @@ TR08 : Dx {
   }
 
   *prInitializeMIDIDevice { |pattern|
-    if (MIDIClient.initialized == false or: { midiClient.notNil and: { midiClient["TR-08"].isNil }})
-    { this.init(0.195, pattern[\drumMachine]) };
+    if (midiClient.isNil or: { midiClient["TR-08"].isNil })
+    { this.init(drumMachine: pattern[\drumMachine]) };
   }
 
   *prIsTR08Detected {

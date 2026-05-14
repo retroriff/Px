@@ -95,8 +95,13 @@
     };
 
     if (pattern[\loop].notNil) {
-      pattern = pattern ++ (instrument: \loop, buf: pattern[\loop]);
+      pattern = pattern ++ (instrument: \loop, buf: pattern[\loop], sendGate: false);
       pattern.removeAt(\loop);
+    };
+
+    if (pattern[\grain].notNil) {
+      pattern = pattern ++ (instrument: \grainLoop, buf: pattern[\grain], sendGate: false);
+      pattern.removeAt(\grain);
     };
 
     if (pattern[\dur].isNumber and: { pattern[\dur] < 0 }) {
@@ -157,7 +162,7 @@
           this.buf(pattern[\buf][0], (this.buf(pattern[\buf][0]).size).rand);
         };
 
-        if (pattern[\instrument] == \loop) {
+        if (pattern[\instrument] == \loop or: { pattern[\instrument] == \grainLoop }) {
           var sampleLength = pattern[\buf][0].split($-);
           var folderBeats = 1;
 

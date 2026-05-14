@@ -35,7 +35,9 @@
   prCollectSynthDefKeys {
     var loopKeys = SynthDescLib.global[\loop].controlNames.asSet;
     var playbufKeys = SynthDescLib.global[\playbuf].controlNames.asSet;
-    var keys = loopKeys ++ playbufKeys;
+    var grainLoopKeys = if (SynthDescLib.global[\grainLoop].notNil)
+      { SynthDescLib.global[\grainLoop].controlNames.asSet } { Set.new };
+    var keys = loopKeys ++ playbufKeys ++ grainLoopKeys;
     var currentInstrument;
 
     if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.notNil })
@@ -50,7 +52,8 @@
 
       if (this.prIsValidInstrument(ins)
         and: (event[\play].isNil)
-        and: (event[\loop].isNil)) {
+        and: (event[\loop].isNil)
+        and: (event[\grain].isNil)) {
         keys.addAll(SynthDescLib.global[ins].controlNames);
       };
     };
@@ -120,6 +123,11 @@
 
   off { |value|
     this.prDebouncer.enqueue([\timingOffset, value]);
+  }
+
+  grain { |value|
+    this.prPlay(grain: value);
+    PxDebouncer.current.prSchedule;
   }
 
   loop { |value|
@@ -287,10 +295,11 @@
     { pattern.removeAt(\fade) };
   }
 
-  prPlay { |i, play, loop|
+  prPlay { |i, play, loop, grain|
     var instrumentWithoutSufix, oldPending;
 
     var newPattern = (
+      grain: this.prCreateArrayFromSample(grain),
       loop: this.prCreateArrayFromSample(loop),
       play: this.prCreateArrayFromSample(play),
     );

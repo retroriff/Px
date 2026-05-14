@@ -1,0 +1,335 @@
+class:: Lx
+summary:: Multi-Track Sample Looper
+categories:: Live Coding, Loops
+related:: Classes/Px, Classes/Fx, Classes/Dx
+
+description::
+Lx extends link::Classes/Px:: to provide multi-track sample looping. Each subfolder in a given path becomes a loop channel, playing tempo-synced audio through the Px pattern system. Loops integrate with Fx effects, quantization, and the Ndef mixer automatically.
+
+subsection:: Setup
+
+code::
+// Boot server and load SynthDefs
+Px.loadSynthDefs;
+
+// Load samples — each subfolder becomes a channel
+Lx.loadSamples("~/path/to/loop/folders/");
+::
+
+subsection:: Basic Usage
+
+code::
+// Play all channels
+Lx.play;
+
+// Play a single channel
+Lx.play(0);
+
+// Stop a channel
+Lx.stop(0);
+
+// Stop all
+Lx.stop;
+::
+
+ClassMethods::
+
+subsection:: Sample Loading
+
+method:: loadSamples
+Scans a directory for subfolders. Each subfolder becomes a loop channel. All .wav and .aiff files in each subfolder become the sample pool for that channel.
+
+argument:: path
+Path to the parent directory containing subfolders of audio files.
+
+code::
+Lx.loadSamples("~/Music/loops/");
+::
+
+subsection:: Playback Control
+
+method:: play
+Plays one channel or all channels. Creates Px loop patterns internally.
+
+argument:: channel
+Channel index (0-based). If omitted, plays all channels.
+
+argument:: fadeTime
+Optional fade-in duration in beats.
+
+code::
+Lx.play;        // All channels
+Lx.play(0);     // Single channel
+Lx.play(0, 16); // Fade in over 16 beats
+::
+
+method:: stop
+Stops one channel or all channels.
+
+argument:: channel
+Channel index (0-based). If omitted, stops all Lx patterns.
+
+code::
+Lx.stop;     // Stop all
+Lx.stop(0);  // Stop channel 0
+::
+
+subsection:: Parameter Control
+
+method:: amp
+Sets the amplitude for a channel.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Amplitude value (0-1). Default: 0.3.
+
+code::
+Lx.amp(0, 0.8);
+::
+
+method:: buf
+Switches to a specific sample in a channel's pool.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: index
+Sample index within the channel's buffer pool.
+
+code::
+Lx.buf(0, 2);  // Switch channel 0 to sample 2
+::
+
+method:: dur
+Sets the duration (in beats) for a channel.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Duration in beats. Default: 4.
+
+code::
+Lx.dur(0, 8);
+::
+
+method:: next
+Advances to the next sample in a channel's pool (wraps around).
+
+argument:: channel
+Channel index (0-based).
+
+code::
+Lx.next(0);
+::
+
+method:: prev
+Goes to the previous sample in a channel's pool (wraps around).
+
+argument:: channel
+Channel index (0-based).
+
+code::
+Lx.prev(0);
+::
+
+method:: start
+Sets the start position within the sample.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Start position (0-1). Default: 0.
+
+code::
+Lx.start(0, 0.25);  // Start at 25%
+::
+
+method:: trim
+Sets the trim position for a channel.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Trim position value.
+
+code::
+Lx.trim(0, 0.5);
+::
+
+method:: vol
+Sets amplitude for all playing channels.
+
+argument:: value
+Amplitude value (0-1).
+
+code::
+Lx.vol(0.5);
+::
+
+subsection:: Shuffle
+
+method:: shuffle
+Randomizes parameters for one or all channels. The amount parameter controls how far values drift from their current state: low values produce subtle variation, high values approach full randomization. Samples only change when amount exceeds 0.7.
+
+argument:: channel
+Channel index (0-based). If omitted, shuffles all channels.
+
+argument:: amount
+Shuffle intensity (0-1). Default: uses per-channel amount set via GUI slider (initially 1).
+
+code::
+Lx.shuffle;            // All channels, full random
+Lx.shuffle(0);         // Channel 0, full random
+Lx.shuffle(0, 0.3);   // Channel 0, gentle nudge
+Lx.shuffle(amount: 0.2); // All channels, subtle drift
+::
+
+subsection:: Granular Synthesis
+
+method:: density
+Sets the grain density (grains per second). Higher values produce smoother, denser textures. Lower values produce sparse, rhythmic grains.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Grains per second. Default: 10. Range: 1-50+.
+
+code::
+Lx.density(0, 30);  // Dense, smooth texture
+Lx.density(0, 4);   // Sparse, rhythmic grains
+::
+
+method:: grainDur
+Sets the duration of each grain in seconds. Smaller grains create clicky, glitchy textures. Larger grains create smooth, overlapping sounds.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Grain duration in seconds. Default: 0.1.
+
+code::
+Lx.grainDur(0, 0.01);  // Micro grains, glitchy
+Lx.grainDur(0, 0.3);   // Large grains, smooth
+::
+
+method:: scatter
+Sets position randomness. At 0, grains scan linearly through the buffer. Higher values add random position jitter, making each grain come from a slightly different position.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Scatter amount (0-1). Default: 0.
+
+code::
+Lx.scatter(0, 0.3);  // Organic variation
+::
+
+method:: spread
+Sets pitch variation between grains. Small values add chorus-like warmth. Larger values create abstract, detuned textures.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Pitch spread amount (0-1). Default: 0.
+
+code::
+Lx.spread(0, 0.02);  // Subtle chorus/shimmer
+Lx.spread(0, 0.2);   // Abstract detuning
+::
+
+method:: freeze
+Stops position scanning. All grains play from the current position, creating a sustained frozen texture.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Freeze state (0 or 1). Default: 0.
+
+code::
+Lx.freeze(0, 1);  // Freeze at current position
+Lx.freeze(0, 0);  // Resume scanning
+::
+
+subsection:: GUI
+
+method:: gui
+Opens a GUI window with per-channel controls: sample navigation, granular parameter knobs, shuffle with amount slider, and mute/solo buttons.
+
+code::
+Lx.gui;
+::
+
+subsection:: State
+
+method:: bufs
+Returns the Dictionary of loaded buffers (channel index to Array of Buffers).
+
+method:: channelCount
+Returns the number of loaded channels.
+
+method:: channelNames
+Returns an Array of subfolder names (one per channel).
+
+method:: tracks
+Returns an Array of current sample indices per channel.
+
+examples::
+
+code::
+// Setup
+Px.loadSynthDefs;
+Lx.loadSamples("~/Music/loops/");
+
+// Play all loops
+Lx.play;
+
+// Adjust parameters
+Lx.amp(0, 0.8);
+Lx.rate(1, 0.5);
+Lx.start(0, 0.25);
+Lx.dur(2, 8);
+
+// Navigate samples
+Lx.next(0);
+Lx.prev(1);
+
+// Add effects via Fx
+Fx(\lx0).reverb(0.3);
+Fx(\lx1).delay(0.2);
+
+// Open GUI
+Lx.gui;
+
+// Fade in
+Lx.play(0, 16);
+
+// Granular parameters
+Lx.density(0, 30);
+Lx.grainDur(0, 0.2);
+Lx.scatter(0, 0.3);
+Lx.spread(0, 0.02);
+
+// Frozen texture
+Lx.freeze(0, 1);
+Lx.freeze(0, 0);
+
+// Shuffle with amount control
+Lx.shuffle;              // Full random, all channels
+Lx.shuffle(0, 0.3);     // Gentle nudge on channel 0
+
+// Granular via Number DSL
+1.grain("fm-2:4").dur(4).density(20).scatter(0.3).spread(0.02);
+
+// Stop
+Lx.stop;
+::

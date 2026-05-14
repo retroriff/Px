@@ -54,6 +54,16 @@ Fx {
   *clear { |singleProxy|
     var fx = activeEffects[proxyName];
 
+    if ((proxyName == \lx or: { proxyName == \dx }) and: { singleProxy.isNil }) {
+      var ids = this.prGroupIds(proxyName);
+      var groupName = proxyName;
+
+      ids.do { |id| this.clear(id) };
+      proxyName = groupName;
+      this.prPrint("🌵 All effects disabled on" + groupName);
+      ^this;
+    };
+
     if (fx.notNil and: { fx.size > 0 } and: { singleProxy.isNil })
     { this.prPrint("🌵 All effects have been disabled") };
 
@@ -156,6 +166,11 @@ Fx {
 
   *pan { |pos = 0|
     var postArgs = "pos:" + pos;
+
+    if (pos == \rand) {
+      var trig = LFNoise1.kr(0.5).range(0.3, 2);
+      pos = { LFNoise1.kr(trig).range(-0.6, 0.6) };
+    };
 
     if (pos.isNil)
     { pos = 0 };
@@ -270,6 +285,28 @@ Fx {
 
   *prAddEffect { |fx, mix, args, postArgs|
     var hasFx = false;
+
+    if (proxyName == \lx or: { proxyName == \dx }) {
+      var ids = this.prGroupIds(proxyName);
+      var groupName = proxyName;
+
+      if (ids.isEmpty)
+      { ^this.prPrint("🔴 No" + groupName + "patterns playing") };
+
+      prSuppressPrint = true;
+      ids.do { |id|
+        proxyName = id;
+        this.prAddEffect(fx, mix, args, postArgs);
+      };
+      prSuppressPrint = false;
+      proxyName = groupName;
+
+      if (mix.isNil or: { mix == Nil })
+      { this.prPrint("🌵 Disabled" + "\\" ++ fx + "on" + groupName) }
+      { this.prPrint("✨ Enabled" + "\\" ++ fx + "on" + groupName + "mix:" + mix + (postArgs ?? "")) };
+
+      ^this;
+    };
 
     if (skipFlush.not)
     { PxDebouncer.flush };
@@ -497,6 +534,11 @@ Fx {
         proxy[proxyName].map(controlName, ndef);
       };
     };
+  }
+
+  *prGroupIds { |group|
+    var key = if (group == \lx) { \lx } { \dx };
+    ^Px.last.keys.select { |id| Px.last[id][key] == true }.asArray;
   }
 
   *prSetMixerValue { |fx, mix|

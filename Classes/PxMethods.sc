@@ -79,6 +79,9 @@
       last.removeAt(id);
       lastFormatted.removeAt(id);
       pausedPatterns.remove(id);
+
+      meterIdMap = meterIdMap.select { |v| v != id };
+      meterLevels.removeAt(id);
       Fx.clear(id);
       this.prAutoRefreshGui;
       ^Ndef(id).free(fadeTime)
@@ -88,6 +91,9 @@
     colors = Dictionary.new;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
+    meterIdMap = Dictionary.new;
+    meterLevels = Dictionary.new;
+    meterNextId = 0;
     pausedPatterns = IdentitySet.new;
     this.prAutoRefreshGui;
 
@@ -181,6 +187,9 @@
       };
 
       ndefList = Dictionary.new;
+      meterIdMap = Dictionary.new;
+      meterLevels = Dictionary.new;
+      meterNextId = 0;
       pausedPatterns = IdentitySet.new;
       this.prAutoRefreshGui;
       ^Ndef(\px).free
@@ -201,6 +210,9 @@
         lastFormatted.removeAt(id);
         ndefList.removeAt(id);
         pausedPatterns.remove(id);
+
+        meterIdMap = meterIdMap.select { |v| v != id };
+        meterLevels.removeAt(id);
         Pdef(id).source = nil;
       } {
         this.prPrint("🔴 Pattern" + id + "does not exist");

@@ -411,6 +411,5 @@ Lx : Px {
         Px.stop(pattern[\id]);
       };
     };
-
   }
 }

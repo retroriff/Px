@@ -135,19 +135,6 @@ code::
 Lx.prev(0);
 ::
 
-method:: rate
-Sets the playback rate for a channel.
-
-argument:: channel
-Channel index (0-based).
-
-argument:: value
-Rate value. 1 = normal, 0.5 = half speed, 2 = double speed. Default: 1.
-
-code::
-Lx.rate(0, 0.5);
-::
-
 method:: start
 Sets the start position within the sample.
 
@@ -159,6 +146,19 @@ Start position (0-1). Default: 0.
 
 code::
 Lx.start(0, 0.25);  // Start at 25%
+::
+
+method:: trim
+Sets the trim position for a channel.
+
+argument:: channel
+Channel index (0-based).
+
+argument:: value
+Trim position value.
+
+code::
+Lx.trim(0, 0.5);
 ::
 
 method:: vol

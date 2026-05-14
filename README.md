@@ -256,8 +256,8 @@ Lx.stop
 | `next`        | channel: integer                     | Next sample in channel (wraps)          |
 | `play`        | channel?: integer, fadeTime?: number | Plays one or all channels               |
 | `prev`        | channel: integer                     | Previous sample in channel (wraps)      |
-| `rate`        | channel: integer, value?: number     | Sets playback rate for a channel        |
 | `start`       | channel: integer, value?: number     | Sets start position (0-1) for a channel |
+| `trim`        | channel: integer, value?: number     | Sets trim position for a channel        |
 | `shuffle`     | channel?: integer, amount?: number   | Randomizes parameters with drift control |
 | `stop`        | channel?: integer                    | Stops one or all Lx patterns            |
 | `vol`         | value: number                        | Sets amplitude for all playing channels |

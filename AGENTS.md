@@ -28,7 +28,7 @@
    - `Classes/PxDebouncer.sc` - Internal class that batches method chain calls into a single pattern update
    - `Classes/Fx.sc` - Effects handler
    - `Classes/Dx.sc` - Drum machines
-   - `Classes/Lx.sc` - Multi-track sample looper
+   - `Classes/Lx.sc` - Multi-track granular looper
    - `Classes/LxGui.sc` - Lx GUI extension
    - `Classes/Nx.sc` - Musical chord data manager
    - See `Docs/init-context.md` for full file organization
@@ -41,7 +41,7 @@
 - Add pattern parameter → Edit `Classes/Number.sc` + `Classes/Px.sc`
 - Add drum preset → Create `Presets/yaml/*.yaml`
 - Add chord → Edit `Score/*.scd`
-- Add loop feature → Edit `Classes/Lx.sc` + `Classes/LxGui.sc`
+- Add granular loop feature → Edit `Classes/Lx.sc` + `Classes/LxGui.sc`
 - Add/modify class method → Update corresponding `HelpSource/Classes/<ClassName>.schelp`
 
 **Documentation conventions:**

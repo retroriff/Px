@@ -168,7 +168,8 @@ Fx {
     var postArgs = "pos:" + pos;
 
     if (pos == \rand) {
-      pos = { LFNoise1.kr(LFNoise1.kr(0.5).range(0.3, 2)).range(-0.6, 0.6) };
+      var trig = LFNoise1.kr(0.5).range(0.3, 2);
+      pos = { LFNoise1.kr(trig).range(-0.6, 0.6) };
     };
 
     if (pos.isNil)

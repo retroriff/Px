@@ -1,8 +1,3 @@
-/*
-TODO: When we use TR08 we should set drum machines to 808. E.g. Routine 03 - Electro.scd
-TODO: We should be able to play TR08 using numbers like 8008 i: \bd
-*/
-
 TR08 : Dx {
   classvar <drumKit;
   classvar <>latency;

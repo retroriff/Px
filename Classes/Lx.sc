@@ -193,7 +193,6 @@ Lx : Px {
     id = this.prCreateId(i);
 
     if (amount > 0.7) {
-
       if (amount > 0.85)
       { tracks[i] = bufs[i].size.rand }
       { tracks[i] = (tracks[i] + [-1, 1].choose) % bufs[i].size };

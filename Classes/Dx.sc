@@ -35,7 +35,7 @@ Dx : Px {
   }
 
   *new { | newPattern|
-    if (this == Dx and: { newPattern[\drumMachine] == \RolandTR808 } and: { TR08.prIsTR08Detected.value == true })
+    if (this == Dx and: { TR08.prShouldHandle(newPattern) })
     { ^TR08(newPattern) };
 
     newPattern = this.prAddDrumMachinePlayBuf(newPattern);

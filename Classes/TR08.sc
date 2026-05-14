@@ -29,6 +29,10 @@ TR08 : Dx {
     ];
   }
 
+  *prShouldHandle { |pattern|
+    ^pattern[\drumMachine] == \RolandTR808 and: { this.prIsTR08Detected.value == true };
+  }
+
   *new { | newPattern|
     this.prInitializeMIDIDevice(newPattern);
 

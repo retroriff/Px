@@ -1,27 +1,14 @@
-// TR-08 has MIDI a specific config for this device that will simplify our code:
-Px.initMidi(deviceName: "TR-08");
+// TR-08 has MIDI a specific config for this device that will simplify our code (default latency is 0.195):
+TR08.init;
 808 i: \bd dur: 1;
-
-// Which is the same as (default latency is 0.195):
-TR08((i: \bd, dur: 1));
 
 // Let's sync the device with SC setting up a different latency:
 (
 TR08.init(0.195);
-/* TODO: 8080 i: \bd dur: 1; */
 1 i: \bd dur: 1;
+TR08.preset(\core).solo(\bd);
+Px.midiClient["TR-08"].latency.postln;
 )
-
-// TODO: Now we can start to play with our TR-08:
-/*
-(
-8080 i: \bd dur: 1;
-8080 i: \rs dur: 0.25 beat: 0.4;
-8080  i: \sd dur: 0.25 fill: 0.42;
-8080 i: \hh dur: 0.25 beat: 0.82;
-8080 i: \ma dur: 0.25 fill: 0.82;
-)
-*/
 
 // Or play a preset:
 TR08.preset(\electro);

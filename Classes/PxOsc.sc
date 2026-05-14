@@ -12,11 +12,16 @@
 
         {
             var result;
-            try {
-                result = code.interpret;
-            } { |err|
-                result = "ERROR: " ++ err.errorString;
-                err.reportError;
+            var func = code.compile;
+            if (func.notNil) {
+                try {
+                    result = func.value;
+                } { |err|
+                    result = "ERROR: " ++ err.errorString;
+                    err.reportError;
+                };
+            } {
+                result = "COMPILE_ERROR: Code failed to compile (check for undefined classes or syntax errors)";
             };
 
             if (replyPort.notNil) {

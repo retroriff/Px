@@ -5,6 +5,12 @@ Px {
   classvar <>fxState;
   classvar <>last;
   classvar <>lastFormatted;
+  classvar <meterFunc;
+  classvar <meterIdMap;
+  classvar <meterLevels;
+  classvar <meterNextId;
+  classvar <meterRoutine;
+  classvar <meterViews;
   classvar <midiClient;
   classvar <>midiHoldedNotes;
   classvar <midiOut;
@@ -26,7 +32,21 @@ Px {
     fxState = Dictionary.new;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
+    meterIdMap = Dictionary.new;
+    meterLevels = Dictionary.new;
+    meterNextId = 0;
     midiHoldedNotes = Dictionary.new;
+
+    meterFunc = OSCFunc({ |msg|
+      var meterId = msg[2].asInteger;
+      var peakL = msg[3];
+      var peakR = msg[5];
+      var patternId = meterIdMap[meterId];
+
+      if (patternId.notNil)
+      { meterLevels[patternId] = max(peakL, peakR) };
+    }, '/pxMeter');
+
     mutedPatterns = Dictionary.new;
     ndefList = Dictionary.new;
     pausedPatterns = IdentitySet.new;
@@ -68,6 +88,21 @@ Px {
 
     if (isNewNdef)
     { Ndef(\px)[0] = { Mix.new(playList.values) } };
+
+    if (isNewNdef and: { pattern[\chan].isNil }) {
+      var meterId = meterNextId;
+      meterNextId = meterNextId + 1;
+      meterIdMap[meterId] = pattern[\id];
+
+      fork {
+        Server.default.sync;
+
+        Ndef(pattern[\id]).filter(100, { |in|
+          SendPeakRMS.kr(in, 20, 0.3, "/pxMeter", meterId);
+          in;
+        });
+      };
+    };
 
     lastFormatted[newPattern[\id]] = pattern;
 
@@ -226,6 +261,9 @@ Px {
       chorusPatterns.clear;
       colors.clear;
       last.clear;
+      meterIdMap.clear;
+      meterLevels.clear;
+      meterNextId = 0;
       ndefList.clear;
     };
 
@@ -271,6 +309,9 @@ Px {
     { hasRepeat or: hasEmptyDur or: hasStop } {
       last.removeAt(pattern[\id]);
       ndefList.removeAt(pattern[\id]);
+
+      meterIdMap = meterIdMap.select { |v| v != pattern[\id] };
+      meterLevels.removeAt(pattern[\id]);
     };
   }
 }

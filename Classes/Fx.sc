@@ -167,6 +167,10 @@ Fx {
   *pan { |pos = 0|
     var postArgs = "pos:" + pos;
 
+    if (pos == \rand) {
+      pos = { LFNoise1.kr(LFNoise1.kr(0.5).range(0.3, 2)).range(-0.6, 0.6) };
+    };
+
     if (pos.isNil)
     { pos = 0 };
 

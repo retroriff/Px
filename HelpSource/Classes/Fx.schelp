@@ -221,10 +221,11 @@ method:: pan
 Stereo panning control.
 
 argument:: pos
-Pan position from -1 (left) to 1 (right), or a Function for modulation. Default: 0.
+Pan position from -1 (left) to 1 (right), \rand for random panning, or a Function for modulation. Default: 0.
 
 code::
 Fx(\px).pan(-0.5);       // Pan left
+Fx(\px).pan(\rand);      // Random panning
 Fx(\px).pan({ SinOsc.kr(0.25).range(-1, 1) });  // Auto-pan
 ::
 

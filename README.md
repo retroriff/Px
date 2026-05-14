@@ -82,7 +82,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | `gverb`      | mix?: range 0..1, roomsize?, revtime?           | Granular reverb              |
 | `hpf`        | mix?: range 0..1, freq?: number                 | High pass filter             |
 | `lpf`        | mix?: range 0..1, freq?: number                 | Low pass filter              |
-| `pan`        | pos?: range -1..1                               | Stereo panning               |
+| `pan`        | pos?: range -1..1 \| \rand                      | Stereo panning               |
 | `phaser`     | mix?: range 0..1, rate?, depth?                 | Phaser effect                |
 | `reverse`    | mix?: range 0..1                                | Beat-synced reverse reverb   |
 | `reverb`     | mix?: range 0..1, room?, size?                  | Reverb effect                |

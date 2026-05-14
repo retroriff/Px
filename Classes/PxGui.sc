@@ -21,7 +21,12 @@
       )
     )
     .front
-    .onClose_({ Px.window = nil });
+    .onClose_({
+      if (Px.meterRoutine.notNil)
+      { Px.meterRoutine.stop };
+
+      Px.window = nil;
+    });
 
     this.prGenerateLayout;
 
@@ -47,12 +52,14 @@
     { layout.add(emptyPatternsText.value); };
 
     window.layout_(layout);
+    this.prStartMeterRoutine;
   }
 
   *prGenerateSliders {
     var patterns = last.reject { |pattern| pattern[\lx] == true };
     var patternsFormatted = lastFormatted;
-
+    var meterColor = Color.new255(37, 190, 106);
+    var meterBgColor = Color.new255(31, 41, 55);
     var drumMachinePatterns = patterns.select { |pattern|
       pattern[\drumMachine].notNil
     }.keys.asSortedList;
@@ -60,6 +67,8 @@
       pattern[\drumMachine].isNil
     }.keys.asArray.sort({ |a, b| a.asInteger < b.asInteger });
     var sortedKeys = drumMachinePatterns ++ nonDrumMachinePatterns;
+
+    meterViews = Array.new;
 
     ^sortedKeys collect: { |key|
       var pattern = patterns[key];
@@ -149,7 +158,39 @@
       if (pausedPatterns.includes(pattern[\id].asSymbol))
       { button.value_(1) };
 
-      VLayout(staticText, slider, numberBox, button);
+      {
+        var meterView;
+
+        meterView = UserView()
+        .minHeight_(20)
+        .drawFunc_({ |v|
+          var bounds = v.bounds.moveTo(0, 0);
+          var level = meterLevels[pattern[\id]] ?? 0;
+          var normalized = level.ampdb.linlin(-40, 0, 0, 1).clip(0, 1);
+          var fillWidth = normalized * bounds.width;
+
+          Pen.fillColor = meterBgColor;
+          Pen.addRoundedRect(bounds, 3, 3);
+          Pen.fill;
+
+          if (fillWidth > 0) {
+            Pen.push;
+            Pen.addRoundedRect(bounds, 3, 3);
+            Pen.clip;
+            Pen.fillColor = meterColor;
+            Pen.fillRect(Rect(0, 0, fillWidth, bounds.height));
+            Pen.pop;
+          };
+
+          Pen.strokeColor = Color.grey(0.3);
+          Pen.addRoundedRect(bounds, 3, 3);
+          Pen.stroke;
+        });
+
+        meterViews = meterViews.add(meterView);
+
+        VLayout(staticText, slider, numberBox, meterView, button);
+      }.value;
     };
   }
 
@@ -200,13 +241,17 @@
   }
 
   *prAutoRefreshGui {
-    if (window.notNil and: { window.visible == true }) {
-      if (last.size == 0) {
-        AppClock.sched(0, { window.close; nil });
-      } {
-        AppClock.sched(0, { this.prUpdateGui; nil });
+    AppClock.sched(0, {
+
+      if (window.notNil and: { window.visible == true }) {
+
+        if (last.size == 0)
+        { window.close }
+        { this.prUpdateGui };
       };
-    };
+
+      nil;
+    });
   }
 
   *prTruncateText { |text|
@@ -217,6 +262,30 @@
     };
 
     ^text;
+  }
+
+  *prStartMeterRoutine {
+    if (meterRoutine.notNil)
+    { meterRoutine.stop; meterRoutine = nil };
+
+    meterRoutine = Routine({
+      inf.do {
+        meterLevels.keysDo { |id|
+
+          if (pausedPatterns.includes(id.asSymbol))
+          { meterLevels[id] = 0 }
+          { meterLevels[id] = meterLevels[id] * 0.7 };
+        };
+
+        meterViews.do { |v|
+
+          if (v.isClosed.not)
+          { v.refresh };
+        };
+
+        0.05.wait;
+      };
+    }).play(AppClock);
   }
 
   *prUpdateGui {

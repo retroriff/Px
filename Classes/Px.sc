@@ -1,7 +1,3 @@
-/*
-TODO: All params after distort doesn't work: 
-909 i: \bd dur: 0.25 beat: 0.4 lpf: 1  distort: 0.1 reverb: 1 amp: 0.2;
-*/
 Px {
   classvar <>chorusPatterns;
   classvar <>colors;

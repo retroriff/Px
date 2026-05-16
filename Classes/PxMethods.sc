@@ -172,12 +172,12 @@
     };
 
     mutedPatterns.keysValuesDo { |id, event|
-      last.putAll([id, event]);
+      last.put(id, event);
     };
 
     mutedPatterns = Dictionary.new;
 
-    ^this.prReevaluate;
+    this.prReevaluate;
   }
 
   *stop { |idArray|

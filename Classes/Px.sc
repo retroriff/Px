@@ -245,6 +245,9 @@ Px {
 
   *prHandleSoloPattern { |pattern|
     if (pattern[\solo] == true) {
+      pattern.removeAt(\solo);
+      last[pattern[\id]].removeAt(\solo);
+
       if (pattern[\dx] == true)
       { ^Dx.solo(pattern[\id]) }
       { ^Px.solo(pattern[\id]) };

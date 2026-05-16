@@ -9,9 +9,8 @@
       { scaleDegrees = scale }
       { scaleDegrees = Scale.at(scale.asSymbol).degrees };
 
-      randomDegrees = Array.newClear(length);
       thisThread.randSeed = this.prGetPatternSeed(pattern);
-      randomDegrees = length.collect { scaleDegrees.choose };
+      randomDegrees = length.collect { scaleDegrees.size.rand };
     };
 
     var degreesWithVariations = { |degrees, numOctaves = 1|
@@ -31,6 +30,18 @@
 
     if (pattern[\degree].isNil)
     { ^pattern };
+
+    if (pattern[\degree] == \rand and: { pattern[\seed] == \rand }) {
+      var scale = pattern[\scale];
+      var scaleSize;
+
+      if (scale.isArray)
+      { scaleSize = scale.size }
+      { scaleSize = Scale.at(scale.asSymbol).degrees.size };
+
+      pattern[\degree] = Pwhite(0, scaleSize - 1, inf);
+      ^pattern;
+    };
 
     if (pattern[\degree].isKindOf(Pattern).not) {
       var degrees = pattern[\degree];

@@ -263,16 +263,16 @@
     ^this.loadSynthDefs;
   }
 
-  *trace { |id|
+  *trace { |id, key|
     if (id.isNil)
-    { this.prPrint("🔴 Please specify a pattern id to trace") }
-    { Pdef(id).source = Pdef(id).source.trace };
-  }
+    { last.keys.do { |k| this.new(last[k]) } }
+    {
+      this.new(last[id]);
 
-  *traceOff { |id|
-    if (id.isNil)
-    { ^("🔴 Please specify a pattern id to disable trace") }
-    { ^this.new(last[id]) };
+      if (key.notNil)
+      { Pdef(id).source = Pdef(id).source.collect { |ev| ev[key].postln; ev } }
+      { Pdef(id).source = Pdef(id).source.trace };
+    };
   }
 
   *vol { |value, id|

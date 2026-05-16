@@ -120,8 +120,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 - `stop`: Stops all patterns. It can stop specific patterns if a single id or an array of ids is provided.
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
 - `tempo` (bpm: nil | number): Sets the tempo if bpm is given; returns current tempo if nil.
-- `trace`: Prints out the results of the streams for debugging purposes.
-- `traceOff`: Disables trace.
+- `trace` (name, key: nil): Enables trace output for a pattern. Optionally filter to a specific key. Call with no arguments to stop all tracing.
 - `vol`: Controls the volume of the nodeproxy.
 
 ### Pattern shortcuts

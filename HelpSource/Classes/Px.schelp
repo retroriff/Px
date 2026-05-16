@@ -202,20 +202,19 @@ argument:: synthDef
 SynthDef name as Symbol.
 
 method:: trace
-Enables trace output for a pattern, showing each event as it plays.
+Enables trace output for a pattern. Optionally filter to a specific key. Call with no arguments to stop all tracing.
 
 argument:: name
-Pattern name as Symbol.
+Pattern name as Symbol. When omitted, stops all tracing.
+
+argument:: key
+(Optional) Event key to trace. When provided, only that key's value is printed.
 
 code::
 Px.trace(\1);
+Px.trace(\1, \degree);
+Px.trace; // stop all tracing
 ::
-
-method:: traceOff
-Disables trace output for a pattern.
-
-argument:: name
-Pattern name as Symbol.
 
 method:: help
 Displays help information for the Px class or a specific SynthDef.

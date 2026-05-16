@@ -22,7 +22,7 @@
       window.view.removeAll;
     } {
       window = Window(
-        name: "🪓 Repeat Or Die",
+        name: "𝄆 repeater 𝄇",
         bounds: Rect(
           left: Window.screenBounds.width - width,
           top: Window.screenBounds.height - height,

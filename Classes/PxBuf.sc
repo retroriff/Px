@@ -220,8 +220,8 @@
 }
 
 + Number {
-  r { |args|
-    this.prDebouncer.enqueue([\rate, this.prCreatePatternKey(args)]);
+  r { |value|
+    this.prDebouncer.enqueue([\rate, value]);
   }
 
   start { |value|

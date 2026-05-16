@@ -1,3 +1,9 @@
+/*
+TODO: Rate doesn't sound to work as expected:
+
+1 play: "fm" dur: 0.25 beat: 0.4 reverb: 0.3 delay: 0.2 r: -1;
+909 i: \bd dur: 0.25 beat: 0.4 reverb: 0.3 delay: 0.2 r: -1;
+*/
 Px {
   classvar <>chorusPatterns;
   classvar <>colors;

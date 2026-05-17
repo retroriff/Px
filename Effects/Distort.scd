@@ -1,9 +1,9 @@
 (
 // Based on SuperDirt's dirt_distort effect
 Dictionary[
-    \distort -> { |drive = 0.5|
+    \dist -> { |drive = 0.5|
         \filterIn -> { |in|
-            var amount = \distort1.kr(drive, 0.5);
+            var amount = \dist1.kr(drive, 0.5);
             var mod = CrossoverDistortion.ar(in, amp: 0.2, smooth: 0.01);
             mod = mod + (0.1 * amount * DynKlank.ar(
                 `[

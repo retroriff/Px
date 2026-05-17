@@ -58,7 +58,7 @@
   }
 
   dist { |mix, drive|
-    this.prFx(\distort, [mix, drive]);
+    this.prFx(\dist, [mix, drive]);
   }
 
   duck { |mix, thresh, src|

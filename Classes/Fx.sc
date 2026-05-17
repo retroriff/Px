@@ -124,9 +124,9 @@ Fx {
     this.prAddEffect(\duck, mix, [busIndex, thresh, lpf], postArgs);
   }
 
-  *distort { |mix = 0.5, drive = 0.5|
+  *dist { |mix = 0.5, drive = 0.5|
     var postArgs = "drive:" + drive;
-    this.prAddEffect(\distort, mix, [drive], postArgs);
+    this.prAddEffect(\dist, mix, [drive], postArgs);
   }
 
   *effectNames {

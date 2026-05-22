@@ -147,9 +147,9 @@ Fx {
     this.prAddEffect(\gverb, mix, [roomsize, revtime], postArgs);
   }
 
-  *hpf { |mix = 1, freq = 1200|
-    var postArgs = "freq:" + freq;
-    this.prAddEffect(\hpf, mix, [freq], postArgs);
+  *hpf { |mix = 1, freq = 1200, gain = 1|
+    var postArgs = "freq:" + freq + "gain:" + gain;
+    this.prAddEffect(\hpf, mix, [freq, gain], postArgs);
   }
 
   *loadEffects {
@@ -159,9 +159,9 @@ Fx {
     };
   }
 
-  *lpf { |mix = 0.4, freq = 200|
-    var postArgs = "freq:" + freq;
-    this.prAddEffect(\lpf, mix, [freq], postArgs);
+  *lpf { |mix = 0.4, freq = 200, gain = 1|
+    var postArgs = "freq:" + freq + "gain:" + gain;
+    this.prAddEffect(\lpf, mix, [freq, gain], postArgs);
   }
 
   *pan { |pos = 0|

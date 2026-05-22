@@ -690,19 +690,21 @@ Pbind(
 || Holds MIDI notes (1) or releases them (0).
 
 ## note
-|| Sets MIDI notes. Here octaves can be adjusted with ctranspose:
+|| Sets MIDI notes. Accepts integers, symbol notation, arrays, or Patterns. Symbol notation uses lowercase note names with optional sharp (code::s::) or flat (code::b::) and octave number:
 code::
-1 i: \wobble dur: 0.5 note: [56, 53, 60, 53, 60, 63].pseq octave: [-2, -1];
+// Integer
+1 i: \wobble dur: 0.5 note: 60;
 
-// Translates to:
-(
-Pdef(\def, Pbind(
-  \instrument, \wobble,
-  \dur, 0.5,
-  \midinote, Pseq([58, 53, 60, 53, 60, 63], inf),
-  \ctranspose, Pseq([-24, -12], inf),
-)).play.quant(4);
-)
+// Symbol notation
+1 i: \wobble dur: 0.5 note: \c4;       // middle C (60)
+1 i: \wobble dur: 0.5 note: \cs4;      // C#4 (61)
+1 i: \wobble dur: 0.5 note: \db4;      // Db4 (61)
+
+// Mixed array
+1 i: \wobble dur: 0.5 note: [74, \c4].pseq;
+
+// With octave transposition
+1 i: \wobble dur: 0.5 note: [56, 53, 60, 53, 60, 63].pseq octave: [-2, -1];
 ::
 
 ## panic

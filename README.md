@@ -80,8 +80,8 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | `flanger`    | mix?: range 0..1                                | Flanger effect               |
 | `freqShift`  | mix?: range 0..1, freq?, phase?                 | Frequency shifter            |
 | `gverb`      | mix?: range 0..1, roomsize?, revtime?           | Granular reverb              |
-| `hpf`        | mix?: range 0..1, freq?: number                 | High pass filter             |
-| `lpf`        | mix?: range 0..1, freq?: number                 | Low pass filter              |
+| `hpf`        | mix?: range 0..1, freq?: number, gain?: number  | High pass filter             |
+| `lpf`        | mix?: range 0..1, freq?: number, gain?: number  | Low pass filter              |
 | `pan`        | pos?: range -1..1 \| \rand                      | Stereo panning               |
 | `phaser`     | mix?: range 0..1, rate?, depth?                 | Phaser effect                |
 | `reverse`    | mix?: range 0..1                                | Beat-synced reverse reverb   |
@@ -173,6 +173,7 @@ Custom pattern player designed to handle degrees, and can send MIDI messages bas
 | -------- | ------------------------------------------------------------------- | -------------------------------------- |
 | `arp`    | None                                                                | Creates a very basic arpegio           |
 | `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                           |
+| `note`   | number \| symbol \| array \| Pattern                                | MIDI note. Accepts symbol notation: `\c4` (60), `\cs4` (61), `\db4` (61) |
 | `octave` | number \| array \| [\beats, octave: number]                         | Can create a sequence or a random beat |
 | `root`   | number \| array                                                     | Sets the root value                    |
 

@@ -77,12 +77,12 @@
     this.prFx(\gverb, [mix, roomsize, revtime]);
   }
 
-  hpf { |mix, freq|
-    this.prFx(\hpf, [mix, freq]);
+  hpf { |mix, freq, gain|
+    this.prFx(\hpf, [mix, freq, gain]);
   }
 
-  lpf { |mix, freq|
-    this.prFx(\lpf, [mix, freq]);
+  lpf { |mix, freq, gain|
+    this.prFx(\lpf, [mix, freq, gain]);
   }
 
   phaser { |mix, rate, depth|

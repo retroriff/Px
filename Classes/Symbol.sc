@@ -170,4 +170,32 @@
       { Px.stop(pattern[\id]) };
     });
   }
+
+  midinote {
+    var str = this.asString;
+    var idx, modifier, note, noteMap, octave;
+
+    noteMap = IdentityDictionary[
+      \c -> 0, \d -> 2, \e -> 4, \f -> 5,
+      \g -> 7, \a -> 9, \b -> 11
+    ];
+
+    idx = 0;
+    note = noteMap[str[idx].asSymbol];
+
+    if (note.isNil)
+    { ^nil };
+
+    idx = idx + 1;
+    modifier = 0;
+
+    if (idx < str.size and: { str[idx] == $s })
+    { modifier = 1; idx = idx + 1 };
+
+    if (idx < str.size and: { str[idx] == $b })
+    { modifier = -1; idx = idx + 1 };
+
+    octave = str[idx..].asInteger;
+    ^((octave + 2) * 12) + note + modifier;
+  }
 }

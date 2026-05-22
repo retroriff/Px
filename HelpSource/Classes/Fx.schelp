@@ -198,8 +198,12 @@ Wet/dry mix (0-1). Default: 1.
 argument:: freq
 Cutoff frequency in Hz, or a Function for modulation. Default: 1200.
 
+argument:: gain
+Makeup gain multiplier. Boosts the filtered signal to compensate for volume reduction. Default: 1.
+
 code::
 Fx(\px).hpf(1, 800);
+Fx(\px).hpf(1, 800, 1.5);  // With makeup gain
 Fx(\px).hpf(1, { SinOsc.kr(0.5).range(200, 4000) });
 ::
 
@@ -212,8 +216,12 @@ Wet/dry mix (0-1). Default: 0.4.
 argument:: freq
 Cutoff frequency in Hz, or a Function for modulation. Default: 200.
 
+argument:: gain
+Makeup gain multiplier. Boosts the filtered signal to compensate for volume reduction. Default: 1.
+
 code::
 Fx(\px).lpf(0.5, 400);
+Fx(\px).lpf(1, 200, 1.5);  // With makeup gain
 Fx(\px).lpf(1, { SinOsc.kr(0.5).range(200, 4000) });
 ::
 

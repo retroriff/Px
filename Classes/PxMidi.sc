@@ -71,6 +71,23 @@ TODO: MIDIOut instances
     };
   }
 
+  *prResolveNotes { |value|
+    var resolveSymbol = { |v|
+      if (v.isKindOf(Symbol)) { v.midinote } { v }
+    };
+
+    if (value.isKindOf(Symbol))
+    { ^value.midinote };
+
+    if (value.isArray)
+    { ^value.collect(resolveSymbol) };
+
+    if (value.isKindOf(Pattern))
+    { ^value.collect(resolveSymbol) };
+
+    ^value;
+  }
+
   *prCreateMidi { |pattern|
     var midiout, isMidiControl, addMidiTypes, isMidi;
 
@@ -227,6 +244,8 @@ TODO: MIDIOut instances
 
   note { |value|
     var pattern;
+
+    value = Px.prResolveNotes(value);
 
     if (value.isInteger)
     { value = [value] };

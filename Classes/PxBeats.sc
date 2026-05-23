@@ -55,13 +55,18 @@
   }
 
   *prCreateBeatRest { |pattern|
-    var dur = pattern[\dur];
-
     if (pattern[\rest].notNil) {
-      dur = Pseq([Pn(dur, repeats: 15), pattern[\rest] + dur], inf);
+      var dur = pattern[\dur];
+      var restDur = Rest(pattern[\rest]);
+
+      pattern[\dur] = if (dur.isKindOf(Pseq))
+      { Pseq(dur.list ++ [restDur], inf) }
+      { Pseq([dur, restDur], inf) };
+
+      pattern.removeAt(\rest);
     };
 
-    ^dur;
+    ^pattern;
   }
 
   *prCreateFillFromBeat { |amp, pattern|

@@ -3,6 +3,16 @@ TODO: Rate doesn't sound to work as expected:
 
 1 play: "fm" dur: 0.25 beat: 0.4 reverb: 0.3 delay: 0.2 r: -1;
 909 i: \bd dur: 0.25 beat: 0.4 reverb: 0.3 delay: 0.2 r: -1;
+
+TODO: Midinote notation in uppercase return chords
+TODO: Something happens:
+
+  Dx.preset(\electro, 4).use(\YamahaRX21);
+  Dx.out
+
+  All preset items fade out but this one: \hhDx
+
+TODO: Px.release(10, \hhDx) should stop only the \hhDx pattern, but it stops all patterns. Is it normal?
 */
 Px {
   classvar <>chorusPatterns;
@@ -80,6 +90,7 @@ Px {
     pattern = this.prCreateLoops(pattern);
     pattern = this.prCreateAmp(pattern);
     pattern = this.prCreateDur(pattern);
+    pattern = this.prCreateBeatRest(pattern);
     pattern = this.prCreatePan(pattern);
     pattern = this.prCreateDegrees(pattern);
     pattern = this.prCreateOctaves(pattern);
@@ -128,7 +139,6 @@ Px {
     if (pattern[\fill].notNil)
     { amp = this.prCreateFillFromBeat(amp, pattern) };
 
-    pattern[\dur] = this.prCreateBeatRest(pattern);
     pattern[\amp] = amp;
 
     if (pattern[\amp].isArray) {

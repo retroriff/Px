@@ -90,6 +90,11 @@
         playBuf = \playbufMono;
       };
 
+      if (pattern[\dur].isNil and: { pattern[\play].class == Buffer }) {
+        var bufDur = pattern[\play].duration * TempoClock.default.tempo;
+        pattern[\dur] = Pseq([bufDur], pattern[\repeat] ?? 1);
+      };
+
       pattern = pattern ++ (instrument: playBuf, buf: pattern[\play]);
       pattern.removeAt(\play);
     };

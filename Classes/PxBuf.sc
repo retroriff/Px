@@ -25,7 +25,13 @@
       };
 
       samplesDict[folderName] = audioFiles.collect { |file|
-        Buffer.read(Server.default, file.fullPath)
+        var sf = SoundFile.openRead(file.fullPath);
+        var channels = sf.numChannels;
+        sf.close;
+
+        if (channels == 1)
+        { Buffer.readChannel(Server.default, file.fullPath, channels: [0, 0]) }
+        { Buffer.read(Server.default, file.fullPath) };
       };
     };
 
@@ -68,26 +74,15 @@
   *prCreateBufInstruments { |pattern|
     if (pattern[\play].notNil) {
       var folder, file;
-      var numChannels = 2;
-      var playBuf = \playbuf;
 
       if (pattern[\play].isArray) {
         folder = pattern[\play][0];
         file = pattern[\play][1];
       };
 
-      if (pattern[\play].class == Buffer) {
-        numChannels = pattern[\play].numChannels;
-      };
-
       if (file.isInteger) {
         var resolvedBuf = this.buf(folder, file);
-        numChannels = resolvedBuf.numChannels;
         pattern[\play] = resolvedBuf;
-      };
-
-      if (numChannels == 1) {
-        playBuf = \playbufMono;
       };
 
       if (pattern[\dur].isNil and: { pattern[\play].class == Buffer }) {
@@ -95,7 +90,7 @@
         pattern[\dur] = Pseq([bufDur], pattern[\repeat] ?? 1);
       };
 
-      pattern = pattern ++ (instrument: playBuf, buf: pattern[\play]);
+      pattern = pattern ++ (instrument: \playbuf, buf: pattern[\play]);
       pattern.removeAt(\play);
     };
 

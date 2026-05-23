@@ -13,6 +13,7 @@ TODO: Something happens:
   All preset items fade out but this one: \hhDx
 
 TODO: Px.release(10, \hhDx) should stop only the \hhDx pattern, but it stops all patterns. Is it normal?
+TODO: Shuffle with ID so we can return to previous state after shuffle
 */
 Px {
   classvar <>chorusPatterns;

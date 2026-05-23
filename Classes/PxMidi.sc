@@ -145,6 +145,14 @@ TODO: MIDIOut instances
     if (isMidiControl == true)
     { pattern = pattern ++ (\midiControl: 1) };
 
+    if (pattern[\timingOffset].notNil) {
+      if (pattern[\lag].notNil)
+      { pattern[\lag] = pattern[\lag] + pattern[\timingOffset] }
+      { pattern[\lag] = pattern[\timingOffset] };
+
+      pattern.removeAt(\timingOffset);
+    };
+
     ^pattern;
   }
 

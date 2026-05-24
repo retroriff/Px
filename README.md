@@ -116,7 +116,8 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 - `resume` (id: symbol): Resumes a paused pattern.
 - `save`: Saves a chorus.
 - `set`: Sets a parameter for all active patterns.
-- `shuffle` (id: symbol): Generates a new random seed for a pattern, or all patterns when id is not provided.
+- `shuffle` (id: symbol, history: symbol): Generates a new random seed for a pattern, or all patterns when id is not provided. Use `history:` to restore a previous shuffle state.
+- `shuffleHistory`: Returns a Dictionary containing all stored shuffle snapshots.
 - `stop`: Stops all patterns. It can stop specific patterns if a single id or an array of ids is provided.
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
 - `tempo` (bpm: nil | number): Sets the tempo if bpm is given; returns current tempo if nil.

@@ -154,10 +154,25 @@ method:: last
 Returns a Dictionary containing all current pattern states.
 
 method:: shuffle
-Randomizes the seed values for patterns using random beat generation.
+Randomizes the seed values for patterns using random beat generation. Each shuffle is stored in a history dictionary that can be recalled later.
+
+argument:: id
+A symbol identifying a specific pattern to shuffle. When nil, all patterns are shuffled.
+
+argument:: history
+A symbol key to restore a previous shuffle state.
 
 code::
 Px.shuffle;
+Px.shuffle(\3);
+Px.shuffle(history: \1);
+::
+
+method:: shuffleHistory
+Returns a Dictionary containing all stored shuffle snapshots.
+
+code::
+Px.shuffleHistory;
 ::
 
 subsection:: Utilities

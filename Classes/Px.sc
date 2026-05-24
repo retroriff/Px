@@ -1,12 +1,5 @@
 /*
-TODO: Rate doesn't sound to work as expected:
-
-1 play: "fm" dur: 0.25 beat: 0.4 reverb: 0.3 delay: 0.2 r: -1;
-909 i: \bd dur: 0.25 beat: 0.4 reverb: 0.3 delay: 0.2 r: -1;
-
 TODO: Midinote notation in uppercase return chords
-TODO: Px.release(10, \hhDx) should stop only the \hhDx pattern, but it stops all patterns. Is it normal?
-TODO: Shuffle with ID so we can return to previous state after shuffle
 */
 Px {
   classvar <>chorusPatterns;
@@ -32,6 +25,7 @@ Px {
   classvar <samplesDict;
   classvar <samplesPath;
   classvar <seeds;
+  classvar <shuffleHistory;
   classvar <>window;
   classvar <windowWidth;
   classvar <windowHeight;
@@ -62,6 +56,7 @@ Px {
     pausedPatterns = IdentitySet.new;
     quant = 4;
     seeds = Dictionary.new;
+    shuffleHistory = Dictionary.new;
     windowWidth = 68;
     windowHeight = 350.min(Window.screenBounds.height / 4);
 

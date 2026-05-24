@@ -1,10 +1,26 @@
 + Px {
-  *shuffle { |id|
+  *shuffle { |id, history|
+    if (history.notNil) {
+      var key = history.asSymbol;
+      var snapshot = shuffleHistory[key];
+
+      if (snapshot.isNil)
+      { this.prPrint("Shuffle history" + key + "not found") }
+      {
+        seeds = snapshot.copy;
+        this.prPrint("Shuffle restored:" + key);
+        this.prReevaluate;
+      };
+
+      ^this;
+    };
+
     if (id.isNil) {
       seeds.order do: { |seedId|
         this.prCreateNewSeeds(seedId)
       };
 
+      this.prSaveShuffleHistory;
       this.prReevaluate;
       ^this;
     };
@@ -13,13 +29,20 @@
 
     if (last.keys.includes(id)) {
       this.prCreateNewSeeds(id);
+      this.prSaveShuffleHistory;
       this.prReevaluate([last[id]]);
     }
   }
 
+  *prSaveShuffleHistory {
+    var key = (shuffleHistory.size + 1).asSymbol;
+    shuffleHistory[key] = seeds.copy;
+    this.prPrint("Shuffle history:" + key);
+  }
+
   *prCreateNewSeeds { |id|
     var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
-    this.prPrint("🎲 Shuffle:".scatArgs(id, "->", newSeed));
+    this.prPrint("🎲 Shuffle" + ("\\" ++ id ++ ":") + newSeed);
     seeds[id] = newSeed;
   }
 

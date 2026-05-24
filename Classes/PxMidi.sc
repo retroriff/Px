@@ -194,7 +194,7 @@ TODO: MIDIOut instances
     if (midiControlEvent.notNil)
     { newPattern = newPattern.putPairs(midiControlEvent) };
 
-    if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.isNil })
+    if (PxDebouncer.current.notNil and: { PxDebouncer.current.original == this })
     { oldPending = PxDebouncer.current.prTakePending };
 
     PxDebouncer.current = PxDebouncer(this, newPattern);

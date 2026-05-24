@@ -225,7 +225,9 @@
       if (last.size > 0) {
         ^fork {
           4.wait;
-          Ndef(id).free;
+
+          if (ndefList[id].isNil)
+          { Ndef(id).free };
         }
       } {
         ^Ndef(\px).free

@@ -1,5 +1,7 @@
 /*
 TODO: Midinote notation in uppercase return chords
+TODO: When used in a group, Number solo method mutes new patterns already played.
+Example on Mastegots.scd
 */
 Px {
   classvar <>chorusPatterns;

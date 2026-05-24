@@ -196,6 +196,6 @@
     { modifier = -1; idx = idx + 1 };
 
     octave = str[idx..].asInteger;
-    ^((octave + 2) * 12) + note + modifier;
+    ^((octave + 1) * 12) + note + modifier;
   }
 }

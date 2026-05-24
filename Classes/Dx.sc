@@ -403,7 +403,7 @@ Dx : Px {
   *prFadeDrums { |direction, fadeTime|
     var fade = [direction, fadeTime.clip(0.1, fadeTime)];
 
-    last do: { |pattern|
+    last.copy do: { |pattern|
       if (pattern[\drumMachine] == drumMachine) {
         pattern.putAll([\fade, fade, direction, fadeTime]);
         super.new(pattern);

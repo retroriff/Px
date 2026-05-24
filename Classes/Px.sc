@@ -5,13 +5,6 @@ TODO: Rate doesn't sound to work as expected:
 909 i: \bd dur: 0.25 beat: 0.4 reverb: 0.3 delay: 0.2 r: -1;
 
 TODO: Midinote notation in uppercase return chords
-TODO: Something happens:
-
-  Dx.preset(\electro, 4).use(\YamahaRX21);
-  Dx.out
-
-  All preset items fade out but this one: \hhDx
-
 TODO: Px.release(10, \hhDx) should stop only the \hhDx pattern, but it stops all patterns. Is it normal?
 TODO: Shuffle with ID so we can return to previous state after shuffle
 */

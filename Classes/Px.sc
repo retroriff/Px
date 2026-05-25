@@ -62,6 +62,8 @@ Px {
     windowWidth = 68;
     windowHeight = 350.min(Window.screenBounds.height / 4);
 
+    CmdPeriod.add { this.clear };
+
     ServerBoot.add {
       this.listen;
       this.loadSynthDefs;

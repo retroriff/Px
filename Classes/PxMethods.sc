@@ -16,7 +16,20 @@
   }
 
   *clear {
-    this.initClass;
+    chorusPatterns.clear;
+    colors.clear;
+    fxState.clear;
+    last.clear;
+    lastFormatted.clear;
+    meterIdMap.clear;
+    meterLevels.clear;
+    meterNextId = 0;
+    midiHoldedNotes.clear;
+    mutedPatterns.clear;
+    ndefList.clear;
+    pausedPatterns.clear;
+    seeds.clear;
+    shuffleHistory.clear;
     Ndef(\px).clear;
   }
 

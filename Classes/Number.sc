@@ -317,7 +317,8 @@
       { newPattern.putAll([\file, this.prExtractSufix(i)]) };
     };
 
-    if (PxDebouncer.current.notNil and: { PxDebouncer.current.original == this })
+    if (PxDebouncer.current.notNil and: { PxDebouncer.current.original == this }
+      and: { PxDebouncer.current.isFullDeclaration.not })
     { oldPending = PxDebouncer.current.prTakePending };
 
     PxDebouncer.current = PxDebouncer(this, newPattern);

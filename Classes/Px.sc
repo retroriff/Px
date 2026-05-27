@@ -12,6 +12,7 @@ Px {
   classvar <>lastFormatted;
   classvar <meterFunc;
   classvar <meterIdMap;
+  classvar <mixBus;
   classvar <meterLevels;
   classvar <meterNextId;
   classvar <meterRoutine;
@@ -68,11 +69,16 @@ Px {
       this.listen;
       this.loadSynthDefs;
       thisProcess.interpreter.t = TempoClock.default.tempo;
+
+      fork {
+        Server.default.sync;
+        this.prInitMasterNdef;
+      };
     };
   }
 
   *new { |newPattern|
-    var pattern, pdef, playList, isNewNdef;
+    var pattern, pdef, isNewNdef;
     var prevSize = last.size;
 
     this.prInitializeDictionaries(newPattern);
@@ -91,13 +97,10 @@ Px {
 
     isNewNdef = ndefList[pattern[\id]].isNil;
     pdef = this.prCreatePdef(pattern);
-    playList = this.prCreatePlayList(pattern[\id], pdef);
-
-    if (Ndef(\px).isPlaying.not)
-    { Ndef(\px).quant_(quant).play };
+    this.prCreatePlayList(pattern[\id], pdef);
 
     if (isNewNdef)
-    { Ndef(\px)[0] = { Mix.new(playList.values) } };
+    { Ndef(pattern[\id]).play(out: mixBus.index, fadeTime: 0) };
 
     if (isNewNdef and: { pattern[\chan].isNil }) {
       var meterId = meterNextId;
@@ -269,14 +272,13 @@ Px {
   }
 
   *prInitializeDictionaries { |pattern|
-    if (Ndef(\px).isPlaying.not) {
+    if (ndefList.isEmpty) {
       chorusPatterns.clear;
       colors.clear;
       last.clear;
       meterIdMap.clear;
       meterLevels.clear;
       meterNextId = 0;
-      ndefList.clear;
     };
 
     last[pattern[\id]] = pattern;
@@ -285,8 +287,13 @@ Px {
   *prCreatePlayList { |id, pdef|
     if (ndefList[id].isNil)
     { ndefList.put(id, Ndef(id, pdef).quant_(quant)) };
+  }
 
-    ^ndefList.copy;
+  *prInitMasterNdef {
+    if (mixBus.isNil)
+    { mixBus = Bus.audio(Server.default, 2) };
+
+    Ndef(\px, { InFeedback.ar(mixBus.index, 2) }).play(fadeTime: 0);
   }
 
   *prPrint { |value|

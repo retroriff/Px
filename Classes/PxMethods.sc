@@ -31,6 +31,13 @@
     seeds.clear;
     shuffleHistory.clear;
     Ndef(\px).clear;
+
+    if (Server.default.serverRunning) {
+      fork {
+        Server.default.sync;
+        this.prInitMasterNdef;
+      };
+    };
   }
 
   *loadSynthDefs {
@@ -199,6 +206,7 @@
         Pdef(item.key).source = nil;
       };
 
+      ndefList do: { |ndef| ndef.stop };
       ndefList = Dictionary.new;
       meterIdMap = Dictionary.new;
       meterLevels = Dictionary.new;

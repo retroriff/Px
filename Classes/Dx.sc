@@ -183,7 +183,7 @@ Dx : Px {
       if (soloIds.includes(pattern[\id]) == false
         and: { pattern[\dx] == true }) {
         last.removeAt(pattern[\id]);
-        Ndef(pattern[\id]).stop;
+        Pdef(pattern[\id]).source = nil;
       }
     };
   }
@@ -424,7 +424,7 @@ Dx : Px {
 
       if (pattern[\dx] == true and: { keepIds.includes(pattern[\id]).not }) {
         last.removeAt(pattern[\id]);
-        Ndef(pattern[\id]).stop;
+        Pdef(pattern[\id]).source = nil;
       };
     };
   }
@@ -435,7 +435,7 @@ Dx : Px {
       if (pattern[\dx] == true) {
         last.removeAt(pattern[\id]);
         ndefList.removeAt(pattern[\id]);
-        Ndef(pattern[\id]).stop;
+        Pdef(pattern[\id]).source = nil;
       };
     };
   }

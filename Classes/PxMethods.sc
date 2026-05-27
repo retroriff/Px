@@ -125,6 +125,10 @@
         Ndef(key).free(fadeTime);
       };
 
+      Pdef.all do: { |item|
+        Pdef(item.key).source = nil;
+      };
+
       if (anyParam.includes(\all)) {
         this.prPrint("When the music is over\nTurn out the lights\nMusic is your only friend\nUntil the end 💀");
       };
@@ -198,6 +202,10 @@
 
   *stop { |idArray|
     if (idArray.isNil) {
+      Pdef.all do: { |item|
+        Pdef(item.key).source = nil;
+      };
+
       ndefList do: { |ndef| ndef.stop };
       ndefList = Dictionary.new;
       meterIdMap = Dictionary.new;
@@ -226,7 +234,7 @@
 
         meterIdMap = meterIdMap.select { |v| v != id };
         meterLevels.removeAt(id);
-        Ndef(id).stop;
+        Pdef(id).source = nil;
       } {
         this.prPrint("🔴 Pattern" + id + "does not exist");
       };
@@ -285,8 +293,8 @@
       this.new(last[id]);
 
       if (key.notNil)
-      { Ndef(id).source = Ndef(id).source.collect { |ev| ev[key].postln; ev } }
-      { Ndef(id).source = Ndef(id).source.trace };
+      { Pdef(id).source = Pdef(id).source.collect { |ev| ev[key].postln; ev } }
+      { Pdef(id).source = Pdef(id).source.trace };
     };
   }
 

@@ -96,7 +96,7 @@ Px {
     pattern = this.prCreateMidi(pattern);
 
     isNewNdef = ndefList[pattern[\id]].isNil;
-    pdef = this.prCreatePbind(pattern);
+    pdef = this.prCreatePdef(pattern);
     this.prCreatePlayList(pattern[\id], pdef);
 
     if (isNewNdef)
@@ -231,24 +231,24 @@ Px {
     ^pattern;
   }
 
-  *prCreatePbind { |pattern|
-    var pbind;
+  *prCreatePdef { |pattern|
+    var pbindef;
     var stopBeats = pattern[\stop];
 
     pattern.removeAt(\repeat);
     pattern.removeAt(\stop);
 
-    pbind = Pbind(*pattern.asPairs);
+    pbindef = Pbind(*pattern.asPairs);
 
     if (pattern[\midiControl] != 1)
-    { pbind = this.prCreateFade(pbind, pattern[\fade]) };
+    { pbindef = this.prCreateFade(pbindef, pattern[\fade]) };
 
-    pbind = this.prCreateChop(pattern, pbind);
+    pbindef = this.prCreateChop(pattern, pbindef);
 
     if (stopBeats.notNil)
-    { pbind = Pfindur(stopBeats, pbind) };
+    { pbindef = Pfindur(stopBeats, pbindef) };
 
-    ^pbind;
+    ^pbindef = Pdef(pattern[\id], pbindef).quant_(quant);
   }
 
   *prHandleSoloPattern { |pattern|
@@ -284,10 +284,9 @@ Px {
     last[pattern[\id]] = pattern;
   }
 
-  *prCreatePlayList { |id, pbind|
+  *prCreatePlayList { |id, pdef|
     if (ndefList[id].isNil)
-    { ndefList.put(id, Ndef(id, pbind).quant_(quant)) }
-    { Ndef(id, pbind) };
+    { ndefList.put(id, Ndef(id, pdef).quant_(quant)) };
   }
 
   *prInitMasterNdef {

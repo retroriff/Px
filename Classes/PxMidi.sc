@@ -164,9 +164,11 @@ TODO: MIDIOut instances
 
     ndefList.keys do: { |key|
       if (key.asString.beginsWith(prefix) and: { last[key].notNil and: { last[key][\chan] == chan } }) {
+        Pdef(key).stop;
         Ndef(key).free;
         last.removeAt(key);
         ndefList.removeAt(key);
+        Ndef(\px)[0] = { Mix.new(ndefList.values) };
       };
     };
 
@@ -216,9 +218,11 @@ TODO: MIDIOut instances
       var controlId = ("cc" ++ ctlNum ++ "_" ++ this.asString).asSymbol;
 
       if (Px.ndefList[controlId].notNil) {
+        Pdef(controlId).stop;
         Ndef(controlId).free;
         Px.last.removeAt(controlId);
         Px.ndefList.removeAt(controlId);
+        Ndef(\px)[0] = { Mix.new(Px.ndefList.values) };
       };
 
       Px.control(chan, ctlNum, control);

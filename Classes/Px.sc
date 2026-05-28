@@ -234,11 +234,12 @@ Px {
   *prCreatePdef { |pattern|
     var pbindef;
     var stopBeats = pattern[\stop];
+    var bindPattern = pattern.copy;
 
-    pattern.removeAt(\repeat);
-    pattern.removeAt(\stop);
+    bindPattern.removeAt(\repeat);
+    bindPattern.removeAt(\stop);
 
-    pbindef = Pbind(*pattern.asPairs);
+    pbindef = Pbind(*bindPattern.asPairs);
 
     if (pattern[\midiControl] != 1)
     { pbindef = this.prCreateFade(pbindef, pattern[\fade]) };
@@ -318,14 +319,13 @@ Px {
     var hasRepeat = pattern[\repeat].notNil;
     var hasStop = pattern[\stop].notNil;
 
-    case
-    { hasFadeIn }
-    { last[pattern[\id]].removeAt(\fade) }
+    if (hasFadeIn)
+    { last[pattern[\id]].removeAt(\fade) };
 
-    { hasFadeOut }
-    { last.removeAt(pattern[\id]) }
+    if (hasFadeOut)
+    { last.removeAt(pattern[\id]) };
 
-    { hasRepeat or: hasEmptyDur or: hasStop } {
+    if (hasRepeat or: hasEmptyDur or: hasStop) {
       last.removeAt(pattern[\id]);
       ndefList.removeAt(pattern[\id]);
 

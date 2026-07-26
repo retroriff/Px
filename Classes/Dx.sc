@@ -354,7 +354,7 @@ Dx : Px {
   *prCreatePresetsDict {
     presetsDict = Dictionary.new;
 
-    PathName(("../Presets/yaml/").resolveRelative).filesDo{ |file|
+    PathName(("../Presets/dx/").resolveRelative).filesDo{ |file|
       var fileName = file.fileNameWithoutExtension.asSymbol;
       var filePath = File.readAllString(file.fullPath);
       presetsDict.put(fileName, PresetsFromYAML(filePath.parseYAML))

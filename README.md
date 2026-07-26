@@ -20,10 +20,11 @@ Additional code examples can be found [here](/Examples/).
 4. 🔄 [Lx: Multi-Track Sample Looper](#-lx-multi-track-sample-looper)
 5. 🌊 [Sx: A Sequenced Synth](#-sx-a-sequenced-synth)
 6. 🎹 [Nx: Musical Chord Data](#-nx-musical-chord-data)
-7. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
-8. 📡 [OSC Communication](#-osc-communication)
-9. 🎚️ [Mixer](#️-mixer)
-10. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#️-tr08-a-roland-tr-08-midi-controller)
+7. 🎛️ [Cx: A MIDI Controller](#️-cx-external-midi-controller-bridge)
+8. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
+9. 📡 [OSC Communication](#-osc-communication)
+10. 🎚️ [Mixer](#️-mixer)
+11. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#️-tr08-a-roland-tr-08-midi-controller)
 
 ## 🛠️ Installation
 
@@ -94,12 +95,12 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 
 ### Instrument methods
 
-| Name   | Arguments                                          | Description                            |
-| ------ | -------------------------------------------------- | -------------------------------------- |
+| Name    | Arguments                                          | Description                            |
+| ------- | -------------------------------------------------- | -------------------------------------- |
 | `grain` | [folder: string, file: number \| \jump \| \rand]\* | Plays a granular texture from a buffer |
-| `i`    | name: string                                       | Plays a Synthdef. Same as `instrument` |
-| `loop` | [folder: string, file: number \| \jump \| \rand]\* | Plays a loop from a buffer             |
-| `play` | [folder: string, file: number \| array \| \rand]\* | Plays a buffer                         |
+| `i`     | name: string                                       | Plays a Synthdef. Same as `instrument` |
+| `loop`  | [folder: string, file: number \| \jump \| \rand]\* | Plays a loop from a buffer             |
+| `play`  | [folder: string, file: number \| array \| \rand]\* | Plays a buffer                         |
 
 `*` The array can be replaced by a string shortcut: `"folder:index"`.
 `**` It also accepts a Buffer object: `Buffer.read(s, "chord.aiff".resolveRelative)`.
@@ -170,13 +171,13 @@ Custom pattern player designed to handle degrees, and can send MIDI messages bas
 
 ### Event methods
 
-| Name     | Arguments                                                           | Description                            |
-| -------- | ------------------------------------------------------------------- | -------------------------------------- |
-| `arp`    | None                                                                | Creates a very basic arpegio           |
-| `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                           |
+| Name     | Arguments                                                           | Description                                                              |
+| -------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `arp`    | None                                                                | Creates a very basic arpegio                                             |
+| `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                                                             |
 | `note`   | number \| symbol \| array \| Pattern                                | MIDI note. Accepts symbol notation: `\c4` (60), `\cs4` (61), `\db4` (61) |
-| `octave` | number \| array \| [\beats, octave: number]                         | Can create a sequence or a random beat |
-| `root`   | number \| array                                                     | Sets the root value                    |
+| `octave` | number \| array \| [\beats, octave: number]                         | Can create a sequence or a random beat                                   |
+| `root`   | number \| array                                                     | Sets the root value                                                      |
 
 ### MIDI
 
@@ -223,7 +224,7 @@ Dx.preset(\electro, 1);
 | `gui`         | None                                              | Opens a drum machine bank GUI          |
 | `instruments` | machine?: symbol                                  | Returns available instruments          |
 | `loadPresets` | None                                              | Reloads presets from YAML files        |
-| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/yaml/)       |
+| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/dx/)       |
 | `release`     | None                                              | Releases with fadeTime                 |
 | `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns  |
 | `shuffle`     | None                                              | Shuffles the drum machines bank        |
@@ -247,26 +248,26 @@ Lx.stop
 
 ### Lx class methods
 
-| Name          | Arguments                            | Description                             |
-| ------------- | ------------------------------------ | --------------------------------------- |
-| `amp`         | channel: integer, value?: number     | Sets amplitude for a channel            |
-| `buf`         | channel: integer, index: integer     | Switches sample in a channel            |
-| `dur`         | channel: integer, value?: number     | Sets duration (beats) for a channel     |
-| `gui`         | None                                 | Opens multi-channel control GUI         |
-| `loadSamples` | path: string                         | Loads subfolders as loop channels       |
-| `next`        | channel: integer                     | Next sample in channel (wraps)          |
-| `play`        | channel?: integer, fadeTime?: number | Plays one or all channels               |
-| `prev`        | channel: integer                     | Previous sample in channel (wraps)      |
-| `start`       | channel: integer, value?: number     | Sets start position (0-1) for a channel |
-| `trim`        | channel: integer, value?: number     | Sets trim position for a channel        |
+| Name          | Arguments                            | Description                              |
+| ------------- | ------------------------------------ | ---------------------------------------- |
+| `amp`         | channel: integer, value?: number     | Sets amplitude for a channel             |
+| `buf`         | channel: integer, index: integer     | Switches sample in a channel             |
+| `dur`         | channel: integer, value?: number     | Sets duration (beats) for a channel      |
+| `gui`         | None                                 | Opens multi-channel control GUI          |
+| `loadSamples` | path: string                         | Loads subfolders as loop channels        |
+| `next`        | channel: integer                     | Next sample in channel (wraps)           |
+| `play`        | channel?: integer, fadeTime?: number | Plays one or all channels                |
+| `prev`        | channel: integer                     | Previous sample in channel (wraps)       |
+| `start`       | channel: integer, value?: number     | Sets start position (0-1) for a channel  |
+| `trim`        | channel: integer, value?: number     | Sets trim position for a channel         |
 | `shuffle`     | channel?: integer, amount?: number   | Randomizes parameters with drift control |
-| `stop`        | channel?: integer                    | Stops one or all Lx patterns            |
-| `vol`         | value: number                        | Sets amplitude for all playing channels |
-| `density`     | channel: integer, value?: number     | Sets grain density (grains/sec)         |
-| `grainDur`    | channel: integer, value?: number     | Sets grain size (seconds)               |
-| `scatter`     | channel: integer, value?: number     | Sets position randomness (0-1)          |
-| `spread`      | channel: integer, value?: number     | Sets pitch variation per grain (0-1)    |
-| `freeze`      | channel: integer, value?: number     | Stops position scanning (0/1)           |
+| `stop`        | channel?: integer                    | Stops one or all Lx patterns             |
+| `vol`         | value: number                        | Sets amplitude for all playing channels  |
+| `density`     | channel: integer, value?: number     | Sets grain density (grains/sec)          |
+| `grainDur`    | channel: integer, value?: number     | Sets grain size (seconds)                |
+| `scatter`     | channel: integer, value?: number     | Sets position randomness (0-1)           |
+| `spread`      | channel: integer, value?: number     | Sets pitch variation per grain (0-1)     |
+| `freeze`      | channel: integer, value?: number     | Stops position scanning (0/1)            |
 
 ## 🌊 Sx: A Sequenced Synth
 
@@ -342,6 +343,22 @@ Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (
 | `shuffle`        | tonic?: Symbol, scale?: Sym | None       | Randomly selects a chord with optional filters      |
 | `tonics`         | None                        | Dictionary | Returns all loaded tonics (root notes)              |
 
+## 🎛️ Cx: External MIDI Controller Bridge
+
+Maps external MIDI controllers to Px pattern parameters via YAML configs. Rotary encoders adjust `\amp`, `\dur`, `\pan`, etc. on the active patterns in real time. Slot N targets the Nth pattern in the GUI sort order; add or remove patterns and the mapping shifts automatically. Configs live in [Presets/cx/](/Presets/cx/); the default `midilab3.yaml` covers an Arturia Midilab 3's 8 rotaries.
+
+### Cx class methods
+
+| Name     | Arguments                 | Description                                                      |
+| -------- | ------------------------- | ---------------------------------------------------------------- |
+| `play`   | name?: symbol             | Load config (default `\midilab3`), open MIDI, register handlers  |
+| `stop`   | None                      | Free MIDI handlers, keep the loaded config                       |
+| `clear`  | None                      | Stop and drop the config and any pinned assignments              |
+| `load`   | name: symbol              | Load a YAML config without opening MIDI                          |
+| `list`   | None                      | Print current slot → pattern → param mapping                     |
+| `assign` | slot: integer, id: symbol | Pin a slot to a specific pattern id, overriding the sorted slot  |
+| `debug`  | value: boolean            | When `true`, prints each incoming MIDI message with decoded step |
+
 ## 📡 OSC Communication
 
 Px also has methods to handle a OSC listener, useful for applications where remote control or interaction is needed, allowing real-time data to be sent and received via the network.
@@ -414,5 +431,5 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | ------------- | ------------------------------ | ------------------------------------ |
 | `init`        | time?: number                  | Controls the latency. Default is 0.2 |
 | `loadPresets` | None                           | Reloads presets from YAML files      |
-| `preset`      | name?: string \| index: number | Plays a [preset](/Presets/yaml/)     |
+| `preset`      | name?: string \| index: number | Plays a [preset](/Presets/dx/)     |
 | `stop`        | None                           | Same as `\808 i: \all`               |

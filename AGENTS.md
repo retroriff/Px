@@ -39,7 +39,7 @@
 
 - Add effect → Edit `Effects/*.scd` + `Classes/Fx.sc` + `Classes/PxFx.sc` (Number DSL method mirrors Fx method, excluding `pan`)
 - Add pattern parameter → Edit `Classes/Number.sc` + `Classes/Px.sc`
-- Add drum preset → Create `Presets/yaml/*.yaml`
+- Add drum preset → Create `Presets/dx/*.yaml`
 - Add chord → Edit `Score/*.scd`
 - Add granular loop feature → Edit `Classes/Lx.sc` + `Classes/LxGui.sc`
 - Add/modify class method → Update corresponding `HelpSource/Classes/<ClassName>.schelp`

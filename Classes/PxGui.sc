@@ -60,13 +60,7 @@
     var patternsFormatted = lastFormatted;
     var meterColor = Color.new255(37, 190, 106);
     var meterBgColor = Color.new255(31, 41, 55);
-    var drumMachinePatterns = patterns.select { |pattern|
-      pattern[\drumMachine].notNil
-    }.keys.asSortedList;
-    var nonDrumMachinePatterns =  patterns.select { |pattern|
-      pattern[\drumMachine].isNil
-    }.keys.asArray.sort({ |a, b| a.asInteger < b.asInteger });
-    var sortedKeys = drumMachinePatterns ++ nonDrumMachinePatterns;
+    var sortedKeys = Px.prSortedPatternIds(patterns);
 
     meterViews = Array.new;
 
@@ -75,8 +69,13 @@
       var patternFormatted = patternsFormatted[key];
       var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
       var play = pattern[\play] !? {
-        if (pattern[\play].isArray)
+        case
+        { pattern[\play].isArray }
         { pattern[\play][0] }
+
+        { pattern[\play].isKindOf(Buffer) and: { pattern[\play].path.notNil } }
+        { PathName(pattern[\play].path).parentPath.basename }
+
         { pattern[\play].asString }
       };
       var loop = pattern[\loop] !? {
@@ -302,4 +301,5 @@
     bounds.width = this.prGenerateWindowWidth;
     window.bounds = bounds;
   }
+
 }

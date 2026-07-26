@@ -157,7 +157,7 @@ Dx.instruments(\909);  // Instruments for 909
 ::
 
 method:: loadPresets
-Reloads all drum machine presets from the Presets/yaml/ directory. Call this after editing YAML preset files.
+Reloads all drum machine presets from the Presets/dx/ directory. Call this after editing YAML preset files.
 
 code::
 Dx.loadPresets;

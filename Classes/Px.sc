@@ -1,10 +1,4 @@
 /*
-TODO: Px.solo stops the fx and when unsolo they don't play again:
-  909 i: \bd dur: 0.25 beat: 0.4 reverb: 0.3 r: 1; //  seed: 380
-  3 i: \square_perc dur: 0.25 space: 0.3 note: [\c4, \e4].pseq ctranspose: 0 delay: 0.7;
-  Px.solo(\bd909)
-  Px.unsolo
-
 TODO: Midinote notation in uppercase return chords
 TODO: When used in a group, Number solo method mutes new patterns already played.
 Example on Mastegots.scd

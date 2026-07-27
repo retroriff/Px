@@ -167,22 +167,32 @@
     { ^("🔴 No matching instruments to solo") };
 
     last.copy do: { |event|
-      if (soloIds.includes(event[\id]) == false) {
-        mutedPatterns.put(event[\id], event);
+      var id = event[\id];
+
+      if (soloIds.includes(id) == false) {
+        mutedPatterns.put(id, event);
 
         if (event[\hasGate] == false) {
           this.prChannelNoteOff(event[\chan]);
         };
 
-        Px.stop(event[\id]);
+        Pdef(id).source = nil;
+        last.removeAt(id);
+        lastFormatted.removeAt(id);
       }
     };
+
+    this.prAutoRefreshGui;
   }
 
   *unsolo {
+    var toRestore;
+
     if (mutedPatterns.isNil || mutedPatterns.isEmpty) {
       ^("🟡 No muted patterns to restore");
     };
+
+    toRestore = mutedPatterns.copy;
 
     mutedPatterns.keysValuesDo { |id, event|
       last.put(id, event);
@@ -190,11 +200,16 @@
 
     mutedPatterns = Dictionary.new;
 
-    this.prReevaluate;
+    this.prReevaluate(toRestore);
   }
 
   *stop { |idArray|
+    var tailWait = 6;
+    var fadeTime = 2;
+
     if (idArray.isNil) {
+      var idsToClean = last.keys.copy;
+
       Pdef.all do: { |item|
         Pdef(item.key).source = nil;
       };
@@ -205,7 +220,25 @@
       meterNextId = 0;
       pausedPatterns = IdentitySet.new;
       this.prAutoRefreshGui;
-      ^Ndef(\px).free
+
+      ^fork({
+        tailWait.wait;
+
+        if (last.isEmpty) {
+          Ndef(\px).fadeTime = fadeTime;
+          Ndef(\px)[0] = { Silent.ar(2) };
+
+          fadeTime.wait;
+
+          idsToClean.do { |id|
+            Ndef(id).free;
+            Fx.prClearProxy(id);
+            fxState.removeAt(id);
+          };
+
+          Ndef(\px).free;
+        };
+      }, SystemClock)
     };
 
     if (idArray.isArray.not)
@@ -235,16 +268,32 @@
     this.prAutoRefreshGui;
 
     idArray.do { |id|
-      if (last.size > 0) {
-        ^fork {
-          4.wait;
+      ^fork({
+        tailWait.wait;
 
-          if (ndefList[id].isNil)
-          { Ndef(id).free };
-        }
-      } {
-        ^Ndef(\px).free
-      };
+        if (last.isEmpty) {
+          Ndef(\px).fadeTime = fadeTime;
+          Ndef(\px)[0] = { Silent.ar(2) };
+          fadeTime.wait;
+
+          if (ndefList[id].isNil) {
+            Ndef(id).free;
+            Fx.prClearProxy(id);
+            fxState.removeAt(id);
+          };
+
+          Ndef(\px).free;
+        } {
+          if (ndefList[id].isNil) {
+            Ndef(id).fadeTime = fadeTime;
+            Ndef(id)[0] = { Silent.ar(2) };
+            fadeTime.wait;
+            Ndef(id).free;
+            Fx.prClearProxy(id);
+            fxState.removeAt(id);
+          };
+        };
+      }, SystemClock)
     };
   }
 

@@ -136,14 +136,14 @@ Cx {
 
     if (targetId.isNil) {
       if (debug == true)
-      { ("🎛️ cc" + row[\cc] + "raw" + value + "step" + step + "→ slot" + slot + "(no target)").postln };
+      { ("🎛️ no target:" + step + "(cc" + row[\cc] ++ ", raw" + value ++ ")").warn };
       ^this;
     };
 
     pattern = Px.last[targetId];
     if (pattern.isNil) {
       if (debug == true)
-      { ("🎛️ cc" + row[\cc] + "raw" + value + "step" + step + "→ slot" + slot + targetId + "(no pattern)").postln };
+      { ("🎛️ \\" ++ targetId + "(no pattern):" + step + "(cc" + row[\cc] ++ ", raw" + value ++ ")").warn };
       ^this;
     };
 
@@ -157,7 +157,7 @@ Cx {
     newValue = next;
 
     if (debug == true)
-    { ("🎛️ cc" + row[\cc] + "raw" + value + "step" + step + "→ slot" + slot + targetId + param + current.round(0.001) + "→" + next.round(0.001)).postln };
+    { ("🎛️ \\" ++ targetId ++ ":"  + param + current.round(0.001) + "→" + next.round(0.001) + "(cc" + row[\cc] ++ ", raw" + value ++ ")").postln };
 
     this.prPerform(targetId, param, newValue);
   }

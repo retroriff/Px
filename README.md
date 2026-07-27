@@ -24,7 +24,7 @@ Additional code examples can be found [here](/Examples/).
 8. 💥 [Notes Handler with MIDI Support](#-notes-handler-with-midi-support)
 9. 📡 [OSC Communication](#-osc-communication)
 10. 🎚️ [Mixer](#️-mixer)
-11. 🎛️ [TR08: A Roland TR-08 MIDI Controller](#️-tr08-a-roland-tr-08-midi-controller)
+11. 🥁 [TR08: A Roland TR-08 MIDI Controller](#️-tr08-a-roland-tr-08-midi-controller)
 
 ## 🛠️ Installation
 
@@ -224,7 +224,7 @@ Dx.preset(\electro, 1);
 | `gui`         | None                                              | Opens a drum machine bank GUI          |
 | `instruments` | machine?: symbol                                  | Returns available instruments          |
 | `loadPresets` | None                                              | Reloads presets from YAML files        |
-| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/dx/)       |
+| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/dx/)         |
 | `release`     | None                                              | Releases with fadeTime                 |
 | `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns  |
 | `shuffle`     | None                                              | Shuffles the drum machines bank        |
@@ -431,5 +431,5 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | ------------- | ------------------------------ | ------------------------------------ |
 | `init`        | time?: number                  | Controls the latency. Default is 0.2 |
 | `loadPresets` | None                           | Reloads presets from YAML files      |
-| `preset`      | name?: string \| index: number | Plays a [preset](/Presets/dx/)     |
+| `preset`      | name?: string \| index: number | Plays a [preset](/Presets/dx/)       |
 | `stop`        | None                           | Same as `\808 i: \all`               |

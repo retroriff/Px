@@ -153,6 +153,7 @@ Fx.setVstPresetsPath(<path>);
 
 It offers the same [class methods as Px](#px-class-methods), with the following additions:
 
+- `activeArgs`: Returns active effects and their argument arrays per proxy
 - `activeEffects`: Checks the active proxy filters
 - `clear`: Clears all effects
 - `duck` (mix, thresh, bus): Sidechain compression — ducks from the master output or a specific Ndef

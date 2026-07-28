@@ -18,7 +18,6 @@
   *clear {
     chorusPatterns.clear;
     colors.clear;
-    fxState.clear;
     last.clear;
     lastFormatted.clear;
     meterIdMap.clear;
@@ -79,7 +78,7 @@
       { fadeTime = fadeTime };
 
       Ndef(\x).proxyspace.free(fadeTime);
-      Fx.activeEffects = Dictionary.new;
+      Fx.chains = Dictionary.new;
 
       if (midiOut.notNil) {
         Px.panic;
@@ -114,7 +113,7 @@
       (fadeTime * 2).wait;
 
       ndefList.keys do: { |key|
-        Fx.activeEffects.removeAt(key);
+        Fx.remove(key);
         Ndef(key).free(fadeTime);
       };
 
@@ -204,96 +203,54 @@
   }
 
   *stop { |idArray|
-    var tailWait = 6;
+    var tailWait = 2;
     var fadeTime = 2;
+    var stopAll = idArray.isNil;
 
-    if (idArray.isNil) {
-      var idsToClean = last.keys.copy;
-
-      Pdef.all do: { |item|
-        Pdef(item.key).source = nil;
-      };
-
-      ndefList = Dictionary.new;
-      meterIdMap = Dictionary.new;
-      meterLevels = Dictionary.new;
-      meterNextId = 0;
-      pausedPatterns = IdentitySet.new;
-      this.prAutoRefreshGui;
-
-      ^fork({
-        tailWait.wait;
-
-        if (last.isEmpty) {
-          Ndef(\px).fadeTime = fadeTime;
-          Ndef(\px)[0] = { Silent.ar(2) };
-
-          fadeTime.wait;
-
-          idsToClean.do { |id|
-            Ndef(id).free;
-            Fx.prClearProxy(id);
-            fxState.removeAt(id);
-          };
-
-          Ndef(\px).free;
-        };
-      }, SystemClock)
-    };
+    if (stopAll)
+    { idArray = last.keys.asArray };
 
     if (idArray.isArray.not)
     { idArray = [idArray] };
 
-    idArray do: { |id|
-      id = id.asSymbol;
+    idArray = idArray.collect(_.asSymbol);
 
+    idArray do: { |id|
       if (last[id].notNil) {
-        if (last[id][\hasGate] == false) {
-          this.prChannelNoteOff(last[id][\chan]);
-        };
+        if (last[id][\hasGate] == false)
+        { this.prChannelNoteOff(last[id][\chan]) };
 
         last.removeAt(id);
         lastFormatted.removeAt(id);
         ndefList.removeAt(id);
         pausedPatterns.remove(id);
-
         meterIdMap = meterIdMap.select { |v| v != id };
         meterLevels.removeAt(id);
         Pdef(id).source = nil;
       } {
-        this.prPrint("🔴 Pattern" + id + "does not exist");
+        if (stopAll.not)
+        { this.prPrint("🔴 Pattern" + id + "does not exist") };
       };
     };
+
+    if (stopAll)
+    { meterNextId = 0 };
 
     this.prAutoRefreshGui;
 
     idArray.do { |id|
-      ^fork({
+      fork({
         tailWait.wait;
 
-        if (last.isEmpty) {
-          Ndef(\px).fadeTime = fadeTime;
-          Ndef(\px)[0] = { Silent.ar(2) };
-          fadeTime.wait;
-
-          if (ndefList[id].isNil) {
-            Ndef(id).free;
-            Fx.prClearProxy(id);
-            fxState.removeAt(id);
-          };
-
-          Ndef(\px).free;
-        } {
-          if (ndefList[id].isNil) {
-            Ndef(id).fadeTime = fadeTime;
-            Ndef(id)[0] = { Silent.ar(2) };
-            fadeTime.wait;
-            Ndef(id).free;
-            Fx.prClearProxy(id);
-            fxState.removeAt(id);
-          };
+        if (ndefList[id].isNil) {
+          Ndef(id).clear(fadeTime);
+          Fx.remove(id);
         };
-      }, SystemClock)
+
+        if (last.isEmpty and: { Ndef(\px).isPlaying }) {
+          Ndef(\px).clear(fadeTime);
+        };
+      }, SystemClock);
     };
   }
 

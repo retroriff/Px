@@ -1,19 +1,20 @@
 + Px {
   *prApplyFx { |id, fxList, isFullDeclaration|
-    var currentFxNames;
+    var chain, previousFxNames, currentFxNames;
 
     if (id.isNil) { ^this };
 
     Fx.skipFlush = true;
+    chain = Fx.chains[id];
+    previousFxNames = if (chain.notNil) { chain.fxNames.asSet } { Set.new };
 
     if (fxList.isNil or: { fxList.size == 0 }) {
 
-      if (isFullDeclaration and: { fxState[id].notNil }) {
+      if (isFullDeclaration and: { previousFxNames.notEmpty }) {
         Fx(id);
         Fx.prSuppressPrint = true;
-        fxState[id].do { |fxName| Fx.perform(fxName, nil) };
+        previousFxNames.do { |fxName| Fx.perform(fxName, nil) };
         Fx.prSuppressPrint = false;
-        fxState[id] = nil;
       };
 
       Fx.skipFlush = false;
@@ -23,8 +24,8 @@
     Fx(id);
     currentFxNames = fxList.collect { |entry| entry[0] }.asSet;
 
-    if (isFullDeclaration and: { fxState[id].notNil }) {
-      (fxState[id] -- currentFxNames).do { |fxName|
+    if (isFullDeclaration and: { previousFxNames.notEmpty }) {
+      (previousFxNames -- currentFxNames).do { |fxName|
         Fx.prDisableFx(fxName, immediate: true);
       };
     };
@@ -35,7 +36,6 @@
     };
     Fx.prSuppressPrint = false;
 
-    fxState[id] = currentFxNames;
     Fx.skipFlush = false;
   }
 }

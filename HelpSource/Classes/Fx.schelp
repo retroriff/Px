@@ -379,6 +379,20 @@ Fx.clear(\px);   // Clear effects from \px only
 Fx.clear;        // Clear all effects
 ::
 
+method:: activeEffects
+Returns a Dictionary mapping each proxy id to its active effects (fx name -> filter slot index).
+
+code::
+Fx.activeEffects;  // ( 'triangle_perc3': ( 'delay': 1, 'space': 2 ), \bd909: ( 'reverb': 1 ) )
+::
+
+method:: activeArgs
+Returns a Dictionary mapping each proxy id to its active effects and their argument arrays.
+
+code::
+Fx.activeArgs;  // ( \px: ( 'gverb': [ 200, 5 ], 'delay': [ 0.5, 0.5 ] ) )
+::
+
 method:: effectNames
 Returns a sorted array of all available effect names.
 

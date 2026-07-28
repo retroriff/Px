@@ -192,7 +192,7 @@ Dx : Px {
     last.copy do: { |pattern|
 
       if (pattern[\dx] == true)
-      { Fx.prClearProxy(pattern[\id]) };
+      { Fx.remove(pattern[\id]) };
     };
 
     this.prStopPreset;

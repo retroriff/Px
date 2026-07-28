@@ -1,10 +1,7 @@
 Fx {
-  classvar <activeArgs;
-  classvar <>activeEffects;
+  classvar <>chains;
   classvar <effects;
-  classvar <>mixer;
   classvar <>presetsPath;
-  classvar <proxy;
   classvar <proxyName;
   classvar <>prSuppressPrint;
   classvar <>skipFlush;
@@ -12,18 +9,15 @@ Fx {
   classvar <vstPresets;
 
   *initClass {
-    activeArgs = Dictionary.new;
-    activeEffects = Dictionary.new;
+    chains = Dictionary.new;
     effects = Dictionary.new;
-    mixer = Dictionary.new;
-    proxy = Dictionary.new;
     prSuppressPrint = false;
     skipFlush = false;
     vstPresets = Dictionary.new;
 
     this.loadEffects;
 
-    CmdPeriod.add { 
+    CmdPeriod.add {
       Fx.prSuppressPrint = true;
       this.clear;
       Fx.prSuppressPrint = false;
@@ -52,7 +46,7 @@ Fx {
   }
 
   *clear { |singleProxy|
-    var fx = activeEffects[proxyName];
+    var chain = chains[proxyName];
 
     if ((proxyName == \lx or: { proxyName == \dx }) and: { singleProxy.isNil }) {
       var ids = this.prGroupIds(proxyName);
@@ -64,14 +58,16 @@ Fx {
       ^this;
     };
 
-    if (fx.notNil and: { fx.size > 0 } and: { singleProxy.isNil })
+    if (chain.notNil and: { chain.effects.size > 0 } and: { singleProxy.isNil })
     { this.prPrint("🌵 All effects have been disabled") };
 
     if (singleProxy.notNil) {
       proxyName = singleProxy.asSymbol;
-      fx = activeEffects[proxyName];
+      chain = chains[proxyName];
 
-      ^fx.copy do: { |slotIndex, fxName|
+      if (chain.isNil) { ^this };
+
+      ^chain.effects.copy do: { |slotIndex, fxName|
         this.prDisableFx(fxName, noPostln: true);
       }
     };
@@ -81,15 +77,13 @@ Fx {
       vstController = nil;
     };
 
-    if (fx.notNil) {
-      fx do: { |slotIndex, fxName|
-        proxy[proxyName][slotIndex] = nil;
+    if (chain.notNil) {
+      chain.effects do: { |slotIndex, fxName|
+        Ndef(proxyName)[slotIndex] = nil;
       };
     };
 
-    activeArgs.clear;
-    activeEffects.clear;
-    mixer.clear;
+    chains.clear;
   }
 
   *delay { |mix = 0.3, delaytime = 0.25, delayfeedback = 0.4|
@@ -127,6 +121,14 @@ Fx {
   *dist { |mix = 0.5, drive = 0.5|
     var postArgs = "drive:" + drive;
     this.prAddEffect(\dist, mix, [drive], postArgs);
+  }
+
+  *activeEffects {
+    ^chains.collect { |chain| chain.effects };
+  }
+
+  *activeArgs {
+    ^chains.collect { |chain| chain.args };
   }
 
   *effectNames {
@@ -206,6 +208,30 @@ Fx {
     this.prAddEffect(\space, mix, [fb], postArgs);
   }
 
+  *remove { |id|
+    var chain;
+
+    id = id.asSymbol;
+    chain = chains[id];
+
+    if (chain.isNil) { ^this };
+
+    chain.effects.keys.do { |fxName|
+      var args = chain.args[fxName];
+
+      if (args.notNil) {
+        args.do { |value, i|
+          if (value.isFunction) {
+            var ndefName = (fxName ++ "Mod" ++ (i + 1)).asSymbol;
+            Ndef(ndefName).clear;
+          };
+        };
+      };
+    };
+
+    chains.removeAt(id);
+  }
+
   *tremolo { |mix = 0.6, rate = 1|
     var postArgs = "rate:" + rate;
     this.prAddEffect(\tremolo, mix, [rate], postArgs);
@@ -274,17 +300,19 @@ Fx {
   }
 
   *prGetVstPluginName {
-    ^activeArgs[proxyName][\vst][0];
+    ^chains[proxyName].args[\vst][0];
   }
 
-  *prClearProxy { |name|
-    activeArgs.removeAt(name);
-    activeEffects.removeAt(name);
-    mixer.removeAt(name);
+  *prEnsureChain {
+    ^chains[proxyName] ?? {
+      var chain = FxChain.new;
+      chains[proxyName] = chain;
+      chain;
+    };
   }
 
   *prAddEffect { |fx, mix, args, postArgs|
-    var hasFx = false;
+    var chain, hasFx = false;
 
     if (proxyName == \lx or: { proxyName == \dx }) {
       var ids = this.prGroupIds(proxyName);
@@ -314,13 +342,13 @@ Fx {
     if (args.notNil) {
       args.do { |value|
 
-        if (value.notNil 
+        if (value.notNil
           and: { value.isNumber.not }
           and: { value.isFunction.not }
           and: { value.isString.not }
           and: { value.isKindOf(Symbol).not }) {
           ^(
-            "🔴 Invalid argument type. Use numbers or wrap UGens in { }, 
+            "🔴 Invalid argument type. Use numbers or wrap UGens in { },
             e.g. { SinOsc.kr(t / 16).range(200, 4000) }"
           );
         };
@@ -331,19 +359,15 @@ Fx {
       ^("🔴 Invalid mix value. Must be a number (0-1) or Nil.");
     };
 
-    if (activeEffects[proxyName].isNil)
-    { activeEffects[proxyName] = Dictionary.new };
-
-    if (activeArgs[proxyName].isNil)
-    { activeArgs[proxyName] = Dictionary.new };
-
-    hasFx = activeEffects[proxyName][fx].notNil;
+    chain = this.prEnsureChain;
+    hasFx = chain.effects[fx].notNil
+      and: { Ndef(proxyName).objects[chain.effects[fx]].notNil };
 
     if (fx == \vst
       and: { vstController.notNil }
       and: { mix.notNil }
       and: { mix != Nil }) {
-      proxy[proxyName].set(\vstBypass, 0);
+      Ndef(proxyName).set(\vstBypass, 0);
       this.prSetMixerValue(fx, mix.clip(0, 1));
       this.prPrint("✨ Enabled" + "\\vst" + "mix:" + mix + this.prGetVstPluginName);
     };
@@ -351,7 +375,7 @@ Fx {
     if (hasFx == false and: { mix.isNil.not } and: { mix != Nil })
     { this.prActivateEffect(args, fx, mix, postArgs) };
 
-    if (args != activeArgs[proxyName][fx] and: { mix.isNil.not } and: { mix != Nil })
+    if (args != chain.args[fx] and: { mix.isNil.not } and: { mix != Nil })
     { this.prUpdateEffect(args, fx) };
 
     if (fx == \vst and: (hasFx == false))
@@ -374,20 +398,16 @@ Fx {
   }
 
   *prActivateEffect { |args, fx, mix, postArgs|
+    var chain = chains[proxyName];
     var index, buildArgs;
 
-    proxy[proxyName] = Ndef(proxyName);
-    index = (activeEffects[proxyName].values.maxItem ?? 0) + 1;
-    activeEffects[proxyName][fx] = index;
+    index = chain.effects[fx] ?? { (chain.effects.values.maxItem ?? 0) + 1 };
+    chain.effects[fx] = index;
 
-    if (proxy[proxyName][index].isNil) {
+    if (Ndef(proxyName)[index].isNil) {
       buildArgs = args.collect { |v| if (v.isFunction) { 0 } { v } };
-      proxy[proxyName][index] = effects.at(fx).(*buildArgs);
-
-      if (activeArgs[proxyName].isNil)
-      { activeArgs[proxyName] = Dictionary.new };
-
-      activeArgs[proxyName].add(fx -> args);
+      Ndef(proxyName)[index] = effects.at(fx).(*buildArgs);
+      chain.args.add(fx -> args);
 
       if (fx == \vst) { postArgs = args[0] } {
         this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + (postArgs ?? ""));
@@ -405,7 +425,7 @@ Fx {
     };
 
     {
-      vstController = VSTPluginNodeProxyController(proxy[vstProxyName], index).open(
+      vstController = VSTPluginNodeProxyController(Ndef(vstProxyName), index).open(
         plugin,
         editor: true,
         action: { |ctrl, ok|
@@ -414,7 +434,7 @@ Fx {
             var folder = PathName.new(presetsPath +/+ plugin);
             var files = folder.entries select: { |file| file.extension == "fxp" };
 
-            proxy[vstProxyName].set(\vstBypass, 0);
+            Ndef(vstProxyName).set(\vstBypass, 0);
             this.prPrint("👉 Open VST Editor: Fx.vstController.editor;");
             this.prPrint("👉 Set VST parameter: Fx.vstSet(1, 1);");
 
@@ -433,6 +453,7 @@ Fx {
   }
 
   *prDisableFx { |fx, noPostln, immediate = false|
+    var chain = chains[proxyName];
     var index = this.prGetIndex(fx);
     var wetIndex = (\wet ++ index).asSymbol;
 
@@ -443,38 +464,42 @@ Fx {
 
     this.prFreeModulationNdefs(fx);
 
-    activeArgs[proxyName].removeAt(fx);
-    mixer[proxyName].removeAt(fx);
-    activeEffects[proxyName].removeAt(fx);
+    chain.args.removeAt(fx);
+    chain.mixer.removeAt(fx);
+    chain.effects.removeAt(fx);
 
     if (immediate)
-    { proxy[proxyName][index] = nil }
+    { Ndef(proxyName)[index] = nil }
     { this.prFadeOutFx(index, fx, wetIndex, noPostln) };
   }
 
   *prFadeOutVst {
+    var chain = chains[proxyName];
     var index = this.prGetIndex(\vst);
     var wetIndex = (\wet ++ index).asSymbol;
+    var wet = chain.mixer[\vst] ? 1;
 
-    activeArgs[proxyName].removeAt(\vst);
-    activeEffects[proxyName].removeAt(\vst);
-    mixer[proxyName].removeAt(\vst);
+    chain.args.removeAt(\vst);
+    chain.effects.removeAt(\vst);
+    chain.mixer.removeAt(\vst);
     vstController.close;
     vstController = nil;
-    this.prRampWet(wetIndex, mixer[proxyName][\vst] ? 1, 0, { |p|
+    this.prRampWet(wetIndex, wet, 0, { |p|
       p.set(\vstBypass, 1);
       p[index] = nil;
     });
   }
 
   *prFadeOutFx { |index, fx, wetIndex, noPostln|
-    this.prRampWet(wetIndex, mixer[proxyName][fx] ? 1, 0, { |p|
+    var chain = chains[proxyName];
+
+    this.prRampWet(wetIndex, chain.mixer[fx] ? 1, 0, { |p|
       p[index] = nil;
     });
   }
 
   *prRampWet { |wetIndex, from, to, onComplete|
-    var targetProxy = proxy[proxyName];
+    var targetProxy = Ndef(proxyName);
     var steps = 30;
 
     fork {
@@ -488,9 +513,11 @@ Fx {
   }
 
   *prGetIndex { |fx|
-    if (activeEffects[proxyName].isNil) { ^nil };
+    var chain = chains[proxyName];
 
-    ^activeEffects[proxyName][fx];
+    if (chain.isNil) { ^nil };
+
+    ^chain.effects[fx];
   }
 
   *prPrint { |value|
@@ -500,17 +527,20 @@ Fx {
 
 
   *prUpdateEffect { |args, fx|
+    var chain = chains[proxyName];
+
     args do: { |value, i|
       if (value.isFunction.not) {
-        proxy[proxyName].set((fx ++ (i + 1)).asSymbol, value);
+        Ndef(proxyName).set((fx ++ (i + 1)).asSymbol, value);
       };
 
-      activeArgs[proxyName].add(fx -> args);
+      chain.args.add(fx -> args);
     }
   }
 
   *prFreeModulationNdefs { |fx|
-    var args = activeArgs[proxyName][fx];
+    var chain = chains[proxyName];
+    var args = chain.args[fx];
 
     if (args.isNil) { ^nil };
 
@@ -531,7 +561,7 @@ Fx {
       if (value.isFunction) {
         var ndefName = (fx ++ "Mod" ++ (i + 1)).asSymbol;
         var ndef = Ndef(ndefName, value);
-        proxy[proxyName].map(controlName, ndef);
+        Ndef(proxyName).map(controlName, ndef);
       };
     };
   }
@@ -542,20 +572,44 @@ Fx {
   }
 
   *prSetMixerValue { |fx, mix|
+    var chain = chains[proxyName];
     var index = this.prGetIndex(fx);
     var wetIndex = (\wet ++ index).asSymbol;
 
     if (index.isNil)
     { ^("🔴".scatArgs(("\\" ++ fx), "FX to mix not found")) };
 
-    if (mixer[proxyName].isNil)
-    { mixer[proxyName] = Dictionary.new };
+    if (mix != chain.mixer[fx]) {
+      var from = chain.mixer[fx] ? 1;
 
-    if (mix != mixer[proxyName][fx]) {
-      var from = mixer[proxyName][fx] ? 1;
-
-      mixer[proxyName][fx] = mix;
+      chain.mixer[fx] = mix;
       this.prRampWet(wetIndex, from, mix);
+    } {
+      Ndef(proxyName).set(wetIndex, mix);
     };
+  }
+}
+
+FxChain {
+  var <>effects;
+  var <>args;
+  var <>mixer;
+
+  *new {
+    ^super.new.init;
+  }
+
+  init {
+    effects = Dictionary.new;
+    args = Dictionary.new;
+    mixer = Dictionary.new;
+  }
+
+  isEmpty {
+    ^effects.isEmpty;
+  }
+
+  fxNames {
+    ^effects.keys;
   }
 }

@@ -245,7 +245,7 @@ Lx : Px {
       if (channel < meterLevels.size)
       { meterLevels[channel] = 0 };
 
-      Fx.prClearProxy(id);
+      Fx.remove(id);
       Px.stop(id);
     } {
       this.prStopAll;
@@ -407,7 +407,7 @@ Lx : Px {
 
     last.copy do: { |pattern|
       if (pattern[\lx] == true) {
-        Fx.prClearProxy(pattern[\id]);
+        Fx.remove(pattern[\id]);
         Px.stop(pattern[\id]);
       };
     };

@@ -7,7 +7,6 @@ Px {
   classvar <>chorusPatterns;
   classvar <>colors;
   classvar <drumMachinesPath;
-  classvar <>fxState;
   classvar <>last;
   classvar <>lastFormatted;
   classvar <meterFunc;
@@ -35,7 +34,6 @@ Px {
   *initClass {
     chorusPatterns = Dictionary.new;
     colors = Dictionary.new;
-    fxState = Dictionary.new;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
     meterIdMap = Dictionary.new;

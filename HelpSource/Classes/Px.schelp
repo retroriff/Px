@@ -178,10 +178,10 @@ Px.shuffleHistory;
 subsection:: Utilities
 
 method:: gui
-Opens or refreshes a mixer GUI window for controlling pattern volumes. Pass code::0:: to close the window.
+Opens a mixer GUI window for controlling pattern volumes. Once open, the window updates automatically whenever patterns change. Pass code::0:: to close the window.
 
 code::
-Px.gui;    // open or refresh
+Px.gui;    // open
 Px.gui(0); // close
 ::
 

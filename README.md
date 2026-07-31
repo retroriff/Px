@@ -49,7 +49,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `dur`    | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
 | `euclid` | [hits: number, total: number]                     | Generates an Euclidian rhythm                                                                                                                                                                |
 | `fill`   | weight: range 0..1                                | Fills the rests gap of its previous sequential pattern                                                                                                                                       |
-| `gui`    | nil (open or update) \| 0 (close)                 | Open or refresh a patterns gui window. A 0 value closes the window. pattern                                                                                                                  |
+| `gui`    | nil (open) \| 0 (close)                           | Open a patterns gui window. Once open, it updates automatically. A 0 value closes the window.                                                                                                |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
 | `in`     | seconds: integer                                  | Fades in the pattern.                                                                                                                                                                        |
 | `length` | number                                            | With `degree: \rand`: number of random degrees (default: 1). With `loop:`: plays at natural rate for N beats, auto-extracting beat count from folder name                                    |
@@ -110,7 +110,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 - `control` (chan, ctlNum, value): Sends a MIDI CC message immediately.
 - `chorus`: Plays a saved chorus.
 - `chop`: (dur: Integer | Nil, drop: Integer)Slices and repeats part of the beat in short bursts. It can be disabled with a `0` or `Nil` value.
-- `gui`: Opens or refresh a gui window with pattern sliders.
+- `gui`: Opens a gui window with pattern sliders. Once open, it updates automatically.
 - `mixer`: Opens an `NdefMixer` instance, always on top, and assigns it to the `~mixer` variable.
 - `pause` (id: symbol): Pauses a specific pattern.
 - `release` (time: nil | number): Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.

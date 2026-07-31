@@ -21,6 +21,7 @@ Px {
   classvar <>mutedPatterns;
   classvar <>ndefList;
   classvar <>patternState;
+  classvar <patternViews;
   classvar <>pausedPatterns;
   classvar <>quant;
   classvar <samplesDict;
@@ -40,6 +41,7 @@ Px {
     meterLevels = Dictionary.new;
     meterNextId = 0;
     midiHoldedNotes = Dictionary.new;
+    patternViews = Dictionary.new;
 
     meterFunc = OSCFunc({ |msg|
       var meterId = msg[2].asInteger;
@@ -71,7 +73,6 @@ Px {
 
   *new { |newPattern|
     var pattern, pdef, playList, isNewNdef;
-    var prevSize = last.size;
 
     this.prInitializeDictionaries(newPattern);
     this.prHandleSoloPattern(newPattern);
@@ -115,10 +116,7 @@ Px {
     lastFormatted[newPattern[\id]] = pattern;
 
     this.prRemoveFinitePatternFromLast(pattern);
-
-    if (last.size != prevSize) {
-      this.prAutoRefreshGui;
-    };
+    this.prAutoRefreshGui;
   }
 
   *prCreateAmp { |pattern|

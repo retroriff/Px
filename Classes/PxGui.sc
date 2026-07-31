@@ -25,6 +25,7 @@
       if (Px.meterRoutine.notNil)
       { Px.meterRoutine.stop };
 
+      Px.patternViews.clear;
       Px.window = nil;
     });
 
@@ -57,140 +58,150 @@
 
   *prGenerateSliders {
     var patterns = last.reject { |pattern| pattern[\lx] == true };
-    var patternsFormatted = lastFormatted;
     var meterColor = Color.new255(37, 190, 106);
     var meterBgColor = Color.new255(31, 41, 55);
     var sortedKeys = Px.prSortedPatternIds(patterns);
 
     meterViews = Array.new;
+    patternViews.clear;
 
     ^sortedKeys collect: { |key|
-      var pattern = patterns[key];
-      var patternFormatted = patternsFormatted[key];
-      var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
-      var play = pattern[\play] !? {
-        case
-        { pattern[\play].isArray }
-        { pattern[\play][0] }
-
-        { pattern[\play].isKindOf(Buffer) and: { pattern[\play].path.notNil } }
-        { PathName(pattern[\play].path).parentPath.basename }
-
-        { pattern[\play].asString }
-      };
-      var loop = pattern[\loop] !? {
-        if (pattern[\loop].isArray)
-        { pattern[\loop][0] }
-        { pattern[\loop].asString }
-      };
-      var patternLabel = pattern[\name] ?? pattern[\instrument] ?? chan ?? play ?? loop ?? key;
-      var amp = this.prGetAmp(patternFormatted[\amp]);
-      var backgroundColor = Color.new255(26, 29, 34);
-      var button, numberBox, slider, staticText;
-
-      var label = {
-        if (pattern[\drumMachine].notNil)
-        { "🛢️" + patternLabel }
-        { this.prTruncateText(pattern[\id].asString + patternLabel) };
-      };
-
-      var staticTextColor = {
-        if (pattern[\drumMachine].notNil)
-        { Color.new255(255, 255, 122) }
-        { colors[pattern[\id]] }
-      };
-
-      var slideAction = { |value|
-        var newAmp = this.prSetAmp(patternFormatted[\amp], value);
-        pattern[\id].asInteger.set(1).amp(newAmp);
-        numberBox.value_(value);
-      };
-
-      if (colors[pattern[\id]].isNil)
-      { colors[pattern[\id]] = Color.rand };
-
-      // StaticText
-      staticText = StaticText()
-      .align_(\center)
-      .background_(staticTextColor.value)
-      .mouseDownAction_({
-        (pattern[\id].asString + pattern.asString).postln
-      })
-      .string_(label.value);
-
-      // NumberBox
-      numberBox = NumberBox()
-      .action_({
-        slideAction.(numberBox.value);
-        slider.value_(numberBox.value);
-      })
-      .backColor_(backgroundColor)
-      .clipHi_(1)
-      .clipLo_(0)
-      .scroll_step_(0.01)
-      .normalColor_(Color.white)
-      .value_(amp);
-
-      // Slider
-      slider = Slider()
-      .action_({
-        numberBox.value_(slider.value);
-      })
-      .backColor_(backgroundColor)
-      .mouseUpAction_({
-        slideAction.(slider.value);
-      })
-      .value_(amp);
-
-      // Button
-      button = Button()
-      .states_([
-        ["🟢", Color.white, Color.new255(32, 42, 55)],
-        ["⬜️", Color.grey, Color.new255(32, 42, 55)]
-      ])
-      .action_({ |btn|
-        if (btn.value == 0)
-        { Px.resume(pattern[\id]) }
-        { Px.pause(pattern[\id]) };
-      });
-
-      if (pausedPatterns.includes(pattern[\id].asSymbol))
-      { button.value_(1) };
-
-      {
-        var meterView;
-
-        meterView = UserView()
-        .minHeight_(20)
-        .drawFunc_({ |v|
-          var bounds = v.bounds.moveTo(0, 0);
-          var level = meterLevels[pattern[\id]] ?? 0;
-          var normalized = level.ampdb.linlin(-40, 0, 0, 1).clip(0, 1);
-          var fillWidth = normalized * bounds.width;
-
-          Pen.fillColor = meterBgColor;
-          Pen.addRoundedRect(bounds, 3, 3);
-          Pen.fill;
-
-          if (fillWidth > 0) {
-            Pen.push;
-            Pen.addRoundedRect(bounds, 3, 3);
-            Pen.clip;
-            Pen.fillColor = meterColor;
-            Pen.fillRect(Rect(0, 0, fillWidth, bounds.height));
-            Pen.pop;
-          };
-
-          Pen.strokeColor = Color.grey(0.3);
-          Pen.addRoundedRect(bounds, 3, 3);
-          Pen.stroke;
-        });
-
-        meterViews = meterViews.add(meterView);
-
-        VLayout(staticText, slider, numberBox, meterView, button);
-      }.value;
+      var views = this.prBuildPatternView(key, meterColor, meterBgColor);
+      patternViews[key] = views;
+      views[\layout];
     };
+  }
+
+  *prBuildPatternView { |key, meterColor, meterBgColor|
+    var pattern = last[key];
+    var amp = this.prGetAmp(lastFormatted[key][\amp]);
+    var backgroundColor = Color.new255(26, 29, 34);
+    var button, numberBox, slider, staticText, meterView;
+
+    var slideAction = { |value|
+      var newAmp = this.prSetAmp(lastFormatted[key][\amp], value);
+      key.asInteger.set(1).amp(newAmp);
+      numberBox.value_(value);
+    };
+
+    if (colors[pattern[\id]].isNil)
+    { colors[pattern[\id]] = Color.rand };
+
+    staticText = StaticText()
+    .align_(\center)
+    .background_(this.prPatternColor(key))
+    .mouseDownAction_({
+      (key.asString + last[key].asString).postln
+    })
+    .string_(this.prPatternLabel(key));
+
+    numberBox = NumberBox()
+    .action_({
+      slideAction.(numberBox.value);
+      slider.value_(numberBox.value);
+    })
+    .backColor_(backgroundColor)
+    .clipHi_(1)
+    .clipLo_(0)
+    .scroll_step_(0.01)
+    .normalColor_(Color.white)
+    .value_(amp);
+
+    slider = Slider()
+    .action_({
+      numberBox.value_(slider.value);
+    })
+    .backColor_(backgroundColor)
+    .mouseUpAction_({
+      slideAction.(slider.value);
+    })
+    .value_(amp);
+
+    button = Button()
+    .states_([
+      ["🟢", Color.white, Color.new255(32, 42, 55)],
+      ["⬜️", Color.grey, Color.new255(32, 42, 55)]
+    ])
+    .action_({ |btn|
+      if (btn.value == 0)
+      { Px.resume(key) }
+      { Px.pause(key) };
+    });
+
+    if (pausedPatterns.includes(key.asSymbol))
+    { button.value_(1) };
+
+    meterView = UserView()
+    .minHeight_(20)
+    .drawFunc_({ |v|
+      var bounds = v.bounds.moveTo(0, 0);
+      var level = meterLevels[key] ?? 0;
+      var normalized = level.ampdb.linlin(-40, 0, 0, 1).clip(0, 1);
+      var fillWidth = normalized * bounds.width;
+
+      Pen.fillColor = meterBgColor;
+      Pen.addRoundedRect(bounds, 3, 3);
+      Pen.fill;
+
+      if (fillWidth > 0) {
+        Pen.push;
+        Pen.addRoundedRect(bounds, 3, 3);
+        Pen.clip;
+        Pen.fillColor = meterColor;
+        Pen.fillRect(Rect(0, 0, fillWidth, bounds.height));
+        Pen.pop;
+      };
+
+      Pen.strokeColor = Color.grey(0.3);
+      Pen.addRoundedRect(bounds, 3, 3);
+      Pen.stroke;
+    });
+
+    meterViews = meterViews.add(meterView);
+
+    ^(
+      staticText: staticText,
+      slider: slider,
+      numberBox: numberBox,
+      button: button,
+      meterView: meterView,
+      layout: VLayout(staticText, slider, numberBox, meterView, button)
+    );
+  }
+
+  *prPatternLabel { |key|
+    var pattern = last[key];
+    var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
+    var play = pattern[\play] !? {
+      case
+      { pattern[\play].isArray }
+      { pattern[\play][0] }
+
+      { pattern[\play].isKindOf(Buffer) and: { pattern[\play].path.notNil } }
+      { PathName(pattern[\play].path).parentPath.basename }
+
+      { pattern[\play].asString }
+    };
+    var loop = pattern[\loop] !? {
+      if (pattern[\loop].isArray)
+      { pattern[\loop][0] }
+      { pattern[\loop].asString }
+    };
+    var patternLabel = pattern[\name] ?? pattern[\instrument] ?? chan ?? play ?? loop ?? key;
+
+    if (pattern[\drumMachine].notNil)
+    { ^("🛢️" + patternLabel) };
+
+    ^this.prTruncateText(pattern[\id].asString + patternLabel);
+  }
+
+  *prPatternColor { |key|
+    var pattern = last[key];
+
+    if (pattern[\drumMachine].notNil)
+    { ^Color.new255(255, 255, 122) };
+
+    ^colors[pattern[\id]];
   }
 
   *prGenerateWindowWidth {
@@ -288,10 +299,20 @@
   }
 
   *prUpdateGui {
-    var bounds;
+    var bounds, patterns, newKeys, existingKeys;
 
     if (window.isNil or: { window.visible != true }) {
       ^("🔴 Window is closed");
+    };
+
+    patterns = last.reject { |pattern| pattern[\lx] == true };
+    newKeys = patterns.keys;
+    existingKeys = patternViews.keys;
+
+    if (newKeys.size > 0
+      and: { newKeys.size == existingKeys.size }
+      and: { newKeys.every { |k| existingKeys.includes(k) } }) {
+      ^this.prRefreshPatternViews;
     };
 
     bounds = window.bounds;
@@ -300,6 +321,19 @@
 
     bounds.width = this.prGenerateWindowWidth;
     window.bounds = bounds;
+  }
+
+  *prRefreshPatternViews {
+    patternViews keysValuesDo: { |key, views|
+      var amp = this.prGetAmp(lastFormatted[key][\amp]);
+      var paused = pausedPatterns.includes(key.asSymbol);
+
+      views[\staticText].string_(this.prPatternLabel(key));
+      views[\staticText].background_(this.prPatternColor(key));
+      views[\slider].value_(amp);
+      views[\numberBox].value_(amp);
+      views[\button].value_(if (paused) { 1 } { 0 });
+    };
   }
 
 }

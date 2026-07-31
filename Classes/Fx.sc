@@ -391,10 +391,7 @@ Fx {
     this.prMapModulationArgs(fx, args);
     this.prSetMixerValue(fx, mix.clip(0, 1));
 
-    if (fx == \vst)
-    { resultMsg = "✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs };
-
-    ^resultMsg;
+    ^resultMsg ?? ("✨ Enabled" + "\\" ++ fx + "mix:" + mix + (postArgs ?? ""));
   }
 
   *prActivateEffect { |args, fx, mix, postArgs|

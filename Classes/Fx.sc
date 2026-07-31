@@ -256,7 +256,7 @@ Fx {
 
   *vstReadProgram { |preset = 0|
     var index = this.prGetIndex(\vst);
-    var path, presetName, msg;
+    var path, presetName;
 
     if (index.isNil) {
       ^"🔴 VST is not enabled";
@@ -282,7 +282,7 @@ Fx {
     };
 
     vstController.readProgram(path);
-    ^("🔥 Loaded preset:" + presetName);
+    this.prPrint("🔥 Loaded preset:" + presetName);
   }
 
   // Animatron
@@ -312,14 +312,14 @@ Fx {
   }
 
   *prAddEffect { |fx, mix, args, postArgs|
-    var chain, hasFx = false, resultMsg;
+    var chain, hasFx = false;
 
     if (proxyName == \lx or: { proxyName == \dx }) {
       var ids = this.prGroupIds(proxyName);
       var groupName = proxyName;
 
       if (ids.isEmpty)
-      { ^("🔴 No" + groupName + "patterns playing") };
+      { ^this.prPrint("🔴 No" + groupName + "patterns playing") };
 
       prSuppressPrint = true;
       ids.do { |id|
@@ -330,8 +330,10 @@ Fx {
       proxyName = groupName;
 
       if (mix.isNil or: { mix == Nil })
-      { ^("🌵 Disabled" + "\\" ++ fx + "on" + groupName) }
-      { ^("✨ Enabled" + "\\" ++ fx + "on" + groupName + "mix:" + mix + (postArgs ?? "")) };
+      { this.prPrint("🌵 Disabled" + "\\" ++ fx + "on" + groupName) }
+      { this.prPrint("✨ Enabled" + "\\" ++ fx + "on" + groupName + "mix:" + mix + (postArgs ?? "")) };
+
+      ^this;
     };
 
     if (skipFlush.not)
@@ -367,11 +369,11 @@ Fx {
       and: { mix != Nil }) {
       Ndef(proxyName).set(\vstBypass, 0);
       this.prSetMixerValue(fx, mix.clip(0, 1));
-      resultMsg = "✨ Enabled" + "\\vst" + "mix:" + mix + this.prGetVstPluginName;
+      this.prPrint("✨ Enabled" + "\\vst" + "mix:" + mix + this.prGetVstPluginName);
     };
 
     if (hasFx == false and: { mix.isNil.not } and: { mix != Nil })
-    { resultMsg = this.prActivateEffect(args, fx, mix, postArgs) };
+    { this.prActivateEffect(args, fx, mix, postArgs) };
 
     if (args != chain.args[fx] and: { mix.isNil.not } and: { mix != Nil })
     { this.prUpdateEffect(args, fx) };
@@ -391,7 +393,8 @@ Fx {
     this.prMapModulationArgs(fx, args);
     this.prSetMixerValue(fx, mix.clip(0, 1));
 
-    ^resultMsg ?? ("✨ Enabled" + "\\" ++ fx + "mix:" + mix + (postArgs ?? ""));
+    if (fx == \vst)
+    { this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + (postArgs ?? "")) };
   }
 
   *prActivateEffect { |args, fx, mix, postArgs|
@@ -407,7 +410,7 @@ Fx {
       chain.args.add(fx -> args);
 
       if (fx == \vst) { postArgs = args[0] } {
-        ^("✨ Enabled" + "\\" ++ fx + "mix:" + mix + (postArgs ?? ""));
+        this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + (postArgs ?? ""));
       };
     };
   }

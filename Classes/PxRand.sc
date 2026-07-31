@@ -47,7 +47,7 @@
   }
 
   *prGenerateRandNumber { |id|
-    var seed = 1000.rand;
+    var seed = (Date.getDate.rawSeconds * 1000).asInteger % 1000;
     this.prPrint("🎲 Seed:".scatArgs(id, "->", seed));
     ^seed;
   }

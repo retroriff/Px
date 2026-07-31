@@ -122,6 +122,13 @@ Px {
   *prCreateAmp { |pattern|
     var amp = pattern[\amp] ?? 0.3;
 
+    if (amp.isKindOf(Pattern)
+      and: { pattern[\beat].notNil or: { pattern[\fill].notNil } })
+    {
+      amp = this.prExtractAmpMax(amp);
+      pattern[\amp] = amp;
+    };
+
     if (pattern[\beat].notNil)
     { amp = this.prCreateRhythmBeat(amp, pattern) };
 
@@ -136,6 +143,18 @@ Px {
     };
 
     ^pattern;
+  }
+
+  *prExtractAmpMax { |amp|
+    if (amp.isKindOf(Pwhite)) { ^amp.hi };
+
+    if (amp.isKindOf(Pattern) and: { amp.respondsTo(\list) }) {
+      ^amp.list.reject { |x| x.isKindOf(Rest) }.collect { |x|
+        this.prExtractAmpMax(x)
+      }.maxItem;
+    };
+
+    ^amp;
   }
 
   *prCreateChop { |pattern, pbindef|

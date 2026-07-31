@@ -79,8 +79,15 @@
     var button, numberBox, slider, staticText, meterView;
 
     var slideAction = { |value|
+      var currentPattern = last[key];
       var newAmp = this.prSetAmp(lastFormatted[key][\amp], value);
-      key.asInteger.set(1).amp(newAmp);
+
+      if (currentPattern.notNil) {
+        var number = key.asInteger;
+        PxDebouncer.current = PxDebouncer(number, currentPattern);
+        number.amp(newAmp);
+      };
+
       numberBox.value_(value);
     };
 
@@ -211,21 +218,7 @@
   }
 
   *prGetAmp { |amp|
-    var hasPwrand = {
-      amp.list[0].isKindOf(Pwrand);
-    };
-
-    case
-    { amp.isKindOf(Pwhite) }
-    { ^amp.hi }
-
-    { amp.isKindOf(Pseq) and: { hasPwrand.value == true } }
-    { ^amp.list[0].list.reject { |x| x.isKindOf(Rest) }.maxItem }
-
-    { amp.isKindOf(Pattern) }
-    { ^amp.list.reject { |x| x.isKindOf(Rest) }.maxItem }
-
-    { ^amp };
+    ^this.prExtractAmpMax(amp);
   }
 
   *prSetAmp { |originalAmp, newMax|

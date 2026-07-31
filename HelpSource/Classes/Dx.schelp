@@ -278,10 +278,10 @@ Dx.vol(0.5);  // Set volume to 0.5
 ::
 
 method:: solo
-Mutes all instruments except the specified ones.
+Mutes all drum patterns except the specified instruments.
 
 argument:: instruments
-Instrument symbol or symbols to solo.
+Instrument symbol or symbols to solo. Pass false to unsolo.
 
 argument:: ins2
 Optional additional instrument.
@@ -299,7 +299,11 @@ code::
 Dx.solo(\bd);              // Solo bass drum only
 Dx.solo(\bd, \sd);         // Solo bass drum and snare
 Dx.solo(\bd, \sd, \hh);    // Solo multiple instruments
+Dx.solo(false);            // Unsolo all drum patterns
 ::
+
+method:: unsolo
+Restores all drum patterns muted by link::#solo::.
 
 subsection:: Utilities
 

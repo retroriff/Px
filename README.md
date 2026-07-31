@@ -229,7 +229,9 @@ Dx.preset(\electro, 1);
 | `release`     | None                                              | Releases with fadeTime                 |
 | `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns  |
 | `shuffle`     | None                                              | Shuffles the drum machines bank        |
+| `solo`        | instrument: symbol \| false                       | Solos one or more drum instruments     |
 | `stop`        | None                                              | Same as `\808 i: \all`                 |
+| `unsolo`      | None                                              | Restores drum patterns muted by solo   |
 | `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns    |
 
 ## 🔄 Lx: Multi-Track Sample Looper

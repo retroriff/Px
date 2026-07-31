@@ -161,6 +161,9 @@ Dx : Px {
   *solo { |instruments, ins2, ins3, ins4, ins5|
     var soloIds;
 
+    if (instruments == false)
+    { ^this.unsolo };
+
     if (instruments.isNil)
     { ^("🟡 Provide at least one instrument to solo") };
 
@@ -179,13 +182,14 @@ Dx : Px {
     if (soloIds.isEmpty)
     { ^("🔴 No matching instruments to solo") };
 
-    last.copy do: { |pattern|
-      if (soloIds.includes(pattern[\id]) == false
-        and: { pattern[\dx] == true }) {
-        last.removeAt(pattern[\id]);
-        Pdef(pattern[\id]).source = nil;
+    last.copy do: { |event|
+      if (soloIds.includes(event[\id]) == false
+        and: { event[\dx] == true }) {
+        this.prMute(event);
       }
     };
+
+    this.prAutoRefreshGui;
   }
 
   *stop {
@@ -197,6 +201,26 @@ Dx : Px {
 
     this.prStopPreset;
     activeFx.clear;
+  }
+
+  *unsolo {
+    var toRestore;
+
+    if (mutedPatterns.isNil || mutedPatterns.isEmpty)
+    { ^("🟡 No muted drum patterns to restore") };
+
+    toRestore = mutedPatterns.select { |event| event[\dx] == true };
+
+    if (toRestore.isEmpty)
+    { ^("🟡 No muted drum patterns to restore") };
+
+    toRestore.keysValuesDo { |id, event|
+      mutedPatterns.removeAt(id);
+      last.put(id, event);
+      this.new(event);
+    };
+
+    this.prAutoRefreshGui;
   }
 
   *use { |newDrumMachine|

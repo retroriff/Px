@@ -114,8 +114,8 @@ Releases patterns with a fade-out effect.
 argument:: time
 Fade-out duration in seconds. Default: 10.
 
-argument:: name
-Pattern name to release. Use \all for all patterns.
+argument:: id
+Pattern id to release. Use \all for all patterns.
 
 code::
 Px.release;      // Release all with default fade
@@ -178,10 +178,11 @@ Px.shuffleHistory;
 subsection:: Utilities
 
 method:: gui
-Opens a mixer GUI window for controlling pattern volumes.
+Opens or refreshes a mixer GUI window for controlling pattern volumes. Pass code::0:: to close the window.
 
 code::
-Px.gui;
+Px.gui;    // open or refresh
+Px.gui(0); // close
 ::
 
 method:: mixer
@@ -219,8 +220,8 @@ SynthDef name as Symbol.
 method:: trace
 Enables trace output for a pattern. Optionally filter to a specific key. Call with no arguments to stop all tracing.
 
-argument:: name
-Pattern name as Symbol. When omitted, stops all tracing.
+argument:: id
+Pattern id as Symbol. When omitted, stops all tracing.
 
 argument:: key
 (Optional) Event key to trace. When provided, only that key's value is printed.
@@ -300,8 +301,8 @@ Gets or sets the master volume.
 argument:: value
 Volume value (0-1 range).
 
-argument:: name
-Optional pattern name. Defaults to \px (master).
+argument:: id
+Optional pattern id. Defaults to \px (master).
 
 code::
 Px.vol(0.5);         // Set master volume to 0.5

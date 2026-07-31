@@ -166,19 +166,8 @@
     { ^("🔴 No matching instruments to solo") };
 
     last.copy do: { |event|
-      var id = event[\id];
-
-      if (soloIds.includes(id) == false) {
-        mutedPatterns.put(id, event);
-
-        if (event[\hasGate] == false) {
-          this.prChannelNoteOff(event[\chan]);
-        };
-
-        Pdef(id).source = nil;
-        last.removeAt(id);
-        lastFormatted.removeAt(id);
-      }
+      if (soloIds.includes(event[\id]) == false)
+      { this.prMute(event) };
     };
 
     this.prAutoRefreshGui;
@@ -187,9 +176,8 @@
   *unsolo {
     var toRestore;
 
-    if (mutedPatterns.isNil || mutedPatterns.isEmpty) {
-      ^("🟡 No muted patterns to restore");
-    };
+    if (mutedPatterns.isNil || mutedPatterns.isEmpty)
+    { ^("🟡 No muted patterns to restore") };
 
     toRestore = mutedPatterns.copy;
 
@@ -200,6 +188,19 @@
     mutedPatterns = Dictionary.new;
 
     this.prReevaluate(toRestore);
+  }
+
+  *prMute { |event|
+    var id = event[\id];
+
+    mutedPatterns.put(id, event);
+
+    if (event[\hasGate] == false)
+    { this.prChannelNoteOff(event[\chan]) };
+
+    Pdef(id).source = nil;
+    last.removeAt(id);
+    lastFormatted.removeAt(id);
   }
 
   *stop { |idArray|

@@ -41,13 +41,13 @@
   }
 
   *prCreateNewSeeds { |id|
-    var newSeed = (Date.getDate.rawSeconds % 1000).rand.asInteger;
+    var newSeed = Date.seed.abs % 1000;
     this.prPrint("🎲 Shuffle" + ("\\" ++ id ++ ":") + newSeed);
     seeds[id] = newSeed;
   }
 
   *prGenerateRandNumber { |id|
-    var seed = (Date.getDate.rawSeconds * 1000).asInteger % 1000;
+    var seed = Date.seed.abs % 1000;
     this.prPrint("🎲 Seed:".scatArgs(id, "->", seed));
     ^seed;
   }

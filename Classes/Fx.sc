@@ -32,17 +32,17 @@ Fx {
   }
 
   *blp { |mix = 0.4|
-    this.prAddEffect(\blp, mix);
+    ^this.prAddEffect(\blp, mix);
   }
 
   *compressor { |mix = 0.5, thresh = 0.1, ratio = 4, gain = 1|
     var postArgs = "thresh:" + thresh + "ratio:" + ratio + "gain:" + gain;
-    this.prAddEffect(\compressor, mix, [thresh, ratio, gain], postArgs);
+    ^this.prAddEffect(\compressor, mix, [thresh, ratio, gain], postArgs);
   }
 
   *crush { |mix = 0.5, bits = 4, rate = 10000|
     var postArgs = "bits:" + bits + "rate:" + rate;
-    this.prAddEffect(\crush, mix, [bits, rate], postArgs);
+    ^this.prAddEffect(\crush, mix, [bits, rate], postArgs);
   }
 
   *clear { |singleProxy|
@@ -88,12 +88,12 @@ Fx {
 
   *delay { |mix = 0.3, delaytime = 0.25, delayfeedback = 0.4|
     var postArgs = "delaytime:" +  delaytime + "delayfeedback:" + delayfeedback;
-    this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
+    ^this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
   }
 
   *delay2 { |mix = 0.4, delaytime = 0.5, delayfeedback = 0.5|
     var postArgs = "delaytime:" +  delaytime + "delayfeedback:" + delayfeedback;
-    this.prAddEffect(\delay2, mix, [delaytime, delayfeedback], postArgs);
+    ^this.prAddEffect(\delay2, mix, [delaytime, delayfeedback], postArgs);
   }
 
   *duck { |mix = 0.5, thresh = 0.005, src|
@@ -115,12 +115,12 @@ Fx {
       busIndex = Ndef(\px).bus.index;
     };
 
-    this.prAddEffect(\duck, mix, [busIndex, thresh, lpf], postArgs);
+    ^this.prAddEffect(\duck, mix, [busIndex, thresh, lpf], postArgs);
   }
 
   *dist { |mix = 0.5, drive = 0.5|
     var postArgs = "drive:" + drive;
-    this.prAddEffect(\dist, mix, [drive], postArgs);
+    ^this.prAddEffect(\dist, mix, [drive], postArgs);
   }
 
   *activeEffects {
@@ -136,22 +136,22 @@ Fx {
   }
 
   *flanger { |mix = 0.3|
-    this.prAddEffect(\flanger, mix);
+    ^this.prAddEffect(\flanger, mix);
   }
 
   *freqShift { |mix = 0.5, freq = 0, phase = 0|
     var postArgs = "freq:" + freq + "phase:" + phase;
-    this.prAddEffect(\freqShift, mix, [freq, phase], postArgs);
+    ^this.prAddEffect(\freqShift, mix, [freq, phase], postArgs);
   }
 
   *gverb { |mix = 0.4, roomsize = 200, revtime = 5|
     var postArgs = "roomsize:" +  roomsize + "revtime:" + revtime;
-    this.prAddEffect(\gverb, mix, [roomsize, revtime], postArgs);
+    ^this.prAddEffect(\gverb, mix, [roomsize, revtime], postArgs);
   }
 
   *hpf { |mix = 1, freq = 1200, gain = 1|
     var postArgs = "freq:" + freq + "gain:" + gain;
-    this.prAddEffect(\hpf, mix, [freq, gain], postArgs);
+    ^this.prAddEffect(\hpf, mix, [freq, gain], postArgs);
   }
 
   *loadEffects {
@@ -163,7 +163,7 @@ Fx {
 
   *lpf { |mix = 0.4, freq = 200, gain = 1|
     var postArgs = "freq:" + freq + "gain:" + gain;
-    this.prAddEffect(\lpf, mix, [freq, gain], postArgs);
+    ^this.prAddEffect(\lpf, mix, [freq, gain], postArgs);
   }
 
   *pan { |pos = 0|
@@ -177,21 +177,21 @@ Fx {
     if (pos.isNil)
     { pos = 0 };
 
-    this.prAddEffect(\pan, 1, [pos], postArgs);
+    ^this.prAddEffect(\pan, 1, [pos], postArgs);
   }
 
   *phaser { |mix = 0.5, rate = 1.0, depth = 1|
     var postArgs = "rate:" + rate + "depth:" + depth;
-    this.prAddEffect(\phaser, mix, [rate, depth], postArgs);
+    ^this.prAddEffect(\phaser, mix, [rate, depth], postArgs);
   }
 
   *reverb { |mix = 0.5, room = 0.7, size = 0.5|
     var postArgs = "room:" +  room + "size:" + size;
-    this.prAddEffect(\reverb, mix, [room, size], postArgs);
+    ^this.prAddEffect(\reverb, mix, [room, size], postArgs);
   }
 
   *reverse { |mix = 0.4|
-    this.prAddEffect(\reverse, mix);
+    ^this.prAddEffect(\reverse, mix);
   }
 
   *setVstPresetsPath { |path|
@@ -205,7 +205,7 @@ Fx {
     { fb = 1 }
     { fb = fb.clip(0, 0.99) };
 
-    this.prAddEffect(\space, mix, [fb], postArgs);
+    ^this.prAddEffect(\space, mix, [fb], postArgs);
   }
 
   *remove { |id|
@@ -234,24 +234,24 @@ Fx {
 
   *tremolo { |mix = 0.6, rate = 1|
     var postArgs = "rate:" + rate;
-    this.prAddEffect(\tremolo, mix, [rate], postArgs);
+    ^this.prAddEffect(\tremolo, mix, [rate], postArgs);
   }
 
   *vibrato { |mix = 0.5, rate = 4, depth = 0.2|
     var postArgs = "rate:" + rate + "depth:" + depth;
-    this.prAddEffect(\vibrato, mix, [rate, depth], postArgs);
+    ^this.prAddEffect(\vibrato, mix, [rate, depth], postArgs);
   }
 
   *vst { |mix = 0.4, plugin|
     var defaultPlugin = "ValhallaFreqEcho";
 
     plugin = plugin ?? defaultPlugin;
-    this.prAddEffect(\vst, mix, [plugin], plugin);
+    ^this.prAddEffect(\vst, mix, [plugin], plugin);
   }
 
   *wah { |mix = 0.5, rate = 1.5, depth = 0.8|
     var postArgs = "rate:" + rate + "depth:" + depth;
-    this.prAddEffect(\wah, mix, [rate, depth], postArgs);
+    ^this.prAddEffect(\wah, mix, [rate, depth], postArgs);
   }
 
   *vstReadProgram { |preset = 0|
@@ -312,14 +312,14 @@ Fx {
   }
 
   *prAddEffect { |fx, mix, args, postArgs|
-    var chain, hasFx = false;
+    var chain, hasFx = false, resultMsg;
 
     if (proxyName == \lx or: { proxyName == \dx }) {
       var ids = this.prGroupIds(proxyName);
       var groupName = proxyName;
 
       if (ids.isEmpty)
-      { ^this.prPrint("🔴 No" + groupName + "patterns playing") };
+      { ^("🔴 No" + groupName + "patterns playing") };
 
       prSuppressPrint = true;
       ids.do { |id|
@@ -330,10 +330,8 @@ Fx {
       proxyName = groupName;
 
       if (mix.isNil or: { mix == Nil })
-      { this.prPrint("🌵 Disabled" + "\\" ++ fx + "on" + groupName) }
-      { this.prPrint("✨ Enabled" + "\\" ++ fx + "on" + groupName + "mix:" + mix + (postArgs ?? "")) };
-
-      ^this;
+      { ^("🌵 Disabled" + "\\" ++ fx + "on" + groupName) }
+      { ^("✨ Enabled" + "\\" ++ fx + "on" + groupName + "mix:" + mix + (postArgs ?? "")) };
     };
 
     if (skipFlush.not)
@@ -369,11 +367,11 @@ Fx {
       and: { mix != Nil }) {
       Ndef(proxyName).set(\vstBypass, 0);
       this.prSetMixerValue(fx, mix.clip(0, 1));
-      this.prPrint("✨ Enabled" + "\\vst" + "mix:" + mix + this.prGetVstPluginName);
+      resultMsg = "✨ Enabled" + "\\vst" + "mix:" + mix + this.prGetVstPluginName;
     };
 
     if (hasFx == false and: { mix.isNil.not } and: { mix != Nil })
-    { this.prActivateEffect(args, fx, mix, postArgs) };
+    { resultMsg = this.prActivateEffect(args, fx, mix, postArgs) };
 
     if (args != chain.args[fx] and: { mix.isNil.not } and: { mix != Nil })
     { this.prUpdateEffect(args, fx) };
@@ -394,7 +392,9 @@ Fx {
     this.prSetMixerValue(fx, mix.clip(0, 1));
 
     if (fx == \vst)
-    { this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs) };
+    { resultMsg = "✨ Enabled" + "\\" ++ fx + "mix:" + mix + postArgs };
+
+    ^resultMsg;
   }
 
   *prActivateEffect { |args, fx, mix, postArgs|
@@ -410,7 +410,7 @@ Fx {
       chain.args.add(fx -> args);
 
       if (fx == \vst) { postArgs = args[0] } {
-        this.prPrint("✨ Enabled" + "\\" ++ fx + "mix:" + mix + (postArgs ?? ""));
+        ^("✨ Enabled" + "\\" ++ fx + "mix:" + mix + (postArgs ?? ""));
       };
     };
   }
@@ -523,6 +523,7 @@ Fx {
   *prPrint { |value|
     if (prSuppressPrint.not)
     { value.postln };
+    value;
   }
 
 

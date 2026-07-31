@@ -28,7 +28,7 @@ Cx {
     var sortedIds;
 
     if (config.isNil)
-    { ^"🔴 Cx: no config loaded".postln };
+    { ^"🔴 Cx: no config loaded" };
 
     sortedIds = Px.prSortedPatternIds;
 

@@ -230,7 +230,7 @@
         Pdef(id).source = nil;
       } {
         if (stopAll.not)
-        { this.prPrint("🔴 Pattern" + id + "does not exist") };
+        { ^("🔴 Pattern" + id + "does not exist") };
       };
     };
 

@@ -5,6 +5,7 @@
 When playing a pattern, the first hit always sounds weak (lower amplitude) compared to subsequent hits. The issue is most noticeable with short percussive samples (drum kits, hi-hats) because they have sharp transients in the first few milliseconds.
 
 Reproducible with:
+
 ```supercollider
 909 i: \hh dur: [1, 0.5, 1, 0.5, 1] amp: 1;
 1 play: "ki" dur: [1, 0.5, 1, 0.5, 1];
@@ -17,16 +18,19 @@ The waveform confirms the first hit is visibly quieter than all subsequent hits.
 We isolated each layer of the signal chain to find where the issue originates:
 
 **Step 1: Raw Pbind (no Pdef, no Ndef)** — OK
+
 ```supercollider
 Pbind(\instrument, \playbuf, \buf, Px.buf("ki", 0), \dur, Pseq([1, 0.5, 1, 0.5, 1], inf), \amp, 1).play;
 ```
 
 **Step 2: Pdef with quant** — OK
+
 ```supercollider
 Pdef(\test, Pbind(\instrument, \playbuf, \buf, Px.buf("ki", 0), \dur, Pseq([1, 0.5, 1, 0.5, 1], inf), \amp, 1)).quant_(4).play;
 ```
 
 **Step 3: Pdef inside a single Ndef** — BROKEN (first hit is weak)
+
 ```supercollider
 (
 var pdef = Pdef(\test, Pbind(\instrument, \playbuf, \buf, Px.buf("ki", 0), \dur, Pseq([1, 0.5, 1, 0.5, 1], inf), \amp, 1)).quant_(4);
@@ -66,19 +70,20 @@ Pre-play `Ndef(\px)` so the monitor is already running before any pattern sets i
 
 The pre-play must happen **after the server's node tree is fully initialized** (the ProxySpace group must exist). Timing options explored:
 
-| Approach | Result |
-|---|---|
-| `ServerBoot.add` (direct) | Too early — server not running yet |
-| `ServerBoot.add` + `fork { sync }` | Too early — ProxySpace group (1001) doesn't exist |
-| `ServerTree.add` (direct) | Too early — ProxySpace group not created yet |
-| `ServerTree.add` + `fork { sync }` | Still fires before group exists |
-| In `clear` method (direct) | Works when server is running, but `clear` also fires when server is off (CmdPeriod during recompile) |
+| Approach                           | Result                                                                                               |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `ServerBoot.add` (direct)          | Too early — server not running yet                                                                   |
+| `ServerBoot.add` + `fork { sync }` | Too early — ProxySpace group (1001) doesn't exist                                                    |
+| `ServerTree.add` (direct)          | Too early — ProxySpace group not created yet                                                         |
+| `ServerTree.add` + `fork { sync }` | Still fires before group exists                                                                      |
+| In `clear` method (direct)         | Works when server is running, but `clear` also fires when server is off (CmdPeriod during recompile) |
 
 ### Recommended Approach
 
 The cleanest solution is to defer the pre-play until the ProxySpace has set up its group. Options to try:
 
 **Option A: Use `defer` after ServerTree**
+
 ```supercollider
 ServerTree.add {
   AppClock.sched(0.1, {
@@ -89,6 +94,7 @@ ServerTree.add {
 ```
 
 **Option B: Use `doWhenBooted` in clear**
+
 ```supercollider
 *clear {
   // ... clear dictionaries ...
@@ -103,6 +109,7 @@ ServerTree.add {
 **Option C: Pre-play in `Px.new` with fork + sync**
 
 Instead of playing and setting the source in the same call, split them:
+
 ```supercollider
 if (Ndef(\px).isPlaying.not) {
   Ndef(\px).fadeTime_(0).play;
@@ -140,7 +147,7 @@ Creating the inner Ndef with `Silent.ar(2)`, setting up the Mix, and playing the
 
 Using a persistent UGen function with `\set -> Pbind(...)` works because no new synths are spawned — but this architecture doesn't support sample playback, polyphony, or per-event instruments.
 
-### Solution — Bus-based mixing (SOLVED)
+### Solution — Bus-based mixing (NOT SOLVED)
 
 **Branch:** `fix/weak-first-hit`
 
@@ -154,4 +161,4 @@ This works because `Ndef(\px)` is always pre-initialized from a separate evaluat
 
 ### Status
 
-Solved. Fix implemented on branch `fix/weak-first-hit`.
+Not solved. Fix implemented on branch `fix/weak-first-hit`. Must be checked if the first beat is fixed after reboot.

@@ -51,12 +51,12 @@ Lx : Px {
     var folders;
 
     if (File.exists(root.fullPath).not)
-    { ^this.prPrint("🔴 Path does not exist:" + root.fullPath) };
+    { ^("🔴 Path does not exist:" + root.fullPath) };
 
     folders = root.entries.select { |entry| entry.isFolder };
 
     if (folders.isEmpty)
-    { ^this.prPrint("🔴 No subfolders found in:" + root.fullPath) };
+    { ^("🔴 No subfolders found in:" + root.fullPath) };
 
     bufs = Dictionary.new;
     monoBufs = Dictionary.new;
@@ -87,7 +87,7 @@ Lx : Px {
     meterLevels = Array.fill(channelCount, { 0 });
 
     if (verbose)
-    { this.prPrint("🔄 Lx with" + channelCount + "channels") };
+    { ^("🔄 Lx with" + channelCount + "channels") };
   }
 
   *amp { |channel, value = 0.3|

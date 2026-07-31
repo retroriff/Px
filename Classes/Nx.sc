@@ -207,8 +207,8 @@ Nx {
     // Build chord name
     chordName = this.prBuildChordName(selectedTonic, selectedQuality);
 
-    this.prPrint("Chord is" + chordName);
-    ^this.set(chordName);
+    this.set(chordName);
+    ^("Chord is" + chordName);
   }
 
   *fifth { |tonicArg = \C, position = 0, quality = \major|
@@ -246,8 +246,8 @@ Nx {
 
     chordName = this.prBuildChordName(targetTonic, qualityStr);
 
-    this.prPrint("Chord is" + chordName);
-    ^this.set(chordName);
+    this.set(chordName);
+    ^("Chord is" + chordName);
   }
 
   *prFifthQuality { |quality|

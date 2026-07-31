@@ -137,8 +137,11 @@ Sx {
     { key == \scale }
     { pairs = this.prGenerateScale(value) }
 
-    { key == \wave }
-    { pairs = this.prGenerateWave(value) }
+    { key == \wave } {
+      if (waveList.includes(value).not)
+      { ^("🔴 Wave not valid. Use:" + waveList) };
+      pairs = this.prGenerateWave(value);
+    }
 
     { key == \pad and: (mode == \pad)} {
         var event = last.copy;
@@ -172,7 +175,7 @@ Sx {
 
   *vol { |value|
     if (value.isNil) {
-      this.prPrint("Sx vol is" + (last[\amp] ?? defaultEvent[\amp]));
+      ^("Sx vol is" + (last[\amp] ?? defaultEvent[\amp]));
     } {
       last[\amp] = value;
       this.prSet([\amp, value]);
@@ -260,18 +263,13 @@ Sx {
   }
 
   *prGenerateWave { |value|
-    if (waveList.includes(value).not) {
-      this.prPrint("🔴 Wave not valid. Use:" + waveList);
-      ^Array.new;
-    };
-
     ^waveList.collect { |wave|
       [wave, if (value == wave) { 1 } { 0 }];
     }.flatten;
   }
 
   *prPrint { |value|
-    value.postln;
+    ^value.postln;
   }
 
   *prSet { |pairs|

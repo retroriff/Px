@@ -116,12 +116,13 @@ Dx : Px {
   *preset { |name = \core, number, amp|
     var newPreset = [name.asSymbol, number, amp];
     var newIds;
+    var resultMsg;
 
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
 
     if (newPreset != lastPreset or: (hasLoadedPresets == true)) {
-      this.prCreatePatternFromPreset(newPreset);
+      resultMsg = this.prCreatePatternFromPreset(newPreset);
     };
 
     newIds = Set.new;
@@ -142,6 +143,8 @@ Dx : Px {
 
     this.prStopRemovedPatterns(newIds);
     this.prApplyActiveFx;
+
+    ^resultMsg;
   }
 
   *release { |fadeTime = 10|
@@ -154,7 +157,7 @@ Dx : Px {
     var randomIndex = folders.size.rand;
 
     Dx.use(folders[randomIndex]);
-    this.prPrint("🎲 Drum machine:".scatArgs(folders[randomIndex]));
+    ^("🎲 Drum machine:" + folders[randomIndex]);
   }
 
 
@@ -343,11 +346,13 @@ Dx : Px {
     var hasNewNumber = newNumber != lastPreset[1];
     var hasNewPreset = hasNewName == true or: { hasNewNumber == true };
 
+    var tooHighMsg, loadedMsg;
+
     presetNumber = newNumber.clip(1, presetGroup.size) - 1;
     preset = presetGroup[presetNumber];
 
     if (newNumber > presetGroup.size) {
-      super.prPrint("🧩 This set has".scatArgs(presetGroup.size, "presets"));
+      tooHighMsg = "🧩 Sorry, this set only has" + presetGroup.size + "presets";
     };
 
     if (preset.notNil) {
@@ -366,13 +371,16 @@ Dx : Px {
       };
     };
 
-    if (preset.notNil and: { preset[\name].notNil } and: { hasNewPreset == true })
-    { super.prPrint("🎧 Preset:".scatArgs(preset[\name])) };
+    if (preset.notNil and: { hasNewPreset == true }) {
+      loadedMsg = "🎧 Preset:".scatArgs(preset[\name] ?? (newName.asString + (presetNumber + 1)));
+    };
 
     dxAmp = newAmp;
     hasLoadedPresets = false;
     lastPreset = [newName, newNumber, newAmp];
     presetPatterns = patterns;
+
+    ^[tooHighMsg, loadedMsg].reject(_.isNil).join("\n");
   }
 
   *prCreatePresetsDict {

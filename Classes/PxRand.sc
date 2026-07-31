@@ -5,7 +5,7 @@
       var snapshot = shuffleHistory[key];
 
       if (snapshot.isNil)
-      { this.prPrint("Shuffle history" + key + "not found") }
+      { ^("Shuffle history" + key + "not found") }
       {
         seeds = snapshot.copy;
         this.prPrint("Shuffle restored:" + key);

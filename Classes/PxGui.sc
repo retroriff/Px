@@ -1,11 +1,7 @@
 + Px {
-  *gui { |value|
-    if (value == 0) {
-      window.close;
-    };
-
+  *gui {
     if (window.notNil) {
-      ^this.prUpdateGui;
+      ^window.close;
     };
 
     window = Window(

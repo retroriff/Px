@@ -173,36 +173,6 @@
     this.prAutoRefreshGui;
   }
 
-  *unsolo {
-    var toRestore;
-
-    if (mutedPatterns.isNil || mutedPatterns.isEmpty)
-    { ^("🟡 No muted patterns to restore") };
-
-    toRestore = mutedPatterns.copy;
-
-    mutedPatterns.keysValuesDo { |id, event|
-      last.put(id, event);
-    };
-
-    mutedPatterns = Dictionary.new;
-
-    this.prReevaluate(toRestore);
-  }
-
-  *prMute { |event|
-    var id = event[\id];
-
-    mutedPatterns.put(id, event);
-
-    if (event[\hasGate] == false)
-    { this.prChannelNoteOff(event[\chan]) };
-
-    Pdef(id).source = nil;
-    last.removeAt(id);
-    lastFormatted.removeAt(id);
-  }
-
   *stop { |idArray|
     var tailWait = 2;
     var fadeTime = 2;
@@ -297,6 +267,23 @@
     };
   }
 
+  *unsolo {
+    var toRestore;
+
+    if (mutedPatterns.isNil || mutedPatterns.isEmpty)
+    { ^("🟡 No muted patterns to restore") };
+
+    toRestore = mutedPatterns.copy;
+
+    mutedPatterns.keysValuesDo { |id, event|
+      last.put(id, event);
+    };
+
+    mutedPatterns = Dictionary.new;
+
+    this.prReevaluate(toRestore);
+  }
+
   *vol { |value, id|
     var ndef = id ?? \px;
 
@@ -306,6 +293,19 @@
     } {
       ^Ndef(ndef).vol_(value.clip(0, 3));
     }
+  }
+
+  *prMute { |event|
+    var id = event[\id];
+
+    mutedPatterns.put(id, event);
+
+    if (event[\hasGate] == false)
+    { this.prChannelNoteOff(event[\chan]) };
+
+    Pdef(id).source = nil;
+    last.removeAt(id);
+    lastFormatted.removeAt(id);
   }
 }
 

@@ -57,4 +57,11 @@ controls:
     param: amp
 device: "Minilab3"
 encoderMode: bin_offset
+pads:
+  - action: gui
+    cc: 61
+  - action: stop
+    cc: 62
+  - action: play
+    cc: 63
 port: "MIDI"

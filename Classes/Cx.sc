@@ -63,6 +63,14 @@ Cx {
       row;
     };
 
+    if (config[\pads].notNil) {
+      config[\pads] = config[\pads] collect: { |row|
+        row[\action] = row[\action].asSymbol;
+        row[\cc] = row[\cc].asInteger;
+        row;
+      };
+    };
+
     ^("✅ Cx: loaded" + name);
   }
 
@@ -83,6 +91,13 @@ Cx {
 
       midiFuncs = midiFuncs.add(MIDIFunc.cc({ |value|
         this.prHandle(slot, row, value);
+      }, row[\cc], srcID: srcID));
+    };
+
+    (config[\pads] ? []) do: { |row|
+      midiFuncs = midiFuncs.add(MIDIFunc.cc({ |value|
+        if (value > 0)
+        { this.prHandlePad(row) };
       }, row[\cc], srcID: srcID));
     };
 
@@ -160,6 +175,15 @@ Cx {
     { ("🎛️ \\" ++ targetId ++ ":"  + param + current.round(0.001) + "→" + next.round(0.001) + "(cc" + row[\cc] ++ ", raw" + value ++ ")").postln };
 
     this.prPerform(targetId, param, newValue);
+  }
+
+  *prHandlePad { |row|
+    var action = row[\action];
+
+    if (debug == true)
+    { ("🎛️ pad cc" + row[\cc] + "→ Px." ++ action).postln };
+
+    { Px.perform(action) }.defer;
   }
 
   *prPerform { |id, param, value|

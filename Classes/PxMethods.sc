@@ -32,9 +32,10 @@
     Ndef(\px).clear;
   }
 
-  *loadSynthDefs {
+  *loadSynthDefs { |only|
     PathName(("../SynthDefs/").resolveRelative).filesDo{ |file|
-      file.fullPath.load;
+      if (only.isNil or: { only.includes(file.fileNameWithoutExtension.asSymbol) })
+      { file.fullPath.load };
     };
   }
 
@@ -61,6 +62,8 @@
 
   *play { |fadeTime|
     Ndef(\px).play(fadeTime: fadeTime);
+    if (last.notEmpty) { this.prReevaluate };
+    pausedPatterns.clear;
   }
 
   *release { |time, id|
@@ -179,7 +182,7 @@
     var stopAll = idArray.isNil;
 
     if (stopAll)
-    { idArray = last.keys.asArray };
+    { ^this.prStopAll };
 
     if (idArray.isArray.not)
     { idArray = [idArray] };
@@ -199,13 +202,9 @@
         meterLevels.removeAt(id);
         Pdef(id).source = nil;
       } {
-        if (stopAll.not)
-        { ^("🔴 Pattern" + id + "does not exist") };
+        ^("🔴 Pattern" + id + "does not exist");
       };
     };
-
-    if (stopAll)
-    { meterNextId = 0 };
 
     this.prAutoRefreshGui;
 
@@ -225,13 +224,27 @@
     };
   }
 
+  *prStopAll {
+    last.keysValuesDo { |id, event|
+      if (event[\hasGate] == false)
+      { this.prChannelNoteOff(event[\chan]) };
+
+      Pdef(id).source = nil;
+    };
+
+    this.prAutoRefreshGui;
+  }
+
   *synthDef { |synthDef|
     if (synthDef.isNil)
     { SynthDescLib.global.browse }
     { ^SynthDescLib.global[synthDef] };
   }
 
-  *tempo { |tempo, withNdef|
+  *tempo { |tempo, withNdef, add|
+    if (add.notNil)
+    { tempo = (TempoClock.default.tempo * 60) + add };
+
     if (tempo.isNil) {
       ^("🕰️ Current tempo is" + (TempoClock.tempo * 60));
     };
@@ -251,6 +264,9 @@
         }
       }
     };
+
+    if (add.notNil)
+    { ^this.loadSynthDefs(only: [\grainLoop, \loop, \PlayBuf, \Sx]) };
 
     ^this.loadSynthDefs;
   }

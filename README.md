@@ -121,7 +121,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 - `shuffleHistory`: Returns a Dictionary containing all stored shuffle snapshots.
 - `stop`: Stops all patterns. It can stop specific patterns if a single id or an array of ids is provided.
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
-- `tempo` (bpm: nil | number): Sets the tempo if bpm is given; returns current tempo if nil.
+- `tempo` (bpm: nil | number, withNdef: bool, add: number): Sets the tempo if bpm is given; returns current tempo if nil. Use `add:` for relative changes (e.g. `Px.tempo(add: 1)`).
 - `trace` (name, key: nil): Enables trace output for a pattern. Optionally filter to a specific key. Call with no arguments to stop all tracing.
 - `vol`: Controls the volume of the nodeproxy.
 
@@ -348,13 +348,13 @@ Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (
 
 ## 🎛️ Cx: External MIDI Controller Bridge
 
-Maps external MIDI controllers to Px pattern parameters via YAML configs. Rotary encoders adjust `\amp`, `\dur`, `\pan`, etc. on the active patterns in real time. Slot N targets the Nth pattern in the GUI sort order; add or remove patterns and the mapping shifts automatically. Configs live in [Presets/cx/](/Presets/cx/); the default `midilab3.yaml` covers an Arturia Midilab 3's 8 rotaries.
+Maps external MIDI controllers to Px pattern parameters via YAML configs. Rotary encoders adjust `\amp`, `\dur`, `\pan`, etc. on the active patterns in real time. Slot N targets the Nth pattern in the GUI sort order; add or remove patterns and the mapping shifts automatically. Configs live in [Presets/cx/](/Presets/cx/); the default `minilab3.yaml` covers an Arturia MiniLab 3's 8 rotaries.
 
 ### Cx class methods
 
 | Name     | Arguments                 | Description                                                      |
 | -------- | ------------------------- | ---------------------------------------------------------------- |
-| `play`   | name?: symbol             | Load config (default `\midilab3`), open MIDI, register handlers  |
+| `play`   | name?: symbol             | Load config (required on first call), open MIDI, register handlers  |
 | `stop`   | None                      | Free MIDI handlers, keep the loaded config                       |
 | `clear`  | None                      | Stop and drop the config and any pinned assignments              |
 | `load`   | name: symbol              | Load a YAML config without opening MIDI                          |

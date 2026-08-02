@@ -87,7 +87,7 @@ Px.clear;
 ::
 
 method:: play
-Starts playing the main Ndef(\px) with optional fade-in time.
+Starts playing the main Ndef(\px) with optional fade-in time. Also restarts any patterns silenced by code::Px.stop:: with no arguments.
 
 argument:: fadeTime
 Fade-in duration in seconds.
@@ -97,15 +97,15 @@ Px.play(4);
 ::
 
 method:: stop
-Stops patterns by ID. Pass nil to stop all patterns.
+Stops patterns by ID. Pass nil to stop all patterns without removing them (state preserved so code::Px.play:: can restart them).
 
 argument:: idArray
 Pattern ID or array of IDs to stop.
 
 code::
-Px.stop(1);        // Stop pattern 1
-Px.stop([1, 2]);   // Stop patterns 1 and 2
-Px.stop;           // Stop all patterns
+Px.stop(1);        // Stop pattern 1 (removes it)
+Px.stop([1, 2]);   // Stop patterns 1 and 2 (removes them)
+Px.stop;           // Stop all patterns (restartable via Px.play)
 ::
 
 method:: release
@@ -290,8 +290,13 @@ Tempo value in BPM.
 argument:: withNdef
 If true, rebuilds Ndefs after tempo change.
 
+argument:: add
+Relative BPM delta added to the current tempo. Overrides code::tempo::.
+
 code::
 Px.tempo(120);
+Px.tempo(add: 1);   // +1 BPM
+Px.tempo(add: -5);  // -5 BPM
 ::
 
 method:: vol

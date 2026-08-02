@@ -8,7 +8,7 @@ Cx (Controller X) maps external MIDI controllers to Px pattern parameters. Rotar
 
 Mappings are declared in YAML files under code::Presets/cx/::. Each control (identified by CC number) targets one parameter (e.g. code::\amp::, code::\dur::) on the pattern occupying a given slot. Slot ordering mirrors the pattern GUI: drum-machine patterns first (alphabetical), then numeric ids ascending. Adding or removing patterns automatically shifts what each encoder targets.
 
-The default mapping code::midilab3.yaml:: targets the 8 rotary encoders on an Arturia Midilab 3 (encoder mode set to Relative 1 = 2's complement).
+The default mapping code::minilab3.yaml:: targets the 8 rotary encoders on an Arturia MiniLab 3 (encoder mode set to Relative 1 = 2's complement).
 
 subsection:: Basic Usage
 
@@ -19,7 +19,7 @@ code::
 808 i: \bd dur: 1;
 
 // Turn the controller on
-Cx.play(\midilab3);
+Cx.play(\minilab3);
 
 // See which encoder controls what
 Cx.list;
@@ -33,10 +33,10 @@ Cx.stop;
 
 subsection:: Config File Format
 
-Each controller has its own YAML file. See code::Presets/cx/midilab3.yaml:: for the reference implementation.
+Each controller has its own YAML file. See code::Presets/cx/minilab3.yaml:: for the reference implementation.
 
 code::
-device: "Midilab 3"           # MIDIClient source name (nil = any source)
+device: "Minilab3"            # MIDIClient source name (nil = any source)
 encoderMode: 2s_comp          # 2s_comp | signed_bit | bin_offset | absolute
 controls:
   - cc: 74
@@ -47,9 +47,15 @@ controls:
     default: 0.5              # used when target pattern has no value yet
     mode: signed_bit          # optional: override encoderMode for this control
     patternId: bd707          # optional: pin this slot to a specific id
+pads:
+  - num: 36                   # CC or note number
+    type: note                # cc (default) | note
+    action: play              # any zero-arg Px class method
 ::
 
 Slot number = position in the code::controls:: list. Encoder in slot N targets the Nth pattern in code::Px.prSortedPatternIds:: unless a code::patternId:: is pinned in the row or via code::Cx.assign(slot, id)::.
+
+Pads fire on rising edge — CC value > 0, or MIDI note-on. Use code::type: note:: for controllers that send pads as note messages instead of CCs. The legacy code::cc: N:: field is still accepted as an alias for code::num: N::.
 
 subsection:: Encoder Modes
 
@@ -68,7 +74,7 @@ method:: play
 Load a config (if not already loaded), open MIDI input, and register handlers. Idempotent — frees existing handlers first.
 
 argument:: name
-Symbol of the config file (without extension). Defaults to code::\midilab3:: on first call.
+Symbol of the config file (without extension). Required on first call; reuses the loaded config on subsequent calls.
 
 method:: stop
 Free all MIDI handlers. Keeps the loaded config so code::Cx.play:: with no argument resumes.
@@ -106,12 +112,12 @@ code::
 808 i: \bd dur: 1;
 808 i: \sd dur: 1;
 
-Cx.play(\midilab3);
+Cx.play(\minilab3);
 Cx.list;    // slot 1 → \bd808  amp, slot 2 → \sd808 amp, slot 3 → \1 amp, slot 4 → \2 amp ...
 
 // Pin slot 1 to a specific pattern regardless of sort order
 Cx.assign(1, \sd808);
 
 // Reload a config after editing the YAML
-Cx.load(\midilab3);
+Cx.load(\minilab3);
 ::

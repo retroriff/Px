@@ -4,6 +4,8 @@ Cx {
   classvar <>configName;
   classvar <>debug;
   classvar <>midiFuncs;
+  classvar <tempoPending;
+  classvar <tempoToken;
 
   *initClass {
     assignments = Dictionary.new;
@@ -60,13 +62,16 @@ Cx {
       row[\param] = row[\param].asSymbol;
       if (row[\mode].notNil)
       { row[\mode] = row[\mode].asSymbol };
+      if (row[\target].notNil)
+      { row[\target] = row[\target].asSymbol };
       row;
     };
 
     if (config[\pads].notNil) {
       config[\pads] = config[\pads] collect: { |row|
         row[\action] = row[\action].asSymbol;
-        row[\cc] = row[\cc].asInteger;
+        row[\num] = (row[\num] ?? row[\cc]).asInteger;
+        row[\type] = (row[\type] ?? \cc).asSymbol;
         row;
       };
     };
@@ -77,8 +82,9 @@ Cx {
   *play { |name|
     var srcID;
 
-    if (name.notNil or: { config.isNil })
-    { this.load(name ?? \midilab3) };
+    if (name.notNil) { this.load(name) };
+
+    if (config.isNil) { ^"⚠️ Cx: no config loaded — pass a name (e.g. Cx.play(\\minilab3))" };
 
     this.stop;
 
@@ -95,12 +101,19 @@ Cx {
     };
 
     (config[\pads] ? []) do: { |row|
-      midiFuncs = midiFuncs.add(MIDIFunc.cc({ |value|
-        if (value > 0)
-        { this.prHandlePad(row) };
-      }, row[\cc], srcID: srcID));
+      if (row[\type] == \note) {
+        midiFuncs = midiFuncs.add(MIDIFunc.noteOn({
+          this.prHandlePad(row);
+        }, row[\num], srcID: srcID));
+      } {
+        midiFuncs = midiFuncs.add(MIDIFunc.cc({ |value|
+          if (value > 0)
+          { this.prHandlePad(row) };
+        }, row[\num], srcID: srcID));
+      };
     };
 
+    CmdPeriod.add { this.play };
     ^("✅ Cx: playing" + configName + "(" ++ midiFuncs.size + "controls)");
   }
 
@@ -145,9 +158,13 @@ Cx {
   *prHandle { |slot, row, value|
     var mode = row[\mode] ?? config[\encoderMode];
     var step = this.prDecodeRelative(mode, value);
-    var targetId = this.prResolveTarget(slot);
-    var param = row[\param];
-    var pattern, source, current, next, newValue;
+    var targetId, param, pattern, source, current, next, newValue;
+
+    if (row[\target] == \global)
+    { ^this.prHandleGlobal(row, step, value) };
+
+    targetId = this.prResolveTarget(slot);
+    param = row[\param];
 
     if (targetId.isNil) {
       if (debug == true)
@@ -177,11 +194,46 @@ Cx {
     this.prPerform(targetId, param, newValue);
   }
 
+  *prHandleGlobal { |row, step, value|
+    var param = row[\param];
+    var delta = row[\delta] ? 1;
+    var amount = step * delta;
+
+    param.switch(
+      \tempo, { this.prDebounceTempo(amount, row, value) },
+      { ("🟡 Cx: unknown global param:" + param).warn }
+    );
+  }
+
+  *prDebounceTempo { |amount, row, value|
+    var myToken;
+    var debounceTime = 0.25;
+
+    tempoPending = (tempoPending ? 0) + amount;
+    tempoToken = (tempoToken ? 0) + 1;
+    myToken = tempoToken;
+
+    AppClock.sched(debounceTime, {
+      var total;
+
+      if (myToken == tempoToken) {
+        total = tempoPending;
+        tempoPending = 0;
+        Px.tempo(add: total);
+
+        if (debug == true)
+        { ("🕰️ Tempo" + (TempoClock.default.tempo * 60).round(1) + "(cc" + row[\cc] ++ ", raw" + value ++ ")").postln };
+      };
+
+      nil;
+    });
+  }
+
   *prHandlePad { |row|
     var action = row[\action];
 
     if (debug == true)
-    { ("🎛️ pad cc" + row[\cc] + "→ Px." ++ action).postln };
+    { ("🎛️ pad" + row[\type] + row[\num] + "→ Px." ++ action).postln };
 
     { Px.perform(action) }.defer;
   }

@@ -55,9 +55,16 @@ controls:
     min: 0.0
     mode: bin_offset
     param: amp
+  - cc: 114
+    delta: 1
+    mode: bin_offset
+    param: tempo
+    target: global
 device: "Minilab3"
 encoderMode: bin_offset
 pads:
+  - action: shuffle
+    cc: 59
   - action: gui
     cc: 61
   - action: stop

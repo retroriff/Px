@@ -9,10 +9,14 @@
       {
         seeds = snapshot.copy;
         this.prPrint("Shuffle restored:" + key);
-        this.prReevaluate;
+        if (this.prIsStopped.not) { this.prReevaluate };
       };
 
       ^this;
+    };
+
+    if (last.isEmpty) {
+      ^"💩 Nothing to shuffle";
     };
 
     if (id.isNil) {
@@ -21,7 +25,7 @@
       };
 
       this.prSaveShuffleHistory;
-      this.prReevaluate;
+      if (this.prIsStopped.not) { this.prReevaluate };
       ^this;
     };
 
@@ -30,8 +34,17 @@
     if (last.keys.includes(id)) {
       this.prCreateNewSeeds(id);
       this.prSaveShuffleHistory;
-      this.prReevaluate([last[id]]);
+      if (this.prIsStopped.not) { this.prReevaluate([last[id]]) };
     }
+  }
+
+  *prIsStopped {
+    var firstId;
+
+    if (last.isEmpty) { ^true };
+
+    firstId = last.keys.asArray.first;
+    ^Pdef(firstId).source.isNil;
   }
 
   *prSaveShuffleHistory {

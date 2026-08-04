@@ -1,5 +1,13 @@
 + Px {
   *chop { |dur, drop|
+    var hasActiveChop = last.any { |pattern|
+      pattern[\chop].isArray and: { pattern[\chop][0] != 0 }
+    };
+
+    if (dur.isNil and: { hasActiveChop }) {
+      dur = 0;
+    };
+
     last do: { |pattern|
       pattern[\chop] = [dur ?? 1, drop ?? 0];
     };

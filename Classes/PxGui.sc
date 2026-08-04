@@ -54,7 +54,7 @@
 
   *prGenerateSliders {
     var patterns = last.reject { |pattern| pattern[\lx] == true };
-    var meterColor = Color.new255(37, 190, 106);
+    var primaryColor = Color.new255(37, 190, 106);
     var meterBgColor = Color.new255(31, 41, 55);
     var sortedKeys = Px.prSortedPatternIds(patterns);
 
@@ -62,17 +62,17 @@
     patternViews.clear;
 
     ^sortedKeys collect: { |key|
-      var views = this.prBuildPatternView(key, meterColor, meterBgColor);
+      var views = this.prBuildPatternView(key, primaryColor, meterBgColor);
       patternViews[key] = views;
       views[\layout];
     };
   }
 
-  *prBuildPatternView { |key, meterColor, meterBgColor|
+  *prBuildPatternView { |key, primaryColor, meterBgColor|
     var pattern = last[key];
     var amp = this.prGetAmp(lastFormatted[key][\amp]);
     var backgroundColor = Color.new255(26, 29, 34);
-    var button, numberBox, slider, staticText, meterView;
+    var meterView, numberBox, pauseButton, slider, soloButton, staticText;
 
     var slideAction = { |value|
       var currentPattern = last[key];
@@ -120,7 +120,8 @@
     })
     .value_(amp);
 
-    button = Button()
+    pauseButton = Button()
+    .maxWidth_(windowWidth / 2)
     .states_([
       ["🟢", Color.white, Color.new255(32, 42, 55)],
       ["⬜️", Color.grey, Color.new255(32, 42, 55)]
@@ -131,8 +132,23 @@
       { Px.pause(key) };
     });
 
+    soloButton = Button()
+    .maxWidth_(windowWidth / 2)
+    .states_([
+      ["S", Color.white, Color.new255(32, 42, 55)],
+      ["S", primaryColor, Color.new255(32, 42, 55)]
+    ])
+    .action_({ |btn|
+      if (btn.value == 0)
+      { Px.unsolo }
+      { Px.solo(key) };
+    });
+
     if (pausedPatterns.includes(key.asSymbol))
-    { button.value_(1) };
+    { pauseButton.value_(1) };
+
+    if (mutedPatterns.notNil and: { mutedPatterns.notEmpty })
+    { soloButton.value_(1) };
 
     meterView = UserView()
     .minHeight_(20)
@@ -150,7 +166,7 @@
         Pen.push;
         Pen.addRoundedRect(bounds, 3, 3);
         Pen.clip;
-        Pen.fillColor = meterColor;
+        Pen.fillColor = primaryColor;
         Pen.fillRect(Rect(0, 0, fillWidth, bounds.height));
         Pen.pop;
       };
@@ -166,9 +182,16 @@
       staticText: staticText,
       slider: slider,
       numberBox: numberBox,
-      button: button,
+      pauseButton: pauseButton,
+      soloButton: soloButton,
       meterView: meterView,
-      layout: VLayout(staticText, slider, numberBox, meterView, button)
+      layout: VLayout(
+        staticText,
+        slider,
+        numberBox,
+        meterView,
+        HLayout(pauseButton, soloButton).margins_(0).spacing_(2)
+      )
     );
   }
 
@@ -316,12 +339,14 @@
     patternViews keysValuesDo: { |key, views|
       var amp = this.prGetAmp(lastFormatted[key][\amp]);
       var paused = pausedPatterns.includes(key.asSymbol);
+      var soloed = mutedPatterns.notNil and: { mutedPatterns.notEmpty };
 
       views[\staticText].string_(this.prPatternLabel(key));
       views[\staticText].background_(this.prPatternColor(key));
       views[\slider].value_(amp);
       views[\numberBox].value_(amp);
-      views[\button].value_(if (paused) { 1 } { 0 });
+      views[\pauseButton].value_(if (paused) { 1 } { 0 });
+      views[\soloButton].value_(if (soloed) { 1 } { 0 });
     };
   }
 

@@ -268,7 +268,7 @@ method:: unsolo
 Restores all muted patterns to playback.
 
 method:: chop
-Slices and repeats part of the beat pattern.
+Slices and repeats part of the beat pattern. Called with no arguments, it toggles: applies the default chop if none is active, disables it otherwise.
 
 argument:: dur
 Duration of the chop. Use 0 to disable.
@@ -279,6 +279,7 @@ Position in the pattern to chop.
 code::
 Px.chop(1, 2);   // Chop with duration 1, drop at position 2
 Px.chop(0);      // Disable chop
+Px.chop;         // Toggle open/close
 ::
 
 method:: tempo

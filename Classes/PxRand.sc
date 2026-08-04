@@ -39,12 +39,9 @@
   }
 
   *prIsStopped {
-    var firstId;
-
     if (last.isEmpty) { ^true };
 
-    firstId = last.keys.asArray.first;
-    ^Pdef(firstId).source.isNil;
+    ^last.keys.every { |id| Ndef(id).paused };
   }
 
   *prSaveShuffleHistory {

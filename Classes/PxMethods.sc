@@ -62,8 +62,14 @@
 
   *play { |fadeTime|
     Ndef(\px).play(fadeTime: fadeTime);
-    if (last.notEmpty) { this.prReevaluate };
-    pausedPatterns.clear;
+
+    if (last.notEmpty) {
+      this.prReevaluate;
+      last.keys do: { |id|
+        if (pausedPatterns.includes(id.asSymbol).not)
+        { Ndef(id).resume };
+      };
+    };
   }
 
   *release { |time, id|
@@ -128,6 +134,12 @@
         this.prPrint("When the music is over\nTurn out the lights\nMusic is your only friend\nUntil the end 💀");
       };
     }
+  }
+
+  *record {
+    if (Server.default.isRecording.not)
+    { Server.default.record }
+    { Server.default.stopRecording };
   }
 
   *resume { |id|
@@ -229,7 +241,7 @@
       if (event[\hasGate] == false)
       { this.prChannelNoteOff(event[\chan]) };
 
-      Pdef(id).source = nil;
+      Ndef(id).pause;
     };
 
     this.prAutoRefreshGui;

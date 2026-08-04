@@ -65,6 +65,8 @@ encoderMode: bin_offset
 pads:
   - action: shuffle
     cc: 59
+  - action: record
+    cc: 60
   - action: gui
     cc: 61
   - action: stop

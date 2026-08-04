@@ -1,14 +1,15 @@
 Dx : Px {
+  classvar aliases;
+  classvar <activeFx;
   classvar <>drumMachine;
   classvar <>dxAmp;
-  classvar <activeFx;
+  classvar <>dxWindow;
   classvar hasLoadedPresets;
   classvar <instrumentFolders;
   classvar instrumentNames;
   classvar <>lastPreset;
   classvar <presetsDict;
   classvar <presetPatterns;
-  classvar aliases;
 
   *initClass {
     aliases = Dictionary[

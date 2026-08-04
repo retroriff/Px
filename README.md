@@ -109,7 +109,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 
 - `control` (chan, ctlNum, value): Sends a MIDI CC message immediately.
 - `chorus`: Plays a saved chorus.
-- `chop`: (dur: Integer | Nil, drop: Integer)Slices and repeats part of the beat in short bursts. It can be disabled with a `0` or `Nil` value.
+- `chop`: (dur: Integer | Nil, drop: Integer)Slices and repeats part of the beat in short bursts. Called with no arguments, it toggles: applies the default chop if none is active, disables it otherwise. Pass `0` to always disable.
 - `gui`: Opens a gui window with pattern sliders. Once open, it updates automatically.
 - `mixer`: Opens an `NdefMixer` instance, always on top, and assigns it to the `~mixer` variable.
 - `pause` (id: symbol): Pauses a specific pattern.
@@ -222,7 +222,7 @@ Dx.preset(\electro, 1);
 | ------------- | ------------------------------------------------- | -------------------------------------- |
 | `delay`       | mix?: range 0..1                                  | Adds delay FX to the preset patterns   |
 | `fill`        | instrument?: symbol, repeat?: integer             | One-shot random fill with crash accent |
-| `gui`         | None                                              | Opens a drum machine bank GUI          |
+| `gui`         | None                                              | Toggles a drum machine bank GUI        |
 | `instruments` | machine?: symbol                                  | Returns available instruments          |
 | `loadPresets` | None                                              | Reloads presets from YAML files        |
 | `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/dx/)         |

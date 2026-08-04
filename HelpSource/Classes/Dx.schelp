@@ -308,7 +308,11 @@ Restores all drum patterns muted by link::#solo::.
 subsection:: Utilities
 
 method:: gui
-Opens a GUI window for controlling the drum machine (inherited from Px).
+Toggles a GUI window for controlling the drum machine. Opens the window if closed, closes it if open.
+
+code::
+Dx.gui; // toggle open/close
+::
 
 method:: shuffle
 Randomizes beat patterns for instruments using random beat generation (inherited from Px).

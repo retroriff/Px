@@ -7,8 +7,13 @@
     var firstCol, secondCol, thirdCol, mainView, row;
     var width = 420, height = 350;
     var linkColor = Color.new255(31, 41, 55);
+    var w;
 
-    var w = Window(
+    if (dxWindow.notNil) {
+      ^dxWindow.close;
+    };
+
+    w = Window(
       name: "🛢️ Dancing To The Drum Machine",
       bounds: Rect(
         left: Window.screenBounds.width - width,
@@ -19,7 +24,10 @@
     )
     .alwaysOnTop_(true)
     .background_(Color.new255(26, 29, 34))
+    .onClose_({ Dx.dxWindow = nil })
     .front;
+
+    dxWindow = w;
 
     mainView = CompositeView(w, w.view.bounds);
     mainView.decorator = FlowLayout(mainView.bounds);

@@ -41,7 +41,7 @@
   *prIsStopped {
     if (last.isEmpty) { ^true };
 
-    ^last.keys.every { |id| Ndef(id).paused };
+    ^last.keys.every { |id| Pdef(id).source.isNil };
   }
 
   *prSaveShuffleHistory {

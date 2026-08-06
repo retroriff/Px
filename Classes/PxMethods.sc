@@ -64,7 +64,8 @@
     pausedPatterns.add(id);
     fork {
       TempoClock.default.timeToNextBeat(quant).wait;
-      Ndef(id).pause;
+      if (pausedPatterns.includes(id))
+      { Ndef(id).pause };
     };
   }
 
@@ -233,12 +234,12 @@
         tailWait.wait;
 
         if (ndefList[id].isNil) {
-          Ndef(id).clear(fadeTime);
+          Ndef(id).clear;
           Fx.remove(id);
         };
 
         if (last.isEmpty and: { Ndef(\px).isPlaying }) {
-          Ndef(\px).clear(fadeTime);
+          Ndef(\px).clear;
         };
       }, SystemClock);
     };
@@ -249,7 +250,7 @@
       if (event[\hasGate] == false)
       { this.prChannelNoteOff(event[\chan]) };
 
-      Ndef(id).pause;
+      Pdef(id).source = nil;
     };
 
     this.prAutoRefreshGui;

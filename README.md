@@ -32,7 +32,7 @@ Install `Quarks.install("https://github.com/retroriff/sc-px");` and recompile.
 
 **Optional:**
 
-- Load audio samples: `Px.loadSamples(<YOUR_SAMPLES_FOLDER_PATH>);`
+- Load audio samples: `Px.loadSamples(<YOUR_SAMPLES_FOLDER_PATH>);` (use `Px.reloadSamples;` to refresh after editing files on disk)
 - Install [Tidal Drum Machines](https://github.com/geikha/tidal-drum-machines) to use drum machines and `Dx`
 - Install [VSTPlugin](https://github.com/Spacechild1/vstplugin) and set a presets path: `Fx.setVstPresetsPath("../VST/presets/".resolveRelative);`
 
@@ -200,7 +200,7 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 
 ## 🛢️ Drum Machines
 
-We can simplify the usage of drum machine using shortcodes. Short aliases (505, 606, 626, 707, 727, 808, 909) resolve to their RolandTR equivalents. Many more machines are available via `Dx.gui`. Here's an example:
+We can simplify the usage of drum machine using shortcodes. Short aliases (505, 606, 626, 707, 727, 808, 909) resolve to their RolandTR equivalents. `101` is a dynamic alias that always resolves to the currently active drum machine (`Dx.drumMachine`), tracking `Dx.use` switches instead of a fixed machine. Many more machines are available via `Dx.gui`. Here's an example:
 
 ```js
 707 i: \bd dur: 1;

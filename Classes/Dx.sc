@@ -395,6 +395,9 @@ Dx : Px {
   }
 
   *prResolveAlias { |name|
+    if (name.asSymbol == \101)
+    { ^drumMachine };
+
     ^(aliases[name.asSymbol] ? name);
   }
 

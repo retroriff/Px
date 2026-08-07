@@ -71,6 +71,17 @@
     };
   }
 
+  *reloadSamples {
+    if (samplesPath.isNil) {
+      this.prPrint("🔴 No samples loaded yet. Call Px.loadSamples first");
+      ^this;
+    };
+
+    samplesDict.do { |bufArray| bufArray.do(_.free) };
+    this.loadSamples(samplesPath);
+    this.prPrint("🔄 Samples reloaded from" + samplesPath);
+  }
+
   *prCreateBufInstruments { |pattern|
     if (pattern[\play].notNil) {
       var folder, file;

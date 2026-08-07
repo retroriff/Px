@@ -316,6 +316,8 @@
 
     mutedPatterns = Dictionary.new;
 
+    toRestore = toRestore.reject { |event, id| pausedPatterns.includes(id) };
+
     this.prReevaluate(toRestore);
   }
 
@@ -340,7 +342,6 @@
 
     Pdef(id).source = nil;
     last.removeAt(id);
-    lastFormatted.removeAt(id);
   }
 }
 

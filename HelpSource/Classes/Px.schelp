@@ -61,6 +61,7 @@ Before using Px, load the SynthDefs and optionally your sample library:
 code::
 Px.loadSynthDefs;
 Px.loadSamples("/path/to/samples/");
+// Px.reloadSamples; // refresh after editing files on disk
 ::
 
 ClassMethods::
@@ -195,6 +196,13 @@ Loads audio samples from a directory structure into the sample dictionary.
 
 argument:: pxPath
 Path to the samples directory.
+
+method:: reloadSamples
+Re-scans the last path passed to code::loadSamples:: and refreshes the sample dictionary. Frees previously loaded buffers before reloading. Useful when samples were added, removed, or edited on disk during a session.
+
+code::
+Px.reloadSamples;
+::
 
 method:: buf
 Retrieves sample buffers from the loaded sample dictionary.

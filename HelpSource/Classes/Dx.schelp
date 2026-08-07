@@ -32,6 +32,18 @@ definitionlist::
 
 Many more drum machines are available from the tidal-drum-machines quark. Use code::Dx.gui:: to see the full list.
 
+In addition to the fixed aliases above, code::101:: is a dynamic alias that always resolves to whichever drum machine is currently active (code::Dx.drumMachine::), rather than a fixed machine. Patterns written with code::101:: keep tracking the active machine across code::Dx.use:: switches:
+
+code::
+// Dx.drumMachine defaults to RolandTR909
+101 i: \bd dur: 1;
+
+Dx.use(707);
+
+// now plays on RolandTR707
+101 i: \sd dur: 1;
+::
+
 subsection:: Basic Usage
 
 Use the drum machine number as the pattern ID prefix:

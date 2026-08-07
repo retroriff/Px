@@ -65,7 +65,7 @@
     fork {
       TempoClock.default.timeToNextBeat(quant).wait;
       if (pausedPatterns.includes(id))
-      { Ndef(id).pause };
+      { Pdef(id).source = nil };
     };
   }
 
@@ -73,11 +73,8 @@
     Ndef(\px).play(fadeTime: fadeTime);
 
     if (last.notEmpty) {
-      this.prReevaluate;
-      last.keys do: { |id|
-        if (pausedPatterns.includes(id.asSymbol).not)
-        { Ndef(id).resume };
-      };
+      var toReevaluate = last.reject { |v, k| pausedPatterns.includes(k) };
+      this.prReevaluate(toReevaluate);
     };
   }
 
@@ -154,7 +151,8 @@
   *resume { |id|
     id = id.asSymbol;
     pausedPatterns.remove(id);
-    Ndef(id).resume;
+    if (last[id].notNil)
+    { this.prReevaluate([last[id]]) };
   }
 
   *save {

@@ -1,4 +1,5 @@
 /*
+TODO: Rand degree from old examples files doesn't work anymore, should we deprecate it? 909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 degree: \rand length: 3;
 TODO: Midinote notation in uppercase return chords
 TODO: When used in a group, Number solo method mutes new patterns already played.
 Example on Mastegots.scd
@@ -82,7 +83,6 @@ Px {
     pattern = this.prCreateLoops(pattern);
     pattern = this.prCreateAmp(pattern);
     pattern = this.prCreateDur(pattern);
-    pattern = this.prCreateBeatRest(pattern);
     pattern = this.prCreatePan(pattern);
     pattern = this.prCreateDegrees(pattern);
     pattern = this.prCreateOctaves(pattern);
@@ -249,9 +249,11 @@ Px {
     var bindPattern = pattern.copy;
 
     bindPattern.removeAt(\repeat);
+    bindPattern.removeAt(\rest);
     bindPattern.removeAt(\stop);
 
     pbindef = Pbind(*bindPattern.asPairs);
+    pbindef = this.prCreateRest(pattern, pbindef);
 
     if (pattern[\midiControl] != 1)
     { pbindef = this.prCreateFade(pbindef, pattern[\fade]) };

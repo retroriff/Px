@@ -31,6 +31,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 - `pattern[\totalBeats]` - Combined beat used by fill patterns
 - `pattern[\fill]` - Invert previous pattern's beat
 - `pattern[\repeat]` - Number of times the beat pattern repeats (removed before Pdef creation)
+- `pattern[\rest]` - Beats of silence inserted after each complete cycle (removed before Pdef creation)
 - `pattern[\weight]` - Probability 0-1 for beat randomness
 
 **Where to find:** Check source files for complete list - pattern keys are used throughout `Classes/Px.sc`, `Classes/Number.sc`, `Classes/PxBeats.sc`

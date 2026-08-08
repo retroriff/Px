@@ -54,19 +54,42 @@
     ^beats;
   }
 
-  *prCreateBeatRest { |pattern|
-    if (pattern[\rest].notNil) {
-      var dur = pattern[\dur];
-      var restDur = Rest(pattern[\rest]);
+  *prRestCycleLength { |pattern|
+    var beatSteps = 16;
+    var ampSteps = 1;
+    var durSteps = 1;
+    var dur = pattern[\dur];
 
-      pattern[\dur] = if (dur.isKindOf(Pseq))
-      { Pseq(dur.list ++ [restDur], inf) }
-      { Pseq([dur, restDur], inf) };
+    case
+    { pattern[\beatSet].notNil }
+    { ampSteps = pattern[\beatSet].size }
 
-      pattern.removeAt(\rest);
-    };
+    { pattern[\beat].notNil or: { pattern[\fill].notNil } }
+    { ampSteps = beatSteps }
 
-    ^pattern;
+    { pattern[\amp].isKindOf(Pseq) }
+    { ampSteps = pattern[\amp].list.size };
+
+    case
+    { pattern[\euclid].notNil }
+    { durSteps = pattern[\euclid][0] }
+
+    { dur.isKindOf(Pseq) }
+    { durSteps = dur.list.size };
+
+    ^lcm(ampSteps.max(1), durSteps.max(1));
+  }
+
+  *prCreateRest { |pattern, pbindef|
+    var restBeats = pattern[\rest];
+
+    if (restBeats.isNil)
+    { ^pbindef };
+
+    ^Pseq([
+      Pfin(this.prRestCycleLength(pattern), pbindef),
+      Pbind(\dur, Pseq([Rest(restBeats)]))
+    ], pattern[\repeat] ?? inf);
   }
 
   *prCreateFillFromBeat { |amp, pattern|

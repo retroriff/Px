@@ -447,9 +447,11 @@ code::
 ::
 
 ## euclid
-|| Generates Euclidean rhythm patterns.
+|| Generates Euclidean rhythm patterns, distributing code::hits:: as evenly as possible over code::total:: steps. code::dur:: is the length of a single step, not of the whole figure, so the figure lasts code::total * dur:: beats. Choose code::dur:: so that code::total * dur:: is a multiple of 4 to stay aligned to the grid.
 code::
-707 i: \cp dur: 0.25 euclid: [3, 8];  // 3 hits over 8 steps
+707 i: \cp dur: 0.25 euclid: [3, 8];  // 3 hits over 8 steps = 2 beats
+707 i: \cp dur: 0.5 euclid: [3, 8];   // Same rhythm over 4 beats (one bar)
+707 i: \cp dur: 1 euclid: [3, 8];     // Same rhythm over 8 beats
 ::
 
 ## repeat
@@ -459,9 +461,11 @@ code::
 ::
 
 ## rest
-|| Adds rest periods to beat patterns.
+|| Inserts silence for the given number of beats after each complete cycle of the pattern. A cycle is the 16-step beat array, the length of the array passed to code::beat::, or a single event for patterns without a step sequence (such as code::loop::). The pattern restarts from its first step after every rest.
 code::
-707 i: \hh dur: 0.25 beat: 0.7 rest: 4;  // 4 beats of rest
+707 i: \hh dur: 0.25 beat: 0.7 rest: 4;            // 16 steps (4 beats), then 4 beats of silence
+707 i: \cp dur: 0.5 beat: [1, 0, 1, 0] rest: 2;    // 4 steps (2 beats), then 2 beats of silence
+1 loop: "breaks" dur: 8 rest: 4;                   // Loop plays once, then 4 beats of silence
 ::
 
 ## seed

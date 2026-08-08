@@ -98,7 +98,7 @@ Dx : Px {
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
 
-    ^instrumentFolders[machine.asSymbol];
+    ^instrumentFolders[machine.asSymbol].collect { |folder| this.prStripPrefix(folder) };
   }
 
   *loadPresets {
@@ -422,18 +422,21 @@ Dx : Px {
 
         names = Set.new;
 
-        subFolders.do { |sf|
-          var str = sf.asString;
-          var dashIndex = str.indexOf($-);
-
-          if (dashIndex.notNil)
-          { names.add(str[(dashIndex + 1)..]) }
-          { names.add(str) };
-        };
+        subFolders.do { |sf| names.add(this.prStripPrefix(sf).asString) };
 
         instrumentNames[folder.asSymbol] = names;
       };
     };
+  }
+
+  *prStripPrefix { |name|
+    var str = name.asString;
+    var dashIndex = str.indexOf($-);
+
+    if (dashIndex.notNil)
+    { ^str[(dashIndex + 1)..].asSymbol };
+
+    ^name;
   }
 
   *prFadeDrums { |direction, fadeTime|

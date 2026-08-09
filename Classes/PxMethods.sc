@@ -72,10 +72,8 @@
   *play { |fadeTime|
     Ndef(\px).play(fadeTime: fadeTime);
 
-    if (last.notEmpty) {
-      var toReevaluate = last.reject { |v, k| pausedPatterns.includes(k) };
-      this.prReevaluate(toReevaluate);
-    };
+    if (last.notEmpty)
+    { this.prReevaluate };
   }
 
   *release { |time, id|
@@ -315,8 +313,6 @@
     };
 
     mutedPatterns = Dictionary.new;
-
-    toRestore = toRestore.reject { |event, id| pausedPatterns.includes(id) };
 
     this.prReevaluate(toRestore);
   }

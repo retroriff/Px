@@ -93,6 +93,10 @@
 
       if (file.isInteger) {
         var resolvedBuf = this.buf(folder, file);
+
+        if (resolvedBuf.class != Buffer)
+        { pattern[\bufMissing] = true };
+
         pattern[\play] = resolvedBuf;
       };
 

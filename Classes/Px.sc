@@ -74,11 +74,21 @@ Px {
 
   *new { |newPattern|
     var pattern, pdef, playList, isNewNdef;
+    var previousPattern = last[newPattern[\id]];
 
     this.prInitializeDictionaries(newPattern);
     this.prHandleSoloPattern(newPattern);
 
     pattern = this.prCreateBufInstruments(newPattern);
+
+    if (pattern[\bufMissing] == true) {
+      if (previousPattern.notNil)
+      { last[pattern[\id]] = previousPattern }
+      { last.removeAt(pattern[\id]) };
+
+      ^this;
+    };
+
     pattern = this.prCreateInstrument(pattern);
     pattern = this.prCreateLoops(pattern);
     pattern = this.prCreateAmp(pattern);
@@ -312,7 +322,7 @@ Px {
   }
 
   *prReevaluate { |patterns|
-    patterns = patterns ?? last;
+    patterns = (patterns ?? last).reject { |v, k| pausedPatterns.includes(k) };
 
     ^patterns do: { |value, key|
       this.new(value);

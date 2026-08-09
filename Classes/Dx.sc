@@ -156,9 +156,11 @@ Dx : Px {
   *shuffle {
     var folders = this.prGetDrumMachinesFolders;
     var randomIndex = folders.size.rand;
+    var instruments;
 
     Dx.use(folders[randomIndex]);
-    ^("🎲 Drum machine:" + folders[randomIndex]);
+    instruments = this.instruments;
+    ^("🎲 Drum machine:" + folders[randomIndex] ++ ". Instruments: " + instruments.join(", "));
   }
 
 

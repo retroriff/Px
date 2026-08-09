@@ -89,6 +89,8 @@ Px {
       ^this;
     };
 
+    pausedPatterns.remove(pattern[\id]);
+
     pattern = this.prCreateInstrument(pattern);
     pattern = this.prCreateLoops(pattern);
     pattern = this.prCreateAmp(pattern);

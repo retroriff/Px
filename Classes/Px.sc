@@ -324,7 +324,7 @@ Px {
   }
 
   *prReevaluate { |patterns|
-    patterns = (patterns ?? last).reject { |v, k| pausedPatterns.includes(k) };
+    patterns = (patterns ?? last).reject { |v| pausedPatterns.includes(v[\id]) };
 
     ^patterns do: { |value, key|
       this.new(value);

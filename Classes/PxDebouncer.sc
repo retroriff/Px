@@ -51,7 +51,7 @@ PxDebouncer {
 
     original.prUpdatePattern(pairs, pattern);
 
-    if (pattern.notNil) {
+    if (pattern.notNil and: { Px.last[pattern[\id]].notNil }) {
       var capturedId = pattern[\id];
 
       fork {

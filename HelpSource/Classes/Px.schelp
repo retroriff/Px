@@ -377,6 +377,22 @@ Px.control(2, 7, 100);   // CC 7 (volume) on channel 2
 
 Note: The DSL code::1 control: [10, 64]:: delegates to this method for integer values, reading the channel from the stored pattern.
 
+method:: bend
+Sends a MIDI pitch bend message immediately.
+
+argument:: chan
+MIDI channel (1-16). Matches the channel number displayed in DAWs and hardware.
+
+argument:: value
+Pitch bend value (0-127, center 64). Internally rescaled to the raw 14-bit MIDI range (0-16383, center 8192).
+
+code::
+Px.bend(1, 64);    // center pitch bend on channel 1
+Px.bend(2, 127);   // full up on channel 2
+::
+
+Note: The DSL code::1 bend: 64:: delegates to this method for integer values, reading the channel from the stored pattern.
+
 method:: panic
 Sends all notes off message.
 
@@ -632,7 +648,7 @@ definitionlist::
 Behind the scenes, the following events are added to the pattern:
 list::
 ## code::\type: \midi:: - Marks the event as a MIDI type
-## code::\midicmd: \noteOn:: - MIDI command (default is code::\noteOn::, can be code::\noteOff:: or code::\control::)
+## code::\midicmd: \noteOn:: - MIDI command (default is code::\noteOn::, can be code::\noteOff::, code::\control::, or code::\bend::)
 ## code::\midiout: midiClient[deviceName]:: - MIDIOut instance (uses device set in code::Px.initMidi::)
 ## code::\chan: 1:: - MIDI channel (defaults to 1 if not specified)
 ## code::\instrument: \midi:: - Sets instrument to MIDI
@@ -683,6 +699,35 @@ Pdef(\def, Pbind(
   \octave, 4,
   \scale, Scale.minor,
 )).play.quant_(4);
+)
+::
+
+## bend
+|| Sends MIDI pitch bend. Reads the channel from the stored pattern. Values use the same 0-127 range as code::control:: (center 64), rescaled internally to the raw 14-bit MIDI range (0-16383, center 8192). Integer values are sent immediately; patterns create a separate Pdef that runs alongside the note pattern.
+code::
+// Define a MIDI pattern first
+1 chan: 1 note: ([0, 0, 0, 0, 0, 3, 0, 5] + Nx.midiRoot).pseq dur: 0.25 amp: 1 octave: -2;
+
+// Send a single bend value (immediate)
+// Equivalent to Px.bend(1, 64) where chan is read from the stored pattern
+1 bend: 64;   // center
+1 bend: 127;  // full up
+
+// Send a bend pattern (creates a separate Pdef, inherits dur from note pattern)
+1 bend: [64, 127].pseq;
+1 bend: Pseq([64, 127], inf);
+
+// The pattern above generates (\val already rescaled to the raw 14-bit range):
+Pbind(
+  \type, \midi,
+  \midicmd, \bend,
+  \midiout, Px.midiOut,
+  \chan, 0,
+  \instrument, \midi,
+  \val, Pseq([64, 127], inf).collect { |v| Px.prScaleBend(v) },
+  \dur, 0.25,
+  \id, \bend_1,
+  \midiControl, 1,
 )
 ::
 

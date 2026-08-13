@@ -193,6 +193,7 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 
 | Name      | Arguments                 | Description                                                                                   |
 | --------- | ------------------------- | --------------------------------------------------------------------------------------------- |
+| `bend`    | number \| Pattern         | Sends a MIDI pitch bend message (0-127, center 64, same range as `control`). Integer values are sent immediately; patterns create a separate Pdef |
 | `control` | number, number \| Pattern | Sends a MIDI CC message. Integer values are sent immediately; patterns create a separate Pdef |
 | `hold`    | None                      | The note off message will not be sent and will keep the notes pressed                         |
 | `holdOff` | None                      | Releases holded notes                                                                         |

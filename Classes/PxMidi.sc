@@ -100,7 +100,8 @@ TODO: MIDIOut instances
 
     if (pattern[\hasGate] == false
       or: { pattern[\midicmd] == \noteOff }
-      or: { pattern[\midicmd] == \control })
+      or: { pattern[\midicmd] == \control }
+      or: { pattern[\midicmd] == \bend })
     { isMidiControl = true };
 
     if (pattern[\hasGate] == false) {
@@ -156,12 +157,7 @@ TODO: MIDIOut instances
     ^pattern;
   }
 
-  *control { |chan, ctlNum, value|
-    var prefix = ("cc" ++ ctlNum ++ "_").asString;
-
-    if (midiClient.isNil)
-    { this.initMidi };
-
+  *prFreeConflictingNdef { |prefix, chan|
     ndefList.keys do: { |key|
       if (key.asString.beginsWith(prefix) and: { last[key].notNil and: { last[key][\chan] == chan } }) {
         Pdef(key).stop;
@@ -171,8 +167,32 @@ TODO: MIDIOut instances
         Ndef(\px)[0] = { Mix.new(ndefList.values) };
       };
     };
+  }
+
+  *control { |chan, ctlNum, value|
+    if (midiClient.isNil)
+    { this.initMidi };
+
+    this.prFreeConflictingNdef(("cc" ++ ctlNum ++ "_").asString, chan);
 
     midiOut.control(chan - 1, ctlNum, value.clip(0, 127));
+  }
+
+  *prScaleBend { |value|
+    var clipped = value.clip(0, 127);
+
+    if (clipped < 64)
+    { ^(clipped / 64 * 8192).round }
+    { ^(8192 + ((clipped - 64) / 63 * 8191)).round };
+  }
+
+  *bend { |chan, value|
+    if (midiClient.isNil)
+    { this.initMidi };
+
+    this.prFreeConflictingNdef("bend_", chan);
+
+    midiOut.bend(chan - 1, this.prScaleBend(value));
   }
 
   *prDetectDevice { |name|
@@ -203,11 +223,22 @@ TODO: MIDIOut instances
     { oldPending.do { |p| PxDebouncer.current.enqueue(p) } };
   }
 
+  prFreeConflictingNdef { |controlId|
+    if (Px.ndefList[controlId].notNil) {
+      Pdef(controlId).stop;
+      Ndef(controlId).free;
+      Px.last.removeAt(controlId);
+      Px.ndefList.removeAt(controlId);
+      Ndef(\px)[0] = { Mix.new(Px.ndefList.values) };
+    };
+  }
+
   control { |value|
     var chan;
     var ctlNum = value[0];
     var control = value[1];
     var previousPattern = Px.last[this.asSymbol];
+    var controlId = ("cc" ++ ctlNum ++ "_" ++ this.asString).asSymbol;
 
     if (previousPattern.isNil)
     { ^"Pattern % not found".format(this).warn; };
@@ -215,26 +246,43 @@ TODO: MIDIOut instances
     chan = previousPattern[\chan] ?? 1;
 
     if (control.isNumber) {
-      var controlId = ("cc" ++ ctlNum ++ "_" ++ this.asString).asSymbol;
-
-      if (Px.ndefList[controlId].notNil) {
-        Pdef(controlId).stop;
-        Ndef(controlId).free;
-        Px.last.removeAt(controlId);
-        Px.ndefList.removeAt(controlId);
-        Ndef(\px)[0] = { Mix.new(Px.ndefList.values) };
-      };
-
+      this.prFreeConflictingNdef(controlId);
       Px.control(chan, ctlNum, control);
     } {
-      var controlId = ("cc" ++ ctlNum ++ "_" ++ this.asString).asSymbol;
-
       this.prPlayClass((
         id: controlId,
         chan: chan,
         midicmd: \control,
         ctlNum: ctlNum,
         control: control,
+        dur: previousPattern[\dur] ?? 1,
+      ));
+    };
+  }
+
+  bend { |value|
+    var chan;
+    var previousPattern = Px.last[this.asSymbol];
+    var controlId = ("bend_" ++ this.asString).asSymbol;
+
+    if (previousPattern.isNil)
+    { ^"Pattern % not found".format(this).warn; };
+
+    chan = previousPattern[\chan] ?? 1;
+
+    if (value.isNumber) {
+      this.prFreeConflictingNdef(controlId);
+      Px.bend(chan, value);
+    } {
+      var scaledValue = if (value.respondsTo(\collect))
+        { value.collect { |v| Px.prScaleBend(v) } }
+        { value };
+
+      this.prPlayClass((
+        id: controlId,
+        chan: chan,
+        midicmd: \bend,
+        val: scaledValue,
         dur: previousPattern[\dur] ?? 1,
       ));
     };
@@ -278,6 +326,7 @@ TODO: MIDIOut instances
     Px.stop(this.asSymbol);
   }
 
+  bend {}
   control {}
   hold {}
   note {}

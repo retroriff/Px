@@ -34,7 +34,7 @@
     if (last.keys.includes(id)) {
       this.prCreateNewSeeds(id);
       this.prSaveShuffleHistory;
-      if (this.prIsStopped.not) { this.prReevaluate([last[id]]) };
+      if (pausedPatterns.includes(id).not) { this.prReevaluate([last[id]]) };
     }
   }
 

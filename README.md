@@ -119,10 +119,12 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 - `set`: Sets a parameter for all active patterns.
 - `shuffle` (id: symbol, history: symbol): Generates a new random seed for a pattern, or all patterns when id is not provided. Use `history:` to restore a previous shuffle state.
 - `shuffleHistory`: Returns a Dictionary containing all stored shuffle snapshots.
+- `solo` (id, id2, id3, id4, id5): Solos one or more patterns, muting all others. Accepts pattern ids, or group targets (`\dx`, `\lx`, a drum machine number/alias). Pass `false` to unsolo.
 - `stop`: Stops all patterns. It can stop specific patterns if a single id or an array of ids is provided.
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
 - `tempo` (bpm: nil | number, withNdef: bool, add: number): Sets the tempo if bpm is given; returns current tempo if nil. Use `add:` for relative changes (e.g. `Px.tempo(add: 1)`).
 - `trace` (name, key: nil): Enables trace output for a pattern. Optionally filter to a specific key. Call with no arguments to stop all tracing.
+- `unsolo`: Restores all patterns muted by `solo`.
 - `vol`: Controls the volume of the nodeproxy.
 
 ### Pattern shortcuts
@@ -150,6 +152,8 @@ Fx.setVstPresetsPath(<path>);
 ```
 
 ### Fx class methods
+
+`Fx(name)` accepts a single proxy name, or a group target that fans the effect out to every matching pattern individually: `\dx` (every Dx preset pattern), `\lx` (every Lx looper channel), or a drum machine number/alias (`\808`, `909`, `\101`, ...). `\101` always tracks whichever machine is currently active via `Dx.use`.
 
 It offers the same [class methods as Px](#px-class-methods), with the following additions:
 

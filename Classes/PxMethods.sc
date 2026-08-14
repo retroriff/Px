@@ -180,6 +180,7 @@
     };
 
     soloIds = soloIds.collect { |id| id.asSymbol };
+    soloIds = soloIds.collect { |id| this.prGroupIds(id) ?? { [id] } }.flatten;
     hasCommon = soloIds.any { |id| last.keys.includes(id) };
 
     if (hasCommon == false)
@@ -326,6 +327,20 @@
     } {
       ^Ndef(ndef).vol_(value.clip(0, 3));
     }
+  }
+
+  *prGroupIds { |group|
+    var key = group.asSymbol;
+    var machine;
+
+    if (key == \dx or: { key == \lx })
+    { ^last.keys.select { |id| last[id][key] == true }.asArray };
+
+    machine = Dx.prResolveAlias(key);
+
+    if (machine == key) { ^nil };
+
+    ^last.keys.select { |id| last[id][\drumMachine] == machine }.asArray;
   }
 
   *prMute { |event|

@@ -34,17 +34,44 @@ Fx(\x).reverb(0.5);
 Fx(\x).delay(0.3);
 ::
 
+subsection:: Group Targets
+
+Instead of a single proxy name, code::Fx:: accepts a group token that fans the effect out to every matching pattern individually, rather than applying a single shared effect to a group bus. Each pattern keeps its own independent effect chain.
+
+list::
+## code::\dx:: — every link::Classes/Dx:: preset pattern (code::Dx.preset::, code::Dx.fill::).
+## code::\lx:: — every link::Classes/Lx:: looper channel.
+## A drum machine number or alias (code::\808::, code::909::, code::\101::, ...) — every pattern currently routed through that machine. code::\101:: always tracks whichever machine is active via link::Classes/Dx#*use::.
+::
+
+code::
+Dx.preset(\electro);
+Fx(\dx).space(0.5);      // applies space to every Dx preset pattern
+
+Dx.use(808);
+808 i: \bd dur: 1;
+808 i: \hh dur: 0.25;
+Fx(\808).crush(0.4);     // applies crush to bd808 and hh808 only
+Fx(101).crush(0.4);      // same result: 101 tracks the active machine (808)
+
+Fx(\dx).clear;           // clears effects from every Dx preset pattern
+::
+
+If a target has no matching patterns, or resolves to an Ndef with no source, code::Fx:: prints a message instead of raising an error.
+
 ClassMethods::
 
 method:: new
-Initializes the Fx controller for a specific proxy.
+Initializes the Fx controller for a specific proxy, or a group of patterns (see Group Targets above).
 
 argument:: name
-The proxy name as a Symbol. Defaults to \px.
+The proxy name as a Symbol or Integer, or a group token (code::\dx::, code::\lx::, a drum machine number/alias). Defaults to \px.
 
 code::
 Fx(\px).reverb(0.5);
 Fx(\myNdef).delay(0.3);
+Fx(\dx).reverb(0.3);
+Fx(\909).crush(0.5);
 ::
 
 subsection:: Effects
@@ -369,14 +396,15 @@ Always wrap UGens in code::{ }:: (a Function). Passing a bare UGen like code::Si
 subsection:: Management
 
 method:: clear
-Clears all active effects from a proxy or all proxies.
+Clears all active effects from a proxy, a group of proxies, or all proxies.
 
 argument:: singleProxy
-Optional proxy name. If omitted, clears all effects from all proxies.
+Optional proxy name. If omitted, clears all effects from all proxies, or from every pattern in the current group target (see Group Targets above).
 
 code::
 Fx.clear(\px);   // Clear effects from \px only
 Fx.clear;        // Clear all effects
+Fx(\dx).clear;   // Clear effects from every Dx preset pattern
 ::
 
 method:: activeEffects

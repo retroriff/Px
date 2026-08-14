@@ -248,27 +248,29 @@ Optional SynthDef name.
 subsection:: Performance
 
 method:: solo
-Solos one or more patterns, muting all others.
+Solos one or more patterns, muting all others. Also accepts group targets — code::\dx:: (every link::Classes/Dx:: preset pattern), code::\lx:: (every link::Classes/Lx:: looper channel), or a drum machine number/alias (code::\808::, code::909::, code::\101::, ...) — which expand to every matching pattern.
 
 argument:: soloIds
-Pattern ID or array of IDs to solo. Pass false to unsolo.
+Pattern ID, group target, or array of IDs/group targets to solo. Pass false to unsolo.
 
 argument:: id2
-Optional additional pattern ID to solo.
+Optional additional pattern ID or group target to solo.
 
 argument:: id3
-Optional additional pattern ID to solo.
+Optional additional pattern ID or group target to solo.
 
 argument:: id4
-Optional additional pattern ID to solo.
+Optional additional pattern ID or group target to solo.
 
 argument:: id5
-Optional additional pattern ID to solo.
+Optional additional pattern ID or group target to solo.
 
 code::
 Px.solo(1);          // Solo pattern 1
 Px.solo(1, 2);       // Solo patterns 1 and 2
 Px.solo([1, 2]);     // Solo patterns 1 and 2
+Px.solo(\dx);        // Solo every Dx preset pattern
+Px.solo(\909, 1);    // Solo every 909 pattern plus pattern 1
 Px.solo(false);      // Unsolo all
 ::
 

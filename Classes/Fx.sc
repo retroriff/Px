@@ -47,12 +47,12 @@ Fx {
 
   *clear { |singleProxy|
     var chain = chains[proxyName];
+    var groupIds = if (singleProxy.isNil) { Px.prGroupIds(proxyName) };
 
-    if ((proxyName == \lx or: { proxyName == \dx }) and: { singleProxy.isNil }) {
-      var ids = this.prGroupIds(proxyName);
+    if (groupIds.notNil) {
       var groupName = proxyName;
 
-      ids.do { |id| this.clear(id) };
+      groupIds.do { |id| this.clear(id) };
       proxyName = groupName;
       this.prPrint("🌵 All effects disabled on" + groupName);
       ^this;
@@ -313,16 +313,21 @@ Fx {
 
   *prAddEffect { |fx, mix, args, postArgs|
     var chain, hasFx = false;
+    var groupIds;
 
-    if (proxyName == \lx or: { proxyName == \dx }) {
-      var ids = this.prGroupIds(proxyName);
+    if (skipFlush.not)
+    { PxDebouncer.flush };
+
+    groupIds = Px.prGroupIds(proxyName);
+
+    if (groupIds.notNil) {
       var groupName = proxyName;
 
-      if (ids.isEmpty)
+      if (groupIds.isEmpty)
       { ^this.prPrint("🔴 No" + groupName + "patterns playing") };
 
       prSuppressPrint = true;
-      ids.do { |id|
+      groupIds.do { |id|
         proxyName = id;
         this.prAddEffect(fx, mix, args, postArgs);
       };
@@ -336,8 +341,8 @@ Fx {
       ^this;
     };
 
-    if (skipFlush.not)
-    { PxDebouncer.flush };
+    if (proxyName.prNdefExists.not)
+    { ^this.prPrint("🔴 Ndef" + "\\" ++ proxyName + "has no source") };
 
     if (args.notNil) {
       args.do { |value|
@@ -565,11 +570,6 @@ Fx {
         Ndef(proxyName).map(controlName, ndef);
       };
     };
-  }
-
-  *prGroupIds { |group|
-    var key = if (group == \lx) { \lx } { \dx };
-    ^Px.last.keys.select { |id| Px.last[id][key] == true }.asArray;
   }
 
   *prSetMixerValue { |fx, mix|

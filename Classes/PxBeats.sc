@@ -24,8 +24,9 @@
     if (pseqWeight > 0) {
       var seq1 = Pseq(rhythmSeq.(rhythmWeight), 1);
       var seq2 = Pseq(rhythmSeq.(rhythmWeight + 0.1), 1);
+      var repeats = pattern[\repeat] ?? inf;
 
-      ^[Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight])];
+      ^Pwrand([seq1, seq2], [1 - pseqWeight, pseqWeight], repeats);
     };
 
     ^rhythmSeq.(weight);

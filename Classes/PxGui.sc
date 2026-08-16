@@ -41,7 +41,8 @@
       StaticText()
       .align_(\center)
       .string_("🔴 Px is not running")
-      .stringColor_(Color.white);
+      .stringColor_(Color.white)
+      .setProperty(\wordWrap, false);
     };
 
     if (sliders.size > 0)
@@ -96,7 +97,8 @@
     .mouseDownAction_({
       (key.asString + last[key].asString).postln
     })
-    .string_(this.prPatternLabel(key));
+    .string_(this.prPatternLabel(key))
+    .setProperty(\wordWrap, false);
 
     numberBox = NumberBox()
     .action_({
@@ -277,7 +279,7 @@
   }
 
   *prTruncateText { |text|
-    var maxChars = 9;
+    var maxChars = 8;
 
     if (text.size > maxChars) {
       text = text.copyRange(0, maxChars - 1) ++ "…";

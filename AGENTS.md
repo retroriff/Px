@@ -134,3 +134,8 @@ If a variable is used across branches or later in the function, it must be decla
 ## Commits
 
 - Do NOT add `Co-Authored-By` trailers to commit messages.
+
+## Verifying behavior with sclang
+
+- Do NOT launch `sclang` (directly or via a `.scd` script) to test or verify behavior unless the user explicitly asks for it. The user runs a live SuperCollider session for music performance — booting the server or compiling the class library interrupts it.
+- Verify through static code reading instead. If that's insufficient and running code is the only way to confirm something, ask the user first.

@@ -114,14 +114,14 @@
     };
 
     getInvertBeat = { |beatAmp, invertAmp = 1|
-      var invertBeat = beatAmp.iter.loop.nextN(steps).linlin(0, amp, amp, Rest());
+      var invertBeat = beatAmp.iter.loop.nextN(steps).linlin(0, invertAmp, invertAmp, Rest());
       var weight = pattern[\weight] ?? 1;
 
       thisThread.randSeed = this.prGetPatternSeed(pattern);
 
       invertBeat.collect { |step|
-        if (step == amp) {
-          step = [0, amp].wchoose([1 - weight, weight]);
+        if (step == invertAmp) {
+          step = [0, invertAmp].wchoose([1 - weight, weight]);
         };
 
         step;

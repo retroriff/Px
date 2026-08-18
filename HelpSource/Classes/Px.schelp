@@ -458,7 +458,7 @@ code::
 ::
 
 ## fill
-|| Fills gaps in the beat pattern from another pattern.
+|| Fills gaps in the beat pattern from another pattern. Editing the referenced pattern's code::beat:: (a new code::weight::, code::seed::, or code::beatSet::) automatically re-triggers the fill to stay complementary. This does not happen when the referenced beat uses code::seed: \rand::, since it has no fixed rhythm to compare against.
 code::
 707 i: \bd dur: 0.25 beat: 0.7;
 707 i: \sd dur: 0.25 fill: 0.5;  // Fills gaps from pattern 1

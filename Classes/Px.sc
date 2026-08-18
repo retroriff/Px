@@ -29,6 +29,7 @@ Px {
   classvar <samplesPath;
   classvar <seeds;
   classvar <shuffleHistory;
+  classvar <>skipFillCascade;
   classvar <>window;
   classvar <windowWidth;
   classvar <windowHeight;
@@ -60,6 +61,7 @@ Px {
     quant = 4;
     seeds = Dictionary.new;
     shuffleHistory = Dictionary.new;
+    skipFillCascade = false;
     windowWidth = 68;
     windowHeight = 350.min(Window.screenBounds.height / 4);
 
@@ -75,6 +77,7 @@ Px {
   *new { |newPattern|
     var pattern, pdef, playList, isNewNdef;
     var previousPattern = last[newPattern[\id]];
+    var previousRhythm = previousPattern !? { previousPattern[\rhythmBeats] ?? previousPattern[\totalBeats] };
 
     this.prInitializeDictionaries(newPattern);
     this.prHandleSoloPattern(newPattern);
@@ -129,6 +132,12 @@ Px {
 
     this.prRemoveFinitePatternFromLast(pattern);
     this.prAutoRefreshGui;
+
+    if (skipFillCascade.not and: {
+      var currentRhythm = last[pattern[\id]] !? { |p| p[\rhythmBeats] ?? p[\totalBeats] };
+      this.prRhythmChanged(previousRhythm, currentRhythm);
+    })
+    { this.prReevaluateFillDependents(pattern) };
   }
 
   *prCreateAmp { |pattern|
@@ -262,7 +271,9 @@ Px {
 
     bindPattern.removeAt(\repeat);
     bindPattern.removeAt(\rest);
+    bindPattern.removeAt(\rhythmBeats);
     bindPattern.removeAt(\stop);
+    bindPattern.removeAt(\totalBeats);
 
     pbindef = Pbind(*bindPattern.asPairs);
     pbindef = this.prCreateRest(pattern, pbindef);
@@ -324,11 +335,34 @@ Px {
   }
 
   *prReevaluate { |patterns|
+    var isFullReevaluation = patterns.isNil;
+
     patterns = (patterns ?? last).reject { |v| pausedPatterns.includes(v[\id]) };
+
+    if (isFullReevaluation) {
+      skipFillCascade = true;
+      this.prSortedForEvaluation(patterns) do: { |value| this.new(value) };
+      skipFillCascade = false;
+
+      ^patterns;
+    };
 
     ^patterns do: { |value, key|
       this.new(value);
     }
+  }
+
+  *prSortedForEvaluation { |patterns|
+    var drumValues, otherValues;
+    var values = patterns.isKindOf(Dictionary).if({ patterns.values }, { patterns.asArray });
+
+    drumValues = values.select { |v| v[\drumMachineIntegerId].notNil };
+    otherValues = values.reject { |v| v[\drumMachineIntegerId].notNil };
+
+    drumValues = drumValues.sort({ |a, b| a[\drumMachineIntegerId] < b[\drumMachineIntegerId] });
+    otherValues = otherValues.sort({ |a, b| a[\id].asInteger < b[\id].asInteger });
+
+    ^drumValues ++ otherValues;
   }
 
   *prSortedPatternIds { |patterns|

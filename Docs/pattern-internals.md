@@ -13,7 +13,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 - **Effects** - fx, fade, chop, reverb
 - **MIDI** - chan, midiout, midicmd, midinote
 - **Samples** - loop, play, file
-- **Internal state** - beats, totalBeats, solo
+- **Internal state** - rhythmBeats, totalBeats, solo
 
 ### Key Pattern Dictionary Keys
 
@@ -27,12 +27,15 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 **Rhythm (beats and fills):**
 - `pattern[\beat]` - Trigger beat generation
 - `pattern[\beatSet]` - Custom 16-step array
-- `pattern[\beats]` - Generated beat array (stored after creation)
-- `pattern[\totalBeats]` - Combined beat used by fill patterns
+- `pattern[\rhythmBeats]` - Generated beat array (stored after creation, removed before Pdef creation)
+- `pattern[\totalBeats]` - Combined beat used by fill patterns (removed before Pdef creation)
 - `pattern[\fill]` - Invert previous pattern's beat
 - `pattern[\repeat]` - Number of times the beat pattern repeats (removed before Pdef creation)
 - `pattern[\rest]` - Beats of silence inserted after each complete cycle (removed before Pdef creation)
 - `pattern[\weight]` - Probability 0-1 for beat randomness
+
+**Note:** `pattern[\beats]` (no `rhythm` prefix) is an unrelated key — it carries sample duration
+to the `loop`/`grainLoop` SynthDefs for `trim`/`chop` patterns (`Classes/PxBuf.sc`, `Classes/Lx.sc`).
 
 **Where to find:** Check source files for complete list - pattern keys are used throughout `Classes/Px.sc`, `Classes/Number.sc`, `Classes/PxBeats.sc`
 
@@ -75,12 +78,19 @@ Preset patterns don't need dual IDs because their primary ID is already numeric.
 **Concept:** Beats are 16-step arrays that control amplitude over time, created with probabilistic randomness.
 
 - **Input:** `pattern[\weight]` (0-1) determines probability each step is active
-- **Output:** 16-step array stored in `pattern[\beats]`
+- **Output:** 16-step array stored in `pattern[\rhythmBeats]`
 - **Deterministic:** Uses seed for reproducible randomness (unless `\rand`)
 
 **Example:** `beat: 0.7` creates pattern where ~70% of steps are active, ~30% silent.
 
-**Implementation:** See `PxBeats.prCreateBeat()` in `Classes/PxBeats.sc`
+**Non-decile weights (e.g. `beat: 0.24`):** builds two adjacent 0.1-density arrays (here 20% and
+30%) and picks one at random each cycle, weighted by the fractional part (`Pwrand`). Since the
+result is a stream rather than a fixed array, `pattern[\rhythmBeats]` stores a resolved 16-step
+snapshot of it, so `fill` and the fill cascade compare against a stable rhythm. `beatSet` is
+snapshotted the same way. Exception: `seed: \rand` is never snapshotted — `\rhythmBeats` keeps the
+raw pattern object, which is why it never cascades.
+
+**Implementation:** See `PxBeats.prCreateBeat()`, `PxBeats.prCreateRhythmBeat()` in `Classes/PxBeats.sc`
 
 ### Fill Mechanics
 
@@ -96,11 +106,27 @@ Preset patterns don't need dual IDs because their primary ID is already numeric.
 **Chain effect:** Each fill builds on previous fills via `totalBeats`, creating evolving patterns.
 
 **Edge cases:**
-- First fill (no previous): Returns unmodified amp
-- Deleted previous pattern: Returns unmodified amp
+- First fill (no previous): Stays silent (amp `0`), and posts a warning (`🔴 fill <id> found no
+  rhythm to fill on the previous pattern`)
+- Deleted previous pattern / numbering gap: Same as above — warns instead of failing silently
 - Multiple drum machines: Independent sequences per drum machine
 
 **Implementation:** See `PxBeats.prCreateFillFromBeat()` in `Classes/PxBeats.sc`
+
+### Fill Cascade (beat → fill dependency)
+
+**Concept:** Editing a pattern's `beat` (new weight, seed, or `beatSet`) automatically
+re-evaluates any `fill` chained after it, forward through the whole chain, so the rhythms stay
+complementary.
+
+**When it does NOT trigger:**
+- The rhythm didn't actually change (e.g. only `amp`/`dur` edited)
+- The beat uses `seed: \rand` — it has no fixed rhythm to compare against, so it never cascades
+- The pattern is paused
+- During a full reevaluation (`Px.shuffle` with no id, `Px.play`, `Px.set`, `Px.chop`) — already
+  handled because every pattern gets re-evaluated in order
+
+**Implementation:** See `Px.new()` in `Classes/Px.sc`
 
 ## Drum Machine Architecture
 
@@ -178,6 +204,9 @@ Fills create **sequential dependencies** between patterns:
 
 **How lookup works:** Fill finds previous via arithmetic on integer IDs (`currentId - 1`)
 
+**Keeping it in sync:** editing Pattern A's beat re-evaluates Pattern B (and transitively C) —
+see [Fill Cascade](#fill-cascade-beat--fill-dependency) above.
+
 ### Shared State
 
 **Same drum machine:** Patterns share `drumMachine` number and sequential integer ID range
@@ -190,9 +219,10 @@ Fills create **sequential dependencies** between patterns:
 
 1. **ID type confusion:** Don't assume all IDs are numeric - manual drum patterns use strings
 2. **Direct modification:** Don't modify `Px.last` directly - use pattern creation methods
-3. **Fill edge cases:** First fill or missing previous returns unmodified amp (not an error)
+3. **Fill edge cases:** First fill or missing previous stays silent and warns (not a hard error)
 4. **ID gaps:** Normal after deletion, IDs intentionally don't reuse
 5. **Preset vs manual:** Check `pattern[\dx]` flag to differentiate
+6. **`\beats` vs `\rhythmBeats`:** `\beats` is the loop/grainLoop duration control (`trim`/`chop`), `\rhythmBeats` is the fill system's 16-step array
 
 ### Quick Checks
 
@@ -200,4 +230,4 @@ Fills create **sequential dependencies** between patterns:
 
 **Is this a preset?** `pattern[\dx] == true`
 
-**Does it have beats?** `pattern[\beats].notNil or: { pattern[\totalBeats].notNil }`
+**Does it have beats?** `pattern[\rhythmBeats].notNil or: { pattern[\totalBeats].notNil }`

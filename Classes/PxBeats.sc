@@ -45,13 +45,18 @@
   }
 
   *prCreateRhythmBeat { |amp, pattern|
-    var beats;
+    var beats, canResolveSnapshot;
 
     if (pattern[\beatSet].isNil)
     { beats = this.prCreateBeat(pattern, max: amp) }
     { beats = this.prCreateBeatSet(amp, pattern) };
 
-    last[pattern[\id]][\beats] = beats;
+    canResolveSnapshot = beats.isKindOf(Pattern) and: { pattern[\seed] != \rand };
+
+    last[pattern[\id]][\rhythmBeats] = if (canResolveSnapshot)
+    { beats.iter.loop.nextN(16) }
+    { beats };
+
     ^beats;
   }
 
@@ -135,15 +140,48 @@
     };
 
     if (previousPattern.notNil)
-    { previousBeats = previousPattern[\beats] ?? previousPattern[\totalBeats] };
+    { previousBeats = previousPattern[\rhythmBeats] ?? previousPattern[\totalBeats] };
 
-    if (previousBeats.isNil)
-    { ^amp };
+    if (previousBeats.isNil) {
+      this.prPrint("🔴 fill" + pattern[\id] + "found no rhythm to fill on the previous pattern");
+      ^0;
+    };
 
-    invertBeat = getInvertBeat.(previousBeats, pattern[\amp]);
+    invertBeat = getInvertBeat.(previousBeats, amp);
     totalBeat = getTotalBeat.(invertBeat);
 
     last[pattern[\id]].putAll([\totalBeats, totalBeat]);
     ^totalBeat;
+  }
+
+  *prFindFillDependent { |pattern|
+    var dependent;
+
+    if (pattern[\drumMachineIntegerId].notNil) {
+      var nextIntegerId = pattern[\drumMachineIntegerId].asInteger + 1;
+      dependent = last.detect({ |p| p[\drumMachineIntegerId] == nextIntegerId });
+    } {
+      var nextId = (pattern[\id].asInteger + 1).asSymbol;
+      dependent = last[nextId];
+    };
+
+    if (dependent.notNil and: { dependent[\fill].notNil })
+    { ^dependent };
+
+    ^nil;
+  }
+
+  *prRhythmChanged { |previousRhythm, currentRhythm|
+    if (previousRhythm.isArray.not or: { currentRhythm.isArray.not })
+    { ^false };
+
+    ^previousRhythm != currentRhythm;
+  }
+
+  *prReevaluateFillDependents { |pattern|
+    var dependent = this.prFindFillDependent(pattern);
+
+    if (dependent.notNil)
+    { this.prReevaluate([dependent]) };
   }
 }

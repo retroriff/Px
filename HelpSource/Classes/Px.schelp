@@ -179,7 +179,7 @@ Px.shuffleHistory;
 subsection:: Utilities
 
 method:: gui
-Toggles a mixer GUI window for controlling pattern volumes. Opens the window if closed, closes it if open. Once open, the window updates automatically whenever patterns change.
+Toggles a mixer GUI window for controlling pattern volumes. Opens the window if closed, closes it if open. Once open, the window updates automatically whenever patterns change. Patterns muted by link::#solo:: stay visible, dimmed, with a red code::S:: button — click it to restore just that pattern.
 
 code::
 Px.gui; // toggle open/close
@@ -275,7 +275,28 @@ Px.solo(false);      // Unsolo all
 ::
 
 method:: unsolo
-Restores all muted patterns to playback.
+Restores patterns muted by link::#solo::. Called with no arguments, restores all of them. Also accepts pattern IDs or group targets to restore only specific muted patterns, leaving the rest muted.
+
+argument:: ids
+Optional pattern ID, group target, or array of IDs/group targets to restore. Omit to restore all muted patterns.
+
+argument:: id2
+Optional additional pattern ID or group target to restore.
+
+argument:: id3
+Optional additional pattern ID or group target to restore.
+
+argument:: id4
+Optional additional pattern ID or group target to restore.
+
+argument:: id5
+Optional additional pattern ID or group target to restore.
+
+code::
+Px.solo(1, 2);       // Solo patterns 1 and 2, muting the rest
+Px.unsolo(1);        // Restore pattern 1, everything else stays muted
+Px.unsolo;           // Restore everything
+::
 
 method:: chop
 Slices and repeats part of the beat pattern. Called with no arguments, it toggles: applies the default chop if none is active, disables it otherwise.

@@ -124,7 +124,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
 - `tempo` (bpm: nil | number, withNdef: bool, add: number): Sets the tempo if bpm is given; returns current tempo if nil. Use `add:` for relative changes (e.g. `Px.tempo(add: 1)`).
 - `trace` (name, key: nil): Enables trace output for a pattern. Optionally filter to a specific key. Call with no arguments to stop all tracing.
-- `unsolo`: Restores all patterns muted by `solo`.
+- `unsolo` (id, id2, id3, id4, id5): Restores patterns muted by `solo`. Restores all when called with no arguments.
 - `vol`: Controls the volume of the nodeproxy.
 
 ### Pattern shortcuts

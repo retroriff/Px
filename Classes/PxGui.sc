@@ -53,8 +53,16 @@
     this.prStartMeterRoutine;
   }
 
+  *prVisiblePatterns {
+    ^(last ++ mutedPatterns).reject { |pattern| pattern[\lx] == true };
+  }
+
+  *prPatternAt { |key|
+    ^last[key] ?? mutedPatterns[key];
+  }
+
   *prGenerateSliders {
-    var patterns = last.reject { |pattern| pattern[\lx] == true };
+    var patterns = this.prVisiblePatterns;
     var primaryColor = Color.new255(37, 190, 106);
     var meterBgColor = Color.new255(31, 41, 55);
     var sortedKeys = Px.prSortedPatternIds(patterns);
@@ -69,15 +77,50 @@
     };
   }
 
+  *prToggleSolo { |key|
+    var id = key.asSymbol;
+
+    if (mutedPatterns[id].notNil)
+    { ^this.unsolo(id) };
+
+    if (mutedPatterns.notEmpty)
+    { ^this.unsolo };
+
+    ^this.solo(id);
+  }
+
+  *prApplyMutedState { |views, key|
+    var muted = mutedPatterns[key].notNil;
+    var patternColor = this.prPatternColor(key);
+
+    views[\soloButton].value_(
+      if (muted)
+      { 2 }
+      { if (mutedPatterns.notEmpty) { 1 } { 0 } }
+    );
+
+    views[\staticText].background_(
+      if (muted)
+      { Color.new(patternColor.red, patternColor.green, patternColor.blue, 0.35) }
+      { patternColor }
+    );
+
+    views[\pauseButton].enabled_(muted.not);
+    views[\slider].enabled_(muted.not);
+    views[\numberBox].enabled_(muted.not);
+  }
+
   *prBuildPatternView { |key, primaryColor, meterBgColor|
-    var pattern = last[key];
-    var amp = this.prGetAmp(lastFormatted[key][\amp]);
+    var pattern = this.prPatternAt(key);
+    var formatted = lastFormatted[key] ?? Dictionary.new;
+    var amp = this.prGetAmp(formatted[\amp]);
     var backgroundColor = Color.new255(26, 29, 34);
-    var meterView, numberBox, pauseButton, slider, soloButton, staticText;
+    var mutedColor = Color.new255(239, 68, 68);
+    var meterView, numberBox, pauseButton, slider, soloButton, staticText, views;
 
     var slideAction = { |value|
       var currentPattern = last[key];
-      var newAmp = this.prSetAmp(lastFormatted[key][\amp], value);
+      var newAmp = this.prSetAmp(formatted[\amp], value);
 
       if (currentPattern.notNil) {
         var number = key.asInteger;
@@ -95,7 +138,7 @@
     .align_(\center)
     .background_(this.prPatternColor(key))
     .mouseDownAction_({
-      (key.asString + last[key].asString).postln
+      (key.asString + this.prPatternAt(key).asString).postln
     })
     .string_(this.prPatternLabel(key))
     .setProperty(\wordWrap, false);
@@ -138,19 +181,13 @@
     .maxWidth_(windowWidth / 2)
     .states_([
       ["S", Color.white, Color.new255(32, 42, 55)],
-      ["S", primaryColor, Color.new255(32, 42, 55)]
+      ["S", primaryColor, Color.new255(32, 42, 55)],
+      ["S", mutedColor, Color.new255(32, 42, 55)]
     ])
-    .action_({ |btn|
-      if (btn.value == 0)
-      { Px.unsolo }
-      { Px.solo(key) };
-    });
+    .action_({ Px.prToggleSolo(key) });
 
     if (pausedPatterns.includes(key.asSymbol))
     { pauseButton.value_(1) };
-
-    if (mutedPatterns.notNil and: { mutedPatterns.notEmpty })
-    { soloButton.value_(1) };
 
     meterView = UserView()
     .minHeight_(20)
@@ -180,7 +217,7 @@
 
     meterViews = meterViews.add(meterView);
 
-    ^(
+    views = (
       staticText: staticText,
       slider: slider,
       numberBox: numberBox,
@@ -195,10 +232,14 @@
         HLayout(pauseButton, soloButton).margins_(0).spacing_(2)
       )
     );
+
+    this.prApplyMutedState(views, key);
+
+    ^views;
   }
 
   *prPatternLabel { |key|
-    var pattern = last[key];
+    var pattern = this.prPatternAt(key);
     var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
     var play = pattern[\play] !? {
       case
@@ -224,7 +265,7 @@
   }
 
   *prPatternColor { |key|
-    var pattern = last[key];
+    var pattern = this.prPatternAt(key);
 
     if (pattern[\drumMachine].notNil)
     { ^Color.new255(255, 255, 122) };
@@ -233,7 +274,7 @@
   }
 
   *prGenerateWindowWidth {
-    if (Px.last.reject { |pattern| pattern[\lx] == true }.size > 0)
+    if (this.prVisiblePatterns.size > 0)
     { ^windowWidth }
     { ^windowHeight }
   }
@@ -269,7 +310,7 @@
 
       if (window.notNil and: { window.visible == true }) {
 
-        if (last.size == 0)
+        if (last.size == 0 and: { mutedPatterns.size == 0 })
         { window.close }
         { this.prUpdateGui };
       };
@@ -319,7 +360,7 @@
       ^("🔴 Window is closed");
     };
 
-    patterns = last.reject { |pattern| pattern[\lx] == true };
+    patterns = this.prVisiblePatterns;
     newKeys = patterns.keys;
     existingKeys = patternViews.keys;
 
@@ -339,16 +380,16 @@
 
   *prRefreshPatternViews {
     patternViews keysValuesDo: { |key, views|
-      var amp = this.prGetAmp(lastFormatted[key][\amp]);
+      var formatted = lastFormatted[key] ?? Dictionary.new;
+      var amp = this.prGetAmp(formatted[\amp]);
       var paused = pausedPatterns.includes(key.asSymbol);
-      var soloed = mutedPatterns.notNil and: { mutedPatterns.notEmpty };
 
       views[\staticText].string_(this.prPatternLabel(key));
-      views[\staticText].background_(this.prPatternColor(key));
       views[\slider].value_(amp);
       views[\numberBox].value_(amp);
       views[\pauseButton].value_(if (paused) { 1 } { 0 });
-      views[\soloButton].value_(if (soloed) { 1 } { 0 });
+
+      this.prApplyMutedState(views, key);
     };
   }
 

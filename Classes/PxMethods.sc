@@ -301,19 +301,41 @@
     };
   }
 
-  *unsolo {
-    var toRestore;
+  *unsolo { |ids, id2, id3, id4, id5|
+    var toRestore, hasCommon;
 
     if (mutedPatterns.isNil || mutedPatterns.isEmpty)
     { ^("🟡 No muted patterns to restore") };
 
-    toRestore = mutedPatterns.copy;
+    if (ids.isNil) {
+      toRestore = mutedPatterns.copy;
+      mutedPatterns = Dictionary.new;
+    } {
+      if (ids.isArray == false) {
+        ids = [ids, id2, id3, id4, id5];
+        ids = ids.reject(_.isNil).collect(_.asSymbol);
+      };
 
-    mutedPatterns.keysValuesDo { |id, event|
-      last.put(id, event);
+      ids = ids.collect { |id| id.asSymbol };
+      ids = ids.collect { |id| this.prGroupIds(id, mutedPatterns) ?? { [id] } }.flatten;
+      hasCommon = ids.any { |id| mutedPatterns.keys.includes(id) };
+
+      if (hasCommon == false)
+      { ^("🔴 No matching muted instruments to restore") };
+
+      toRestore = Dictionary.new;
+
+      ids do: { |id|
+        if (mutedPatterns[id].notNil) {
+          toRestore.put(id, mutedPatterns[id]);
+          mutedPatterns.removeAt(id);
+        };
+      };
     };
 
-    mutedPatterns = Dictionary.new;
+    toRestore.keysValuesDo { |id, event|
+      last.put(id, event);
+    };
 
     this.prReevaluate(toRestore);
   }
@@ -329,18 +351,20 @@
     }
   }
 
-  *prGroupIds { |group|
+  *prGroupIds { |group, source|
     var key = group.asSymbol;
     var machine;
 
+    source = source ?? last;
+
     if (key == \dx or: { key == \lx })
-    { ^last.keys.select { |id| last[id][key] == true }.asArray };
+    { ^source.keys.select { |id| source[id][key] == true }.asArray };
 
     machine = Dx.prResolveAlias(key);
 
     if (machine == key) { ^nil };
 
-    ^last.keys.select { |id| last[id][\drumMachine] == machine }.asArray;
+    ^source.keys.select { |id| source[id][\drumMachine] == machine }.asArray;
   }
 
   *prMute { |event|

@@ -180,7 +180,7 @@ Custom pattern player designed to handle degrees, and can send MIDI messages bas
 | -------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `arp`    | None                                                                | Creates a very basic arpegio                                             |
 | `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                                                             |
-| `note`   | number \| symbol \| array \| Pattern                                | MIDI note. Accepts symbol notation: `\c4` (60), `\cs4` (61), `\db4` (61) |
+| `note`   | number \| symbol \| array \| Pattern                                | MIDI note. Accepts symbol notation: `\c3` (60), `\cs3` (61), `\db3` (61) |
 | `octave` | number \| array \| [\beats, octave: number]                         | Can create a sequence or a random beat                                   |
 | `root`   | number \| array                                                     | Sets the root value                                                      |
 

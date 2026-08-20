@@ -143,7 +143,7 @@
     { previousBeats = previousPattern[\rhythmBeats] ?? previousPattern[\totalBeats] };
 
     if (previousBeats.isNil) {
-      this.prPrint("🔴 \" ++ pattern[\id] + "found no rhythm to fill on the previous pattern");
+      this.prPrint("🔴 \\" ++ pattern[\id] + "found no rhythm to fill on the previous pattern");
       ^0;
     };
 

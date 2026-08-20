@@ -797,12 +797,12 @@ code::
 1 i: \wobble dur: 0.5 note: 60;
 
 // Symbol notation
-1 i: \wobble dur: 0.5 note: \c4;       // middle C (60)
-1 i: \wobble dur: 0.5 note: \cs4;      // C#4 (61)
-1 i: \wobble dur: 0.5 note: \db4;      // Db4 (61)
+1 i: \wobble dur: 0.5 note: \c3;       // middle C (60)
+1 i: \wobble dur: 0.5 note: \cs3;      // C#3 (61)
+1 i: \wobble dur: 0.5 note: \db3;      // Db3 (61)
 
 // Mixed array
-1 i: \wobble dur: 0.5 note: [74, \c4].pseq;
+1 i: \wobble dur: 0.5 note: [74, \c3].pseq;
 
 // With octave transposition
 1 i: \wobble dur: 0.5 note: [56, 53, 60, 53, 60, 63].pseq octave: [-2, -1];

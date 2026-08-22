@@ -120,7 +120,7 @@
 
     var slideAction = { |value|
       var currentPattern = last[key];
-      var newAmp = this.prSetAmp(formatted[\amp], value);
+      var newAmp = this.prSetAmp((lastFormatted[key] ?? Dictionary.new)[\amp], value);
 
       if (currentPattern.notNil) {
         var number = key.asInteger;

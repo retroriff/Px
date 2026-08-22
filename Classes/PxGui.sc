@@ -291,16 +291,8 @@
 
     ratio = newMax / oldMax;
 
-    if (originalAmp.isKindOf(Pwhite)) {
-      ^Pwhite(originalAmp.lo * ratio, originalAmp.hi * ratio)
-    };
-
-    if (originalAmp.isKindOf(Pattern)) {
-      originalAmp.list = originalAmp.list.collect { |x|
-        if (x.isKindOf(Rest)) { x } { x * ratio }
-      };
-      ^originalAmp
-    };
+    if (originalAmp.isKindOf(Pattern))
+    { ^this.prScaleAmp(originalAmp, ratio) };
 
     ^newMax;
   }

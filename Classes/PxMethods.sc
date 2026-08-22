@@ -103,6 +103,7 @@
       colors.removeAt(id);
       last.removeAt(id);
       lastFormatted.removeAt(id);
+      mutedPatterns.removeAt(id);
       pausedPatterns.remove(id);
 
       meterIdMap = meterIdMap.select { |v| v != id };
@@ -116,6 +117,7 @@
     colors = Dictionary.new;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
+    mutedPatterns = Dictionary.new;
     meterIdMap = Dictionary.new;
     meterLevels = Dictionary.new;
     meterNextId = 0;

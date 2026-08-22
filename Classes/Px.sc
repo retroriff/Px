@@ -7,6 +7,7 @@ Example on Mastegots.scd
 Px {
   classvar <>chorusPatterns;
   classvar <>colors;
+  classvar <defaultAmp;
   classvar <drumMachinesPath;
   classvar <>last;
   classvar <>lastFormatted;
@@ -37,6 +38,7 @@ Px {
   *initClass {
     chorusPatterns = Dictionary.new;
     colors = Dictionary.new;
+    defaultAmp = 0.3;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
     meterIdMap = Dictionary.new;
@@ -141,7 +143,7 @@ Px {
   }
 
   *prCreateAmp { |pattern|
-    var amp = pattern[\amp] ?? 0.3;
+    var amp = pattern[\amp] ?? defaultAmp;
 
     if (amp.isKindOf(Pattern)
       and: { pattern[\beat].notNil or: { pattern[\fill].notNil } })
@@ -167,12 +169,37 @@ Px {
   }
 
   *prExtractAmpMax { |amp|
-    if (amp.isKindOf(Pwhite)) { ^amp.hi };
+    if (amp.isNumber) { ^amp };
+
+    if (amp.isKindOf(Pwhite)) { ^this.prExtractAmpMax(amp.hi) };
 
     if (amp.isKindOf(Pattern) and: { amp.respondsTo(\list) }) {
-      ^amp.list.reject { |x| x.isKindOf(Rest) }.collect { |x|
+      var values = amp.list.reject { |x| x.isKindOf(Rest) }.collect { |x|
         this.prExtractAmpMax(x)
-      }.maxItem;
+      }.select(_.isNumber);
+
+      ^if (values.notEmpty) { values.maxItem } { defaultAmp };
+    };
+
+    this.prPrint("🔴 amp" + amp.class + "could not be resolved, using" + defaultAmp);
+    ^defaultAmp;
+  }
+
+  *prScaleAmp { |amp, ratio|
+    if (amp.isKindOf(Rest)) { ^amp };
+
+    if (amp.isNumber) { ^amp * ratio };
+
+    if (amp.isKindOf(Pwhite)) {
+      ^Pwhite(
+        this.prScaleAmp(amp.lo, ratio),
+        this.prScaleAmp(amp.hi, ratio)
+      )
+    };
+
+    if (amp.isKindOf(Pattern) and: { amp.respondsTo(\list) }) {
+      amp.list = amp.list.collect { |x| this.prScaleAmp(x, ratio) };
+      ^amp
     };
 
     ^amp;

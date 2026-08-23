@@ -23,7 +23,7 @@ Nx {
     tonics = Dictionary.new;
 
     this.loadChords;
-    this.set(\C7sus4Add13);
+    this.set(\Cmaj);
   }
 
   *new { |chordName, octaveArg|

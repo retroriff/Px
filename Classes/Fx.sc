@@ -352,7 +352,7 @@ Fx {
           and: { value.isFunction.not }
           and: { value.isString.not }
           and: { value.isKindOf(Symbol).not }) {
-          ^(
+          ^this.prPrint(
             "🔴 Invalid argument type. Use numbers or wrap UGens in { },
             e.g. { SinOsc.kr(t / 16).range(200, 4000) }"
           );
@@ -361,7 +361,7 @@ Fx {
     };
 
     if (mix.notNil and: { mix != Nil } and: { mix.isNumber.not }) {
-      ^("🔴 Invalid mix value. Must be a number (0-1) or Nil.");
+      ^this.prPrint("🔴 Invalid mix value. Must be a number (0-1) or Nil.");
     };
 
     chain = this.prEnsureChain;

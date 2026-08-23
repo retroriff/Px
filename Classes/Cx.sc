@@ -11,8 +11,6 @@ Cx {
     assignments = Dictionary.new;
     debug = true;
     midiFuncs = Array.new;
-
-    CmdPeriod.add { this.stop };
   }
 
   *assign { |slot, patternId|
@@ -88,8 +86,10 @@ Cx {
 
     this.stop;
 
-    MIDIClient.init(verbose: false);
-    MIDIIn.connectAll;
+    // connectAll skips MIDIClient.init when already initialized, avoiding the
+    // disposeClient deadlock that MIDIClient.init triggers on repeated calls
+    MIDIIn.connectAll(verbose: false);
+
     srcID = this.prSourceId(config[\device], config[\port]);
 
     config[\controls] do: { |row, index|
@@ -113,7 +113,8 @@ Cx {
       };
     };
 
-    CmdPeriod.add { this.play };
+    midiFuncs do: { |func| func.permanent_(true) };
+
     ^("✅ Cx: playing" + configName + "(" ++ midiFuncs.size + "controls)");
   }
 

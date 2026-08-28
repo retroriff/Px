@@ -144,26 +144,39 @@ Px {
 
   *prCreateAmp { |pattern|
     var amp = pattern[\amp] ?? defaultAmp;
+    var repeats = pattern[\repeat] ?? inf;
+    var ampPattern, beats;
 
     if (amp.isKindOf(Pattern)
       and: { pattern[\beat].notNil or: { pattern[\fill].notNil } })
     {
+      ampPattern = amp;
       amp = this.prExtractAmpMax(amp);
-      pattern[\amp] = amp;
     };
 
     if (pattern[\beat].notNil)
-    { amp = this.prCreateRhythmBeat(amp, pattern) };
+    { beats = this.prCreateRhythmBeat(amp, pattern) };
 
     if (pattern[\fill].notNil)
-    { amp = this.prCreateFillFromBeat(amp, pattern) };
+    { beats = this.prCreateFillFromBeat(amp, pattern) };
 
-    pattern[\amp] = amp;
+    pattern[\amp] = ampPattern ?? amp;
+    pattern.removeAt(\ampBeat);
 
-    if (pattern[\amp].isArray) {
-      var repeats = pattern[\repeat] ?? inf;
-      pattern[\amp] = Pseq(pattern[\amp], repeats);
+    if (beats.isNil) {
+      if (pattern[\amp].isArray)
+      { pattern[\amp] = Pseq(pattern[\amp], repeats) };
+
+      ^pattern;
     };
+
+    if (beats.isArray)
+    { beats = Pseq(beats, repeats) };
+
+    if (ampPattern.notNil and: { beats.isKindOf(Pattern) })
+    { beats = this.prApplyAmpPattern(beats, ampPattern) };
+
+    pattern[\ampBeat] = beats;
 
     ^pattern;
   }
@@ -296,6 +309,9 @@ Px {
     var stopBeats = pattern[\stop];
     var bindPattern = pattern.copy;
 
+    bindPattern[\amp] = bindPattern[\ampBeat] ?? bindPattern[\amp];
+
+    bindPattern.removeAt(\ampBeat);
     bindPattern.removeAt(\repeat);
     bindPattern.removeAt(\rest);
     bindPattern.removeAt(\rhythmBeats);

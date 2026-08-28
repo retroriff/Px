@@ -60,6 +60,28 @@
     ^beats;
   }
 
+  *prApplyAmpPattern { |beats, ampPattern|
+    ^Prout({ |inval|
+      var ampStream = ampPattern.asStream;
+      var beatStream = beats.asStream;
+      var step = beatStream.next(inval);
+      var value;
+
+      while { step.notNil } {
+        if (step.isRest or: { step <= 0 })
+        { value = step }
+        { value = ampStream.next(inval) };
+
+        if (value.isNil)
+        { step = nil }
+        {
+          inval = value.yield;
+          step = beatStream.next(inval);
+        };
+      };
+    });
+  }
+
   *prRestCycleLength { |pattern|
     var beatSteps = 16;
     var ampSteps = 1;

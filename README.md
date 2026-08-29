@@ -49,7 +49,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `dur`    | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
 | `euclid` | [hits: number, total: number]                     | Generates an Euclidian rhythm. `dur` is the length of one step, so the figure lasts `total * dur` beats                                                                                      |
 | `fill`   | weight: range 0..1                                | Fills the rests gap of its previous sequential pattern. Re-fills automatically when that pattern's `beat` changes (not with `seed: \rand`)                                                  |
-| `gui`    | None                                              | Toggles a patterns gui window. Once open, it updates automatically.                                                                                                                          |
+| `gui`    | atMouse: boolean                                  | Toggles a patterns gui window. Once open, it updates automatically. With `atMouse: true` it opens at the mouse position.                                                                     |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
 | `in`     | seconds: integer                                  | Fades in the pattern.                                                                                                                                                                        |
 | `length` | number                                            | With `degree: \rand`: number of random degrees (default: 1). With `loop:`: plays at natural rate for N beats, auto-extracting beat count from folder name                                    |
@@ -110,7 +110,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 - `control` (chan, ctlNum, value): Sends a MIDI CC message immediately.
 - `chorus`: Plays a saved chorus.
 - `chop`: (dur: Integer | Nil, drop: Integer)Slices and repeats part of the beat in short bursts. Called with no arguments, it toggles: applies the default chop if none is active, disables it otherwise. Pass `0` to always disable.
-- `gui`: Opens a gui window with pattern sliders. Once open, it updates automatically.
+- `gui` (atMouse: boolean): Opens a gui window with pattern sliders. Once open, it updates automatically. With `atMouse: true` it opens at the mouse position.
 - `mixer`: Opens an `NdefMixer` instance, always on top, and assigns it to the `~mixer` variable.
 - `pause` (id: symbol): Pauses a specific pattern.
 - `release` (time: nil | number): Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.
@@ -403,7 +403,8 @@ They can be used directly with symbols methods and binary operator syntax:
 And we can get and set synth controls:
 
 ```
-\a.edit; // open NdefGui editor
+\a.edit; // open NdefGui editor at the mouse position
+\a.edit(atMouse: false); // open it wherever NdefGui defaults to
 \a.get; // show user-facing controls
 \a.get(\amp); // get a specific control value
 \a.set(\amp, 1); // non-quantified set

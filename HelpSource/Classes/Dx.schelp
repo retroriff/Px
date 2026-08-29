@@ -176,7 +176,7 @@ Dx.loadPresets;
 ::
 
 method:: use
-Switches to a different drum machine type. Existing patterns are migrated to the new machine.
+Switches to a different drum machine type. Existing patterns are migrated to the new machine. Returns the instruments available in the new machine; called with no argument it returns the active drum machine.
 
 argument:: newDrumMachine
 Drum machine folder name or short alias (e.g., 909 or \RolandTR909).

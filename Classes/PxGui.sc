@@ -1,12 +1,12 @@
 + Px {
-  *gui {
+  *gui { |atMouse = false|
     if (window.notNil) {
       ^window.close;
     };
 
     window = Window(
       "🪩 The music was new, black polished chrome, and came over the summer, like liquid night.",
-      Rect(0, Window.screenBounds.height, this.prGenerateWindowWidth, windowHeight)
+      this.prWindowBounds(atMouse)
     )
     .alwaysOnTop_(true)
     .background_(
@@ -277,6 +277,36 @@
     if (this.prVisiblePatterns.size > 0)
     { ^windowWidth }
     { ^windowHeight }
+  }
+
+  // Top-left corner for a window of the given size placed at the cursor.
+  // Window bounds use a bottom-left origin while the cursor is reported from
+  // the top-left, so the y coordinate has to be flipped. The flip cancels out
+  // for cursors outside the primary screen, but clamping would drag the window
+  // back onto it — so only clamp when the cursor is on the primary screen.
+  *prMouseOrigin { |width, height|
+    var screen = Window.screenBounds;
+    var cursor = QtGUI.cursorPosition;
+    var left = cursor.x;
+    var bottom = screen.height - cursor.y - height;
+
+    if (screen.containsPoint(cursor)) {
+      left = left.clip(0, screen.width - width);
+      bottom = bottom.clip(0, screen.height - height);
+    };
+
+    ^Point(left, bottom);
+  }
+
+  *prWindowBounds { |atMouse|
+    var width = this.prGenerateWindowWidth;
+    var origin;
+
+    if (atMouse.not) { ^Rect(0, Window.screenBounds.height, width, windowHeight) };
+
+    origin = this.prMouseOrigin(width, windowHeight);
+
+    ^Rect(origin.x, origin.y, width, windowHeight);
   }
 
   *prGetAmp { |amp|

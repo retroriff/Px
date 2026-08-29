@@ -7,10 +7,19 @@
 
   doesNotUnderstand {}
 
-  edit {
-    if (this.prNdefExists)
-    { Ndef(this).edit }
+  edit { |atMouse = true|
+    var gui, bounds, origin;
+
+    if (this.prNdefExists.not)
     { ^this.prNdefNotFound };
+
+    gui = Ndef(this).edit;
+
+    if (atMouse) {
+      bounds = gui.parent.bounds;
+      origin = Px.prMouseOrigin(bounds.width, bounds.height);
+      gui.moveTo(origin.x, origin.y);
+    };
   }
 
   free {

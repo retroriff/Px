@@ -232,11 +232,14 @@ Cx {
 
   *prHandlePad { |row|
     var action = row[\action];
+    var args = row[\args];
 
     if (debug == true)
     { ("🎛️ pad" + row[\type] + row[\num] + "→ Px." ++ action).postln };
 
-    { Px.perform(action) }.defer;
+    if (args.isNil)
+    { { Px.perform(action) }.defer }
+    { { Px.performWithEnvir(action, args) }.defer };
   }
 
   *prPerform { |id, param, value|

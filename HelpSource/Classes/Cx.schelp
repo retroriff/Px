@@ -50,12 +50,16 @@ controls:
 pads:
   - num: 36                   # CC or note number
     type: note                # cc (default) | note
-    action: play              # any zero-arg Px class method
+    action: play              # any Px class method
+    args:                     # optional: keyword arguments for the action
+      atMouse: true
 ::
 
 Slot number = position in the code::controls:: list. Encoder in slot N targets the Nth pattern in code::Px.prSortedPatternIds:: unless a code::patternId:: is pinned in the row or via code::Cx.assign(slot, id)::.
 
 Pads fire on rising edge — CC value > 0, or MIDI note-on. Use code::type: note:: for controllers that send pads as note messages instead of CCs. The legacy code::cc: N:: field is still accepted as an alias for code::num: N::.
+
+The optional code::args:: mapping passes keyword arguments to the action — keys that the method does not declare are ignored. For example, code::action: gui:: with code::atMouse: true:: opens link::Classes/Px#gui:: at the mouse position.
 
 subsection:: Encoder Modes
 

@@ -86,7 +86,7 @@ Fx {
     chains.clear;
   }
 
-  *delay { |mix = 0.3, delaytime = 0.25, delayfeedback = 0.4|
+  *delay { |mix = 0.2, delaytime = 0.25, delayfeedback = 0.4|
     var postArgs = "delaytime:" +  delaytime + "delayfeedback:" + delayfeedback;
     this.prAddEffect(\delay, mix, [delaytime, delayfeedback], postArgs);
   }
@@ -185,7 +185,7 @@ Fx {
     this.prAddEffect(\phaser, mix, [rate, depth], postArgs);
   }
 
-  *reverb { |mix = 0.5, room = 0.7, size = 0.5|
+  *reverb { |mix = 0.2, room = 0.7, size = 0.5|
     var postArgs = "room:" +  room + "size:" + size;
     this.prAddEffect(\reverb, mix, [room, size], postArgs);
   }
@@ -198,7 +198,7 @@ Fx {
     presetsPath = path;
   }
 
-  *space { |mix = 0.2, fb = 0.95|
+  *space { |mix = 0.1, fb = 0.95|
     var postArgs = "fb:" + fb;
 
     if (fb == inf)

@@ -87,8 +87,8 @@
     this.prDebouncer.enqueue(pairs);
   }
 
-  gui {
-    AppClock.sched(0, { Px.gui; nil })
+  gui { |atMouse = false|
+    AppClock.sched(0, { Px.gui(atMouse); nil })
   }
 
   human { |delay|

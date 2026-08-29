@@ -160,7 +160,7 @@ Dx : Px {
 
     Dx.use(folders[randomIndex]);
     instruments = this.instruments;
-    ^("🎲 Drum machine:" + folders[randomIndex] ++ ". Instruments: " + instruments.join(", "));
+    ^("🎲 Drum machine:" + folders[randomIndex] ++ ". Instruments:" + instruments.join(", "));
   }
 
 
@@ -259,6 +259,8 @@ Dx : Px {
     };
 
     this.prApplyActiveFx;
+
+    ^("🥁 Instruments:" + this.instruments.join(", "));
   }
 
   *vol { |amp|

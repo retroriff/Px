@@ -57,7 +57,7 @@
     drumMachinesList = EZListView(
       parentView: firstCol,
       bounds: 200@300,
-      globalAction: { |ez| Dx.use(folders[ez.value]) },
+      globalAction: { |ez| Dx.use(folders[ez.value]).postln },
       items: folders,
       initVal: folders[0],
       initAction: false
@@ -83,7 +83,7 @@
     .states_([["Random", Color.white, linkColor]])
     .action_({
       var idx;
-      this.shuffle;
+      this.shuffle.postln;
       idx = this.prGetDrumMachinesListIndex(folders);
       drumMachinesList.value = idx;
     })

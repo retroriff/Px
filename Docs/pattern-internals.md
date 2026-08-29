@@ -13,7 +13,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 - **Effects** - fx, fade, chop, reverb
 - **MIDI** - chan, midiout, midicmd, midinote
 - **Samples** - loop, play, file
-- **Internal state** - rhythmBeats, totalBeats, solo
+- **Internal state** - ampBeat, rhythmBeats, totalBeats, solo
 
 ### Key Pattern Dictionary Keys
 
@@ -27,6 +27,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 **Rhythm (beats and fills):**
 - `pattern[\beat]` - Trigger beat generation
 - `pattern[\beatSet]` - Custom 16-step array
+- `pattern[\ampBeat]` - Beat/fill amplitude sequence actually played (swapped into `\amp` and removed before Pdef creation)
 - `pattern[\rhythmBeats]` - Generated beat array (stored after creation, removed before Pdef creation)
 - `pattern[\totalBeats]` - Combined beat used by fill patterns (removed before Pdef creation)
 - `pattern[\fill]` - Invert previous pattern's beat
@@ -90,7 +91,25 @@ snapshot of it, so `fill` and the fill cascade compare against a stable rhythm. 
 snapshotted the same way. Exception: `seed: \rand` is never snapshotted — `\rhythmBeats` keeps the
 raw pattern object, which is why it never cascades.
 
-**Implementation:** See `PxBeats.prCreateBeat()`, `PxBeats.prCreateRhythmBeat()` in `Classes/PxBeats.sc`
+### Amp and Beats
+
+`pattern[\amp]` always holds the **user's value** (number or Pattern); the generated amplitude
+sequence lives in `pattern[\ampBeat]`, which `prCreatePdef` swaps into `\amp` when building the
+Pbind. Keeping the source separate makes re-evaluation idempotent — `last[id]` is the same
+dictionary that gets reprocessed on every edit, so a generated sequence stored back into `\amp`
+would be treated as user input the next time around. It also lets the GUI slider and the Cx
+encoder read and rescale the value the user actually wrote (`PxGui.prGetAmp`, `Cx.prExtractScalar`).
+
+A **numeric** amp is the peak: the beat fills its active steps with it.
+
+A **Pattern** amp (`amp: [0, 0.3].pwrand([0.5, 0.5])`) supplies the value of each hit instead. The
+beat is still generated from the pattern's max (`Px.prExtractAmpMax`) so `\rhythmBeats` and the
+fill cascade keep working on real amp values, then `PxBeats.prApplyAmpPattern` wraps the two in a
+`Prout` that shares a single amp stream and pulls from it **only on hits** — `0` steps and `Rest`
+steps pass through untouched. So `amp: [0.3, 0.1].pseq` alternates across consecutive hits rather
+than across grid steps, and a `0` in the amp pattern silences that hit, thinning the rhythm.
+
+**Implementation:** See `PxBeats.prCreateBeat()`, `PxBeats.prCreateRhythmBeat()`, `PxBeats.prApplyAmpPattern()` in `Classes/PxBeats.sc`
 
 ### Fill Mechanics
 

@@ -32,8 +32,8 @@ Lx : Px {
 
     meterFunc = OSCFunc({ |msg|
       var channel = msg[2].asInteger;
-      var peakL = msg[3];
-      var peakR = msg[5];
+      var peakL = msg[3] ?? 0;
+      var peakR = msg[5] ?? peakL;
 
       if (channel >= 0 and: { channel < meterLevels.size })
       { meterLevels[channel] = max(peakL, peakR) };
@@ -376,10 +376,7 @@ Lx : Px {
     fork {
       Server.default.sync;
 
-      Ndef(id).filter(100, { |in|
-        SendPeakRMS.kr(in, 20, 0.3, "/lxMeter", channel);
-        in;
-      });
+      this.prAddMeter(id, channel, "/lxMeter");
     };
   }
 

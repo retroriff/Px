@@ -49,8 +49,8 @@ Px {
 
     meterFunc = OSCFunc({ |msg|
       var meterId = msg[2].asInteger;
-      var peakL = msg[3];
-      var peakR = msg[5];
+      var peakL = msg[3] ?? 0;
+      var peakR = msg[5] ?? peakL;
       var patternId = meterIdMap[meterId];
 
       if (patternId.notNil)
@@ -123,10 +123,7 @@ Px {
       fork {
         Server.default.sync;
 
-        Ndef(pattern[\id]).filter(100, { |in|
-          SendPeakRMS.kr(in, 20, 0.3, "/pxMeter", meterId);
-          in;
-        });
+        this.prAddMeter(pattern[\id], meterId, "/pxMeter");
       };
     };
 
@@ -140,6 +137,18 @@ Px {
       this.prRhythmChanged(previousRhythm, currentRhythm);
     })
     { this.prReevaluateFillDependents(pattern) };
+  }
+
+  *prAddMeter { |id, meterId, cmdName|
+    var ndef = Ndef(id);
+
+    if (ndef.isNeutral)
+    { ndef.initBus(\audio, 2) };
+
+    ndef.filter(100, { |in|
+      SendPeakRMS.kr(in, 20, 0.3, cmdName, meterId);
+      in;
+    });
   }
 
   *prCreateAmp { |pattern|

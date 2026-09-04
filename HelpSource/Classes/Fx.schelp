@@ -161,13 +161,13 @@ Fx(\px).delay(0.3, 4, 3);
 ::
 
 method:: dist
-Distortion effect based on SuperDirt's dirt_distort.
+Electric guitar style distortion: the signal is tightened with a high-pass, pushed through cascaded soft-clipping gain stages and voiced with a speaker cabinet EQ.
 
 argument:: mix
 Wet/dry mix (0-1). Default: 0.5.
 
 argument:: drive
-Drive amount (0-1). Default: 0.5.
+Pre-gain into the clipping stages (0-1). Low values give a warm overdrive, high values a saturated amp tone. Default: 0.5.
 
 code::
 Fx(\px).dist(0.6, 0.8);

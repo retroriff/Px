@@ -76,7 +76,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | `compressor` | mix?: range 0..1, thresh?, ratio?, gain?        | Dynamic range compressor     |
 | `crush`      | mix?: range 0..1, bits?: number, rate?: number  | Bit crusher                  |
 | `delay`      | mix?: range 0..1, delaytime?, delayfeedback?    | Delay effect                 |
-| `dist`       | mix?: range 0..1, drive?: number                | Distortion                   |
+| `dist`       | mix?: range 0..1, drive?: number                | Guitar amp style distortion  |
 | `duck`       | mix?: range 0..1, thresh?: number, src?: Symbol | Sidechain compression        |
 | `flanger`    | mix?: range 0..1                                | Flanger effect               |
 | `freqShift`  | mix?: range 0..1, freq?, phase?                 | Frequency shifter            |

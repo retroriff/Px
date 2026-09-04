@@ -1,7 +1,7 @@
 Fx {
-  classvar <>awaitingSync;
   classvar <>chains;
   classvar <effects;
+  classvar <generation;
   classvar <>pendingFx;
   classvar <>presetsPath;
   classvar <proxyName;
@@ -11,9 +11,9 @@ Fx {
   classvar <vstPresets;
 
   *initClass {
-    awaitingSync = false;
     chains = Dictionary.new;
     effects = Dictionary.new;
+    generation = 0;
     pendingFx = Dictionary.new;
     prSuppressPrint = false;
     skipFlush = false;
@@ -22,11 +22,12 @@ Fx {
     this.loadEffects;
 
     CmdPeriod.add {
-      Fx.awaitingSync = false;
-      Fx.pendingFx.clear;
-      Fx.prSuppressPrint = true;
+      generation = generation + 1;
+      pendingFx.clear;
+      PxDebouncer.prResetSyncs;
+      prSuppressPrint = true;
       this.clear;
-      Fx.prSuppressPrint = false;
+      prSuppressPrint = false;
     };
   }
 
@@ -323,22 +324,28 @@ Fx {
 
     if (skipFlush.not and: { isSynced.not }) {
       var pendingProxy = proxyName;
+      var pendingIds = Px.prGroupIds(pendingProxy) ?? { [pendingProxy] };
 
-      this.prMarkPending(pendingProxy, fx);
+      this.prMarkPending(pendingIds, fx);
 
       if (this.prNeedsSync) {
+        var capturedGeneration = generation;
+
         fork {
           Server.default.sync;
-          awaitingSync = false;
-          proxyName = pendingProxy;
-          this.prAddEffect(fx, mix, args, postArgs, true);
-          this.prUnmarkPending(pendingProxy, fx);
+
+          if (capturedGeneration == generation) {
+            proxyName = pendingProxy;
+            this.prAddEffect(fx, mix, args, postArgs, true);
+          };
+
+          this.prUnmarkPending(pendingIds, fx);
         };
 
         ^this;
       };
 
-      this.prUnmarkPending(pendingProxy, fx);
+      this.prUnmarkPending(pendingIds, fx);
     };
 
     groupIds = Px.prGroupIds(proxyName);
@@ -541,10 +548,9 @@ Fx {
   }
 
   *prNeedsSync {
-    if (PxDebouncer.flush > 0)
-    { awaitingSync = true };
+    PxDebouncer.flush;
 
-    ^awaitingSync;
+    ^PxDebouncer.pendingSyncs > 0;
   }
 
   *prFxNames { |id|
@@ -559,24 +565,24 @@ Fx {
     ^pendingFx[id] ?? { Set.new };
   }
 
-  *prMarkPending { |id, fx|
-    (Px.prGroupIds(id) ?? { [id] }).do { |each|
-      if (pendingFx[each].isNil)
-      { pendingFx[each] = Set.new };
+  *prMarkPending { |ids, fx|
+    ids.do { |id|
+      if (pendingFx[id].isNil)
+      { pendingFx[id] = Set.new };
 
-      pendingFx[each].add(fx);
+      pendingFx[id].add(fx);
     };
   }
 
-  *prUnmarkPending { |id, fx|
-    (Px.prGroupIds(id) ?? { [id] }).do { |each|
-      var names = pendingFx[each];
+  *prUnmarkPending { |ids, fx|
+    ids.do { |id|
+      var names = pendingFx[id];
 
       if (names.notNil) {
         names.remove(fx);
 
         if (names.isEmpty)
-        { pendingFx.removeAt(each) };
+        { pendingFx.removeAt(id) };
       };
     };
   }

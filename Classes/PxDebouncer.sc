@@ -1,5 +1,6 @@
 PxDebouncer {
   classvar <>current;
+  classvar <pendingSyncs;
   classvar <queue;
   var <>fxList;
   var <>isFullDeclaration;
@@ -9,6 +10,7 @@ PxDebouncer {
   var scheduled;
 
   *initClass {
+    pendingSyncs = 0;
     queue = IdentitySet.new;
   }
 
@@ -26,13 +28,13 @@ PxDebouncer {
   }
 
   *flush {
-    var committed = queue.copy;
-
-    committed.do { |debouncer|
+    queue.copy.do { |debouncer|
       debouncer.commit
     };
+  }
 
-    ^committed.size;
+  *prResetSyncs {
+    pendingSyncs = 0;
   }
 
   commit {
@@ -59,10 +61,17 @@ PxDebouncer {
     if (pattern.notNil and: { Px.last[pattern[\id]].notNil }) {
       var capturedId = pattern[\id];
       var capturedPreviousFx = Fx.prFxNames(capturedId);
+      var capturedGeneration = Fx.generation;
+
+      pendingSyncs = pendingSyncs + 1;
 
       fork {
         Server.default.sync;
-        Px.prApplyFx(capturedId, capturedFxList, capturedIsFullDeclaration, capturedPreviousFx);
+
+        if (capturedGeneration == Fx.generation) {
+          Px.prApplyFx(capturedId, capturedFxList, capturedIsFullDeclaration, capturedPreviousFx);
+          pendingSyncs = (pendingSyncs - 1).max(0);
+        };
       };
     };
   }

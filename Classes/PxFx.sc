@@ -1,12 +1,11 @@
 + Px {
-  *prApplyFx { |id, fxList, isFullDeclaration|
-    var chain, previousFxNames, currentFxNames;
+  *prApplyFx { |id, fxList, isFullDeclaration, previousFxNames|
+    var currentFxNames;
 
     if (id.isNil) { ^this };
 
     Fx.skipFlush = true;
-    chain = Fx.chains[id];
-    previousFxNames = if (chain.notNil) { chain.fxNames.asSet } { Set.new };
+    previousFxNames = previousFxNames ?? { Fx.prFxNames(id) };
 
     if (fxList.isNil or: { fxList.size == 0 }) {
 
@@ -25,7 +24,7 @@
     currentFxNames = fxList.collect { |entry| entry[0] }.asSet;
 
     if (isFullDeclaration and: { previousFxNames.notEmpty }) {
-      (previousFxNames -- currentFxNames).do { |fxName|
+      previousFxNames.difference(currentFxNames).do { |fxName|
         Fx.prDisableFx(fxName, immediate: true);
       };
     };

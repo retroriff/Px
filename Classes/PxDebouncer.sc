@@ -26,9 +26,13 @@ PxDebouncer {
   }
 
   *flush {
-    queue.copy.do { |debouncer| 
+    var committed = queue.copy;
+
+    committed.do { |debouncer|
       debouncer.commit
     };
+
+    ^committed.size;
   }
 
   commit {
@@ -44,6 +48,7 @@ PxDebouncer {
 
     pending.clear;
     fxList = List.new;
+    isFullDeclaration = false;
     queue.remove(this);
 
     if (this === current)
@@ -53,10 +58,11 @@ PxDebouncer {
 
     if (pattern.notNil and: { Px.last[pattern[\id]].notNil }) {
       var capturedId = pattern[\id];
+      var capturedPreviousFx = Fx.prFxNames(capturedId);
 
       fork {
         Server.default.sync;
-        Px.prApplyFx(capturedId, capturedFxList, capturedIsFullDeclaration);
+        Px.prApplyFx(capturedId, capturedFxList, capturedIsFullDeclaration, capturedPreviousFx);
       };
     };
   }

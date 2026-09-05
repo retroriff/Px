@@ -2,6 +2,7 @@ Fx {
   classvar <>chains;
   classvar <effects;
   classvar <generation;
+  classvar <mixStreams;
   classvar <>pendingFx;
   classvar <>presetsPath;
   classvar <proxyName;
@@ -14,6 +15,7 @@ Fx {
     chains = Dictionary.new;
     effects = Dictionary.new;
     generation = 0;
+    mixStreams = Dictionary.new;
     pendingFx = Dictionary.new;
     prSuppressPrint = false;
     skipFlush = false;
@@ -91,6 +93,7 @@ Fx {
     };
 
     chains.clear;
+    mixStreams.clear;
   }
 
   *delay { |mix = 0.2, delaytime = 0.25, delayfeedback = 0.4|
@@ -237,6 +240,7 @@ Fx {
     };
 
     chains.removeAt(id);
+    mixStreams.removeAt(id);
   }
 
   *tremolo { |mix = 0.6, rate = 1|
@@ -498,6 +502,7 @@ Fx {
     };
 
     this.prFreeModulationNdefs(fx);
+    this.prClearMixStreams(proxyName, [fx]);
 
     chain.args.removeAt(fx);
     chain.mixer.removeAt(fx);
@@ -642,6 +647,60 @@ Fx {
     };
   }
 
+  *prAdvanceMixStreams { |id|
+    var streams = mixStreams[id];
+
+    if (streams.isNil) { ^this };
+
+    streams.keysValuesDo { |fx, stream|
+      var mix = stream.next;
+
+      if (mix.isNumber)
+      { this.prSetMix(id, fx, mix) };
+    };
+  }
+
+  *prClearMixStreams { |id, fxNames|
+    var streams = mixStreams[id];
+
+    if (streams.isNil) { ^this };
+
+    if (fxNames.isNil)
+    { streams.clear }
+    { fxNames.do { |fx| streams.removeAt(fx) } };
+
+    if (streams.isEmpty)
+    { mixStreams.removeAt(id) };
+  }
+
+  *prHasMixStream { |id, fx|
+    var streams = mixStreams[id];
+
+    ^streams.notNil and: { streams[fx].notNil };
+  }
+
+  *prRegisterMixStream { |id, fx, pattern|
+    var streams = mixStreams[id];
+
+    if (streams.isNil) {
+      streams = Dictionary.new;
+      mixStreams[id] = streams;
+    };
+
+    streams[fx] = pattern.asStream;
+  }
+
+  *prSetMix { |id, fx, mix|
+    var chain = chains[id];
+    var index = chain !? { chain.effects[fx] };
+
+    if (index.isNil) { ^this };
+
+    mix = mix.clip(0, 1);
+    chain.mixer[fx] = mix;
+    Ndef(id).set((\wet ++ index).asSymbol, mix);
+  }
+
   *prSetMixerValue { |fx, mix|
     var chain = chains[proxyName];
     var index = this.prGetIndex(fx);
@@ -649,6 +708,11 @@ Fx {
 
     if (index.isNil)
     { ^("🔴".scatArgs(("\\" ++ fx), "FX to mix not found")) };
+
+    if (this.prHasMixStream(proxyName, fx)) {
+      chain.mixer[fx] = mix;
+      ^Ndef(proxyName).set(wetIndex, mix);
+    };
 
     if (mix != chain.mixer[fx]) {
       var from = chain.mixer[fx] ? 1;

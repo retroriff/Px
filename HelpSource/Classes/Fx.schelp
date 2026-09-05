@@ -393,6 +393,24 @@ note::
 Always wrap UGens in code::{ }:: (a Function). Passing a bare UGen like code::SinOsc.kr(0.5):: without curly braces will produce an error.
 ::
 
+subsection:: Pattern-driven mix
+
+The mix of an effect can be driven by a Pattern when the effect is declared from a pattern, so the wet amount advances one step per event.
+
+code::
+// Delay alternates fully wet / dry on every event
+11 i: \saw dur: 0.25 note: [\c3, \c3].pseq delay: Pseq([1, 0], inf);
+
+// Random reverb amount per event
+11 i: \saw dur: 0.25 reverb: Pwhite(0, 0.6, inf);
+::
+
+The effect starts at mix code::0:: and takes its value from the first event, without the usual mix ramp. Rests advance the stream too, and the stream is restarted whenever the pattern is redeclared. Only the mix (first argument) accepts a Pattern; the remaining arguments take numbers or Functions. Calling an code::Fx:: method directly with a Pattern is not supported, since there is no event stream to advance it.
+
+code::
+Fx(\px).delay(Pseq([1, 0], inf));  // 🔴 Invalid mix value
+::
+
 subsection:: Management
 
 method:: clear

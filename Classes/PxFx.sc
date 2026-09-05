@@ -7,6 +7,9 @@
     Fx.skipFlush = true;
     previousFxNames = previousFxNames ?? { Fx.prFxNames(id) };
 
+    if (isFullDeclaration)
+    { Fx.prClearMixStreams(id) };
+
     if (fxList.isNil or: { fxList.size == 0 }) {
 
       if (isFullDeclaration and: { previousFxNames.notEmpty }) {
@@ -31,11 +34,28 @@
 
     Fx.prSuppressPrint = true;
     fxList.do { |entry|
-      Fx.perform(entry[0], *entry[1]);
+      Fx.perform(entry[0], *this.prResolveFxMix(id, entry));
     };
     Fx.prSuppressPrint = false;
 
     Fx.skipFlush = false;
+  }
+
+  *prResolveFxMix { |id, entry|
+    var fx = entry[0];
+    var args = entry[1];
+    var mix = args[0];
+
+    if (mix.isKindOf(Pattern).not) {
+      Fx.prClearMixStreams(id, [fx]);
+      ^args;
+    };
+
+    Fx.prRegisterMixStream(id, fx, mix);
+    args = args.copy;
+    args[0] = 0;
+
+    ^args;
   }
 }
 
@@ -118,6 +138,11 @@
 
   prFx { |fx, args|
     var debouncer = this.prDebouncer;
+    var id = debouncer.pattern !? { |pattern| pattern[\id] };
+
+    if (args[0].isKindOf(Pattern) and: { id.notNil })
+    { debouncer.enqueue([\fxMix, Pfunc({ Fx.prAdvanceMixStreams(id); 0 })]) };
+
     args = args.reject { |v| v.isNil };
     debouncer.fxList.add([fx, args]);
     debouncer.prSchedule;

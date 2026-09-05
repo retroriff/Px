@@ -68,7 +68,7 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ### FX integer pattern methods
 
-These methods add effects directly to a pattern's proxy via the Fx class. They accept the same arguments as the corresponding `Fx` methods. Effects are automatically disabled when removed from a full pattern declaration.
+These methods add effects directly to a pattern's proxy via the Fx class. They accept the same arguments as the corresponding `Fx` methods. Effects are automatically disabled when removed from a full pattern declaration. The mix also accepts a Pattern, advancing one step per event (`delay: Pseq([1, 0], inf)`).
 
 | Name         | Arguments                                       | Description                  |
 | ------------ | ----------------------------------------------- | ---------------------------- |

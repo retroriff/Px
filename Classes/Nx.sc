@@ -13,7 +13,7 @@ Nx {
   *initClass {
     chords = Dictionary.new;
     circleOfFifths = [\C, \G, \D, \A, \E, \B, \Fs, \Db, \Ab, \Eb, \Bb, \F];
-    defaultOctave = 3;
+    defaultOctave = 2;
     qualityAliases = Dictionary[
       \add9 -> "add9", \aug -> "aug", \dim -> "dim", \dom7 -> "dom7",
       \m7 -> "m7", \maj7 -> "maj7", \major -> "maj", \minor -> "m",
@@ -99,6 +99,15 @@ Nx {
 
   *midiRoot {
     ^currentChord[\midiRoot];
+  }
+
+  *parse { |chordName|
+    var parsed = this.prParseChordName(chordName.asSymbol);
+
+    if (parsed.isNil or: { chords.includesKey(parsed[\quality]).not })
+    { ^nil };
+
+    ^parsed;
   }
 
   *root {
@@ -298,7 +307,7 @@ Nx {
   *prMapQuality { |qualityStr|
     if (qualityStr.isEmpty) { ^"maj" };
 
-    ^qualityStr;
+    ^qualityAliases[qualityStr.asSymbol] ?? { qualityStr };
   }
 
   *prBuildChordName { |tonicSym, qualityStr|

@@ -180,7 +180,7 @@ Custom pattern player designed to handle degrees, and can send MIDI messages bas
 | -------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `arp`    | None                                                                | Creates a very basic arpegio                                             |
 | `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                                                             |
-| `note`   | number \| symbol \| array \| Pattern                                | MIDI note. Accepts symbol notation: `\c3` (60), `\cs3` (61), `\db3` (61) |
+| `note`   | number \| symbol \| array \| Pattern                                | MIDI note. Lowercase symbols are notes: `\c3` (60), `\cs3` (61), `\db3` (61). Uppercase symbols are chords, resolved at octave 2: `\Cmaj` ([48, 52, 55]), `\Am7` ([57, 60, 64, 67]) |
 | `octave` | number \| array \| [\beats, octave: number]                         | Can create a sequence or a random beat                                   |
 | `root`   | number \| array                                                     | Sets the root value                                                      |
 
@@ -321,15 +321,17 @@ A class for managing musical chord data. It dynamically builds chords by combini
 
 ```js
 Nx.set(\EmAdd9);
-Nx.midinotes;    // -> [52, 55, 59, 66] (octave 3)
-Nx.degrees;      // -> [0, 2, 4, 7]
+Nx.midinotes;    // -> [52, 55, 59, 66] (octave 2)
+Nx.degrees;      // -> [0, 2, 4, 8]
 Nx.scale;        // -> \minor
 
 // Work with octaves
-Nx.midinotes(4); // -> [64, 67, 71, 78] (octave 4, temporary)
+Nx.midinotes(4); // -> [76, 79, 83, 90] (octave 4, temporary)
 Nx.octave = 5;
-Nx.midinotes;    // -> [76, 79, 83, 90] (octave 5, permanent)
+Nx.midinotes;    // -> [88, 91, 95, 102] (octave 5, permanent)
 ```
+
+Octave numbering follows the same C3 = 60 standard as `note:` symbol notation, so `Nx.midinotes(3)` is rooted on middle C. Chords default to octave 2.
 
 Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (chord qualities).
 
@@ -339,12 +341,12 @@ Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (
 | ---------------- | --------------------------- | ---------- | --------------------------------------------------- |
 | `all`            | None                        | Dictionary | Returns all chord data in a single Dictionary       |
 | `chord`          | None                        | Symbol     | Returns current chord name                          |
-| `chordQualities` | None                        | Dictionary | Returns all loaded chord qualities                  |
+| `chords`         | None                        | Dictionary | Returns all loaded chord qualities                  |
 | `degrees`        | None                        | Array      | Returns scale degrees array                         |
-| `key`            | None                        | Integer    | Returns MIDI key (base note)                        |
 | `loadChords`     | None                        | None       | Reloads chord data from `Score/`                    |
 | `midinotes`      | octave?: Integer (-1 to 9)  | Array      | Returns MIDI notes, optionally transposed           |
-| `octave`         | None                        | Integer    | Gets/sets current octave (default: 3, range: -1..9) |
+| `octave`         | None                        | Integer    | Gets/sets current octave (default: 2, range: -1..9) |
+| `parse`          | chord: Symbol               | Dictionary | Resolves a chord name to its tonic and quality, or `nil` |
 | `root`           | None                        | Integer    | Returns root value (pitch class 0-11)               |
 | `scale`          | None                        | Symbol     | Returns scale symbol                                |
 | `set`            | chord: Symbol, octave?: Int | None       | Sets current chord, optionally changes octave       |

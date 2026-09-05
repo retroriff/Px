@@ -34,6 +34,39 @@ code::
 1 i: \sine dur: 0.5 note: [60, 64, 67].pseq;
 ::
 
+Notes can also be written as symbols, following the C3 = 60 standard: a lowercase note name, an optional sharp (code::s::) or flat (code::b::), and an octave number.
+
+code::
+1 i: \sine dur: 0.5 note: [\c3, \e3, \g3].pseq;
+::
+
+section:: Chords
+
+An code::uppercase:: symbol is a chord: a tonic (code::C::, code::Cs::, code::Db::, ...) followed by a quality from link::Classes/Nx::. Omitting the quality means major. Octave numbering is the same C3 = 60 standard as note symbols, and a chord with no octave in its name resolves at octave 2.
+
+code::
+1 i: \piano dur: 1 note: \Cmaj;   // [48, 52, 55]
+1 i: \piano dur: 1 note: \Am7;    // [57, 60, 64, 67]
+::
+
+code::octave:: is the way to move a chord — as a transposition offset, exactly as with any other code::note:: value:
+
+code::
+1 i: \piano dur: 1 note: \Cmaj octave: 1;   // [60, 64, 67]
+::
+
+Wrap a chord sequence in code::.pseq:: to play one chord per event. A parallel code::octave:: sequence gives each chord its own offset:
+
+code::
+1 i: \piano dur: 1 note: [\Cmaj, \Am].pseq octave: [1, 0].pseq;
+::
+
+Without code::.pseq::, a plain array stacks into a single simultaneous voicing, so chords and notes can be combined:
+
+code::
+1 i: \piano dur: 1 note: [\Cmaj, \g3];   // [48, 52, 55, 67]
+::
+
 section:: Octave Behavior
 
 The code::octave:: parameter works differently depending on whether you use code::degree:: or code::note:::

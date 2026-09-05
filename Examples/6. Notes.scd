@@ -14,6 +14,13 @@ Px.shuffle;
 // We can send midinotes directly, combined with octave:
 1 i: \wobble dur: 0.5 note: [56, 53, 60, 53, 60, 63].pseq octave: [-2, -1];
 
+// Notes can be written as lowercase symbols, following the C3 = 60 standard:
+1 i: \rhodes dur: 0.5 amp: 0.5 note: [\c3, \eb3, \g3, \bb3].pseq;
+
+// Uppercase symbols are chords, and octave transposes them:
+1 i: \rhodes dur: 1 amp: 0.5 legato: 1 note: \Cmaj7;
+1 i: \rhodes dur: 1 amp: 0.5 legato: 1 note: [\Cmaj7, \Am7, \Dm7, \G7sus4Add13].pseq octave: [0, -1].pseq;
+
 // Create arpegios:
 1 i: \rhodes dur: 1 legato: 4 amp: 0.5 octave: 3 degree: \rand scale: \minor length: 3 arp: 1;
 Fx(\px).gverb(0.2).hpf(0.2);

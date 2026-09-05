@@ -795,7 +795,11 @@ Pbind(
 || Holds MIDI notes (1) or releases them (0).
 
 ## note
-|| Sets MIDI notes. Accepts integers, symbol notation, arrays, or Patterns. Symbol notation uses lowercase note names with optional sharp (code::s::) or flat (code::b::) and octave number:
+|| Sets MIDI notes. Accepts integers, symbol notation, arrays, or Patterns.
+
+Symbol notation is case sensitive: strong::lowercase:: symbols are single notes, strong::uppercase:: symbols are chords.
+
+A note is a lowercase note name with an optional sharp (code::s::) or flat (code::b::) and an octave number, following the C3 = 60 standard:
 code::
 // Integer
 1 i: \wobble dur: 0.5 note: 60;
@@ -811,6 +815,27 @@ code::
 // With octave transposition
 1 i: \wobble dur: 0.5 note: [56, 53, 60, 53, 60, 63].pseq octave: [-2, -1];
 ::
+
+A chord is an uppercase tonic (code::C::, code::Cs::, code::Db::, ...) followed by a quality from link::Classes/Nx::. An omitted quality means major. Chords resolve at octave 2, and code::octave:: transposes from there:
+code::
+// Chord notation
+1 i: \piano dur: 1 note: \Cmaj;        // [48, 52, 55]
+1 i: \piano dur: 1 note: \C;           // [48, 52, 55], quality defaults to major
+1 i: \piano dur: 1 note: \Am7;         // [57, 60, 64, 67]
+1 i: \piano dur: 1 note: \Ebmaj7;      // [51, 55, 58, 62]
+1 i: \piano dur: 1 note: \Cminor;      // [48, 51, 55], alias of \Cm
+
+// Octave transposition
+1 i: \piano dur: 1 note: \Cmaj octave: 1;   // [60, 64, 67]
+
+// Chord sequence, one octave offset per step
+1 i: \piano dur: 1 note: [\Cmaj, \Am].pseq octave: [1, 0].pseq;
+
+// A plain array stacks into a single voicing
+1 i: \piano dur: 1 note: [\Cmaj, \g3]; // [48, 52, 55, 67]
+::
+
+Available qualities are the keys of code::Nx.chords::. Unknown symbols post code::🔴 Unknown note or chord::.
 
 ## panic
 || Sends all notes off for this pattern's channel.

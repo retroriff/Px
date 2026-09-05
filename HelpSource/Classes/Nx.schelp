@@ -6,6 +6,8 @@ related:: Classes/Px, Classes/Sx, Classes/Fx
 description::
 The Nx class manages musical chord data for the link::Classes/Px:: pattern system. It dynamically builds chords by combining tonics (root notes) with chord qualities (intervals/scales), allowing generation of any chord on-the-fly. The class provides methods to access chord properties like intervals, degrees, scale type, and MIDI notes.
 
+Octave numbering follows the C3 = 60 standard, the same one used by code::note:: symbol notation in link::Classes/Px::, so code::Nx.midinotes(3):: is rooted on middle C. Chords resolve at octave 2 by default. The chord data here also backs uppercase chord symbols in patterns, e.g. code::1 i: \piano note: \Cmaj::.
+
 subsection:: Basic Usage
 
 code::
@@ -179,13 +181,13 @@ Optional octave value (Integer from -1 to 9). If provided, temporarily transpose
 
 code::
 Nx.set(\Em);
-Nx.midinotes;     // -> [52, 55, 59] (octave 3, default)
-Nx.midinotes(4);  // -> [64, 67, 71] (octave 4, temporary)
-Nx.midinotes;     // -> [52, 55, 59] (still octave 3)
+Nx.midinotes;     // -> [52, 55, 59] (octave 2, default)
+Nx.midinotes(4);  // -> [76, 79, 83] (octave 4, temporary)
+Nx.midinotes;     // -> [52, 55, 59] (still octave 2)
 
 // Change octave permanently
 Nx.octave = 5;
-Nx.midinotes;     // -> [76, 79, 83] (octave 5)
+Nx.midinotes;     // -> [88, 91, 95] (octave 5)
 ::
 
 method:: chord
@@ -205,7 +207,7 @@ Nx.root;  // -> 4
 ::
 
 method:: midiRoot
-Returns the root MIDI note number of the current chord at the default octave (3).
+Returns the root MIDI note number of the current chord at the default octave (2).
 
 code::
 Nx.set(\Em);
@@ -214,6 +216,22 @@ Nx.midiRoot;  // -> 52
 Nx.set(\C);
 Nx.midiRoot;  // -> 48
 ::
+
+method:: parse
+Resolves a chord name to its tonic and quality without changing the current chord. Quality aliases are applied, and unknown tonics or qualities return code::nil::. This is what makes uppercase chord symbols work in code::note::.
+
+argument:: chordName
+Chord name as a Symbol (e.g., \Cmaj, \Am7, \Ebmaj7).
+
+code::
+Nx.parse(\Am7);     // -> Dictionary[\tonic -> \A, \quality -> "m7"]
+Nx.parse(\C);       // -> Dictionary[\tonic -> \C, \quality -> "maj"]
+Nx.parse(\Cminor);  // -> Dictionary[\tonic -> \C, \quality -> "m"]
+Nx.parse(\c3);      // -> nil (lowercase symbols are notes, not chords)
+Nx.parse(\Xyz);     // -> nil
+::
+
+Returns:: A Dictionary with code::\tonic:: (Symbol) and code::\quality:: (String), or nil.
 
 method:: scale
 Returns the scale type of the current chord.
@@ -234,17 +252,17 @@ Nx.loadChords;
 ::
 
 method:: tonics
-Class variable containing all loaded tonics as a Dictionary. Each entry maps a tonic Symbol to an Event with code::root:: (semitone offset 0-11) and code::midiRoot:: (MIDI note number at octave 3).
+Class variable containing all loaded tonics as a Dictionary. Each entry maps a tonic Symbol to an Event with code::root:: (semitone offset 0-11) and code::midiRoot:: (MIDI note number at octave 2).
 
 code::
 Nx.tonics.keys;  // list all available tonics: C, Cs, Db, D, Ds, Eb, E, F, Fs, Gb, G, Gs, Ab, A, As, Bb, B
 ::
 
-method:: chordQualities
+method:: chords
 Class variable containing all loaded chord qualities as a Dictionary.
 
 code::
-Nx.chordQualities.keys;  // list all available chord qualities
+Nx.chords.keys;  // list all available chord qualities
 ::
 
 method:: currentChord
@@ -258,19 +276,19 @@ Nx.circleOfFifths;  // -> [\C, \G, \D, \A, \E, \B, \Fs, \Db, \Ab, \Eb, \Bb, \F]
 ::
 
 method:: octave
-Class variable for the current octave value. Can be read and written to change the octave globally. Valid range: -1 to 9. Default is 3.
+Class variable for the current octave value. Can be read and written to change the octave globally. Valid range: -1 to 9. Default is 2.
 
 code::
-Nx.octave;      // -> 3 (default)
+Nx.octave;      // -> 2 (default)
 Nx.octave = 5;  // Change to octave 5
 Nx.midinotes;   // MIDI notes transposed to octave 5
 ::
 
 method:: defaultOctave
-Class variable containing the default octave value (3). This is the reference octave for chord definitions in tonics.scd. Read-only.
+Class variable containing the default octave value (2). This is the reference octave for chord definitions in tonics.scd. Read-only.
 
 code::
-Nx.defaultOctave;  // -> 3
+Nx.defaultOctave;  // -> 2
 ::
 
 subsection:: Supported Chord Qualities
@@ -284,18 +302,18 @@ table::
 ## \maj7 || \Cmaj7 || major || [0, 4, 7, 11]
 ## \m7 || \Am7, \Em7 || minor || [0, 3, 7, 10]
 ## \m9 || \Am9, \Em9 || minor || [0, 3, 7, 10, 14]
-## \m11 || \Am11, \Em11 || minor || [0, 3, 7, 10, 17]
+## \m11 || \Am11, \Em11 || minor || [0, 3, 7, 10, 14, 17]
 ## \mAdd9 || \EmAdd9 || minor || [0, 3, 7, 14]
 ## \add4Add9 || \EAdd4Add9 || major || [0, 4, 5, 7, 14]
-## \69 || \A69 || major || [0, 2, 4, 9, 11]
+## \69 || \A69 || major || [0, 4, 7, 9, 14]
 ## \maj7Sharp11 || \Cmaj7Sharp11 || lydian || [0, 4, 7, 11, 18]
 ## \sus2AddSharp11 || \Csus2AddSharp11 || hexSus || [0, 2, 5, 7, 18]
-## \7sus4Add13 || \E7sus4Add13 || mixolydian || [0, 5, 10, 15]
+## \7sus4Add13 || \E7sus4Add13 || mixolydian || [0, 5, 7, 10, 21]
 ## \dom7 || \Cdom7, \Adom7 || mixolydian || [0, 4, 7, 10]
 ## \add9 || \Cadd9, \Aadd9 || major || [0, 4, 7, 14]
-## \aug || \Caug, \Aaug || major || [0, 4, 8]
-## \dim || \Cdim, \Adim || minor || [0, 3, 6]
-## \sus4 || \Csus4, \Asus4 || major || [0, 5, 7]
+## \aug || \Caug, \Aaug || augmented || [0, 4, 8]
+## \dim || \Cdim, \Adim || diminished || [0, 3, 6]
+## \sus4 || \Csus4, \Asus4 || hexSus || [0, 5, 7]
 ::
 
 note::
@@ -341,26 +359,26 @@ Nx.shuffle(\A, \major);  // picks major A chords
 
 // Working with octaves
 Nx.set(\Am7);
-Nx.midinotes;       // [57, 60, 64, 67] (octave 3, default)
+Nx.midinotes;       // [57, 60, 64, 67] (octave 2, default)
 
 // Temporarily transpose to octave 4
-Nx.midinotes(4);    // [69, 72, 76, 79]
-Nx.midinotes;       // [57, 60, 64, 67] (still octave 3)
+Nx.midinotes(4);    // [81, 84, 88, 91]
+Nx.midinotes;       // [57, 60, 64, 67] (still octave 2)
 
 // Permanently change octave
 Nx.octave = 5;
-Nx.midinotes;       // [81, 84, 88, 91]
+Nx.midinotes;       // [93, 96, 100, 103]
 
 // Set chord with specific octave via Nx()
 Nx(\Am7, 4);
-Nx.midinotes;       // [69, 72, 76, 79] (Am7 in octave 4)
+Nx.midinotes;       // [81, 84, 88, 91] (Am7 in octave 4)
 
 // Set chord with octave via set
 Nx.set(\E, \minor, 2);
 Nx.midinotes;       // E minor in octave 2
 
 // Reset to default
-Nx.octave = 3;
+Nx.octave = 2;
 
 // Use with Px patterns
 (

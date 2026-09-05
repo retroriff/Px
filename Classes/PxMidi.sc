@@ -72,15 +72,26 @@ TODO: MIDIOut instances
   }
 
   *prResolveNotes { |value|
-    var resolveSymbol = { |v|
-      if (v.isKindOf(Symbol)) { v.midinote } { v }
+    var resolveSymbol = { |note|
+      var resolved;
+
+      if (note.isKindOf(Symbol)) {
+        resolved = note.chordNotes ?? { note.midinote };
+
+        if (resolved.isNil)
+        { this.prPrint("🔴 Unknown note or chord: \\" ++ note) };
+
+        resolved;
+      } {
+        note;
+      };
     };
 
     if (value.isKindOf(Symbol))
-    { ^value.midinote };
+    { ^resolveSymbol.(value) };
 
     if (value.isArray)
-    { ^value.collect(resolveSymbol) };
+    { ^value.collect(resolveSymbol).flat };
 
     if (value.isKindOf(Pattern))
     { ^value.collect(resolveSymbol) };

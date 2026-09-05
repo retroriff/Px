@@ -170,6 +170,20 @@
     });
   }
 
+  chordNotes { |octave = 2|
+    var intervals, parsed, root;
+
+    parsed = Nx.parse(this);
+
+    if (parsed.isNil)
+    { ^nil };
+
+    root = (parsed[\tonic].asString.toLower ++ octave).asSymbol.midinote;
+    intervals = Nx.chords[parsed[\quality]][\intervals];
+
+    ^intervals.collect { |interval| root + interval };
+  }
+
   midinote {
     var str = this.asString;
     var idx, modifier, note, noteMap, octave;

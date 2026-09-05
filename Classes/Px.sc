@@ -1,10 +1,10 @@
 /*
+TODO: A pattern should wait the cycle is complete before starting a new cycle when it is reevaluated:
+  5 play: "v:rand" dur: 0.25 beat: 0.3 delay: 0.2 reverb: 0.3 in: 20 amp: 0.15 space: 0.2 rest: 4;
 TODO: Repeat and rest should allow that a pattern is repeated a number of times and then rest for a number of times, like: 
   909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 repeat: 2 rest: 4;
 TODO: ~playPad and ~playChord should be able to switch octaves
-TODO; Note and degree should support chords using uppercase?
 TODO: Rand degree from old examples files doesn't work anymore, should we deprecate it? 909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 degree: \rand length: 3;
-TODO: Midinote notation in uppercase return chords
 TODO: When used in a group, Number solo method mutes new patterns already played.
 Example on Mastegots.scd
 */
@@ -50,17 +50,6 @@ Px {
     meterNextId = 0;
     midiHoldedNotes = Dictionary.new;
     patternViews = Dictionary.new;
-
-    meterFunc = OSCFunc({ |msg|
-      var meterId = msg[2].asInteger;
-      var peakL = msg[3] ?? 0;
-      var peakR = msg[5] ?? peakL;
-      var patternId = meterIdMap[meterId];
-
-      if (patternId.notNil)
-      { meterLevels[patternId] = max(peakL, peakR) };
-    }, '/pxMeter');
-
     mutedPatterns = Dictionary.new;
     ndefList = Dictionary.new;
     pausedPatterns = IdentitySet.new;
@@ -71,9 +60,12 @@ Px {
     windowWidth = 68;
     windowHeight = 350.min(Window.screenBounds.height / 4);
 
+    this.prStartMeterListener;
+
     CmdPeriod.add { this.clear };
 
     ServerBoot.add {
+      this.prStartMeterListener;
       this.listen;
       this.loadSynthDefs;
       thisProcess.interpreter.t = TempoClock.default.tempo;
@@ -153,6 +145,22 @@ Px {
       SendPeakRMS.kr(in, 20, 0.3, cmdName, meterId);
       in;
     });
+  }
+
+  *prStartMeterListener {
+    meterFunc !? { meterFunc.free };
+
+    meterFunc = OSCFunc({ |msg|
+      var meterId = msg[2].asInteger;
+      var peakL = msg[3] ?? 0;
+      var peakR = msg[5] ?? peakL;
+      var patternId = meterIdMap[meterId];
+
+      if (patternId.notNil)
+      { meterLevels[patternId] = max(peakL, peakR) };
+    }, '/pxMeter');
+
+    meterFunc.permanent_(true);
   }
 
   *prCreateAmp { |pattern|

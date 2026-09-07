@@ -108,6 +108,85 @@
     ^lcm(ampSteps.max(1), durSteps.max(1));
   }
 
+  *prSequenceSteps { |value|
+    while { value.isKindOf(FilterPattern) }
+    { value = value.pattern };
+
+    if (value.isKindOf(Pseq))
+    { ^value.list.size };
+
+    ^nil;
+  }
+
+  *prCycleStepCandidates { |pattern|
+    var candidates = List.new;
+    var steps = 1;
+
+    case
+    { pattern[\beatSet].notNil }
+    { steps = pattern[\beatSet].size }
+
+    { pattern[\beat].notNil or: { pattern[\fill].notNil } }
+    { steps = 16 }
+
+    { pattern[\euclid].notNil }
+    { steps = pattern[\euclid][1] };
+
+    candidates.add(steps.max(1));
+
+    pattern.values do: { |value|
+      var size = this.prSequenceSteps(value);
+
+      if (size.notNil)
+      { candidates.add(size.max(1)) };
+    };
+
+    ^candidates.asArray;
+  }
+
+  *prStepsToBeats { |steps, durStep|
+    if (durStep.isNumber)
+    { ^steps * durStep };
+
+    if (durStep.isKindOf(Pseq) and: { durStep.list.every(_.isNumber) }) {
+      var list = durStep.list;
+      ^steps.collect { |index| list.wrapAt(index) }.sum;
+    };
+
+    ^nil;
+  }
+
+  *prCycleBeats { |pattern|
+    var durStep = pattern[\durStep];
+    var restBeats = pattern[\rest] ?? 0;
+    var cycles, fitting;
+
+    if (durStep.isNil)
+    { ^nil };
+
+    if (pattern[\euclid].notNil) {
+      if (durStep.isNumber.not)
+      { ^nil };
+
+      ^(pattern[\euclid][1] * durStep) + restBeats;
+    };
+
+    cycles = this.prCycleStepCandidates(pattern)
+      .collect { |steps| this.prStepsToBeats(steps, durStep) }
+      .reject(_.isNil)
+      .collect { |beats| beats + restBeats };
+
+    if (cycles.isEmpty)
+    { ^nil };
+
+    fitting = cycles.select { |beats| beats <= maxQuant };
+
+    if (fitting.notEmpty)
+    { ^fitting.maxItem };
+
+    ^cycles.maxItem;
+  }
+
   *prCreateRest { |pattern, pbindef|
     var restBeats = pattern[\rest];
 

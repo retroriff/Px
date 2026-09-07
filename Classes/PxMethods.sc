@@ -26,6 +26,7 @@
   *clear {
     chorusPatterns.clear;
     colors.clear;
+    cycleOrigins.clear;
     last.clear;
     lastFormatted.clear;
     meterIdMap.clear;
@@ -214,6 +215,7 @@
         if (last[id][\hasGate] == false)
         { this.prChannelNoteOff(last[id][\chan]) };
 
+        cycleOrigins.removeAt(id);
         last.removeAt(id);
         lastFormatted.removeAt(id);
         ndefList.removeAt(id);

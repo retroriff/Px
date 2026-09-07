@@ -163,7 +163,7 @@ Examples/         - Usage examples (.scd files)
 ## Important Notes
 
 - **NodeProxy architecture**: All audio routing through `Ndef(\px)` mixer
-- **Quantization**: Patterns quantized to 4 beats by default (`quant_(4)`)
+- **Quantization**: A pattern re-evaluation lands on that pattern's own cycle, so a phrase is never cut mid-way. `Px.prCycleBeats` measures the cycle: each sequence in the pattern proposes `steps × dur` beats, and the longest proposal that fits within `Px.maxQuant` (16) wins, so a long decorative parameter cannot cost a shorter phrase its cycle. The value is used when it also exceeds `Px.quant` (4), otherwise the 4-beat grid applies. Each pattern is quantized independently — nothing is synced across tracks. See `Docs/pattern-internals.md` for the full rules
 - **Pattern IDs**: Integer keys (1, 2, 3) create pattern IDs, symbols stop them
 - **State management**: Heavy use of class variables - be careful with reinitialization
 - **MIDI**: Requires `Pmidi.init` before MIDI operations

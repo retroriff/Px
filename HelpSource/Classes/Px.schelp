@@ -48,6 +48,38 @@ Fx(\px).reverb(Nil)
 Fx(\sd).reverb(0.5)
 ::
 
+subsection:: Quantization
+
+Re-evaluating a pattern replaces its Pdef source, and the swap waits for the next quantization
+boundary. Each pattern computes that boundary from its own cycle, so a phrase is never cut
+mid-way, and no two tracks are forced onto a shared grid.
+
+Every sequence in the pattern proposes a cycle of code::steps * dur:: beats: 16 steps for
+code::beat:: and code::fill::, the array size for code::beatSet::, code::n:: for
+code::euclid: [k, n]::, or the length of any code::Pseq:: passed to a parameter. Only a Pseq
+counts as a sequence — a plain array is a chord. code::rest: n:: adds code::n:: beats.
+
+The longest of those that fits within code::Px.maxQuant:: (16) is the pattern's cycle, and it is
+used only when it is also longer than code::Px.quant:: (4). Outside that range, or when
+code::dur:: comes from a random pattern, the 4-beat grid applies so edits stay responsive.
+
+Because each sequence is measured separately, a long decorative parameter cannot cost a shorter
+phrase its cycle — a 20-step code::octave:: alongside an 8-note code::degree:: figure still
+quantizes to the 8-beat figure.
+
+code::
+909 i: \oh dur: 0.25 beat: 0.7;  // 16 * 0.25 = 4 beats  -> quant 4
+909 i: \oh dur: 0.5 beat: 0.7;   // 16 * 0.5  = 8 beats  -> quant 8
+
+// 12 notes at one beat each: the run always completes before a new version starts
+1 i: "piano" dur: 1 note: [\c3, \cs3, \d3, \ds3, \e3, \f3, \fs3, \g3, \gs3, \a3, \as3, \b3].pseq;
+
+Px.maxQuant = 32;  // allow longer phrases to keep their own cycle
+::
+
+A pattern that is starting fresh — first evaluation, or after link::#*stop::, link::#*pause:: or
+mute — always uses the 4-beat grid, so it comes in without a long wait.
+
 subsection:: Method Chaining (PxDebouncer)
 
 Method chaining works through a debouncing system (link::Classes/PxDebouncer::). When a chain like code::1 i: \sine amp: 0.5 dur: 1:: is evaluated, SuperCollider calls each method (code::i::, code::amp::, code::dur::) sequentially. The first method creates a PxDebouncer instance that captures the pattern, and subsequent methods enqueue their key-value pairs into it. The debouncer schedules a single commit on the next AppClock cycle, which merges all pairs and sends them to Px or Dx as one pattern update.

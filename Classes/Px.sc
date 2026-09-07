@@ -1,6 +1,4 @@
 /*
-TODO: A pattern should wait the cycle is complete before starting a new cycle when it is reevaluated:
-  5 play: "v:rand" dur: 0.25 beat: 0.3 delay: 0.2 reverb: 0.3 in: 20 amp: 0.15 space: 0.2 rest: 4;
 TODO: Repeat and rest should allow that a pattern is repeated a number of times and then rest for a number of times, like: 
   909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 repeat: 2 rest: 4;
 TODO: ~playPad and ~playChord should be able to switch octaves
@@ -11,10 +9,12 @@ Example on Mastegots.scd
 Px {
   classvar <>chorusPatterns;
   classvar <>colors;
+  classvar <>cycleOrigins;
   classvar <defaultAmp;
   classvar <drumMachinesPath;
   classvar <>last;
   classvar <>lastFormatted;
+  classvar <>maxQuant;
   classvar <meterFunc;
   classvar <meterIdMap;
   classvar <meterLevels;
@@ -42,9 +42,11 @@ Px {
   *initClass {
     chorusPatterns = Dictionary.new;
     colors = Dictionary.new;
+    cycleOrigins = Dictionary.new;
     defaultAmp = 0.3;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
+    maxQuant = 16;
     meterIdMap = Dictionary.new;
     meterLevels = Dictionary.new;
     meterNextId = 0;
@@ -263,8 +265,9 @@ Px {
 
   *prCreateDur { |pattern|
     var dur = pattern[\dur];
+    var hasDur = dur.notNil and: { dur != 0 };
 
-    if (dur.isNil or: (dur == 0))
+    if (hasDur.not)
     { dur = Pseq([8], pattern[\repeat] ?? 1) };
 
     if (dur.isArray) {
@@ -274,6 +277,10 @@ Px {
 
     if (dur.isString)
     { dur = 1 };
+
+    if (hasDur)
+    { pattern[\durStep] = dur }
+    { pattern.removeAt(\durStep) };
 
     if (pattern[\euclid].notNil)
     { dur = Pbjorklund2(pattern[\euclid][0], pattern[\euclid][1]) * dur };
@@ -325,14 +332,37 @@ Px {
     ^pattern;
   }
 
+  *prPatternQuant { |pattern|
+    var id = pattern[\id];
+    var previous = lastFormatted[id];
+    var cycle;
+
+    if (Pdef(id).source.isNil or: { previous.isNil })
+    { ^quant };
+
+    if (previous[\repeat].notNil or: { previous[\stop].notNil })
+    { ^quant };
+
+    cycle = this.prCycleBeats(previous);
+
+    if (cycle.isNil or: { cycle <= quant } or: { cycle > maxQuant })
+    { ^quant };
+
+    ^[cycle, (cycleOrigins[id] ?? 0) % cycle];
+  }
+
   *prCreatePdef { |pattern|
     var pbindef;
+    var id = pattern[\id];
+    var pdef = Pdef(id);
+    var patternQuant = this.prPatternQuant(pattern);
     var stopBeats = pattern[\stop];
     var bindPattern = pattern.copy;
 
     bindPattern[\amp] = bindPattern[\ampBeat] ?? bindPattern[\amp];
 
     bindPattern.removeAt(\ampBeat);
+    bindPattern.removeAt(\durStep);
     bindPattern.removeAt(\repeat);
     bindPattern.removeAt(\rest);
     bindPattern.removeAt(\rhythmBeats);
@@ -350,7 +380,11 @@ Px {
     if (stopBeats.notNil)
     { pbindef = Pfindur(stopBeats, pbindef) };
 
-    ^pbindef = Pdef(pattern[\id], pbindef).quant_(quant);
+    pdef.quant = patternQuant;
+    pdef.source = pbindef;
+    cycleOrigins[id] = patternQuant.asQuant.nextTimeOnGrid(TempoClock.default);
+
+    ^pdef;
   }
 
   *prHandleSoloPattern { |pattern|
@@ -377,6 +411,7 @@ Px {
     if (Ndef(\px).isPlaying.not) {
       chorusPatterns.clear;
       colors.clear;
+      cycleOrigins.clear;
       last.clear;
       meterIdMap.clear;
       meterLevels.clear;
@@ -460,6 +495,7 @@ Px {
     { last.removeAt(pattern[\id]) };
 
     if (hasRepeat or: hasEmptyDur or: hasStop) {
+      cycleOrigins.removeAt(pattern[\id]);
       last.removeAt(pattern[\id]);
       ndefList.removeAt(pattern[\id]);
 

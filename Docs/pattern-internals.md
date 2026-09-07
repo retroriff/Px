@@ -34,6 +34,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 - `pattern[\repeat]` - Number of times the beat pattern repeats (removed before Pdef creation)
 - `pattern[\rest]` - Beats of silence inserted after each complete cycle (removed before Pdef creation)
 - `pattern[\weight]` - Probability 0-1 for beat randomness
+- `pattern[\durStep]` - Duration of a single step, kept before `euclid` rewrites `\dur` into `Pbjorklund2(...) * dur`; used to measure the cycle (removed before Pdef creation)
 
 **Note:** `pattern[\beats]` (no `rhythm` prefix) is an unrelated key — it carries sample duration
 to the `loop`/`grainLoop` SynthDefs for `trim`/`chop` patterns (`Classes/PxBuf.sc`, `Classes/Lx.sc`).
@@ -199,16 +200,66 @@ When same instrument/number called again, **IDs are reused** rather than creatin
 
 Example: `808 i: \kick amp: 0.5` then `808 i: \kick amp: 0.8` → Same pattern ID, dictionary updated in place.
 
+### Re-evaluation Quantization
+
+Re-evaluating a pattern replaces its `Pdef` source. SuperCollider pads the stream that is
+currently playing up to the next `quant` boundary, then swaps in the new one — so `quant`
+decides where a phrase gets cut.
+
+`Px.prPatternQuant` picks that boundary per pattern:
+
+1. If the `Pdef` has no source (first play, or after `stop`/`pause`/`mute`), or the previous
+   pattern used `repeat`/`stop`, use `Px.quant` (4) so the change is heard promptly.
+2. Otherwise measure the cycle of the **previously played** pattern with `Px.prCycleBeats` —
+   the boundary must belong to the cycle that is sounding right now, not to the new one.
+3. Use that cycle only when `Px.quant < cycle <= Px.maxQuant` (4 and 16). Anything shorter or
+   longer falls back to the 4-beat grid.
+
+**Measuring a cycle** (`Px.prCycleBeats`, `Classes/PxBeats.sc`):
+
+Every sequence in the pattern contributes a **candidate** step count (`Px.prCycleStepCandidates`)
+— `beatSet.size`, or 16 when `beat`/`fill` is used, or `n` for `euclid: [k, n]`, plus the
+`.list.size` of every `Pseq` value in the dictionary. `Px.prSequenceSteps` unwraps `FilterPattern`
+chains first, because `note:` reaches the dictionary as a `Pcollect` around the user's `Pseq`
+(see `Px.prResolveNotes`).
+
+Only `Pseq` counts as a sequence. A plain array in the Pbind is a chord, not a phrase.
+
+Each candidate is converted to beats (`Px.prStepsToBeats`: `steps × durStep`, or the sum of the
+wrapped `dur` list when `dur` is itself a `Pseq`) and `rest` is added. The **longest candidate that
+fits within `Px.maxQuant`** wins; if none fit, the longest overall is returned and
+`Px.prPatternQuant` rejects it. Filtering before the comparison matters: one long sequence —
+typically a decorative rider such as `octave` — would otherwise drag the whole pattern over the
+ceiling and cost a shorter phrase its working cycle.
+
+Special cases: `rest: n` adds `n` beats; a `dur` built from `Pwhite`/`Prand`/`Pexprand` has no
+measurable cycle and falls back to 4.
+
+```
+dur 0.25  beat: 0.7        16 × 0.25 =  4  → quant 4   (the common case, unchanged)
+dur 0.5   beat: 0.7        16 × 0.5  =  8  → quant 8
+dur 1     note: [12].pseq  12 × 1    = 12  → quant 12
+dur 1     note: [24].pseq  24 × 1    = 24  → quant 4   (over maxQuant)
+
+dur 1     degree: [8].pseq octave: [20]   candidates 8 and 20 → quant 8
+                                          (20 overflows, so the 8-beat phrase keeps its cycle)
+```
+
+**Phase:** `quant_(12)` alone snaps to absolute beats 0/12/24, but a pattern that started at
+beat 40 has its boundaries at 40/52/64. `Px.cycleOrigins[id]` records the beat where each
+pattern's grid begins, and the quant is passed as `[cycle, origin % cycle]`.
+
 ### Pattern Storage
 
-**Three class variables store pattern state:**
+**Four class variables store pattern state:**
 - `Px.last` - Pattern dictionaries
 - `Px.lastFormatted` - Processed patterns for playback
+- `Px.cycleOrigins` - Beat where each pattern's quantization grid begins
 - `ndefList` - NodeProxy instances
 
 ### Pattern Deletion
 
-Stop methods remove patterns from all three storage locations. Integer IDs **do not get reused** - sequence continues with gaps (this is intentional).
+Stop methods remove patterns from all four storage locations. Integer IDs **do not get reused** - sequence continues with gaps (this is intentional).
 
 Example: Create 80801, 80802, delete 80801, next is 80803 (not 80801).
 

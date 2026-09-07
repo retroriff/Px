@@ -48,7 +48,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `beat`   | weight: range 0..1                                | Generates a random rhythm, or own rhythym defined by set                                                                                                                                     |
 | `dur`    | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
 | `euclid` | [hits: number, total: number]                     | Generates an Euclidian rhythm. `dur` is the length of one step, so the figure lasts `total * dur` beats                                                                                      |
-| `fill`   | weight: range 0..1                                | Fills the rests gap of its previous sequential pattern. Re-fills automatically when that pattern's `beat` changes (not with `seed: \rand`)                                                  |
+| `fill`   | weight: range 0..1                                | Fills the rests gap of its previous sequential pattern. Re-fills automatically when that pattern's `beat` changes (not with `seed: \rand`)                                                   |
 | `gui`    | atMouse: boolean                                  | Toggles a patterns gui window. Once open, it updates automatically. With `atMouse: true` it opens at the mouse position.                                                                     |
 | `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
 | `in`     | seconds: integer                                  | Fades in the pattern.                                                                                                                                                                        |
@@ -176,13 +176,13 @@ Custom pattern player designed to handle degrees, and can send MIDI messages bas
 
 ### Event methods
 
-| Name     | Arguments                                                           | Description                                                              |
-| -------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `arp`    | None                                                                | Creates a very basic arpegio                                             |
-| `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                                                             |
+| Name     | Arguments                                                           | Description                                                                                                                                                                         |
+| -------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `arp`    | None                                                                | Creates a very basic arpegio                                                                                                                                                        |
+| `degree` | `degree`: number \| array \| \rand, `scale`?: scale, `size`: number | Handle notes                                                                                                                                                                        |
 | `note`   | number \| symbol \| array \| Pattern                                | MIDI note. Lowercase symbols are notes: `\c3` (60), `\cs3` (61), `\db3` (61). Uppercase symbols are chords, resolved at octave 2: `\Cmaj` ([48, 52, 55]), `\Am7` ([57, 60, 64, 67]) |
-| `octave` | number \| array \| [\beats, octave: number]                         | Can create a sequence or a random beat                                   |
-| `root`   | number \| array                                                     | Sets the root value                                                      |
+| `octave` | number \| array \| [\beats, octave: number]                         | Can create a sequence or a random beat                                                                                                                                              |
+| `root`   | number \| array                                                     | Sets the root value                                                                                                                                                                 |
 
 ### MIDI
 
@@ -195,13 +195,13 @@ When the pattern contains `\chan`, it sends MIDI with MIDIOut class and the `\mi
 
 #### MIDI event methods
 
-| Name      | Arguments                 | Description                                                                                   |
-| --------- | ------------------------- | --------------------------------------------------------------------------------------------- |
+| Name      | Arguments                 | Description                                                                                                                                       |
+| --------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bend`    | number \| Pattern         | Sends a MIDI pitch bend message (0-127, center 64, same range as `control`). Integer values are sent immediately; patterns create a separate Pdef |
-| `control` | number, number \| Pattern | Sends a MIDI CC message. Integer values are sent immediately; patterns create a separate Pdef |
-| `hold`    | None                      | The note off message will not be sent and will keep the notes pressed                         |
-| `holdOff` | None                      | Releases holded notes                                                                         |
-| `panic`   | None                      | "Panic" message, kills all notes on the channel pattern                                       |
+| `control` | number, number \| Pattern | Sends a MIDI CC message. Integer values are sent immediately; patterns create a separate Pdef                                                     |
+| `hold`    | None                      | The note off message will not be sent and will keep the notes pressed                                                                             |
+| `holdOff` | None                      | Releases holded notes                                                                                                                             |
+| `panic`   | None                      | "Panic" message, kills all notes on the channel pattern                                                                                           |
 
 ## 🛢️ Drum Machines
 
@@ -337,21 +337,21 @@ Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (
 
 ### Nx class methods
 
-| Name             | Arguments                   | Returns    | Description                                         |
-| ---------------- | --------------------------- | ---------- | --------------------------------------------------- |
-| `all`            | None                        | Dictionary | Returns all chord data in a single Dictionary       |
-| `chord`          | None                        | Symbol     | Returns current chord name                          |
-| `chords`         | None                        | Dictionary | Returns all loaded chord qualities                  |
-| `degrees`        | None                        | Array      | Returns scale degrees array                         |
-| `loadChords`     | None                        | None       | Reloads chord data from `Score/`                    |
-| `midinotes`      | octave?: Integer (-1 to 9)  | Array      | Returns MIDI notes, optionally transposed           |
-| `octave`         | None                        | Integer    | Gets/sets current octave (default: 2, range: -1..9) |
-| `parse`          | chord: Symbol               | Dictionary | Resolves a chord name to its tonic and quality, or `nil` |
-| `root`           | None                        | Integer    | Returns root value (pitch class 0-11)               |
-| `scale`          | None                        | Symbol     | Returns scale symbol                                |
-| `set`            | chord: Symbol, octave?: Int | None       | Sets current chord, optionally changes octave       |
-| `shuffle`        | tonic?: Symbol, scale?: Sym | None       | Randomly selects a chord with optional filters      |
-| `tonics`         | None                        | Dictionary | Returns all loaded tonics (root notes)              |
+| Name         | Arguments                   | Returns    | Description                                              |
+| ------------ | --------------------------- | ---------- | -------------------------------------------------------- |
+| `all`        | None                        | Dictionary | Returns all chord data in a single Dictionary            |
+| `chord`      | None                        | Symbol     | Returns current chord name                               |
+| `chords`     | None                        | Dictionary | Returns all loaded chord qualities                       |
+| `degrees`    | None                        | Array      | Returns scale degrees array                              |
+| `loadChords` | None                        | None       | Reloads chord data from `Score/`                         |
+| `midinotes`  | octave?: Integer (-1 to 9)  | Array      | Returns MIDI notes, optionally transposed                |
+| `octave`     | None                        | Integer    | Gets/sets current octave (default: 2, range: -1..9)      |
+| `parse`      | chord: Symbol               | Dictionary | Resolves a chord name to its tonic and quality, or `nil` |
+| `root`       | None                        | Integer    | Returns root value (pitch class 0-11)                    |
+| `scale`      | None                        | Symbol     | Returns scale symbol                                     |
+| `set`        | chord: Symbol, octave?: Int | None       | Sets current chord, optionally changes octave            |
+| `shuffle`    | tonic?: Symbol, scale?: Sym | None       | Randomly selects a chord with optional filters           |
+| `tonics`     | None                        | Dictionary | Returns all loaded tonics (root notes)                   |
 
 ## 🎛️ Cx: External MIDI Controller Bridge
 
@@ -359,15 +359,15 @@ Maps external MIDI controllers to Px pattern parameters via YAML configs. Rotary
 
 ### Cx class methods
 
-| Name     | Arguments                 | Description                                                      |
-| -------- | ------------------------- | ---------------------------------------------------------------- |
-| `play`   | name?: symbol             | Load config (required on first call), open MIDI, register handlers  |
-| `stop`   | None                      | Free MIDI handlers, keep the loaded config                       |
-| `clear`  | None                      | Stop and drop the config and any pinned assignments              |
-| `load`   | name: symbol              | Load a YAML config without opening MIDI                          |
-| `list`   | None                      | Print current slot → pattern → param mapping                     |
-| `assign` | slot: integer, id: symbol | Pin a slot to a specific pattern id, overriding the sorted slot  |
-| `debug`  | value: boolean            | When `true`, prints each incoming MIDI message with decoded step |
+| Name     | Arguments                 | Description                                                        |
+| -------- | ------------------------- | ------------------------------------------------------------------ |
+| `play`   | name?: symbol             | Load config (required on first call), open MIDI, register handlers |
+| `stop`   | None                      | Free MIDI handlers, keep the loaded config                         |
+| `clear`  | None                      | Stop and drop the config and any pinned assignments                |
+| `load`   | name: symbol              | Load a YAML config without opening MIDI                            |
+| `list`   | None                      | Print current slot → pattern → param mapping                       |
+| `assign` | slot: integer, id: symbol | Pin a slot to a specific pattern id, overriding the sorted slot    |
+| `debug`  | value: boolean            | When `true`, prints each incoming MIDI message with decoded step   |
 
 ## 📡 OSC Communication
 

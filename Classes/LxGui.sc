@@ -6,6 +6,7 @@
     var width = (colWidth * channelCount) + (gap * (channelCount - 1)) + (margin * 2);
     var colHeight = 694;
     var height = colHeight + 75;
+    var origin = Px.prMouseOrigin(width, height);
     var bgColor = Color.new255(26, 29, 34);
     var linkColor = Color.new255(31, 41, 55);
     var durSteps = [-16, -8, -4, -2, -1, -0.5, -0.25, -0.125, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
@@ -24,8 +25,8 @@
       window = Window(
         name: "𝄆 repeater 𝄇",
         bounds: Rect(
-          left: Window.screenBounds.width - width,
-          top: Window.screenBounds.height - height,
+          left: origin.x,
+          top: origin.y,
           width: width,
           height: height
         )

@@ -68,8 +68,6 @@ pads:
   - action: record
     cc: 60
   - action: gui
-    args:
-      atMouse: true
     cc: 61
   - action: stop
     cc: 62

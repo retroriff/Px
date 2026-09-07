@@ -263,7 +263,7 @@ Lx.freeze(0, 0);  // Resume scanning
 subsection:: GUI
 
 method:: gui
-Opens a GUI window with per-channel controls: sample navigation, granular parameter knobs, shuffle with amount slider, and mute/solo buttons.
+Opens a GUI window with per-channel controls: sample navigation, granular parameter knobs, shuffle with amount slider, and mute/solo buttons. The window opens at the current mouse position.
 
 code::
 Lx.gui;

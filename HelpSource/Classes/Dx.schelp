@@ -320,7 +320,7 @@ Restores all drum patterns muted by link::#solo::.
 subsection:: Utilities
 
 method:: gui
-Toggles a GUI window for controlling the drum machine. Opens the window if closed, closes it if open.
+Toggles a GUI window for controlling the drum machine. Opens the window if closed, closes it if open. The window opens at the current mouse position.
 
 code::
 Dx.gui; // toggle open/close

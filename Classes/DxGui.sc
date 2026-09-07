@@ -7,6 +7,7 @@
     var firstCol, secondCol, thirdCol, mainView, row;
     var width = 420, height = 350;
     var linkColor = Color.new255(31, 41, 55);
+    var origin = Px.prMouseOrigin(width, height);
     var w;
 
     if (dxWindow.notNil) {
@@ -16,8 +17,8 @@
     w = Window(
       name: "🛢️ Dancing To The Drum Machine",
       bounds: Rect(
-        left: Window.screenBounds.width - width,
-        top: Window.screenBounds.height - height,
+        left: origin.x,
+        top: origin.y,
         width: width,
         height: height
       )

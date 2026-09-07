@@ -1,12 +1,12 @@
 + Px {
-  *gui { |atMouse = false|
+  *gui {
     if (window.notNil) {
       ^window.close;
     };
 
     window = Window(
       "🪩 The music was new, black polished chrome, and came over the summer, like liquid night.",
-      this.prWindowBounds(atMouse)
+      this.prWindowBounds
     )
     .alwaysOnTop_(true)
     .background_(
@@ -298,13 +298,9 @@
     ^Point(left, bottom);
   }
 
-  *prWindowBounds { |atMouse|
+  *prWindowBounds {
     var width = this.prGenerateWindowWidth;
-    var origin;
-
-    if (atMouse.not) { ^Rect(0, Window.screenBounds.height, width, windowHeight) };
-
-    origin = this.prMouseOrigin(width, windowHeight);
+    var origin = this.prMouseOrigin(width, windowHeight);
 
     ^Rect(origin.x, origin.y, width, windowHeight);
   }

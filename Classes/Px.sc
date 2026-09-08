@@ -1,10 +1,5 @@
 /*
-TODO: Repeat and rest should allow that a pattern is repeated a number of times and then rest for a number of times, like: 
-  909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 repeat: 2 rest: 4;
-TODO: ~playPad and ~playChord should be able to switch octaves
 TODO: Rand degree from old examples files doesn't work anymore, should we deprecate it? 909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 degree: \rand length: 3;
-TODO: When used in a group, Number solo method mutes new patterns already played.
-Example on Mastegots.scd
 */
 Px {
   classvar <>chorusPatterns;
@@ -91,8 +86,6 @@ Px {
 
       ^this;
     };
-
-    pausedPatterns.remove(pattern[\id]);
 
     pattern = this.prCreateInstrument(pattern);
     pattern = this.prCreateLoops(pattern);
@@ -381,6 +374,10 @@ Px {
     { pbindef = Pfindur(stopBeats, pbindef) };
 
     pdef.quant = patternQuant;
+
+    if (pausedPatterns.includes(id))
+    { ^pdef };
+
     pdef.source = pbindef;
     cycleOrigins[id] = patternQuant.asQuant.nextTimeOnGrid(TempoClock.default);
 

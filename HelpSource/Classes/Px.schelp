@@ -156,7 +156,9 @@ Px.release(20);  // Release all with 20 second fade
 ::
 
 method:: pause
-Pauses a pattern by ID.
+Pauses a pattern by ID. While paused, parameter updates (from the DSL or the GUI
+sliders) are stored but do not restart playback. Re-evaluating the full pattern
+declaration resumes it.
 
 argument:: id
 Pattern ID to pause.

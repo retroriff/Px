@@ -299,6 +299,9 @@
     {
       this.new(last[id]);
 
+      if (Pdef(id).source.isNil)
+      { ^("🟡 Pattern" + id + "is paused") };
+
       if (key.notNil)
       { Pdef(id).source = Pdef(id).source.collect { |ev| ev[key].postln; ev } }
       { Pdef(id).source = Pdef(id).source.trace };

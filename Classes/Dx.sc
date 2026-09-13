@@ -102,7 +102,12 @@ Dx : Px {
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
 
-    ^instrumentFolders[machine.asSymbol].collect { |folder| this.prStripPrefix(folder) };
+    ^instrumentFolders[machine.asSymbol]
+    .reject(_.isNil)
+    .collect { |folder|
+      "\\" ++ this.prStripPrefix(folder) ++ " (" ++ this.prSampleCount(machine, folder) ++ ")";
+    }
+    .join(", ");
   }
 
   *loadPresets {
@@ -164,7 +169,7 @@ Dx : Px {
 
     Dx.use(folders[randomIndex]);
     instruments = this.instruments;
-    ^("🎲 Drum machine:" + folders[randomIndex] ++ ". Instruments:" + instruments.join(", "));
+    ^("🎲 Drum machine:" + folders[randomIndex] ++ ". Instruments:" + instruments);
   }
 
 
@@ -265,7 +270,7 @@ Dx : Px {
     this.prRestorePresetInstruments;
     this.prApplyActiveFx;
 
-    ^("🥁 Instruments:" + this.instruments.join(", "));
+    ^("🥁 Instruments:" + this.instruments);
   }
 
   *vol { |amp|
@@ -436,6 +441,13 @@ Dx : Px {
         instrumentNames[folder.asSymbol] = names;
       };
     };
+  }
+
+  *prSampleCount { |machine, folder|
+    var key = machine.asString ++ "/" ++ folder.asString;
+    var samples = samplesDict !? { samplesDict[key] };
+
+    ^(samples ? []).size;
   }
 
   *prStripPrefix { |name|

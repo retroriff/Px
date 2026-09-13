@@ -158,7 +158,7 @@ Dx.preset(\electro, 2, 0.5);  // Half volume
 ::
 
 method:: instruments
-Returns the list of available instruments for a drum machine.
+Returns the available instruments for a drum machine, each followed by its number of samples, e.g. code::\bd (5), \hh (5), \ht (4)::. The count is the highest usable sample index plus one (e.g. code::\bd (5):: allows code::\bd:0:: to code::\bd:4::).
 
 argument:: machine
 Optional drum machine identifier (e.g., \909). If omitted, returns instruments for the current drum machine.
@@ -176,7 +176,7 @@ Dx.loadPresets;
 ::
 
 method:: use
-Switches to a different drum machine type. Existing patterns are migrated to the new machine. Returns the instruments available in the new machine; called with no argument it returns the active drum machine.
+Switches to a different drum machine type. Existing patterns are migrated to the new machine. Returns the instruments available in the new machine with their sample counts; called with no argument it returns the active drum machine.
 
 argument:: newDrumMachine
 Drum machine folder name or short alias (e.g., 909 or \RolandTR909).

@@ -25,49 +25,6 @@
     { ("🔴 Method not understood:" + selector).postln };
   }
 
-  prCollectEventKeys {
-    var parentEventsKeys = Event.parentEvents.keys.collect { |key| Event.parentEvents[key].keys.asArray };
-    var partialEventsKeys = Event.partialEvents.keys.collect { |key| Event.partialEvents[key].keys.asArray };
-
-    ^(parentEventsKeys ++ partialEventsKeys).asArray.flat;
-  }
-
-  prCollectSynthDefKeys {
-    var loopKeys = SynthDescLib.global[\loop].controlNames.asSet;
-    var playbufKeys = SynthDescLib.global[\playbuf].controlNames.asSet;
-    var grainLoopKeys = if (SynthDescLib.global[\grainLoop].notNil)
-      { SynthDescLib.global[\grainLoop].controlNames.asSet } { Set.new };
-    var keys = loopKeys ++ playbufKeys ++ grainLoopKeys;
-    var currentInstrument;
-
-    if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.notNil })
-    { currentInstrument = PxDebouncer.current.pattern[\instrument] };
-
-    if (this.prIsValidInstrument(currentInstrument)) {
-      keys.addAll(SynthDescLib.global[currentInstrument].controlNames);
-    };
-
-    Px.last.do { |event|
-      var ins = event[\instrument];
-
-      if (this.prIsValidInstrument(ins)
-        and: (event[\play].isNil)
-        and: (event[\loop].isNil)
-        and: (event[\grain].isNil)) {
-        keys.addAll(SynthDescLib.global[ins].controlNames);
-      };
-    };
-
-    ^keys.asArray;
-  }
-
-  prIsValidInstrument { |ins|
-    ^ins.notNil
-    and: { ins.isKindOf(Pattern).not }
-    and: { ins.isArray.not }
-    and: { SynthDescLib.global[ins].notNil };
-  }
-
   dur { |value|
     this.prDebouncer.enqueue([\dur, value]);
   }
@@ -138,6 +95,10 @@
   play { |value|
     this.prPlay(play: value);
     PxDebouncer.current.prSchedule;
+  }
+  
+  pitchRatio {
+      ^2.pow(this / 12);
   }
 
   repeat { |value|
@@ -215,6 +176,49 @@
     };
 
     ^sample;
+  }
+
+  prCollectEventKeys {
+    var parentEventsKeys = Event.parentEvents.keys.collect { |key| Event.parentEvents[key].keys.asArray };
+    var partialEventsKeys = Event.partialEvents.keys.collect { |key| Event.partialEvents[key].keys.asArray };
+
+    ^(parentEventsKeys ++ partialEventsKeys).asArray.flat;
+  }
+
+  prCollectSynthDefKeys {
+    var loopKeys = SynthDescLib.global[\loop].controlNames.asSet;
+    var playbufKeys = SynthDescLib.global[\playbuf].controlNames.asSet;
+    var grainLoopKeys = if (SynthDescLib.global[\grainLoop].notNil)
+      { SynthDescLib.global[\grainLoop].controlNames.asSet } { Set.new };
+    var keys = loopKeys ++ playbufKeys ++ grainLoopKeys;
+    var currentInstrument;
+
+    if (PxDebouncer.current.notNil and: { PxDebouncer.current.pattern.notNil })
+    { currentInstrument = PxDebouncer.current.pattern[\instrument] };
+
+    if (this.prIsValidInstrument(currentInstrument)) {
+      keys.addAll(SynthDescLib.global[currentInstrument].controlNames);
+    };
+
+    Px.last.do { |event|
+      var ins = event[\instrument];
+
+      if (this.prIsValidInstrument(ins)
+        and: (event[\play].isNil)
+        and: (event[\loop].isNil)
+        and: (event[\grain].isNil)) {
+        keys.addAll(SynthDescLib.global[ins].controlNames);
+      };
+    };
+
+    ^keys.asArray;
+  }
+
+  prIsValidInstrument { |ins|
+    ^ins.notNil
+    and: { ins.isKindOf(Pattern).not }
+    and: { ins.isArray.not }
+    and: { SynthDescLib.global[ins].notNil };
   }
 
   prShouldGenerateDrumMachineId { |ins|

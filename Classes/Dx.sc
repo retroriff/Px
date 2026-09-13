@@ -28,9 +28,13 @@ Dx : Px {
     instrumentFolders = Dictionary.new;
     instrumentNames = Dictionary.new;
     lastPreset = Array.new;
+    presetPatterns = Array.new;
     this.prCreatePresetsDict;
 
-    CmdPeriod.add { lastPreset = Array.new };
+    CmdPeriod.add {
+      lastPreset = Array.new;
+      presetPatterns = Array.new;
+    };
 
     ^super.initClass;
   }
@@ -258,6 +262,7 @@ Dx : Px {
       };
     };
 
+    this.prRestorePresetInstruments;
     this.prApplyActiveFx;
 
     ^("🥁 Instruments:" + this.instruments.join(", "));
@@ -462,6 +467,22 @@ Dx : Px {
     ^names.includes(instrument.asString);
   }
 
+  *prRestorePresetInstruments {
+    presetPatterns.asArray do: { |pattern|
+      var id = this.prCreateId(pattern[\instrument]);
+
+      if (last[id].isNil
+        and: { mutedPatterns[id].isNil }
+        and: { this.prHasInstrument(pattern[\instrument]) == true }) {
+        this.new(pattern.putAll([
+          \id, id,
+          \drumMachine, drumMachine,
+          \dx, true,
+        ]));
+      };
+    };
+  }
+
   *prStopRemovedPatterns { |keepIds|
     last.copy do: { |pattern|
 
@@ -481,5 +502,7 @@ Dx : Px {
         Pdef(pattern[\id]).source = nil;
       };
     };
+
+    presetPatterns = Array.new;
   }
 }

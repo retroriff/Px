@@ -70,6 +70,11 @@ Dictionary[
     \intervals -> [0, 3, 7, 10, 14, 17],
     \scale -> \minor
   ],
+  "mPent" -> Dictionary[
+    \degree -> [0, 2, 3, 4, 6],
+    \intervals -> [0, 3, 5, 7, 10],
+    \scale -> \minor
+  ],
   "sus4" -> Dictionary[
     \degree -> [0, 3, 4],
     \intervals -> [0, 5, 7],

@@ -237,6 +237,7 @@ Dx.preset(\electro, 1);
 | `solo`        | instrument: symbol \| false                       | Solos one or more drum instruments     |
 | `stop`        | None                                              | Same as `\808 i: \all`                 |
 | `unsolo`      | None                                              | Restores drum patterns muted by solo   |
+| `use`         | machine?: symbol \| number                        | Switches the active drum machine       |
 | `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns    |
 
 ## 🔄 Lx: Multi-Track Sample Looper

@@ -211,21 +211,23 @@
     idArray = idArray.collect(_.asSymbol);
 
     idArray do: { |id|
-      if (last[id].notNil) {
-        if (last[id][\hasGate] == false)
-        { this.prChannelNoteOff(last[id][\chan]) };
+      var pattern = last[id] ?? lastFormatted[id];
+      var pdef = Pdef.at(id);
 
-        cycleOrigins.removeAt(id);
-        last.removeAt(id);
-        lastFormatted.removeAt(id);
-        ndefList.removeAt(id);
-        pausedPatterns.remove(id);
-        meterIdMap = meterIdMap.select { |v| v != id };
-        meterLevels.removeAt(id);
-        Pdef(id).source = nil;
-      } {
-        ^("🔴 Pattern" + id + "does not exist");
-      };
+      if (pattern.isNil and: { pdef.isNil or: { pdef.source.isNil } })
+      { ^("🔴 Pattern" + id + "does not exist") };
+
+      if (pattern.notNil and: { pattern[\hasGate] == false })
+      { this.prChannelNoteOff(pattern[\chan]) };
+
+      cycleOrigins.removeAt(id);
+      last.removeAt(id);
+      lastFormatted.removeAt(id);
+      ndefList.removeAt(id);
+      pausedPatterns.remove(id);
+      meterIdMap = meterIdMap.select { |v| v != id };
+      meterLevels.removeAt(id);
+      Pdef(id).source = nil;
     };
 
     this.prAutoRefreshGui;

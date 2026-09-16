@@ -31,7 +31,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 - `pattern[\rhythmBeats]` - Generated beat array (stored after creation, removed before Pdef creation)
 - `pattern[\totalBeats]` - Combined beat used by fill patterns (removed before Pdef creation)
 - `pattern[\fill]` - Invert previous pattern's beat
-- `pattern[\repeat]` - Number of times the beat pattern repeats (removed before Pdef creation)
+- `pattern[\repeat]` - Number of cycles to play before stopping. Source sequences built from arrays (`\amp`, `\instrument`, beat steps) are wrapped in a finite `Pseq`, and `prCreateRepeat` additionally caps the whole Pbind with `Pfindur(prRepeatBeats * repeat)` so patterns built from user-supplied `.pseq` values also terminate (removed before Pdef creation)
 - `pattern[\rest]` - Beats of silence inserted after each complete cycle (removed before Pdef creation)
 - `pattern[\weight]` - Probability 0-1 for beat randomness
 - `pattern[\durStep]` - Duration of a single step, kept before `euclid` rewrites `\dur` into `Pbjorklund2(...) * dur`; used to measure the cycle (removed before Pdef creation)

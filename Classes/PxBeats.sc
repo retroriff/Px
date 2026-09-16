@@ -187,6 +187,29 @@
     ^cycles.maxItem;
   }
 
+  *prRepeatBeats { |pattern|
+    var durStep = pattern[\durStep];
+    var restBeats = pattern[\rest] ?? 0;
+    var beats;
+
+    if (durStep.isNil)
+    { ^nil };
+
+    if (pattern[\euclid].notNil) {
+      if (durStep.isNumber.not)
+      { ^nil };
+
+      ^(pattern[\euclid][1] * durStep) + restBeats;
+    };
+
+    beats = this.prStepsToBeats(this.prRestCycleLength(pattern), durStep);
+
+    if (beats.isNil)
+    { ^nil };
+
+    ^beats + restBeats;
+  }
+
   *prCreateRest { |pattern, pbindef|
     var restBeats = pattern[\rest];
 

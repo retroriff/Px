@@ -130,7 +130,7 @@ Px.play(4);
 ::
 
 method:: stop
-Stops patterns by ID. Pass nil to stop all patterns without removing them (state preserved so code::Px.play:: can restart them).
+Stops patterns by ID. Pass nil to stop all patterns without removing them (state preserved so code::Px.play:: can restart them). Finite patterns — those declared with code::repeat:: or code::stop:: — can also be stopped this way while they are still playing, even though they are no longer part of the active set.
 
 argument:: idArray
 Pattern ID or array of IDs to stop.
@@ -533,9 +533,11 @@ code::
 ::
 
 ## repeat
-|| Sets the number of times a beat pattern repeats before stopping. The pattern is removed from the active set after playback completes.
+|| Plays the pattern for the given number of cycles, then stops it. The pattern is removed from the active set after playback completes. A cycle is the 16-step beat array, the length of the array passed to code::beat::, the euclid step count, or the length of the code::dur:: or code::amp:: sequence. Use link::#*stop:: to end it before the requested number of cycles completes.
 code::
-707 i: \hh dur: 0.25 beat: 0.7 repeat: 2;  // Repeat beat 2 times then stop
+707 i: \hh dur: 0.25 beat: 0.7 repeat: 2;  // 16 steps of 0.25 = 4 beats, played twice
+6 i: \square_perc dur: [1.5, 1.5, 1, 1.5, 1.5, 1].pseq repeat: 4;  // 8-beat cycle, played 4 times
+Px.stop(6);  // Stops a repeating pattern before it completes
 ::
 
 ## rest

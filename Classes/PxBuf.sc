@@ -91,6 +91,14 @@
         file = pattern[\play][1];
       };
 
+      if (pattern[\play].isKindOf(ListPattern)) {
+        var resolvedList = this.prResolveBufList(pattern[\play]);
+
+        if (resolvedList.isNil)
+        { pattern[\bufMissing] = true }
+        { pattern[\play] = resolvedList };
+      };
+
       if (file.isInteger) {
         var resolvedBuf = this.buf(folder, file);
 
@@ -100,9 +108,13 @@
         pattern[\play] = resolvedBuf;
       };
 
-      if (pattern[\dur].isNil and: { pattern[\play].class == Buffer }) {
-        var bufDur = pattern[\play].duration * TempoClock.default.tempo;
-        pattern[\dur] = Pseq([bufDur], pattern[\repeat] ?? 1);
+      if (pattern[\dur].isNil) {
+        var firstBuf = this.prFirstBuf(pattern[\play]);
+
+        if (firstBuf.notNil) {
+          var bufDur = firstBuf.duration * TempoClock.default.tempo;
+          pattern[\dur] = Pseq([bufDur], pattern[\repeat] ?? 1);
+        };
       };
 
       pattern = pattern ++ (instrument: \playbuf, buf: pattern[\play]);
@@ -128,7 +140,102 @@
 
   }
 
+  *prFirstBuf { |value|
+    if (value.class == Buffer) { ^value };
+
+    if (value.isKindOf(ListPattern))
+    { ^value.list.detect { |item| item.class == Buffer } };
+
+    ^nil;
+  }
+
+  // Replaces every [folder, file] entry of a list pattern with its Buffer.
+  // Returns nil when any of them cannot be resolved.
+  *prResolveBufList { |listPattern|
+    var resolved = listPattern.copy;
+
+    resolved.list = listPattern.list.collect { |item|
+      case
+      { item.class == Buffer }
+      { item }
+
+      { item.isArray and: { item[1].isInteger } }
+      { this.buf(item[0], item[1]) };
+    };
+
+    if (resolved.list.any { |item| item.class != Buffer }) {
+      this.prPrint("🔴 Could not resolve every sample of" + listPattern.class);
+      ^nil;
+    };
+
+    ^resolved;
+  }
+
+  *prSetLoopDur { |pattern, folder|
+    var sampleLength = folder.asString.split($-);
+    var folderBeats = 1;
+
+    if (pattern[\instrument] != \loop and: { pattern[\instrument] != \grainLoop })
+    { ^pattern };
+
+    if (sampleLength.size > 1 and: { sampleLength[1].asInteger > 0 })
+    { folderBeats = sampleLength[1].asInteger };
+
+    if (pattern[\length].notNil) {
+      pattern[\beats] = pattern[\dur] ?? folderBeats;
+      pattern[\dur] = pattern[\length];
+      pattern.removeAt(\length);
+    } {
+      if (pattern[\dur].isNil)
+      { pattern[\dur] = Pseq([folderBeats], pattern[\repeat] ?? 1) };
+    };
+
+    ^pattern;
+  }
+
+  *prApplyTrim { |pattern|
+    if (pattern[\trim].isNil) { ^pattern };
+
+    if (pattern[\trim] == \seq)
+    { pattern[\trim] = Pseed(Pdup(4, Pseq((0..10), inf)), Prand((0..3), 4) / 4) };
+
+    pattern[\beats] = pattern[\dur];
+    pattern[\dur] = pattern[\dur] / 4;
+    pattern[\start] = pattern[\trim];
+
+    ^pattern;
+  }
+
+  *prCreateLoopsFromList { |pattern|
+    var samples = pattern[\buf].list;
+    var resolved;
+
+    // Already resolved by prCreateBufInstruments (play:)
+    if (samples[0].isArray.not) { ^pattern };
+
+    resolved = this.prResolveBufList(pattern[\buf]);
+
+    if (resolved.isNil) {
+      pattern[\amp] = 0;
+      ^pattern;
+    };
+
+    this.prSetLoopDur(pattern, samples[0][0]);
+
+    if (pattern[\degree].notNil) {
+      var patternWithdegrees = this.prCreateDegrees(pattern, midiratio: true);
+      pattern[\rate] = patternWithdegrees[\degree];
+    };
+
+    pattern[\buf] = resolved;
+
+    ^this.prApplyTrim(pattern);
+  }
+
   *prCreateLoops { |pattern|
+    if (pattern[\buf].isKindOf(ListPattern))
+    { ^this.prCreateLoopsFromList(pattern) };
+
     if (pattern[\buf].notNil and: { pattern[\buf].class != Buffer }) {
       var filesCount = this.buf(pattern[\buf][0]).size;
 
@@ -177,22 +284,7 @@
           this.buf(pattern[\buf][0], (this.buf(pattern[\buf][0]).size).rand);
         };
 
-        if (pattern[\instrument] == \loop or: { pattern[\instrument] == \grainLoop }) {
-          var sampleLength = pattern[\buf][0].split($-);
-          var folderBeats = 1;
-
-          if (sampleLength.isArray and: { sampleLength.size > 1 } and: { sampleLength[1].asInteger > 0 })
-          { folderBeats = sampleLength[1].asInteger };
-
-          if (pattern[\length].notNil) {
-            pattern[\beats] = pattern[\dur] ?? folderBeats;
-            pattern[\dur] = pattern[\length];
-            pattern.removeAt(\length);
-          } {
-            if (pattern[\dur].isNil)
-            { pattern[\dur] = Pseq([folderBeats], pattern[\repeat] ?? 1) };
-          };
-        };
+        this.prSetLoopDur(pattern, pattern[\buf][0]);
 
         if (pattern[\degree].notNil) {
           var patternWithdegrees = this.prCreateDegrees(pattern, midiratio: true);
@@ -214,14 +306,7 @@
 
         { buf = this.buf(pattern[\buf][0], pattern[\buf][1]) };
 
-        if (pattern[\trim].notNil) {
-          if (pattern[\trim] == \seq)
-          { pattern[\trim] = (Pseed(Pdup(4, Pseq((0..10), inf)), Prand((0..3), 4) / 4)) };
-
-          pattern[\beats] = pattern[\dur];
-          pattern[\dur] = pattern[\dur] / 4;
-          pattern[\start] = pattern[\trim];
-        };
+        this.prApplyTrim(pattern);
 
         if ([Buffer, Pseq, Pxrand].includes(buf.class))
         { pattern[\buf] = buf }

@@ -241,27 +241,28 @@
   *prPatternLabel { |key|
     var pattern = this.prPatternAt(key);
     var chan = pattern[\chan] !? { "chan" + pattern[\chan] };
-    var play = pattern[\play] !? {
-      case
-      { pattern[\play].isArray }
-      { pattern[\play][0] }
-
-      { pattern[\play].isKindOf(Buffer) and: { pattern[\play].path.notNil } }
-      { PathName(pattern[\play].path).parentPath.basename }
-
-      { pattern[\play].asString }
-    };
-    var loop = pattern[\loop] !? {
-      if (pattern[\loop].isArray)
-      { pattern[\loop][0] }
-      { pattern[\loop].asString }
-    };
+    var play = pattern[\play] !? { this.prSampleLabel(pattern[\play]) };
+    var loop = pattern[\loop] !? { this.prSampleLabel(pattern[\loop]) };
     var patternLabel = pattern[\name] ?? pattern[\instrument] ?? chan ?? play ?? loop ?? key;
 
     if (pattern[\drumMachine].notNil)
     { ^("🛢️" + patternLabel) };
 
     ^this.prTruncateText(pattern[\id].asString + patternLabel);
+  }
+
+  *prSampleLabel { |sample|
+    ^case
+    { sample.isArray }
+    { sample[0] }
+
+    { sample.isKindOf(ListPattern) }
+    { this.prSampleLabel(sample.list[0]) }
+
+    { sample.isKindOf(Buffer) and: { sample.path.notNil } }
+    { PathName(sample.path).parentPath.basename }
+
+    { sample.asString };
   }
 
   *prPatternColor { |key|

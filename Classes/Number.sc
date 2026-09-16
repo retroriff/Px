@@ -154,6 +154,14 @@
   }
 
   prCreateArrayFromSample { |sample|
+    if (sample.isKindOf(ListPattern)) {
+      var resolved = sample.copy;
+
+      resolved.list = sample.list.collect { |item| this.prCreateArrayFromSample(item) };
+
+      ^resolved;
+    };
+
     if (sample.isString) {
       var parts = sample.asString.split($:);
 

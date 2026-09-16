@@ -1,4 +1,6 @@
 /*
+TODO: Fix repeat doesn't allow to stop it and doesn't play 4 times: 
+  6 i: \square_perc note: \b3 dur: [1.5, 1.5, 1, 1.5, 1.5, 1].pseq amp: 0.08 note: [\c4].pseq sustain: 0.3 repeat: 4;
 TODO: Rand degree from old examples files doesn't work anymore, should we deprecate it? 909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 degree: \rand length: 3;
 */
 Px {

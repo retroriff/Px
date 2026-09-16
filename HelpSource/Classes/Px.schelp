@@ -472,16 +472,19 @@ code::
 ::
 
 ## play
-|| Plays a sample from a folder.
+|| Plays a sample from a folder. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different sample on every event.
 code::
 1 play: "fm:0";
 1 play: "fm:rand";  // Random sample
+1 play: ["fm:0", "fm:1"].prand;                 // Random sample on each event
+1 play: ["fm:0", "fm:1"].pwrand([0.8, 0.2]);    // Weighted random sample
 ::
 
 ## loop
-|| Plays a looping sample.
+|| Plays a looping sample. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different loop on every cycle. The default duration comes from the beat count in the first folder name.
 code::
 707 loop: "breaks" dur: 8;
+11 loop: ["pop-2:0", "pop-2:1"].pwrand([0.8, 0.2]) dur: 4 amp: 0.6;
 ::
 
 ## dur

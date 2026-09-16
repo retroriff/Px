@@ -41,7 +41,7 @@ SynthDef(\saw, {
   Out.ar(out, (sig * env * amp) ! 2);
 }).add;
 
-SynthDef(\triangle, {
+SynthDef(\tri, {
   |amp=0.2, freq=440, out=0,
   atk=0.001, dec=0.05, slev=0.5, rel=0.01, sustain=0.5|
 
@@ -73,7 +73,7 @@ SynthDef(\saw_perc, { |out=0, freq=440, amp=0.2, sustain=1|
   Out.ar(out, (sig * env * amp) ! 2);
 }).add;
 
-SynthDef(\triangle_perc, { |out=0, freq=440, amp=0.2, sustain=1|
+SynthDef(\tri_perc, { |out=0, freq=440, amp=0.2, sustain=1|
   var env = EnvGen.kr(Env.perc(0.01, sustain), doneAction:2);
   var sig = LFTri.ar(freq);
   Out.ar(out, (sig * env * amp) ! 2);

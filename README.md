@@ -105,6 +105,8 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 `*` The array can be replaced by a string shortcut: `"folder:index"`.
 `**` It also accepts a Buffer object: `Buffer.read(s, "chord.aiff".resolveRelative)`.
 
+They also accept a list pattern of string shortcuts, so a different sample is picked on every event: `1 loop: ["pop-4:0", "pop-4:1"].pwrand([0.8, 0.2]) dur: 4`.
+
 ### Px class methods
 
 - `control` (chan, ctlNum, value): Sends a MIDI CC message immediately.

@@ -435,8 +435,15 @@ Px {
     last[pattern[\id]] = pattern;
   }
 
+  // A finite Pdef ends its own stream, which also ends the Ndef's player, so the
+  // Ndef has to be re-sourced to restart it. Infinite patterns keep playing and
+  // pick up the new source on their own — re-sourcing them would reset the stream.
   *prCreatePlayList { |id, pdef|
-    if (ndefList[id].isNil)
+    var previous = lastFormatted[id];
+    var wasFinite = previous.notNil
+    and: { previous[\repeat].notNil or: { previous[\stop].notNil } };
+
+    if (ndefList[id].isNil or: wasFinite)
     { ndefList.put(id, Ndef(id, pdef).quant_(quant)) };
 
     ^ndefList.copy;
@@ -507,13 +514,13 @@ Px {
     if (hasFadeOut)
     { last.removeAt(pattern[\id]) };
 
+    // Finite patterns leave the active set immediately, but their Ndef keeps
+    // sounding until it ends. It stays in ndefList so a Mix rebuild triggered by
+    // another pattern still includes it, and its meter slot stays mapped.
+    // prCreatePlayList re-sources it when the pattern is evaluated again.
     if (hasRepeat or: hasEmptyDur or: hasStop) {
       cycleOrigins.removeAt(pattern[\id]);
       last.removeAt(pattern[\id]);
-      ndefList.removeAt(pattern[\id]);
-
-      meterIdMap = meterIdMap.select { |v| v != pattern[\id] };
-      meterLevels.removeAt(pattern[\id]);
     };
   }
 }

@@ -210,10 +210,12 @@ Dx : Px {
   }
 
   *stop {
+    this.prRemoveDxGroups;
+
     last.copy do: { |pattern|
 
       if (pattern[\dx] == true)
-      { Fx.remove(pattern[\id]) };
+      { Fx.prClearProxy(pattern[\id]) };
     };
 
     this.prStopPreset;
@@ -310,7 +312,7 @@ Dx : Px {
   }
 
   *prApplyActiveFx {
-    if (activeFx.size > 0) {
+    if (activeFx.size > 0 or: { Fx.groupFx.isEmpty.not }) {
       fork {
         Server.default.sync;
 
@@ -320,6 +322,7 @@ Dx : Px {
           this.prApplyFxToAll(fxName, value);
         };
 
+        Fx.prApplyGroups;
         Fx.prSuppressPrint = false;
       };
     };
@@ -487,6 +490,15 @@ Dx : Px {
     ^last.any { |pattern| pattern[\dx] == true };
   }
 
+  *prRemoveDxGroups {
+    Fx.groupFx.keys.asArray do: { |group|
+      var ids = this.prGroupIds(group) ?? [];
+
+      if (ids.notEmpty and: { ids.every { |id| last[id][\dx] == true } })
+      { Fx.prRemoveGroup(group) };
+    };
+  }
+
   *prRestorePresetInstruments {
     presetPatterns.asArray do: { |pattern|
       var id = this.prCreateId(pattern[\instrument]);
@@ -508,6 +520,7 @@ Dx : Px {
 
       if (pattern[\dx] == true and: { keepIds.includes(pattern[\id]).not }) {
         last.removeAt(pattern[\id]);
+        Fx.prClearProxy(pattern[\id]);
         Pdef(pattern[\id]).source = nil;
       };
     };

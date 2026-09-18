@@ -2,6 +2,7 @@ Fx {
   classvar <>chains;
   classvar <effects;
   classvar <generation;
+  classvar <groupFx;
   classvar <mixStreams;
   classvar <>pendingFx;
   classvar <>presetsPath;
@@ -15,6 +16,7 @@ Fx {
     chains = Dictionary.new;
     effects = Dictionary.new;
     generation = 0;
+    groupFx = Dictionary.new;
     mixStreams = Dictionary.new;
     pendingFx = Dictionary.new;
     prSuppressPrint = false;
@@ -25,6 +27,7 @@ Fx {
 
     CmdPeriod.add {
       generation = generation + 1;
+      groupFx.clear;
       pendingFx.clear;
       PxDebouncer.prResetSyncs;
       prSuppressPrint = true;
@@ -62,6 +65,7 @@ Fx {
       var groupName = proxyName;
 
       groupIds.do { |id| this.clear(id) };
+      groupFx.removeAt(groupName);
       proxyName = groupName;
       this.prPrint("🌵 All effects disabled on" + groupName);
       ^this;
@@ -93,6 +97,7 @@ Fx {
     };
 
     chains.clear;
+    groupFx.clear;
     mixStreams.clear;
   }
 
@@ -360,6 +365,8 @@ Fx {
       if (groupIds.isEmpty)
       { ^this.prPrint("🔴 No" + groupName + "patterns playing") };
 
+      this.prStoreGroupFx(groupName, fx, mix, args, postArgs);
+
       prSuppressPrint = true;
       groupIds.do { |id|
         proxyName = id;
@@ -513,6 +520,25 @@ Fx {
     { this.prFadeOutFx(index, fx, wetIndex, noPostln) };
   }
 
+  *prClearProxy { |id|
+    var chain, previousProxy = proxyName;
+
+    id = id.asSymbol;
+    chain = chains[id];
+
+    if (chain.isNil) { ^this };
+
+    proxyName = id;
+
+    chain.effects.keys.asArray do: { |fx|
+      this.prDisableFx(fx, immediate: true);
+    };
+
+    chains.removeAt(id);
+    mixStreams.removeAt(id);
+    proxyName = previousProxy;
+  }
+
   *prFadeOutVst {
     var chain = chains[proxyName];
     var index = this.prGetIndex(\vst);
@@ -568,6 +594,56 @@ Fx {
 
   *prPendingFx { |id|
     ^pendingFx[id] ?? { Set.new };
+  }
+
+  *prStoreGroupFx { |group, fx, mix, args, postArgs|
+    var stored = groupFx[group];
+
+    if (mix.isNil or: { mix == Nil }) {
+      if (stored.notNil) {
+        stored.removeAt(fx);
+
+        if (stored.isEmpty)
+        { groupFx.removeAt(group) };
+      };
+
+      ^this;
+    };
+
+    if (stored.isNil) {
+      stored = Dictionary.new;
+      groupFx[group] = stored;
+    };
+
+    stored[fx] = [mix, args, postArgs];
+  }
+
+  *prRemoveGroup { |group|
+    groupFx.removeAt(group.asSymbol);
+  }
+
+  *prApplyGroups {
+    var previousProxy = proxyName;
+    var previousSuppress = prSuppressPrint;
+
+    if (groupFx.isEmpty) { ^this };
+
+    prSuppressPrint = true;
+
+    groupFx.copy.keysValuesDo { |group, stored|
+      var ids = Px.prGroupIds(group) ?? [];
+
+      ids do: { |id|
+        proxyName = id;
+
+        stored.copy.keysValuesDo { |fx, call|
+          this.prAddEffect(fx, call[0], call[1], call[2], true);
+        };
+      };
+    };
+
+    prSuppressPrint = previousSuppress;
+    proxyName = previousProxy;
   }
 
   *prMarkPending { |ids, fx|

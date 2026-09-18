@@ -49,8 +49,20 @@
   }
 
   pwrand { |weights, repeats|
-    if (weights.isArray.not) {
-      Error("pwrand requires an Array of weights").throw;
+    if (weights.isNumber) {
+        if (this.size != 2) {
+            Error("pwrand number weights require an Array of 2 items").throw;
+        };
+
+        if (weights < 0 or: { weights > 1 }) {
+            Error("pwrand number must be between 0 and 1").throw;
+        };
+
+        weights = [1 - weights, weights];
+    } {
+        if (weights.isArray.not) {
+            Error("pwrand requires an Array of weights").throw;
+        };
     };
 
     ^Pwrand(this, weights.normalizeSum, repeats ?? inf);

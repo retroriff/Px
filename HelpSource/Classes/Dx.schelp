@@ -284,6 +284,8 @@ Gets or sets the volume for drum machine presets.
 argument:: amp
 Amplitude value (0-1). If omitted, prints current volume.
 
+note:: When the drums are stopped, setting the volume only stores the value for the next preset; it does not restart playback.::
+
 code::
 Dx.vol;       // Print current volume
 Dx.vol(0.5);  // Set volume to 0.5

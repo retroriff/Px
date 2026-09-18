@@ -279,7 +279,7 @@ Dx : Px {
 
     dxAmp = amp;
 
-    if (lastPreset.notEmpty)
+    if (lastPreset.notEmpty and: { this.prIsPlaying })
     { this.preset(lastPreset[0], lastPreset[1], amp) };
   }
 
@@ -477,6 +477,10 @@ Dx : Px {
     if (names.isNil) { ^false };
 
     ^names.includes(instrument.asString);
+  }
+
+  *prIsPlaying {
+    ^last.any { |pattern| pattern[\dx] == true };
   }
 
   *prRestorePresetInstruments {

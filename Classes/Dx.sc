@@ -10,6 +10,7 @@ Dx : Px {
   classvar <>lastPreset;
   classvar <presetsDict;
   classvar <presetPatterns;
+  classvar sync101;
 
   *initClass {
     aliases = Dictionary[
@@ -23,6 +24,7 @@ Dx : Px {
     ];
     drumMachine = \RolandTR909;
     dxAmp = 0.3;
+    sync101 = false;
 
     activeFx = Dictionary.new;
     instrumentFolders = Dictionary.new;
@@ -162,12 +164,12 @@ Dx : Px {
   }
 
 
-  *shuffle {
+  *shuffle { |update101 = false|
     var folders = this.prGetDrumMachinesFolders;
     var randomIndex = folders.size.rand;
     var instruments;
 
-    Dx.use(folders[randomIndex]);
+    Dx.use(folders[randomIndex], update101);
     instruments = this.instruments;
     ^("🎲" ++ folders[randomIndex] + ":" ++ instruments);
   }
@@ -238,7 +240,7 @@ Dx : Px {
     this.prAutoRefreshGui;
   }
 
-  *use { |newDrumMachine|
+  *use { |newDrumMachine, update101 = false|
     if (newDrumMachine.isNil)
     { ^drumMachine };
 
@@ -256,13 +258,15 @@ Dx : Px {
     drumMachine = newDrumMachine;
 
     last.copy do: { |pattern|
+      var is101 = pattern[\is101] == true;
 
-      if (pattern[\dx] == true) {
+      if (pattern[\dx] == true or: { update101 and: { is101 } }) {
         if (this.prHasInstrument(pattern[\instrument]) == true) {
           pattern[\drumMachine] = newDrumMachine;
           this.new(pattern);
         } {
-          Px.stop(pattern[\id]);
+          if (is101.not)
+          { Px.stop(pattern[\id]) };
         }
       };
     };
@@ -270,7 +274,7 @@ Dx : Px {
     this.prRestorePresetInstruments;
     this.prApplyActiveFx;
 
-    ^("🥁 Instruments:" + this.instruments);
+    ^("🥁" + this.instruments);
   }
 
   *vol { |amp|

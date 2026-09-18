@@ -2,7 +2,7 @@
 
 + Dx {
   *gui {
-    var drumMachinesList;
+    var drumMachinesList, sync101Box;
     var folders = this.prGetDrumMachinesFolders;
     var firstCol, secondCol, thirdCol, mainView, row;
     var width = 420, height = 350;
@@ -48,17 +48,18 @@
 
     thirdCol = CompositeView(row, 100@320);
     thirdCol.decorator = FlowLayout(thirdCol.bounds);
+    thirdCol.decorator.gap = 10@10;
 
     // Labels
     StaticText(firstCol, 200@20).align_(\center).string_("Drum Machines").stringColor_(Color.white);
     StaticText(secondCol, 80@20).align_(\center).string_("Amp").stringColor_(Color.white);
-    StaticText(thirdCol, 80@20).align_(\center).string_("").stringColor_(Color.white);
+    StaticText(thirdCol, 80@14).align_(\center).string_("").stringColor_(Color.white);
 
     // 🥁 Drum machine list
     drumMachinesList = EZListView(
       parentView: firstCol,
       bounds: 200@300,
-      globalAction: { |ez| Dx.use(folders[ez.value]).postln },
+      globalAction: { |ez| Dx.use(folders[ez.value], sync101).postln },
       items: folders,
       initVal: folders[0],
       initAction: false
@@ -80,11 +81,11 @@
     this.prCreateKnob(secondCol, "Reverb", Dx.activeFx[\reverb], { |v| Dx.fx(\reverb, v.value) });
 
     // 🔀 Random button
-    Button(thirdCol, 80@145)
+    Button(thirdCol, 80@126)
     .states_([["Random", Color.white, linkColor]])
     .action_({
       var idx;
-      this.shuffle.postln;
+      this.shuffle(sync101).postln;
       idx = this.prGetDrumMachinesListIndex(folders);
       drumMachinesList.value = idx;
     })
@@ -98,7 +99,7 @@
     });
 
     // 🔴 Stop button
-    Button(thirdCol, 80@145)
+    Button(thirdCol, 80@126)
     .states_([
       ["Stop", Color.white, Color.red(0.8)],
       ["Play", Color.white, Color.new255(0, 193, 137)],
@@ -108,6 +109,13 @@
       { Dx.preset(Dx.lastPreset[0], Dx.lastPreset[1]) }
       { Dx.stop };
     });
+
+    // 🔁 Update 101 patterns toggle
+    sync101Box = CheckBox(thirdCol, 80@20, "101 Sync")
+    .action_({ |box| sync101 = box.value })
+    .value_(sync101);
+
+    sync101Box.palette = sync101Box.palette.windowText_(Color.white);
 
     w.front;
   }

@@ -363,7 +363,8 @@
 
       newPattern.putAll([
         \drumMachine, resolvedMachine,
-        \drumMachineIntegerId, drumMachineIntegerId
+        \drumMachineIntegerId, drumMachineIntegerId,
+        \is101, this.asSymbol == \101
       ]);
 
       ^Dx(newPattern);

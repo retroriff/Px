@@ -1,7 +1,7 @@
 # LLM Agent Task Routing
 
 - Write clean, solid, and maintainable code.
-- Avoid unnecessary comments. The code should be self-explanatory through clear naming and structure. Only add comments to explain non-obvious logic, edge cases, or complex behavior.
+- **Do not add comments.** The code must be self-explanatory through clear naming and structure. Never narrate what a line does, restate a method or variable name, or justify a layout, size or parameter choice. The only acceptable comments are the section markers already used in a file (e.g. the emoji labels in the GUI classes) and a rare note about an external constraint that cannot be expressed in code. When in doubt, write no comment.
 
 ### Primary References (read in order)
 

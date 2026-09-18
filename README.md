@@ -236,11 +236,11 @@ Dx.preset(\electro, 1);
 | `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/dx/)         |
 | `release`     | None                                              | Releases with fadeTime                 |
 | `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns  |
-| `shuffle`     | None                                              | Shuffles the drum machines bank        |
+| `shuffle`     | update101?: boolean                               | Shuffles the drum machines bank        |
 | `solo`        | instrument: symbol \| false                       | Solos one or more drum instruments     |
 | `stop`        | None                                              | Same as `\808 i: \all`                 |
 | `unsolo`      | None                                              | Restores drum patterns muted by solo   |
-| `use`         | machine?: symbol \| number                        | Switches the active drum machine       |
+| `use`         | machine?: symbol \| number, update101?: boolean   | Switches the active drum machine       |
 | `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns    |
 
 ## 🔄 Lx: Multi-Track Sample Looper

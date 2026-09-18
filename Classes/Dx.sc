@@ -169,7 +169,7 @@ Dx : Px {
 
     Dx.use(folders[randomIndex]);
     instruments = this.instruments;
-    ^("🎲 Drum machine:" + folders[randomIndex] ++ ". Instruments:" + instruments);
+    ^("🎲" ++ folders[randomIndex] + ":" ++ instruments);
   }
 
 

@@ -257,6 +257,22 @@ pattern's grid begins, and the quant is passed as `[cycle, origin % cycle]`.
 - `Px.cycleOrigins` - Beat where each pattern's quantization grid begins
 - `ndefList` - NodeProxy instances
 
+**Active set vs. live audio:** these track two different lifecycles. `last`/`cycleOrigins` are the
+active set — what gets re-evaluated, listed in the GUI and targeted by `solo`/`mute`. `ndefList` is
+the set of NodeProxies feeding the master mix, and `Px.new` rebuilds that mix as
+`Ndef(\px)[0] = { Mix.new(playList.values) }` whenever a new Ndef appears. Finite patterns
+(`repeat`, `stop`) leave the active set as soon as they are created, via
+`prRemoveFinitePatternFromLast`, but stay in `ndefList` until something clears them — otherwise
+creating any new pattern would rebuild the mix without them and cut them off mid-playback. Their
+entry in `meterIdMap` stays for the same reason: the `SendPeakRMS` filter slot is still on the Ndef.
+
+**Re-triggering a finite pattern:** a finite Pdef ends its own stream, and `EventPatternProxy`
+only picks up a new source from inside its embed loop, so once that loop exits the Ndef's player is
+dead — setting `Pdef(id).source` again is not enough. `prCreatePlayList` therefore re-sources the
+Ndef (`Ndef(id, pdef)`) when the *previous* `lastFormatted[id]` had `repeat` or `stop`. Infinite
+patterns are deliberately not re-sourced: they are still running and swap in the new source
+themselves, so re-sourcing would reset the stream on every parameter tweak.
+
 ### Pattern Deletion
 
 Stop methods remove patterns from all four storage locations. Integer IDs **do not get reused** - sequence continues with gaps (this is intentional).

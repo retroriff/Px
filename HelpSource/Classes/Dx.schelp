@@ -328,7 +328,7 @@ subsection:: Utilities
 method:: gui
 Toggles a GUI window for controlling the drum machine. Opens the window if closed, closes it if open. The window opens at the current mouse position.
 
-The window lists the available drum machines, provides amp, delay and reverb knobs, a Random button that switches to a random machine, a Stop/Play button and a code::101:: checkbox. When the checkbox is checked, switching machines from the list or with Random also migrates the patterns declared with the dynamic code::101:: alias, as link::#*use:: and link::#*shuffle:: do with their code::update101:: argument.
+The window lists the available drum machines sorted by name, highlighted with a teal row background when the machine has an entry in code::Data/drum-machines.yaml::. It provides amp, delay and reverb knobs, a Random button that switches to a random machine, a Stop/Play button and a code::101:: checkbox. When the checkbox is checked, switching machines from the list or with Random also migrates the patterns declared with the dynamic code::101:: alias, as link::#*use:: and link::#*shuffle:: do with their code::update101:: argument.
 
 code::
 Dx.gui; // toggle open/close

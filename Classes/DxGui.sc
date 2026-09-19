@@ -3,10 +3,15 @@
 + Dx {
   *gui {
     var drumMachinesList, sync101Box;
-    var folders = this.prGetDrumMachinesFolders;
     var firstCol, secondCol, thirdCol, mainView, row;
     var width = 420, height = 350;
     var linkColor = Color.new255(31, 41, 55);
+    var documentedColor = Color.new255(15, 118, 110);
+    var folders = this.prGetDrumMachinesFolders;
+    var machineNames = folders.collect { |folder| this.prGetMachineName(folder) };
+    var machineColors = folders.collect { |folder|
+      if (machinesDict[folder.asSymbol].notNil) { documentedColor } { linkColor };
+    };
     var origin = Px.prMouseOrigin(width, height);
     var w;
 
@@ -60,13 +65,14 @@
       parentView: firstCol,
       bounds: 200@300,
       globalAction: { |ez| Dx.use(folders[ez.value], sync101).postln },
-      items: folders,
-      initVal: folders[0],
+      items: machineNames,
+      initVal: machineNames[0],
       initAction: false
     )
     .listView
     .background_(linkColor)
-    .stringColor_(Color.white);
+    .stringColor_(Color.white)
+    .colors_(machineColors);
 
     // Set the initial value of the drum machine list
     if (Dx.drumMachine.notNil) {
@@ -140,7 +146,9 @@
   }
 
   *prGetDrumMachinesFolders {
-    ^PathName(drumMachinesPath).folders.collect(_.folderName);
+    ^PathName(drumMachinesPath).folders
+    .collect(_.folderName)
+    .sort { |a, b| this.prGetMachineName(a) < this.prGetMachineName(b) };
   }
 
   *prGetDrumMachinesListIndex { |folders|

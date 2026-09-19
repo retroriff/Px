@@ -8,6 +8,7 @@ Dx : Px {
   classvar <instrumentFolders;
   classvar instrumentNames;
   classvar <>lastPreset;
+  classvar <machinesDict;
   classvar <presetsDict;
   classvar <presetPatterns;
   classvar sync101;
@@ -31,6 +32,7 @@ Dx : Px {
     instrumentNames = Dictionary.new;
     lastPreset = Array.new;
     presetPatterns = Array.new;
+    this.prCreateMachinesDict;
     this.prCreatePresetsDict;
 
     CmdPeriod.add {
@@ -405,6 +407,15 @@ Dx : Px {
     ^[tooHighMsg, loadedMsg].reject(_.isNil).join("\n");
   }
 
+  *prCreateMachinesDict {
+    var path = ("../Data/drum-machines.yaml").resolveRelative;
+
+    machinesDict = Dictionary.new;
+
+    if (File.exists(path))
+    { machinesDict = PresetsFromYAML(File.readAllString(path).parseYAML) };
+  }
+
   *prCreatePresetsDict {
     presetsDict = Dictionary.new;
 
@@ -448,6 +459,12 @@ Dx : Px {
         instrumentNames[folder.asSymbol] = names;
       };
     };
+  }
+
+  *prGetMachineName { |machine|
+    var entry = machinesDict[machine.asSymbol];
+
+    ^(entry !? { entry[\name] }) ? machine.asString;
   }
 
   *prSampleCount { |machine, folder|

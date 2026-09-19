@@ -136,6 +136,8 @@ Classes/           - Core class definitions (.sc files)
 Effects/          - Effect definitions (.scd files)
 SynthDefs/        - Synth definitions (.scd files)
 Presets/dx/     - Drum machine presets (YAML)
+Data/             - Reference metadata (YAML)
+  drum-machines.yaml - Drum machine specs keyed by sample folder name
 Examples/         - Usage examples (.scd files)
 ```
 

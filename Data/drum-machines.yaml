@@ -1,0 +1,117 @@
+DRM16:
+  name: Electro-Harmonix DRM-16
+  manufacturer: Electro-Harmonix
+  year: 1978
+  type: Analog voices with digital pattern matrix
+  notes: >-
+    Built in New York City by **Electro-Harmonix** and sold as the Digital Rhythm Matrix, model EH-7450, it was a
+    rare detour outside the company's guitar pedal catalogue and stayed in production only briefly at the turn of
+    the 1980s. A cut-down sibling, the DRM-15, and a trigger-based Sequencer Drum pedal rounded out the short-lived
+    rhythm line.
+
+    Cabaret Voltaire used an Electro-Harmonix DRM-16
+
+KorgMinipops:
+  name: Korg Minipops
+  manufacturer: Keio Electronic Laboratories
+  year: 1966
+  type: Analog preset rhythm machine
+  notes: >-
+    Built in Japan by Keio Electronic Laboratories, the company that later renamed itself Korg, the Mini Pops
+    line succeeded the electromechanical Donca-Matic units and became Keio's first all solid-state rhythm
+    machines.
+
+    The flagship Mini Pops 7 carried fifteen voices — bass, two snares, rimshot, hi-hat, two cymbals, cowbell,
+    conga, large and small bongo, claves, quijada, guiro and tambourine — all generated with inductors, which
+    makes the circuit notoriously hard to clone. Individual faders let each voice be balanced in the mix, a rare
+    luxury for the period.
+
+    Donna Summer / Pete Bellotte / Giorgio Moroder: Used a Korg Minipops (cha-cha preset) to lay down the steady 
+    foundation for "Love to Love You Baby".
+
+    Métal Urbain used a Korg Minipops 120P, which Eric Débris modified with custom soldered switches and wiring.
+
+Rhythm10:
+  name: Farfisa Rhythm 10
+  manufacturer: Farfisa
+  year: 1969
+  type: Analog preset rhythm machine
+  notes: >-
+    Built in Italy by **Farfisa** (Fabbriche Riunite di Fisarmoniche), the organ maker behind the Compact combo
+    organs, the Rhythm 10 is a battery-powered analog box with ten preset patterns.
+
+    Five buttons — Drum, Bongo, Claves, Snare D. and Cymbal — trigger the voices by hand so the player can fill
+    over the sequencer, and a hard-wired footswitch halts the pattern and restarts it from the downbeat. Pushing
+    the volume control past halfway drives the output into audible saturation, most obvious on the kick-like
+    "Drum" voice.
+
+    Michael Rother (Neu!) processed a Farfisa Rhythm 10 through guitar pedals and filters.
+
+    Combined Jaki Liebezeit's live drumming with a Farfisa Rhythm 10 on "Peking O" and "Spoon".
+
+    Kraftwerk used a Farfisa Rhythm 10 on Kraftwerk 2 ("Klingklang") and Ralf und Florian. 
+
+    Wolfgang Flür wired the Farfisa's internal contact points to custom DIY metal drum plates to build their iconic electronic drum kit.
+
+    Cluster used it on Zuckerzeit and Harmonia recordings.
+
+    Cabaret Voltaire: Used a battery-powered Farfisa Rhythm 10.
+
+RhythmAce:
+  name: Ace Tone Rhythm Ace
+  manufacturer: Ace Tone
+  year: 1967
+  type: Analog preset rhythm machine
+  notes: >-
+    Developed in Japan by **Ikutaro Kakehashi**, and rebranded in the UK as the Bentley Rhythm Ace, it was
+    one of the first transistorized, fully automatic drum machines to achieve widespread
+    commercial success and shape popular music.
+
+    Users discovered they could press multiple buttons simultaneously to combine patterns into new polyrhythms,
+    as well as use "cancel" buttons to mute specific instruments like the bass drum or cymbals.
+
+    J. J. Cale used the Rhythm Ace on his 1971 album *Naturally* ("Call Me the Breeze", "Crazy Mama") simply because he lacked the funds to hire a live drummer.
+
+    Rhythm Ace circuits integrated into Lowrey home organs powered Timmy Thomas's "Why Can't We Live Together" (1972).
+
+    Chris Carter of Throbbing Gristle processed a secondhand Bentley Rhythm Ace through distortion, phasers, and wah-wah pedals to create heavy industrial tape loops.
+
+    Brian Eno also featured it on his solo album Taking Tiger Mountain (By Strategy).
+
+RhythmPrince:
+  name: Seeburg Rhythm Prince
+  manufacturer: Seeburg
+  year: 1967
+  type: Electro-mechanical preset rhythm machine
+  notes: >-
+    Built in the United States by **Seeburg**, the jukebox and coin-operated music firm, in collaboration with the
+    home organ maker Gulbransen. It descends from the Kinsman Rhythm Prince and sits alongside the Select-A-Rhythm
+    in the lineage that Seeburg's 1964 automatic rhythm patent opened up, predating the transistorized preset
+    machines that followed it.
+
+    Controls are limited to volume, tempo and the pattern buttons — two foxtrots, rhumba, samba, cha cha, 6/8 and
+    2/4 marches and a waltz — and holding two presets down at once runs them together as a hybrid rhythm.
+
+    Suicide (Martin Rev & Alan Vega): Used an analog Seeburg Rhythm Prince (cranking its tempo for tracks like 
+    "Rocket USA" and "Frankie Teardrop"), later purchasing a used Univox SR-95.
+
+RolandTR707:
+  name: Roland TR-707
+  manufacturer: Roland
+  year: 1985
+  type: Digital sample playback
+  notes: Crisp 12-bit kit, a house and Chicago acid regular
+
+RolandTR808:
+  name: Roland TR-808
+  manufacturer: Roland
+  year: 1980
+  type: Analog
+  notes: Booming tunable kick, cornerstone of electro and hip-hop
+
+RolandTR909:
+  name: Roland TR-909
+  manufacturer: Roland
+  year: 1983
+  type: Analog / sample hybrid
+  notes: House and techno staple

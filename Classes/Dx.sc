@@ -408,7 +408,7 @@ Dx : Px {
   }
 
   *prCreateMachinesDict {
-    var path = ("../Data/drum-machines.yaml").resolveRelative;
+    var path = ("../Data/dx/drum-machines.yaml").resolveRelative;
 
     machinesDict = Dictionary.new;
 
@@ -419,7 +419,7 @@ Dx : Px {
   *prCreatePresetsDict {
     presetsDict = Dictionary.new;
 
-    PathName(("../Presets/dx/").resolveRelative).filesDo{ |file|
+    PathName(("../Data/dx/presets/").resolveRelative).filesDo{ |file|
       var fileName = file.fileNameWithoutExtension.asSymbol;
       var filePath = File.readAllString(file.fullPath);
       presetsDict.put(fileName, PresetsFromYAML(filePath.parseYAML))

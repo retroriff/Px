@@ -45,7 +45,7 @@ The extension uses **method chaining on Integer and Symbol classes** to enable c
 
 4. **Dx** (Classes/Dx.sc) - Drum machine presets (extends Px)
 
-   - Loads YAML presets from `Presets/dx/`
+   - Loads YAML presets from `Data/dx/presets/`
    - Shorthand syntax: `808 i: \bd dur: 1` routes through drum machine
    - Maps instrument symbols to PlayBuf-based sample playback
 
@@ -113,7 +113,7 @@ Fx.loadEffects;  // Reload effect files from Effects/
 **Loading Presets:**
 
 ```supercollider
-Dx.loadPresets;  // Reload YAML presets from Presets/dx/
+Dx.loadPresets;  // Reload YAML presets from Data/dx/presets/
 ```
 
 ### File Organization
@@ -135,9 +135,10 @@ Classes/           - Core class definitions (.sc files)
 
 Effects/          - Effect definitions (.scd files)
 SynthDefs/        - Synth definitions (.scd files)
-Presets/dx/     - Drum machine presets (YAML)
-Data/             - Reference metadata (YAML)
-  drum-machines.yaml - Drum machine specs keyed by sample folder name
+Data/             - YAML data
+  cx/minilab3.yaml   - MIDI controller mappings
+  dx/drum-machines.yaml - Drum machine specs keyed by sample folder name
+  dx/presets/        - Drum machine presets
 Examples/         - Usage examples (.scd files)
 ```
 
@@ -158,7 +159,7 @@ Examples/         - Usage examples (.scd files)
 
 **Adding a drum preset:**
 
-1. Create YAML file in `Presets/dx/`
+1. Create YAML file in `Data/dx/presets/`
 2. Run `Dx.loadPresets` to reload
 3. Test with `Dx.preset(\name)`
 

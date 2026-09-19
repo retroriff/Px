@@ -1,1 +1,141 @@
-AGENTS.md
+# LLM Agent Task Routing
+
+- Write clean, solid, and maintainable code.
+- **Do not add comments.** The code must be self-explanatory through clear naming and structure. Never narrate what a line does, restate a method or variable name, or justify a layout, size or parameter choice. The only acceptable comments are the section markers already used in a file (e.g. the emoji labels in the GUI classes) and a rare note about an external constraint that cannot be expressed in code. When in doubt, write no comment.
+
+### Primary References (read in order)
+
+1. **`Docs/init-context.md`** - Complete architecture and development workflow
+   - Core class hierarchy
+   - How the DSL pattern works
+   - Pattern generation flow
+   - Development workflow and testing
+   - How to add features (effects, parameters, presets)
+
+2. **`Docs/pattern-internals.md`** - Deep technical reference for pattern system
+   - Pattern data structure (all dictionary keys)
+   - ID systems (regular, manual drum, preset patterns)
+   - Beat generation and fill mechanics
+   - Drum machine architecture internals
+   - Pattern lifecycle and relationships
+
+3. **`Docs/code-conventions.md`** - Code formatting rules
+   - Blank lines around conditionals
+
+4. **`Classes/*.sc`** - Source code to modify
+   - `Classes/Number.sc` - Integer method extensions (DSL entry point)
+   - `Classes/Px.sc` - Base pattern generator
+   - `Classes/PxDebouncer.sc` - Internal class that batches method chain calls into a single pattern update
+   - `Classes/Fx.sc` - Effects handler
+   - `Classes/Dx.sc` - Drum machines
+   - `Classes/Lx.sc` - Multi-track granular looper
+   - `Classes/LxGui.sc` - Lx GUI extension
+   - `Classes/Nx.sc` - Musical chord data manager
+   - See `Docs/init-context.md` for full file organization
+
+### Development Quick Reference
+
+**Common development tasks:**
+
+- Add effect → Edit `Effects/*.scd` + `Classes/Fx.sc` + `Classes/PxFx.sc` (Number DSL method mirrors Fx method, excluding `pan`)
+- Add pattern parameter → Edit `Classes/Number.sc` + `Classes/Px.sc`
+- Add drum preset → Create `Data/dx/presets/*.yaml`
+- Add chord → Edit `Score/*.scd`
+- Add granular loop feature → Edit `Classes/Lx.sc` + `Classes/LxGui.sc`
+- Add/modify class method → Update corresponding `HelpSource/Classes/<ClassName>.schelp`
+
+**Documentation conventions:**
+
+- When creating a new feature or updating the functionality of an existing one, always update the documentation
+- Documentation must be updated in three places:
+  1. **Help files** (`HelpSource/Classes/<ClassName>.schelp`) - Detailed SCDoc format documentation
+  2. **README.md** - Brief feature listing in the class methods tables
+  3. **px-agent docs** (`~/icloud/Music/SuperCollider/px-agent/Docs/`) - Agent reference documentation
+- Help files are only maintained for **project-defined classes** (Px, Fx, Sx, Dx, Nx). Do NOT create or update help files for SC built-in classes extended by this project (Array, Symbol, Number, etc.)
+- Private methods (starting with `pr`) are not documented
+- When adding new public methods to project-defined classes, update the corresponding help file and add the method to the README table
+- Reference existing help files (Px.schelp, Fx.schelp, Sx.schelp) for format examples
+- README entries should be concise (one-line description); help files contain full details and examples
+
+**Data file conventions:**
+
+- Dictionary entries must be in alphabetical order by key
+- When adding new entries, insert at the correct alphabetical position
+
+---
+
+## Dependencies
+
+- **Bjorklund** — Euclidean rhythm generation
+- **VSTPlugin** — VST plugin integration
+
+## File Type Reference
+
+- `.sc` - SuperCollider class definitions (source code)
+- `.scd` - SuperCollider data/scripts (executable code, effect definitions)
+- `.schelp` - SuperCollider help files (SCDoc format documentation)
+- `.yaml` - Drum machine preset data
+
+## Class Extensions Across Files
+
+SuperCollider's `+ ClassName { }` syntax allows extending classes across multiple files. When investigating a class, search ALL files for extensions:
+
+**Number** (DSL entry point methods):
+
+- `Number.sc` - Core methods (play, loop, amp, dur, beat, etc.)
+- `PxNotes.sc` - Note methods (degree, arp, scale, sus)
+- `PxFx.sc` - Effect methods
+- `PxBuf.sc` - Buffer/sample methods
+- `PxMidi.sc` - MIDI methods
+
+**Px** (pattern generator):
+
+- `Px.sc` - Core pattern creation
+- `PxBeats.sc` - Beat generation
+- `PxNotes.sc` - Degree/scale processing
+- `PxFx.sc` - Effect processing
+- `PxBuf.sc` - Buffer/loop handling
+- `PxMidi.sc` - MIDI integration
+- `PxGui.sc` - GUI methods
+- `PxRand.sc` - Randomization
+- `PxMethods.sc` - Utility methods
+
+**Symbol**: `Symbol.sc`, `PxNotes.sc`, `PxBuf.sc`, `PxMidi.sc`
+
+When debugging or modifying behavior, always grep for `^\+ ClassName` to find all extensions.
+
+## Classvars in extension files
+
+Extension files like `PxMidi.sc` contain multiple `+ ClassName` blocks (e.g., `+ Px` and `+ Number`). Px classvars (`last`, `ndefList`, `midiOut`, etc.) are accessible via `this` from **any** block in the file — including `+ Number` methods — because the file is an extension of the Px class. Do **not** replace `this.last` or `this.ndefList` with `Px.last` or `Px.ndefList` in these files.
+
+# Variable definitions
+
+In SuperCollider, all `var` declarations in a scope must appear **before any executable statements**. Placing a `var` after an `if` or any other expression is a syntax error.
+
+```supercollider
+// BAD — var after executable statement
+myMethod { |x|
+    if (x > 5) { ^x };
+    var y = 10; // syntax error
+}
+
+// GOOD — all vars declared first
+myMethod { |x|
+    var y = 10;
+
+    if (x > 5) { ^x };
+}
+```
+
+`var` is lexically scoped and each { ... } introduces a new lexical scope (function block).
+Variables defined inside an if branch belong only to that branch's scope and are not visible outside.
+If a variable is used across branches or later in the function, it must be declared in the outer (top-level) scope.
+
+## Commits
+
+- Do NOT add `Co-Authored-By` trailers to commit messages.
+
+## Verifying behavior with sclang
+
+- Do NOT launch `sclang` (directly or via a `.scd` script) to test or verify behavior unless the user explicitly asks for it. The user runs a live SuperCollider session for music performance — booting the server or compiling the class library interrupts it.
+- Verify through static code reading instead. If that's insufficient and running code is the only way to confirm something, ask the user first.

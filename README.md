@@ -233,7 +233,7 @@ Dx.preset(\electro, 1);
 | `gui`         | None                                              | Toggles a drum machine bank GUI        |
 | `instruments` | machine?: symbol                                  | Available instruments + sample counts  |
 | `loadPresets` | None                                              | Reloads presets from YAML files        |
-| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Presets/dx/)         |
+| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Data/dx/presets/)         |
 | `release`     | None                                              | Releases with fadeTime                 |
 | `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns  |
 | `shuffle`     | update101?: boolean                               | Shuffles the drum machines bank        |
@@ -359,7 +359,7 @@ Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (
 
 ## 🎛️ Cx: External MIDI Controller Bridge
 
-Maps external MIDI controllers to Px pattern parameters via YAML configs. Rotary encoders adjust `\amp`, `\dur`, `\pan`, etc. on the active patterns in real time. Slot N targets the Nth pattern in the GUI sort order; add or remove patterns and the mapping shifts automatically. Configs live in [Presets/cx/](/Presets/cx/); the default `minilab3.yaml` covers an Arturia MiniLab 3's 8 rotaries.
+Maps external MIDI controllers to Px pattern parameters via YAML configs. Rotary encoders adjust `\amp`, `\dur`, `\pan`, etc. on the active patterns in real time. Slot N targets the Nth pattern in the GUI sort order; add or remove patterns and the mapping shifts automatically. Configs live in [Data/cx/](/Data/cx/); the default `minilab3.yaml` covers an Arturia MiniLab 3's 8 rotaries.
 
 ### Cx class methods
 
@@ -446,5 +446,5 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | ------------- | ------------------------------ | ------------------------------------ |
 | `init`        | time?: number                  | Controls the latency. Default is 0.2 |
 | `loadPresets` | None                           | Reloads presets from YAML files      |
-| `preset`      | name?: string \| index: number | Plays a [preset](/Presets/dx/)       |
+| `preset`      | name?: string \| index: number | Plays a [preset](/Data/dx/presets/)       |
 | `stop`        | None                           | Same as `\808 i: \all`               |

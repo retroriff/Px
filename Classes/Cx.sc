@@ -44,7 +44,7 @@ Cx {
   }
 
   *load { |name|
-    var path = ("../Presets/cx/" ++ name ++ ".yaml").resolveRelative;
+    var path = ("../Data/cx/" ++ name ++ ".yaml").resolveRelative;
 
     if (File.exists(path).not)
     { ^("🔴 Cx: config not found:" + path).warn };

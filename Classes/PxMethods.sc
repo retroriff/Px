@@ -201,6 +201,7 @@
     var tailWait = 2;
     var fadeTime = 2;
     var stopAll = idArray.isNil;
+    var tailWaits = Dictionary.new;
 
     if (stopAll)
     { ^this.prStopAll };
@@ -220,6 +221,8 @@
       if (pattern.notNil and: { pattern[\hasGate] == false })
       { this.prChannelNoteOff(pattern[\chan]) };
 
+      tailWaits[id] = this.prStopTailWait(pattern, tailWait);
+
       cycleOrigins.removeAt(id);
       last.removeAt(id);
       lastFormatted.removeAt(id);
@@ -234,7 +237,7 @@
 
     idArray.do { |id|
       fork({
-        tailWait.wait;
+        (tailWaits[id] ?? tailWait).wait;
 
         if (ndefList[id].isNil) {
           Ndef(id).clear;
@@ -257,6 +260,15 @@
     };
 
     this.prAutoRefreshGui;
+  }
+
+  *prStopTailWait { |pattern, tailWait|
+    var offset = pattern !? { |value| value[\timingOffset] };
+
+    if (offset.isNumber.not)
+    { ^tailWait };
+
+    ^tailWait + (offset.max(0) * TempoClock.default.beatDur);
   }
 
   *synthDef { |synthDef|

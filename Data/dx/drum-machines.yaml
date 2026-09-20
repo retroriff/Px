@@ -11,6 +11,24 @@ DRM16:
 
     Cabaret Voltaire used an Electro-Harmonix DRM-16
 
+KorgKR55:
+  name: Korg KR-55
+  manufacturer: Korg
+  year: 1979
+  type: Analog preset rhythm machine
+  notes: >-
+    Built in Japan by **Korg** as the Korg Rhythm 55, it opened the KR line that later produced the smaller KR-33
+    and the programmable KPR-77, and it was reissued as the KR-55B with a revised output section.
+
+    Its standout feature—considered quite revolutionary for the time—was a set of six mixer controls that 
+    allowed users to adjust the individual volume levels of its 12 drum sounds.
+
+    Mute Records founder Daniel Miller utilized the KR-55 alongside an ARP 2600 synthesizer, using the KR-55 
+    for conventional hi-hat and snare sounds while crafting the kick drum on the ARP.
+
+    Miller brought the KR-55 into the studio for Depeche Mode's debut album, Speak & Spell, using the machine's "Disco 2" 
+    preset pattern as the foundation for the track "Photographic".
+
 KorgMinipops:
   name: Korg Minipops
   manufacturer: Keio Electronic Laboratories
@@ -94,6 +112,21 @@ RhythmPrince:
 
     Suicide (Martin Rev & Alan Vega): Used an analog Seeburg Rhythm Prince (cranking its tempo for tracks like 
     "Rocket USA" and "Frankie Teardrop"), later purchasing a used Univox SR-95.
+
+RolandSystem100:
+  name: Roland System-100
+  manufacturer: Roland
+  year: 1975
+  type: Semi-modular analog synthesizer
+  notes: >-
+    The system combined two monophonic synthesizers (a main keyboard unit and a secondary "brain" unit) housing oscillators, 
+    filters, envelope generators, attenuators, built-in speakers, a four-channel mixer, and a 12-step sequencer.
+
+    It is not a rhythm machine. Every sound here is percussion patched by hand rather than selected from a kit:
+    noise through the filter for snares and hats, a fast pitch envelope on the oscillator for kicks and toms.
+
+    Rather than being a standalone drum machine, the Roland System 100 was a semi-modular synthesizer costing nearly $2,000, 
+    purchased by Martyn Ware and Ian Craig Marsh for their work in The Future and The Human League
 
 RolandTR707:
   name: Roland TR-707

@@ -63,6 +63,9 @@ controls:
 device: "Minilab3"
 encoderMode: bin_offset
 pads:
+  - action: gui
+    cc: 56
+    target: Dx
   - action: shuffle
     cc: 59
   - action: record

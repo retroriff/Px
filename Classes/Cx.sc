@@ -69,6 +69,7 @@ Cx {
       config[\pads] = config[\pads] collect: { |row|
         row[\action] = row[\action].asSymbol;
         row[\num] = (row[\num] ?? row[\cc]).asInteger;
+        row[\target] = (row[\target] ?? \Px).asSymbol;
         row[\type] = (row[\type] ?? \cc).asSymbol;
         row;
       };
@@ -233,13 +234,28 @@ Cx {
   *prHandlePad { |row|
     var action = row[\action];
     var args = row[\args];
+    var target = this.prPadTarget(row[\target]);
+
+    if (target.isNil)
+    { ^this };
 
     if (debug == true)
-    { ("🎛️ pad" + row[\type] + row[\num] + "→ Px." ++ action).postln };
+    { ("🎛️ pad" + row[\type] + row[\num] + "→" + target.name ++ "." ++ action).postln };
 
     if (args.isNil)
-    { { Px.perform(action) }.defer }
-    { { Px.performWithEnvir(action, args) }.defer };
+    { { target.perform(action) }.defer }
+    { { target.performWithEnvir(action, args) }.defer };
+  }
+
+  *prPadTarget { |name|
+    var class = name.asClass;
+
+    if (class.isNil) {
+      ("🟡 Cx: unknown pad target:" + name).warn;
+      ^nil;
+    };
+
+    ^class;
   }
 
   *prPerform { |id, param, value|

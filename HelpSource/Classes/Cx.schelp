@@ -50,7 +50,8 @@ controls:
 pads:
   - num: 36                   # CC or note number
     type: note                # cc (default) | note
-    action: tempo             # any Px class method
+    action: tempo             # any class method of the target
+    target: Px                # optional: class receiving the action (default Px)
     args:                     # optional: keyword arguments for the action
       add: 5
 ::
@@ -58,6 +59,8 @@ pads:
 Slot number = position in the code::controls:: list. Encoder in slot N targets the Nth pattern in code::Px.prSortedPatternIds:: unless a code::patternId:: is pinned in the row or via code::Cx.assign(slot, id)::.
 
 Pads fire on rising edge — CC value > 0, or MIDI note-on. Use code::type: note:: for controllers that send pads as note messages instead of CCs. The legacy code::cc: N:: field is still accepted as an alias for code::num: N::.
+
+The optional code::target:: field names the class the action is sent to — code::Px:: when omitted. Use code::target: Dx:: to toggle the drum machine window with code::action: gui::.
 
 The optional code::args:: mapping passes keyword arguments to the action — keys that the method does not declare are ignored. For example, code::action: tempo:: with code::add: 5:: raises the tempo by 5 BPM.
 

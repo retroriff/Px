@@ -30,7 +30,7 @@ SynthDef(\playbuf, {
     trigger: 1,
     startPos: startPos,
     loop: 0,
-    doneAction: 2
+    doneAction: 0
   ));
   sig = sig * env * amp;
   sig = Pan2.ar(sig, pan);

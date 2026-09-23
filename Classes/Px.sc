@@ -1,6 +1,4 @@
 /*
-TODO: The off generate warn messages when stopped:
-  101 i: \sd dur: 0.25 beat: [0.dup(12), 1.dup(4)].flat off: 11 rest: 12 amp: 0.2;
 TODO: Rand degree from old examples files doesn't work anymore, should we deprecate it?
   909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 degree: \rand length: 3;
 */

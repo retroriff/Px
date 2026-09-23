@@ -114,6 +114,7 @@ They also accept a list pattern of string shortcuts, so a different sample is pi
 - `chorus`: Plays a saved chorus.
 - `chop`: (dur: Integer | Nil, drop: Integer)Slices and repeats part of the beat in short bursts. Called with no arguments, it toggles: applies the default chop if none is active, disables it otherwise. Pass `0` to always disable.
 - `gui`: Opens a gui window with pattern sliders at the mouse position. Once open, it updates automatically.
+- `meter`: Toggles a server output level window at the top right corner of the screen, with one `LevelIndicator` per active output channel, the channel number underneath, and a master volume knob (-6 dB to +6 dB, double-click to reset) below them.
 - `mixer`: Opens an `NdefMixer` instance, always on top, and assigns it to the `~mixer` variable.
 - `pause` (id: symbol): Pauses a specific pattern.
 - `release` (time: nil | number): Sets the release time. Accepts either nil or an integer value. To clear all instances use `\all`.

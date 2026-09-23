@@ -66,6 +66,8 @@ pads:
   - action: gui
     cc: 56
     target: Dx
+  - action: meter
+    cc: 57
   - action: shuffle
     cc: 59
   - action: record

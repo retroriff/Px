@@ -221,6 +221,17 @@ code::
 Px.gui; // toggle open/close
 ::
 
+method:: meter
+Toggles a server output level window docked to the top right corner of the screen. Opens it if closed, closes it if open.
+
+One link::Classes/LevelIndicator:: per active output channel shows the RMS level, with its own peak marker and tick lines, framed in white and with the channel number underneath. The bar is green, turns amber when the peak goes above -8 dB and red when it clips. The window can be resized vertically and the bars stretch to fill it. Metering only runs while the window is open.
+
+Underneath the meters, a link::Classes/Knob:: controls the master volume (code::Server.default.volume::) from -6 dB to +6 dB, centered at 0 dB. Double-clicking it resets the volume to 0 dB. The knob reflects the current volume when the window opens and keeps its setting after the window is closed.
+
+code::
+Px.meter; // toggle open/close
+::
+
 method:: mixer
 Opens the NdefMixer window for audio mixing.
 

@@ -53,6 +53,172 @@
     this.prStartMeterRoutine;
   }
 
+  *meter {
+    var width;
+
+    if (meterWindow.notNil)
+    { ^meterWindow.close };
+
+    meterWindow = Window("", Rect(0, 0, windowWidth, windowHeight))
+    .alwaysOnTop_(true)
+    .background_(
+      Color.new255(
+        red: 24,
+        green: 24,
+        blue: 24
+      )
+    )
+    .onClose_({
+      Px.prStopMasterMeterRoutine;
+      Px.prStopMasterMeter;
+      Px.masterMeterViews = [];
+      Px.meterWindow = nil;
+    });
+
+    meterWindow.layout_(this.prGenerateServerMeterLayout);
+
+    width = meterWindow.view.sizeHint.width;
+    meterWindow.view.fixedWidth_(width);
+    meterWindow.bounds = this.prMeterWindowBounds(width);
+    meterWindow.front;
+
+    this.prStartMasterMeter;
+    this.prStartMasterMeterRoutine;
+
+    CmdPeriod.add {
+      if (Px.meterWindow.notNil)
+      { Px.meterWindow.close };
+    }
+  }
+
+  *prPrimaryColor {
+    ^Color.new255(37, 190, 106);
+  }
+
+  *prMeterBgColor {
+    ^Color.new255(31, 41, 55);
+  }
+
+  *prWarningColor {
+    ^Color.new255(250, 204, 21);
+  }
+
+  *prCriticalColor {
+    ^Color.new255(239, 68, 68);
+  }
+
+  *prServerMeterBarWidth {
+    ^24;
+  }
+
+  *prServerMeterTickWidth {
+    ^6;
+  }
+
+  *prServerMeterSpacing {
+    ^4;
+  }
+
+  *prServerMeterWidth {
+    var channels = masterLevels.size;
+
+    ^(channels * this.prServerMeterBarWidth) + ((channels - 1) * this.prServerMeterSpacing);
+  }
+
+  *prMasterVolumeRange {
+    ^[-10, 10];
+  }
+
+  *prMeterWindowBounds { |width|
+    var screen = Window.availableBounds;
+    var height = windowHeight + this.prServerMeterWidth + this.prServerMeterSpacing;
+
+    ^Window.flipY(Rect(screen.right - width, screen.top, width, height));
+  }
+
+  *prGenerateServerMeterLayout {
+    var meters = HLayout().margins_(0).spacing_(this.prServerMeterSpacing);
+
+    masterMeterViews = masterLevels.collect { this.prGenerateServerMeterBar };
+
+    masterMeterViews do: { |bar, channel|
+      meters.add(this.prGenerateServerMeterColumn(bar, channel));
+    };
+
+    ^VLayout(
+      [meters, stretch: 1],
+      [this.prGenerateMasterVolumeKnob, align: \center]
+    ).spacing_(this.prServerMeterSpacing);
+  }
+
+  *prGenerateMasterVolumeKnob {
+    var range = this.prMasterVolumeRange;
+    var size = this.prServerMeterWidth;
+    var volume = Server.default.volume;
+    var knob, knobColor;
+
+    knob = Knob()
+    .centered_(true)
+    .fixedSize_(size @ size)
+    .mode_(\vert)
+    .value_(volume.volume.linlin(range[0], range[1], 0, 1))
+    .action_({ |view|
+      volume.volume_(view.value.linlin(0, 1, range[0], range[1]));
+    })
+    .mouseDownAction_({ |view, x, y, modifiers, buttonNumber, clickCount|
+
+      if (clickCount == 2) {
+        view.valueAction_(0.5);
+        true;
+      };
+    });
+
+    knobColor = knob.color;
+    knobColor[1] = Color.cyan;
+    knob.color = knobColor;
+
+    ^knob;
+  }
+
+  *prGenerateServerMeterBar {
+    ^LevelIndicator()
+    .background_(this.prMeterBgColor)
+    .critical_(1.0)
+    .criticalColor_(this.prCriticalColor)
+    .drawsPeak_(true)
+    .fixedWidth_(this.prServerMeterBarWidth)
+    .meterColor_(this.prPrimaryColor)
+    .numMajorTicks_(3)
+    .numTicks_(9)
+    .palette_(QPalette.new.windowText_(Color.white))
+    .warning_(0.8)
+    .warningColor_(this.prWarningColor);
+  }
+
+  *prGenerateServerMeterColumn { |bar, channel|
+    var frame = UserView()
+    .drawFunc_({ |view|
+      var rect = view.bounds.moveTo(0, 0).insetBy(0.5, 0.5);
+
+      rect.width = rect.width - this.prServerMeterTickWidth;
+
+      Pen.strokeColor = Color.white;
+      Pen.addRoundedRect(rect, 3, 3);
+      Pen.stroke;
+    });
+
+    var label = StaticText()
+    .align_(\center)
+    .font_(Font.sansSerif(9).boldVariant)
+    .string_(channel.asString)
+    .stringColor_(Color.white);
+
+    ^VLayout(
+      [StackLayout(bar, frame).mode_(\stackAll).margins_(0), stretch: 1],
+      label
+    ).margins_(0).spacing_(2);
+  }
+
   *prVisiblePatterns {
     ^(last ++ mutedPatterns).reject { |pattern| pattern[\lx] == true };
   }
@@ -63,8 +229,8 @@
 
   *prGenerateSliders {
     var patterns = this.prVisiblePatterns;
-    var primaryColor = Color.new255(37, 190, 106);
-    var meterBgColor = Color.new255(31, 41, 55);
+    var primaryColor = this.prPrimaryColor;
+    var meterBgColor = this.prMeterBgColor;
     var sortedKeys = Px.prSortedPatternIds(patterns);
 
     meterViews = Array.new;
@@ -370,6 +536,29 @@
         0.05.wait;
       };
     }).play(AppClock);
+  }
+
+  *prStartMasterMeterRoutine {
+    this.prStopMasterMeterRoutine;
+
+    masterMeterRoutine = Routine({
+      inf.do {
+        masterMeterViews do: { |view, channel|
+
+          if (view.isClosed.not) {
+            view.value = (masterLevels[channel] ?? 0).ampdb.linlin(-40, 0, 0, 1);
+            view.peakLevel = (masterPeaks[channel] ?? 0).ampdb.linlin(-40, 0, 0, 1, \min);
+          };
+        };
+
+        0.05.wait;
+      };
+    }).play(AppClock);
+  }
+
+  *prStopMasterMeterRoutine {
+    masterMeterRoutine !? { masterMeterRoutine.stop };
+    masterMeterRoutine = nil;
   }
 
   *prUpdateGui {

@@ -1,16 +1,14 @@
 + Ndef {
     *playing {
         var space = Ndef.all[\localhost];
+        var playing = space !? {
+          space.arProxyNames.select { |name| space[name].monitor.isPlaying }
+        } ?? [];
 
-        var playingProxies = space.arProxyNames.select { |name|
-          var proxy = space[name];
-          proxy.monitor.isPlaying
-        };
-
-        ^if (playingProxies.isEmpty) {
+        ^if (playing.isEmpty) {
           "No Ndefs playing";
         } {
-          "Playing:" + playingProxies.collect { |name| "\\" ++ name }.join(" ");
+          "Playing:" + playing.collect { |name| "\\" ++ name }.join(" ");
         };
     }
 }

@@ -12,6 +12,12 @@ Px {
   classvar <drumMachinesPath;
   classvar <>last;
   classvar <>lastFormatted;
+  classvar <masterLevels;
+  classvar <masterMeterFunc;
+  classvar <masterMeterRoutine;
+  classvar <masterMeterSynth;
+  classvar <>masterMeterViews;
+  classvar <masterPeaks;
   classvar <>maxQuant;
   classvar <meterFunc;
   classvar <meterIdMap;
@@ -19,6 +25,7 @@ Px {
   classvar <meterNextId;
   classvar <meterRoutine;
   classvar <meterViews;
+  classvar <>meterWindow;
   classvar <midiClient;
   classvar <>midiHoldedNotes;
   classvar <midiOut;
@@ -44,6 +51,8 @@ Px {
     defaultAmp = 0.3;
     last = Dictionary.new;
     lastFormatted = Dictionary.new;
+    masterLevels = [0, 0];
+    masterPeaks = [0, 0];
     maxQuant = 16;
     meterIdMap = Dictionary.new;
     meterLevels = Dictionary.new;
@@ -143,6 +152,36 @@ Px {
       SendPeakRMS.kr(in, 20, 0.3, cmdName, meterId);
       in;
     });
+  }
+
+  *prStartMasterMeter {
+    var server = Server.default;
+
+    this.prStopMasterMeter;
+
+    masterMeterFunc = OSCFunc({ |msg|
+      masterPeaks = [msg[3] ?? 0, msg[5] ?? 0];
+      masterLevels = [msg[4] ?? 0, msg[6] ?? 0];
+    }, '/pxMasterMeter');
+
+    if (server.serverRunning.not)
+    { ^this };
+
+    masterMeterSynth = SynthDef(\pxMasterMeter, {
+      SendPeakRMS.kr(In.ar(0, 2), 20, 3, "/pxMasterMeter");
+    }).play(RootNode(server), nil, \addToTail);
+  }
+
+  *prStopMasterMeter {
+    masterMeterFunc !? { masterMeterFunc.free };
+
+    if (masterMeterSynth.notNil and: { Server.default.serverRunning })
+    { masterMeterSynth.free };
+
+    masterMeterFunc = nil;
+    masterMeterSynth = nil;
+    masterLevels = [0, 0];
+    masterPeaks = [0, 0];
   }
 
   *prStartMeterListener {

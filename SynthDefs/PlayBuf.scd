@@ -1,28 +1,24 @@
 (
 SynthDef(\playbuf, {
-  |amp = 1, atk  = 0, buf = 0, dur = 1, out = 0, pan = 0,
-  rel = 0.05, rate = 1, start = 0, sus = 1|
+  |amp = 1, atk  = 0, buf = 0, gate = 1, out = 0, pan = 0,
+  rel = 0.05, rate = 1, start = 0|
 
-  var beatDur, env, frames, isRewind, numChannels = 2, startPos, sig;
+  var env, frames, isRewind, startPos, sig;
 
   isRewind = (rate < 0);
   frames = BufFrames.kr(buf);
   startPos = abs((frames * isRewind) - (frames * start)) - (2 * isRewind);
   rate = BufRateScale.ir(buf) * rate;
 
-  sus = (BufDur.kr(buf) * sus);
-  beatDur = TempoClock.beatDur;
-  // Prevents that sample length is longer than the pattern's length
-  sus = Select.kr(((beatDur * dur) > sus), [beatDur * dur, sus]);
-
   // Envelope
   env = EnvGen.ar(
-    Env.linen(
+    Env.asr(
       attackTime: atk,
-      sustainTime: sus,
-      releaseTime: rel
+      sustainLevel: 1,
+      releaseTime: rel,
+      curve: \lin
     ),
-    gate: 1,
+    gate,
     doneAction: 2
   );
 
@@ -34,7 +30,7 @@ SynthDef(\playbuf, {
     trigger: 1,
     startPos: startPos,
     loop: 0,
-    doneAction: 2
+    doneAction: 0
   ));
   sig = sig * env * amp;
   sig = Pan2.ar(sig, pan);

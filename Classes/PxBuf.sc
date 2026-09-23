@@ -117,6 +117,9 @@
         };
       };
 
+      if (pattern[\legato].isNil)
+      { pattern[\legato] = 1 };
+
       pattern = pattern ++ (instrument: \playbuf, buf: pattern[\play]);
       pattern.removeAt(\play);
     };

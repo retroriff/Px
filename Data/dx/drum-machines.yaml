@@ -1,16 +1,3 @@
-DRM16:
-  name: Electro-Harmonix DRM-16
-  manufacturer: Electro-Harmonix
-  year: 1978
-  type: Analog voices with digital pattern matrix
-  notes: >-
-    Built in New York City by **Electro-Harmonix** and sold as the Digital Rhythm Matrix, model EH-7450, it was a
-    rare detour outside the company's guitar pedal catalogue and stayed in production only briefly at the turn of
-    the 1980s. A cut-down sibling, the DRM-15, and a trigger-based Sequencer Drum pedal rounded out the short-lived
-    rhythm line.
-
-    Cabaret Voltaire used an Electro-Harmonix DRM-16
-
 KorgKR55:
   name: Korg KR-55
   manufacturer: Korg

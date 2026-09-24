@@ -125,7 +125,10 @@
     };
 
     if (pattern[\loop].notNil) {
-      pattern = pattern ++ (instrument: \loop, buf: pattern[\loop], sendGate: false);
+      if (pattern[\legato].isNil)
+      { pattern[\legato] = 1 };
+
+      pattern = pattern ++ (instrument: \loop, buf: pattern[\loop]);
       pattern.removeAt(\loop);
     };
 

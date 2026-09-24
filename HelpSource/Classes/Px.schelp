@@ -664,16 +664,18 @@ code::
 ::
 
 ## legato
-|| Note length as a multiple of code::dur::, for code::play:::. Defaults to code::1::, so a hit ends exactly at its step boundary. Values above 1 let it ring into the following steps and overlap them; values below 1 shorten it. A hit never outlasts the sample itself.
+|| Note length as a multiple of code::dur::, for code::play:: and code::loop:::. Defaults to code::1::, so a hit ends exactly at its step boundary. Values above 1 let it ring into the following steps and overlap them; values below 1 shorten it. A hit never outlasts the sample itself. For code::loop:::, shortening a note cuts the loop without changing its tempo.
 code::
 1 play: "electro/sweep" dur: 0.25 legato: 8;   // Rings for 8 steps
 1 play: "electro/sweep" dur: 4 legato: 0.25;   // Staccato
+1 loop: "breaks" dur: 8 legato: 0.5;           // Plays the first half of the loop
 ::
 
 ## sustain
-|| Note length in beats for code::play:::, independent of code::dur::. Overrides code::legato:: when set.
+|| Note length in beats for code::play:: and code::loop:::, independent of code::dur::. Overrides code::legato:: when set.
 code::
 1 play: "electro/sweep" dur: 0.25 sustain: 2;  // Always 2 beats long
+1 loop: "breaks" dur: 8 sustain: 2;            // Plays the first 2 beats of the loop
 ::
 ::
 

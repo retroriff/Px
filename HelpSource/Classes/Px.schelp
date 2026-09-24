@@ -120,7 +120,7 @@ Px.clear;
 ::
 
 method:: play
-Starts playing the main Ndef(\px) with optional fade-in time. Also restarts any patterns silenced by code::Px.stop:: with no arguments.
+Starts playing the main Ndef(\px) with optional fade-in time. Also restarts any patterns silenced by code::Px.stop:: with no arguments. Patterns silenced with link::#*pause:: stay paused.
 
 argument:: fadeTime
 Fade-in duration in seconds.
@@ -134,6 +134,8 @@ Stops patterns by ID. Pass nil to stop all patterns without removing them (state
 
 argument:: idArray
 Pattern ID or array of IDs to stop.
+
+note:: While all patterns are stopped, parameter updates — including the GUI amp slider — only store the new value instead of restarting playback. Use code::Px.play::, link::#*resume:: or a full declaration to start them again.::
 
 code::
 Px.stop(1);        // Stop pattern 1 (removes it)
@@ -164,7 +166,7 @@ argument:: id
 Pattern ID to pause.
 
 method:: resume
-Resumes a paused pattern.
+Resumes a paused or stopped pattern.
 
 argument:: id
 Pattern ID to resume.

@@ -56,8 +56,10 @@ PxDebouncer {
     if (this === current)
     { current = nil };
 
-    if (capturedIsFullDeclaration and: { pattern.notNil })
-    { Px.pausedPatterns.remove(pattern[\id]) };
+    if (capturedIsFullDeclaration and: { pattern.notNil }) {
+      Px.pausedPatterns.remove(pattern[\id]);
+      Px.stoppedPatterns.remove(pattern[\id]);
+    };
 
     original.prUpdatePattern(pairs, pattern);
 

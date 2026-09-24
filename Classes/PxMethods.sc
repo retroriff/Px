@@ -20,6 +20,7 @@
       ^("💩 Chorus is empty. Please run \"save\"");
     };
 
+    chorusPatterns do: { |pattern| stoppedPatterns.remove(pattern[\id]) };
     this.prReevaluate(chorusPatterns);
   }
 
@@ -38,6 +39,7 @@
     pausedPatterns.clear;
     seeds.clear;
     shuffleHistory.clear;
+    stoppedPatterns.clear;
     Ndef(\px).clear;
   }
 
@@ -72,6 +74,7 @@
 
   *play { |fadeTime|
     Ndef(\px).play(fadeTime: fadeTime);
+    stoppedPatterns.clear;
 
     if (last.notEmpty)
     { this.prReevaluate };
@@ -106,6 +109,7 @@
       lastFormatted.removeAt(id);
       mutedPatterns.removeAt(id);
       pausedPatterns.remove(id);
+      stoppedPatterns.remove(id);
 
       meterIdMap = meterIdMap.select { |v| v != id };
       meterLevels.removeAt(id);
@@ -123,6 +127,7 @@
     meterLevels = Dictionary.new;
     meterNextId = 0;
     pausedPatterns = IdentitySet.new;
+    stoppedPatterns = IdentitySet.new;
     this.prAutoRefreshGui;
 
     fork {
@@ -152,6 +157,7 @@
   *resume { |id|
     id = id.asSymbol;
     pausedPatterns.remove(id);
+    stoppedPatterns.remove(id);
     if (last[id].notNil)
     { this.prReevaluate([last[id]]) };
   }
@@ -228,6 +234,7 @@
       lastFormatted.removeAt(id);
       ndefList.removeAt(id);
       pausedPatterns.remove(id);
+      stoppedPatterns.remove(id);
       meterIdMap = meterIdMap.select { |v| v != id };
       meterLevels.removeAt(id);
       Pdef(id).source = nil;
@@ -256,6 +263,7 @@
       if (event[\hasGate] == false)
       { this.prChannelNoteOff(event[\chan]) };
 
+      stoppedPatterns.add(id.asSymbol);
       Pdef(id).source = nil;
     };
 

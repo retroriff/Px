@@ -38,6 +38,7 @@ Px {
   classvar <seeds;
   classvar <shuffleHistory;
   classvar <>skipFillCascade;
+  classvar <>stoppedPatterns;
   classvar <>window;
   classvar <windowWidth;
   classvar <windowHeight;
@@ -64,6 +65,7 @@ Px {
     seeds = Dictionary.new;
     shuffleHistory = Dictionary.new;
     skipFillCascade = false;
+    stoppedPatterns = IdentitySet.new;
     windowWidth = 68;
     windowHeight = 350.min(Window.screenBounds.height / 4);
 
@@ -431,7 +433,7 @@ Px {
 
     pdef.quant = patternQuant;
 
-    if (pausedPatterns.includes(id))
+    if (this.prIsSilenced(id))
     { ^pdef };
 
     pdef.source = pbindef;
@@ -475,6 +477,10 @@ Px {
     last[pattern[\id]] = pattern;
   }
 
+  *prIsSilenced { |id|
+    ^pausedPatterns.includes(id) or: { stoppedPatterns.includes(id) };
+  }
+
   // A finite Pdef ends its own stream, which also ends the Ndef's player, so the
   // Ndef has to be re-sourced to restart it. Infinite patterns keep playing and
   // pick up the new source on their own — re-sourcing them would reset the stream.
@@ -496,7 +502,7 @@ Px {
   *prReevaluate { |patterns|
     var isFullReevaluation = patterns.isNil;
 
-    patterns = (patterns ?? last).reject { |v| pausedPatterns.includes(v[\id]) };
+    patterns = (patterns ?? last).reject { |v| this.prIsSilenced(v[\id]) };
 
     if (isFullReevaluation) {
       skipFillCascade = true;

@@ -111,6 +111,10 @@
     ^24;
   }
 
+  *prServerMeterDbLow {
+    ^-80;
+  }
+
   *prServerMeterTickWidth {
     ^6;
   }
@@ -191,7 +195,7 @@
     .numMajorTicks_(3)
     .numTicks_(9)
     .palette_(QPalette.new.windowText_(Color.white))
-    .warning_(0.8)
+    .warning_(0.9)
     .warningColor_(this.prWarningColor);
   }
 
@@ -539,6 +543,8 @@
   }
 
   *prStartMasterMeterRoutine {
+    var dbLow = this.prServerMeterDbLow;
+
     this.prStopMasterMeterRoutine;
 
     masterMeterRoutine = Routine({
@@ -546,8 +552,8 @@
         masterMeterViews do: { |view, channel|
 
           if (view.isClosed.not) {
-            view.value = (masterLevels[channel] ?? 0).ampdb.linlin(-40, 0, 0, 1);
-            view.peakLevel = (masterPeaks[channel] ?? 0).ampdb.linlin(-40, 0, 0, 1, \min);
+            view.value = (masterLevels[channel] ?? 0).ampdb.linlin(dbLow, 0, 0, 1);
+            view.peakLevel = (masterPeaks[channel] ?? 0).ampdb.linlin(dbLow, 0, 0, 1, \min);
           };
         };
 

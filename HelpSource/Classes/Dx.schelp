@@ -141,7 +141,7 @@ ClassMethods::
 subsection:: Presets
 
 method:: preset
-Loads and plays a drum machine preset from the YAML files.
+Loads and plays a drum machine preset from the YAML files. It is the play command for the drums: it also restarts its instruments when they were silenced by code::Px.stop::.
 
 argument:: name
 Preset name as Symbol (e.g., \electro, \house, \techno).
@@ -183,6 +183,8 @@ Drum machine folder name or short alias (e.g., 909 or \RolandTR909).
 
 argument:: update101
 When true, playing patterns declared with the dynamic code::101:: alias also migrate to the new machine. Patterns whose instrument is missing in the new machine keep their previous machine. Default: false.
+
+note:: Switching machines never starts playback: while the drums are stopped, preset instruments that only exist in the new machine are not restored.::
 
 code::
 Dx use: 909;           // Switch using short alias

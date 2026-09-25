@@ -16,6 +16,13 @@
     this.prDebouncer.enqueue(pairs);
   }
 
+  chop { |value|
+    var dur = value.asArray[0] ?? 1;
+    var drop = value.asArray[1] ?? 0;
+
+    this.prDebouncer.enqueue([\chop, [dur, drop]]);
+  }
+
   doesNotUnderstand { |selector, args|
     var allKeys = this.prCollectEventKeys ++ this.prCollectSynthDefKeys ++ [\callback, \finish, \length, \name];
 
@@ -95,10 +102,6 @@
   play { |value|
     this.prPlay(play: value);
     PxDebouncer.current.prSchedule;
-  }
-  
-  pitchRatio {
-      ^2.pow(this / 12);
   }
 
   repeat { |value|

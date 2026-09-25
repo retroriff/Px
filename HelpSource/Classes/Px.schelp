@@ -528,6 +528,13 @@ code::
 707 i: \hh dur: 0.25 beat: [1, 0, 1, 0];     // Fixed pattern
 ::
 
+## chop
+|| Slices and repeats part of a single pattern. Takes a duration, or code::[dur, drop]:: to start from a later event. On code::loop:::, the loop keeps its tempo and restarts every code::dur:: beats. Use link::#*chop:: to chop all patterns at once.
+code::
+2 loop: "pop:1" dur: 16 chop: 1;             // Repeats the first beat of a 16-beat loop
+707 i: \hh dur: 0.25 beat: 0.7 chop: [1, 2]; // Repeats 1 beat starting from the third event
+::
+
 ## fill
 || Fills gaps in the beat pattern from another pattern. Editing the referenced pattern's code::beat:: (a new code::weight::, code::seed::, or code::beatSet::) automatically re-triggers the fill to stay complementary. This does not happen when the referenced beat uses code::seed: \rand::, since it has no fixed rhythm to compare against.
 code::

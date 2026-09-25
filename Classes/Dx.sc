@@ -146,6 +146,7 @@ Dx : Px {
       if (this.prHasInstrument(pattern[\instrument]) == true) {
         var id = this.prCreateId(pattern[\instrument]);
         newIds.add(id);
+        stoppedPatterns.remove(id);
 
         this.new(pattern.putAll([
           \id, id,
@@ -504,7 +505,9 @@ Dx : Px {
   }
 
   *prIsPlaying {
-    ^last.any { |pattern| pattern[\dx] == true };
+    ^last.any { |pattern|
+      pattern[\dx] == true and: { this.prIsSilenced(pattern[\id]).not }
+    };
   }
 
   *prRemoveDxGroups {
@@ -517,6 +520,9 @@ Dx : Px {
   }
 
   *prRestorePresetInstruments {
+    if (this.prIsPlaying.not)
+    { ^this };
+
     presetPatterns.asArray do: { |pattern|
       var id = this.prCreateId(pattern[\instrument]);
 

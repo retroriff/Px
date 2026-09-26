@@ -288,12 +288,6 @@ Px.trace(\1, \degree);
 Px.trace; // stop all tracing
 ::
 
-method:: help
-Displays help information for the Px class or a specific SynthDef.
-
-argument:: synthDef
-Optional SynthDef name.
-
 subsection:: Performance
 
 method:: solo

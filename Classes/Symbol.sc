@@ -31,6 +31,10 @@
     { ^this.prNdefNotFound };
   }
 
+  fx { |name ... args|
+    ^Fx(this).performList(name, args);
+  }
+
   get { |key|
     if (this.prNdefExists) {
       if (key.notNil)

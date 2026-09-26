@@ -75,8 +75,8 @@ Dx.preset(\electro, 2);
 Dx.preset(\electro, 2, 0.5);
 
 // Add effects to the preset
-Dx.reverb(0.3);
-Dx.delay(0.2);
+Dx.fx(\reverb, 0.3);
+Dx.fx(\delay, 0.2);
 
 // Stop the preset
 Dx.stop;
@@ -194,24 +194,19 @@ Dx.use(\808, true);    // Switch and migrate the 101 patterns
 
 subsection:: Effects
 
-method:: delay
-Applies delay effect to the current preset.
+method:: fx
+Applies an link::Classes/Fx:: effect to every preset pattern. The effect is remembered and reapplied when a new preset is loaded.
+
+argument:: name
+Effect name as Symbol (e.g. code::\delay::, code::\reverb::).
 
 argument:: value
-Wet/dry mix (0-1). Default: 0.3.
+Effect value passed to the Fx method. Pass code::0:: or code::nil:: to remove the effect.
 
 code::
-Dx.delay(0.4);
-::
-
-method:: reverb
-Applies reverb effect to the current preset.
-
-argument:: value
-Wet/dry mix (0-1). Default: 0.3.
-
-code::
-Dx.reverb(0.5);
+Dx.fx(\delay, 0.4);
+Dx.fx(\reverb, 0.5);
+Dx.fx(\delay, 0);
 ::
 
 subsection:: Playback Control
@@ -380,8 +375,8 @@ code::
 Dx.preset(\electro, 2);
 
 // Add effects to preset
-Dx.delay(0.5);
-Dx.reverb(0.5);
+Dx.fx(\delay, 0.5);
+Dx.fx(\reverb, 0.5);
 
 // Adjust volume
 Dx.vol(0.7);

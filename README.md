@@ -231,14 +231,13 @@ Dx.preset(\electro, 1);
 
 | Name          | Arguments                                         | Description                            |
 | ------------- | ------------------------------------------------- | -------------------------------------- |
-| `delay`       | mix?: range 0..1                                  | Adds delay FX to the preset patterns   |
 | `fill`        | instrument?: symbol, repeat?: integer             | One-shot random fill with crash accent |
+| `fx`          | name: symbol, value: number \| nil                | Applies an Fx effect to preset patterns |
 | `gui`         | None                                              | Toggles a drum machine bank GUI        |
 | `instruments` | machine?: symbol                                  | Available instruments + sample counts  |
 | `loadPresets` | None                                              | Reloads presets from YAML files        |
 | `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Data/dx/presets/)         |
 | `release`     | None                                              | Releases with fadeTime                 |
-| `reverb`      | mix?: range 0..1 \|                               | Adds reverb FX to the preset patterns  |
 | `shuffle`     | update101?: boolean                               | Shuffles the drum machines bank        |
 | `solo`        | instrument: symbol \| false                       | Solos one or more drum instruments     |
 | `stop`        | None                                              | Same as `\808 i: \all`                 |
@@ -268,6 +267,7 @@ Lx.stop
 | `amp`         | channel: integer, value?: number     | Sets amplitude for a channel             |
 | `buf`         | channel: integer, index: integer     | Switches sample in a channel             |
 | `dur`         | channel: integer, value?: number     | Sets duration (beats) for a channel      |
+| `fx`          | name: symbol, value: number \| nil                | Applies an Fx effect to preset patterns |
 | `gui`         | None                                 | Opens multi-channel control GUI          |
 | `loadSamples` | path: string                         | Loads subfolders as loop channels        |
 | `next`        | channel: integer                     | Next sample in channel (wraps)           |
@@ -418,6 +418,13 @@ And we can get and set synth controls:
 \a.get(\amp); // get a specific control value
 \a.set(\amp, 1); // non-quantified set
 \a.qset(\amp, 1); // quantified set
+```
+
+And apply effects, same as calling the `Fx` method on the Ndef:
+
+```
+\a.fx(\reverb); // same as Fx(\a).reverb
+\a.fx(\reverb, 0.3); // same as Fx(\a).reverb(0.3)
 ```
 
 ## 🎛️ TR08: A Roland TR-08 MIDI Controller

@@ -187,14 +187,8 @@
     if (sampleLength.size > 1 and: { sampleLength[1].asInteger > 0 })
     { folderBeats = sampleLength[1].asInteger };
 
-    if (pattern[\length].notNil) {
-      pattern[\beats] = pattern[\dur] ?? folderBeats;
-      pattern[\dur] = pattern[\length];
-      pattern.removeAt(\length);
-    } {
-      if (pattern[\dur].isNil)
-      { pattern[\dur] = Pseq([folderBeats], pattern[\repeat] ?? 1) };
-    };
+    if (pattern[\dur].isNil)
+    { pattern[\dur] = Pseq([folderBeats], pattern[\repeat] ?? 1) };
 
     ^pattern;
   }

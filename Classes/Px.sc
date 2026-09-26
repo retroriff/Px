@@ -1,6 +1,9 @@
 /*
 TODO: Rand degree from old examples files doesn't work anymore, should we deprecate it?
   909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 degree: \rand length: 3;
+TODO: Unify trim and chop for loops: the second chop value could be the buffer start position instead of drop.
+  Drop on a single-event loop (no dur) likely hangs, since Pseq inf loops over an empty Pdrop:
+  1 loop: "pop-2" chop: [1, 2];
 */
 Px {
   classvar <>chorusPatterns;

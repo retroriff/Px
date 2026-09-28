@@ -1,9 +1,19 @@
 (
 Dictionary[
+  "6" -> Dictionary[
+    \degree -> [0, 2, 4, 5],
+    \intervals -> [0, 4, 7, 9],
+    \scale -> \major
+  ],
   "69" -> Dictionary[
     \degree -> [0, 2, 4, 5, 8],
     \intervals -> [0, 4, 7, 9, 14],
     \scale -> \major
+  ],
+  "9" -> Dictionary[
+    \degree -> [0, 2, 4, 6, 8],
+    \intervals -> [0, 4, 7, 10, 14],
+    \scale -> \mixolydian
   ],
   "add4Add9" -> Dictionary[
     \degree -> [0, 2, 3, 4, 8],
@@ -25,6 +35,11 @@ Dictionary[
     \intervals -> [0, 3, 6],
     \scale -> \diminished
   ],
+  "dim7" -> Dictionary[
+    \degree -> [0, 2, 4, 6],
+    \intervals -> [0, 3, 6, 9],
+    \scale -> \diminished
+  ],
   "dom7" -> Dictionary[
     \degree -> [0, 2, 4, 6],
     \intervals -> [0, 4, 7, 10],
@@ -34,6 +49,11 @@ Dictionary[
     \degree -> [0, 2, 4, 8],
     \intervals -> [0, 3, 7, 14],
     \scale -> \minor
+  ],
+  "mMaj7" -> Dictionary[
+    \degree -> [0, 2, 4, 6],
+    \intervals -> [0, 3, 7, 11],
+    \scale -> \melodicMinor
   ],
   "maj" -> Dictionary[
     \degree -> [0, 2, 4],
@@ -55,10 +75,20 @@ Dictionary[
     \intervals -> [0, 3, 7],
     \scale -> \minor
   ],
+  "m6" -> Dictionary[
+    \degree -> [0, 2, 4, 5],
+    \intervals -> [0, 3, 7, 9],
+    \scale -> \melodicMinor
+  ],
   "m7" -> Dictionary[
     \degree -> [0, 2, 4, 6],
     \intervals -> [0, 3, 7, 10],
     \scale -> \minor
+  ],
+  "m7b5" -> Dictionary[
+    \degree -> [0, 2, 4, 6],
+    \intervals -> [0, 3, 6, 10],
+    \scale -> \locrian
   ],
   "m9" -> Dictionary[
     \degree -> [0, 2, 4, 6, 8],
@@ -75,14 +105,19 @@ Dictionary[
     \intervals -> [0, 3, 5, 7, 10],
     \scale -> \minor
   ],
-  "sus4" -> Dictionary[
-    \degree -> [0, 3, 4],
-    \intervals -> [0, 5, 7],
-    \scale -> \hexSus
+  "sus2" -> Dictionary[
+    \degree -> [0, 1, 4],
+    \intervals -> [0, 2, 7],
+    \scale -> \major
   ],
   "sus2AddSharp11" -> Dictionary[
     \degree -> [0, 1, 3, 4, 10],
     \intervals -> [0, 2, 5, 7, 18],
+    \scale -> \hexSus
+  ],
+  "sus4" -> Dictionary[
+    \degree -> [0, 3, 4],
+    \intervals -> [0, 5, 7],
     \scale -> \hexSus
   ],
   "7sus4Add13" -> Dictionary[

@@ -1,3 +1,15 @@
+BossDR55:
+  name: BOSS DR-55 Dr. Rhythm
+  manufacturer: BOSS
+  year: 1980
+  type: Analog programmable drum machine
+  notes: >-
+    BOSS's first Dr. Rhythm model uses four analog voices: bass drum, snare drum, rim shot and hi-hat.
+    Its compact step-writing system programs each voice with dedicated note and rest buttons, while the
+    hi-hat is selected globally as eighth notes, sixteenth notes or off.
+
+    Robin Guthrie from Cocteau Twins used the Dr. Rhythm and the Sound Master before using the TR-808 in "Garlands".
+
 KorgKR55:
   name: Korg KR-55
   manufacturer: Korg
@@ -158,3 +170,15 @@ RolandTR909:
   year: 1983
   type: Analog / sample hybrid
   notes: House and techno staple
+
+SoundmastersR88:
+  name: Sound Master Memory Rhythm SR-88
+  manufacturer: Sound Master
+  year: 1981
+  type: Analog programmable drum machine
+  notes: >-
+    The Memory Rhythm SR-88 is a compact four-voice analog machine with bass drum, snare drum, closed
+    hi-hat and cymbal sounds. Patterns are written one step at a time by selecting a voice and using
+    start and stop buttons to place hits and rests.
+
+    When the DR-55's eight-pattern memory limit proved too small for full live sets, Robin Guthrie from Cocteau Twins bought two Sound Master SR-88 units

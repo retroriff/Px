@@ -299,8 +299,13 @@ table::
 ## Quality Key || User Input Examples || Scale || Intervals
 ## \maj || \E, \C || major || [0, 4, 7]
 ## \m || \Em, \Am || minor || [0, 3, 7]
+## \6 || \C6 || major || [0, 4, 7, 9]
+## \m6 || \Cm6 || melodicMinor || [0, 3, 7, 9]
+## \9 || \C9 || mixolydian || [0, 4, 7, 10, 14]
 ## \maj7 || \Cmaj7 || major || [0, 4, 7, 11]
+## \mMaj7 || \CmMaj7 || melodicMinor || [0, 3, 7, 11]
 ## \m7 || \Am7, \Em7 || minor || [0, 3, 7, 10]
+## \m7b5 || \Bm7b5 || locrian || [0, 3, 6, 10]
 ## \m9 || \Am9, \Em9 || minor || [0, 3, 7, 10, 14]
 ## \m11 || \Am11, \Em11 || minor || [0, 3, 7, 10, 14, 17]
 ## \mAdd9 || \EmAdd9 || minor || [0, 3, 7, 14]
@@ -313,6 +318,8 @@ table::
 ## \add9 || \Cadd9, \Aadd9 || major || [0, 4, 7, 14]
 ## \aug || \Caug, \Aaug || augmented || [0, 4, 8]
 ## \dim || \Cdim, \Adim || diminished || [0, 3, 6]
+## \dim7 || \Bdim7 || diminished || [0, 3, 6, 9]
+## \sus2 || \Csus2 || major || [0, 2, 7]
 ## \sus4 || \Csus4, \Asus4 || hexSus || [0, 5, 7]
 ::
 

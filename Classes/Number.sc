@@ -178,6 +178,9 @@
         { file.asSymbol == \rand }
         { file = \rand }
 
+        { file.asSymbol == \seq }
+        { file = \seq }
+
         { file = file.asInteger };
 
         ^[parts[0], file];
@@ -411,4 +414,3 @@
     ^PxDebouncer.current;
   }
 }
-

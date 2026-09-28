@@ -99,17 +99,19 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 
 ### Instrument methods
 
-| Name    | Arguments                                          | Description                            |
-| ------- | -------------------------------------------------- | -------------------------------------- |
-| `grain` | [folder: string, file: number \| \jump \| \rand]\* | Plays a granular texture from a buffer |
-| `i`     | name: string                                       | Plays a Synthdef. Same as `instrument` |
-| `loop`  | [folder: string, file: number \| \jump \| \rand]\* | Plays a loop from a buffer             |
-| `play`  | [folder: string, file: number \| array \| \rand]\* | Plays a buffer                         |
+| Name    | Arguments                                                  | Description                            |
+| ------- | ---------------------------------------------------------- | -------------------------------------- |
+| `grain` | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a granular texture from a buffer |
+| `i`     | name: string                                               | Plays a Synthdef. Same as `instrument` |
+| `loop`  | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a loop from a buffer             |
+| `play`  | [folder: string, file: number \| array \| \rand \| \seq]\* | Plays a buffer                         |
 
 `*` The array can be replaced by a string shortcut: `"folder:index"`.
 `**` It also accepts a Buffer object: `Buffer.read(s, "chord.aiff".resolveRelative)`.
 
 They also accept a list pattern of string shortcuts, so a different sample is picked on every event: `1 loop: ["pop-4:0", "pop-4:1"].pwrand([0.8, 0.2]) dur: 4`.
+
+Use the `:seq` selector to play every sample in a folder in index order, repeating continuously: `1 loop: "pop-4:seq" dur: 4`.
 
 ### Px class methods
 

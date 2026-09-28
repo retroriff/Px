@@ -295,6 +295,9 @@
         { pattern[\buf][1] == \rand }
         { buf = getRandSeqBufs.value }
 
+        { pattern[\buf][1] == \seq }
+        { buf = Pseq(this.buf(pattern[\buf][0]), inf) }
+
         { pattern[\buf][1] == \jump }
         { buf = getJumpBufs.value }
 

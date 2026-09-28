@@ -76,6 +76,9 @@
     };
   }
 
+  // Overwrites SC default Symbol behaviour
+  repeat {}
+
   out { |fadeTime|
     FadeOut(this, fadeTime);
   }

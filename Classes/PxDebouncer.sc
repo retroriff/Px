@@ -63,7 +63,10 @@ PxDebouncer {
 
     original.prUpdatePattern(pairs, pattern);
 
-    if (pattern.notNil and: { Px.last[pattern[\id]].notNil }) {
+    if (pattern.notNil and: {
+      Pdef.at(pattern[\id]).notNil
+      and: { Pdef.at(pattern[\id]).source.notNil }
+    }) {
       var capturedId = pattern[\id];
       var capturedPreviousFx = Fx.prFxNames(capturedId);
       var capturedGeneration = Fx.generation;

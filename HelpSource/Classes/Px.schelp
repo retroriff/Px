@@ -21,6 +21,12 @@ code::
 \707 i: \sd;   // Stop pattern 2
 ::
 
+The original loop declaration may remain after the Symbol ID when stopping an existing pattern:
+
+code::
+\2 loop: "jeanne:0" amp: 0.5 repeat: 4 dur: 32 space: 1;
+::
+
 subsection:: Architecture
 
 Px is a concatenation of Ndef proxies, where each Ndef represents a Pbindef

@@ -279,7 +279,7 @@ Dx : Px {
     this.prRestorePresetInstruments;
     this.prApplyActiveFx;
 
-    ^("🥁" + this.instruments);
+    ^("🛢️" + drumMachine ++ ":" + this.instruments);
   }
 
   *vol { |amp|

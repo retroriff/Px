@@ -42,33 +42,33 @@ The superclass that generates the patterns from an array of events with a simpli
 
 ### Integer methods to play a pattern
 
-| Name     | Arguments                                         | Description                                                                                                                                                                                  |
-| -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `amp`    | number \| number[] \| Pattern                     | Amplification. An array generates a Pseq. With `beat` or `fill`, a Pattern supplies the value of each hit — advancing only on hits, and a `0` silences that hit                              |
-| `beat`   | weight: range 0..1                                | Generates a random rhythm, or own rhythym defined by set                                                                                                                                     |
-| `chop`   | dur: number \| [dur: number, drop: integer]       | Slices and repeats part of this pattern. On `loop:` it keeps the loop's tempo and restarts it every `dur` beats                                                                              |
-| `dur`    | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
-| `euclid` | [hits: number, total: number]                     | Generates an Euclidian rhythm. `dur` is the length of one step, so the figure lasts `total * dur` beats                                                                                      |
-| `fill`   | weight: range 0..1                                | Fills the rests gap of its previous sequential pattern. Re-fills automatically when that pattern's `beat` changes (not with `seed: \rand`)                                                   |
-| `gui`    | None                                              | Toggles a patterns gui window at the mouse position. Once open, it updates automatically.                                                                                                    |
-| `human`  | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
-| `in`     | seconds: integer                                  | Fades in the pattern.                                                                                                                                                                        |
-| `legato` | number \| Pattern                                 | Note length as a multiple of `dur`. Values above 1 let a hit ring past its step and overlap the next one. Defaults to 1 for `play:` and `loop:`                                              |
-| `length` | number                                            | With `degree: \rand`: number of random degrees (default: 1)                                                                                                                                  |
-| `off`    | beats: integer                                    | Offset value                                                                                                                                                                                 |
-| `out`    | seconds: integer                                  | Fades out the pattern.                                                                                                                                                                       |
-| `pan`    | range -1..1 \| \rand \| \rotate \| Pattern        | A pan controller                                                                                                                                                                             |
-| `r`      | number \| \rand \| [\wrand, item1, item2, weight] | Rate value. The term rate was discarded because it was an existing Integer method                                                                                                            |
-| `repeat` | cycles: integer                                   | Plays the pattern for the given number of cycles, then stops and removes it. A cycle is the beat/euclid step count or the length of the `dur` or `amp` sequence                              |
-| `rest`   | beats: integer                                    | Inserts silence for a number of beats after each complete cycle of the pattern (16-step beat, the length of the array given to `beat`, or a single event)                                    |
-| `seed`   | seed: integer \| symbol \| \rand                  | Generate a specific random seed or a `Pxrand` using `\rand`                                                                                                                                  |
-| `set`    | 1 (enable)                                        | Updates an existing pattern. Not needed for regular patterns (parameters can be set directly). Required for drum machines where the value must be the instrument.                            |
-| `solo`   | 1 (enable)                                        | Mutes all patterns that don't contain a solo method                                                                                                                                          |
-| `stop`   | beats: integer                                    | Stops and removes the pattern after the specified number of beats                                                                                                                            |
-| `sustain`| beats: number \| Pattern                          | Note length in beats, independent of `dur`. Overrides `legato` when set                                                                                                                      |
-| `unsolo` | None                                              | Restore all patterns that have been muted by solo method                                                                                                                                     |
-| `trim`   | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
-| `weight` | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
+| Name      | Arguments                                         | Description                                                                                                                                                                                  |
+| --------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `amp`     | number \| number[] \| Pattern                     | Amplification. An array generates a Pseq. With `beat` or `fill`, a Pattern supplies the value of each hit — advancing only on hits, and a `0` silences that hit                              |
+| `beat`    | weight: range 0..1                                | Generates a random rhythm, or own rhythym defined by set                                                                                                                                     |
+| `chop`    | dur: number \| [dur: number, drop: integer]       | Slices and repeats part of this pattern. On `loop:` it keeps the loop's tempo and restarts it every `dur` beats                                                                              |
+| `dur`     | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
+| `euclid`  | [hits: number, total: number]                     | Generates an Euclidian rhythm. `dur` is the length of one step, so the figure lasts `total * dur` beats                                                                                      |
+| `fill`    | weight: range 0..1                                | Fills the rests gap of its previous sequential pattern. Re-fills automatically when that pattern's `beat` changes (not with `seed: \rand`)                                                   |
+| `gui`     | None                                              | Toggles a patterns gui window at the mouse position. Once open, it updates automatically.                                                                                                    |
+| `human`   | delay: range 0..1                                 | Humanize the playback of an instrument                                                                                                                                                       |
+| `in`      | seconds: integer                                  | Fades in the pattern.                                                                                                                                                                        |
+| `legato`  | number \| Pattern                                 | Note length as a multiple of `dur`. Values above 1 let a hit ring past its step and overlap the next one. Defaults to 1 for `play:` and `loop:`                                              |
+| `length`  | number                                            | With `degree: \rand`: number of random degrees (default: 1)                                                                                                                                  |
+| `off`     | beats: integer                                    | Offset value                                                                                                                                                                                 |
+| `out`     | seconds: integer                                  | Fades out the pattern.                                                                                                                                                                       |
+| `pan`     | range -1..1 \| \rand \| \rotate \| Pattern        | A pan controller                                                                                                                                                                             |
+| `r`       | number \| \rand \| [\wrand, item1, item2, weight] | Rate value. The term rate was discarded because it was an existing Integer method                                                                                                            |
+| `repeat`  | cycles: integer                                   | Plays the pattern for the given number of cycles, then stops and removes it. A cycle is the beat/euclid step count or the length of the `dur` or `amp` sequence                              |
+| `rest`    | beats: integer                                    | Inserts silence for a number of beats after each complete cycle of the pattern (16-step beat, the length of the array given to `beat`, or a single event)                                    |
+| `seed`    | seed: integer \| symbol \| \rand                  | Generate a specific random seed or a `Pxrand` using `\rand`                                                                                                                                  |
+| `set`     | 1 (enable)                                        | Updates an existing pattern. Not needed for regular patterns (parameters can be set directly). Required for drum machines where the value must be the instrument.                            |
+| `solo`    | 1 (enable)                                        | Mutes all patterns that don't contain a solo method                                                                                                                                          |
+| `stop`    | beats: integer                                    | Stops and removes the pattern after the specified number of beats                                                                                                                            |
+| `sustain` | beats: number \| Pattern                          | Note length in beats, independent of `dur`. Overrides `legato` when set                                                                                                                      |
+| `unsolo`  | None                                              | Restore all patterns that have been muted by solo method                                                                                                                                     |
+| `trim`    | startPosition?: range 0..1 \| number[]            | Plays a trimmed loop from a fixed position, a sequence from an array, or random when startPosition is nil                                                                                    |
+| `weight`  | range 0..1                                        | Generates a list of probabilities or weights. Value range from 0 to 1. Tenths change the probability of hits and rests while hundredths defines the probabilty of switching between 2 tenths |
 
 ### FX integer pattern methods
 
@@ -230,21 +230,21 @@ Dx.preset(\electro, 1);
 
 ### Dx class methods
 
-| Name          | Arguments                                         | Description                            |
-| ------------- | ------------------------------------------------- | -------------------------------------- |
-| `fill`        | instrument?: symbol, repeat?: integer             | One-shot random fill with crash accent |
+| Name          | Arguments                                         | Description                             |
+| ------------- | ------------------------------------------------- | --------------------------------------- |
+| `fill`        | instrument?: symbol, repeat?: integer             | One-shot random fill with crash accent  |
 | `fx`          | name: symbol, value: number \| nil                | Applies an Fx effect to preset patterns |
-| `gui`         | None                                              | Toggles a drum machine bank GUI        |
-| `instruments` | machine?: symbol                                  | Available instruments + sample counts  |
-| `loadPresets` | None                                              | Reloads presets from YAML files        |
-| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Data/dx/presets/)         |
-| `release`     | None                                              | Releases with fadeTime                 |
-| `shuffle`     | update101?: boolean                               | Shuffles the drum machines bank        |
-| `solo`        | instrument: symbol \| false                       | Solos one or more drum instruments     |
-| `stop`        | None                                              | Same as `\808 i: \all`                 |
-| `unsolo`      | None                                              | Restores drum patterns muted by solo   |
-| `use`         | machine?: symbol \| number, update101?: boolean   | Switches the active drum machine       |
-| `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns    |
+| `gui`         | None                                              | Toggles a drum machine bank GUI         |
+| `instruments` | machine?: symbol                                  | Available instruments + sample counts   |
+| `loadPresets` | None                                              | Reloads presets from YAML files         |
+| `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Data/dx/presets/)     |
+| `release`     | None                                              | Releases with fadeTime                  |
+| `shuffle`     | update101?: boolean                               | Shuffles the drum machines bank         |
+| `solo`        | instrument: symbol \| false                       | Solos one or more drum instruments      |
+| `stop`        | None                                              | Same as `\808 i: \all`                  |
+| `unsolo`      | None                                              | Restores drum patterns muted by solo    |
+| `use`         | machine?: symbol \| number, update101?: boolean   | Switches the active drum machine        |
+| `vol`         | amp: range 0..1                                   | Sets an amp for the preset patterns     |
 
 ## 🔄 Lx: Multi-Track Sample Looper
 
@@ -268,7 +268,7 @@ Lx.stop
 | `amp`         | channel: integer, value?: number     | Sets amplitude for a channel             |
 | `buf`         | channel: integer, index: integer     | Switches sample in a channel             |
 | `dur`         | channel: integer, value?: number     | Sets duration (beats) for a channel      |
-| `fx`          | name: symbol, value: number \| nil                | Applies an Fx effect to preset patterns |
+| `fx`          | name: symbol, value: number \| nil   | Applies an Fx effect to preset patterns  |
 | `gui`         | None                                 | Opens multi-channel control GUI          |
 | `loadSamples` | path: string                         | Loads subfolders as loop channels        |
 | `next`        | channel: integer                     | Next sample in channel (wraps)           |
@@ -342,6 +342,7 @@ Nx.midinotes;    // -> [88, 91, 95, 102] (octave 5, permanent)
 Octave numbering follows the same C3 = 60 standard as `note:` symbol notation, so `Nx.midinotes(3)` is rooted on middle C. Chords default to octave 2.
 
 Chord data is stored in `Score/tonics.scd` (root notes) and `Score/chords.scd` (chord qualities).
+Available qualities include major, minor, suspended, diminished, sixth, seventh, and ninth voicings.
 
 ### Nx class methods
 
@@ -457,5 +458,5 @@ It can send MIDI messages to a Roland TR08. if the device is not available, play
 | ------------- | ------------------------------ | ------------------------------------ |
 | `init`        | time?: number                  | Controls the latency. Default is 0.2 |
 | `loadPresets` | None                           | Reloads presets from YAML files      |
-| `preset`      | name?: string \| index: number | Plays a [preset](/Data/dx/presets/)       |
+| `preset`      | name?: string \| index: number | Plays a [preset](/Data/dx/presets/)  |
 | `stop`        | None                           | Same as `\808 i: \all`               |

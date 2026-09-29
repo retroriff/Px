@@ -17,10 +17,20 @@
   }
 
   chop { |value|
-    var dur = value.asArray[0] ?? 1;
-    var drop = value.asArray[1] ?? 0;
+    var dur = value;
+    var position = 0;
 
-    this.prDebouncer.enqueue([\chop, [dur, drop]]);
+    if (value.isArray) {
+      dur = value[0] ?? 1;
+      position = value[1] ?? 0;
+    };
+
+    if (value.isKindOf(Pattern) or: { value.isKindOf(Symbol) }) {
+      dur = nil;
+      position = value;
+    };
+
+    this.prDebouncer.enqueue([\chop, [dur, position]]);
   }
 
   doesNotUnderstand { |selector, args|

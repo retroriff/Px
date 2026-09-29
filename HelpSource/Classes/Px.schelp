@@ -354,7 +354,7 @@ argument:: dur
 Duration of the chop. Use 0 to disable.
 
 argument:: drop
-Position in the pattern to chop.
+Number of events to skip before the chopped slice. On code::loop:: patterns it is the start position in the sample instead (see the code::chop:: pattern parameter).
 
 code::
 Px.chop(1, 2);   // Chop with duration 1, drop at position 2
@@ -533,10 +533,17 @@ code::
 ::
 
 ## chop
-|| Slices and repeats part of a single pattern. Takes a duration, or code::[dur, drop]:: to start from a later event. On code::loop:::, the loop keeps its tempo and restarts every code::dur:: beats. Use link::#*chop:: to chop all patterns at once.
+|| Slices and repeats part of a single pattern. Takes a duration, or code::[dur, drop]:: to start from a later event. Use link::#*chop:: to chop all patterns at once.
+
+On code::loop::, the loop keeps its tempo and restarts every code::dur:: beats, and the second value is the start position in the sample (0–1) instead of a drop. It can be a number, an array, a Pattern, or code::\seq:: to shuffle the loop's slices. A Pattern keeps advancing from slice to slice. A Pattern or code::\seq:: on its own is taken as the start position, with slices a quarter of the loop long.
 code::
-2 loop: "pop:1" dur: 16 chop: 1;             // Repeats the first beat of a 16-beat loop
-707 i: \hh dur: 0.25 beat: 0.7 chop: [1, 2]; // Repeats 1 beat starting from the third event
+707 i: \hh dur: 0.25 beat: 0.7 chop: [1, 2];                          // Repeats 1 beat starting from the third event
+2 loop: "sp-8:1" dur: 8 chop: 1;                                      // Repeats the first beat
+2 loop: "sp-8:1" dur: 8 chop: [1, 0.5];                               // Repeats the fifth beat
+2 loop: "sp-8:1" dur: 8 chop: [1, Pdup(8, Pseq([0.25, 0.5], inf))];   // Jumps between two start positions
+2 loop: "sp-8:1" dur: 8 chop: [1, \seq];                              // Shuffles the 8 one-beat slices
+2 loop: "sp-8:1" dur: 8 chop: \seq;                                   // Shuffles the 4 two-beat quarters
+2 loop: "sp-8:1" dur: 8 chop: Pwhite(0.0, 0.75);                      // Random start for each quarter
 ::
 
 ## fill
@@ -663,13 +670,6 @@ code::
 || Number of random degrees generated when using code::degree: \rand::. Default is 1. See link::Guides/PxSamples:: for details.
 code::
 1 play: "fm:0" dur: 1 degree: \rand length: 5;
-::
-
-## trim
-|| Trims the sample to a specific start position.
-code::
-1 loop: "breaks" dur: 8 trim: 0.25;
-1 loop: "breaks" dur: 8 trim: \seq;  // Sequential trimming
 ::
 
 ## legato

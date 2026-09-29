@@ -193,19 +193,6 @@
     ^pattern;
   }
 
-  *prApplyTrim { |pattern|
-    if (pattern[\trim].isNil) { ^pattern };
-
-    if (pattern[\trim] == \seq)
-    { pattern[\trim] = Pseed(Pdup(4, Pseq((0..10), inf)), Prand((0..3), 4) / 4) };
-
-    pattern[\beats] = pattern[\dur];
-    pattern[\dur] = pattern[\dur] / 4;
-    pattern[\start] = pattern[\trim];
-
-    ^pattern;
-  }
-
   *prCreateLoopsFromList { |pattern|
     var samples = pattern[\buf].list;
     var resolved;
@@ -229,7 +216,7 @@
 
     pattern[\buf] = resolved;
 
-    ^this.prApplyTrim(pattern);
+    ^pattern;
   }
 
   *prCreateLoops { |pattern|
@@ -309,8 +296,6 @@
 
         { buf = this.buf(pattern[\buf][0], pattern[\buf][1]) };
 
-        this.prApplyTrim(pattern);
-
         if ([Buffer, Pseq, Pxrand].includes(buf.class))
         { pattern[\buf] = buf }
         { pattern[\amp] = 0 };
@@ -330,24 +315,10 @@
   start { |value|
     this.prDebouncer.enqueue([\start, value]);
   }
-
-  trim { |startPosition|
-    case
-    { startPosition.isNil or: (startPosition == 1) }
-    { startPosition = \seq }
-
-    { startPosition.isArray }
-    { startPosition = Pseq(startPosition, inf) }
-
-    { startPosition = startPosition.clip(0, 0.75) };
-
-    this.prDebouncer.enqueue([\trim, startPosition]);
-  }
 }
 
 + Symbol {
   // Prevent methods to generate errors when a Px is stopped through a symbol
   r {}
   start {}
-  trim {}
 }

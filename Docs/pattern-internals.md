@@ -37,7 +37,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 - `pattern[\durStep]` - Duration of a single step, kept before `euclid` rewrites `\dur` into `Pbjorklund2(...) * dur`; used to measure the cycle (removed before Pdef creation)
 
 **Note:** `pattern[\beats]` (no `rhythm` prefix) is an unrelated key — it carries sample duration
-to the `loop`/`grainLoop` SynthDefs for `trim`/`chop` patterns (`Classes/PxBuf.sc`, `Classes/Lx.sc`).
+to the `loop`/`grainLoop` SynthDefs for `chop` patterns (`Classes/PxBuf.sc`, `Classes/Lx.sc`).
 
 **Where to find:** Check source files for complete list - pattern keys are used throughout `Classes/Px.sc`, `Classes/Number.sc`, `Classes/PxBeats.sc`
 
@@ -308,7 +308,7 @@ see [Fill Cascade](#fill-cascade-beat--fill-dependency) above.
 3. **Fill edge cases:** First fill or missing previous stays silent and warns (not a hard error)
 4. **ID gaps:** Normal after deletion, IDs intentionally don't reuse
 5. **Preset vs manual:** Check `pattern[\dx]` flag to differentiate
-6. **`\beats` vs `\rhythmBeats`:** `\beats` is the loop/grainLoop duration control (`trim`/`chop`), `\rhythmBeats` is the fill system's 16-step array
+6. **`\beats` vs `\rhythmBeats`:** `\beats` is the loop/grainLoop duration control (`chop`), `\rhythmBeats` is the fill system's 16-step array
 
 ### Quick Checks
 

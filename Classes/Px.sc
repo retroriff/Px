@@ -1,9 +1,6 @@
 /*
 TODO: Rand degree from old examples files doesn't work anymore, should we deprecate it?
   909 i: \oh dur: 0.25 beat: 0.7 amp: 0.4 degree: \rand length: 3;
-TODO: Unify trim and chop for loops: the second chop value could be the buffer start position instead of drop.
-  Drop on a single-event loop (no dur) likely hangs, since Pseq inf loops over an empty Pdrop:
-  1 loop: "pop-2" chop: [1, 2];
 */
 Px {
   classvar <>chorusPatterns;
@@ -280,25 +277,68 @@ Px {
   }
 
   *prCreateChop { |pattern, pbindef|
-    if (pattern[\chop].isArray) {
-      var dur = pattern[\chop][0];
-      var drop = pattern[\chop][1];
+    var dur, position;
 
-      if (dur != 0 and: (dur != Nil)) {
-        if (pattern[\instrument] == \loop or: { pattern[\instrument] == \grainLoop }) {
-          pbindef = Pbindf(pbindef,
-            \beats, pattern[\beats] ?? pattern[\dur],
-            \dur, dur
-          );
-        };
+    if (pattern[\chop].isArray.not)
+    { ^pbindef };
 
-        pbindef = Pseq([
-          Pfindur(dur.max(0.25), Pdrop(drop, pbindef))
-        ], inf);
-      };
-    };
+    dur = pattern[\chop][0];
+    position = pattern[\chop][1] ?? 0;
 
-    ^pbindef;
+    if (dur == 0)
+    { ^pbindef };
+
+    if (pattern[\instrument] == \loop or: { pattern[\instrument] == \grainLoop })
+    { ^this.prCreateLoopChop(pattern, pbindef, dur ?? { this.prLoopBeats(pattern) / 4 }, position) };
+
+    if (dur.isNil)
+    { ^pbindef };
+
+    if (position.isNumber.not)
+    { position = 0 };
+
+    ^Pseq([
+      Pfindur(dur.max(0.25), Pdrop(position, pbindef))
+    ], inf);
+  }
+
+  *prCreateLoopChop { |pattern, pbindef, dur, position|
+    pbindef = Pbindf(pbindef,
+      \beats, pattern[\beats] ?? pattern[\dur],
+      \dur, dur
+    );
+
+    pbindef = Pseq([Pfindur(dur.max(0.25), pbindef)], inf);
+
+    case
+    { position == \seq }
+    { position = this.prCreateShuffledSlices(pattern, dur) }
+
+    { position.isArray }
+    { position = Pseq(position, inf) }
+
+    { position.isNumber }
+    { position = position.mod(1) };
+
+    if (position == 0)
+    { ^pbindef };
+
+    ^Pbindf(pbindef, \start, position.asStream);
+  }
+
+  *prCreateShuffledSlices { |pattern, dur|
+    var slices = (this.prLoopBeats(pattern) / dur).round.max(1).asInteger;
+
+    ^Pseed(Pdup(4, Pseq((0..10), inf)), Prand((0..(slices - 1)), slices) / slices);
+  }
+
+  *prLoopBeats { |pattern|
+    var beats = pattern[\beats] ?? pattern[\dur];
+
+    if (beats.isKindOf(ListPattern))
+    { beats = beats.list[0] };
+
+    ^beats;
   }
 
   *prCreateDur { |pattern|
@@ -423,12 +463,12 @@ Px {
     bindPattern.removeAt(\totalBeats);
 
     pbindef = Pbind(*bindPattern.asPairs);
+    pbindef = this.prCreateChop(pattern, pbindef);
     pbindef = this.prCreateRest(pattern, pbindef);
 
     if (pattern[\midiControl] != 1)
     { pbindef = this.prCreateFade(pbindef, pattern[\fade]) };
 
-    pbindef = this.prCreateChop(pattern, pbindef);
     pbindef = this.prCreateRepeat(pattern, pbindef);
 
     if (stopBeats.notNil)

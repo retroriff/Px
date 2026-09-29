@@ -212,12 +212,19 @@
 
   *prCreateRest { |pattern, pbindef|
     var restBeats = pattern[\rest];
+    var cycleBeats, cycle;
 
     if (restBeats.isNil)
     { ^pbindef };
 
+    cycleBeats = this.prRepeatBeats(pattern);
+
+    if (pattern[\chop].isArray and: { cycleBeats.notNil })
+    { cycle = Pfindur(cycleBeats - restBeats, pbindef) }
+    { cycle = Pfin(this.prRestCycleLength(pattern), pbindef) };
+
     ^Pseq([
-      Pfin(this.prRestCycleLength(pattern), pbindef),
+      cycle,
       Pbind(\dur, Pseq([Rest(restBeats)]))
     ], pattern[\repeat] ?? inf);
   }

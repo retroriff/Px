@@ -126,6 +126,7 @@ Classes/           - Core class definitions (.sc files)
   PxBuf.sc        - Buffer/sample handling
   PxNotes.sc      - Note/degree pattern handling
   PxMidi.sc       - MIDI functionality
+  PxSwing.sc      - Swing timing and event collision handling
   Fx.sc           - Effects handler
   Dx.sc           - Drum machines
   Lx.sc           - Multi-track sample looper

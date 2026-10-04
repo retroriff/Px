@@ -48,6 +48,24 @@ KorgMinipops:
 
     Métal Urbain used a Korg Minipops 120P, which Eric Débris modified with custom soldered switches and wiring.
 
+LinnLM1:
+  name: Linn LM-1 Drum Computer
+  manufacturer: Linn Electronics
+  year: 1980
+  type: Digital sample playback drum machine
+  notes: >-
+    Designed by Roger Linn, the LM-1 was the first programmable drum machine to use digital samples of acoustic
+    drums. Its 8-bit samples gave it a markedly more realistic sound than the analog rhythm machines available at
+    the time.
+    
+    The acoustic drum samples in the Linn LM-1 were provided by session drummer Art Wood.
+    
+    The Linn LM-1 revolutionized music production by pairing real 8-bit sampled acoustic drum sounds with real-time tap programming, quantized auto-
+    correction, swing feel, individual pitch tuning, and separate audio outputs.
+    
+    When Roger Linn demonstrated his initial cardboard-box prototype, several high-profile musicians immediately put down $2,500 deposits to secure
+    early production models, including **Stevie Wonder**, **Herbie Hancock**, **Giorgio Moroder**, and **Frank Zappa**.
+
 Rhythm10:
   name: Farfisa Rhythm 10
   manufacturer: Farfisa
@@ -182,3 +200,22 @@ SoundmastersR88:
     start and stop buttons to place hits and rests.
 
     When the DR-55's eight-pattern memory limit proved too small for full live sets, Robin Guthrie from Cocteau Twins bought two Sound Master SR-88 units
+
+SimmonsSDS5:
+  name: Simmons SDS5 Drum Synthesizer
+  manufacturer: Simmons
+  year: 1981
+  type: Analog electronic drum kit
+  notes: >-
+    The SDS5, also known as the SDS-V, was Simmons's first commercially released electronic drum kit.
+    The **Simmons SDS 5** was a fully modular electronic drum kit featuring iconic hexagonal hard-plastic pads that 
+    triggered layered, customizable drum sounds across independent channels for the kick, snare, and toms, 
+    with memory to store preset rhythm sounds.
+    
+    **Stephen Morris**—the drummer for **Joy Division** and **New Order**—was an early adopter of electronic drum pads and gear, driven by both 
+    sound and visual aesthetic.
+    
+    Morris integrated the Synare 3 into Joy Division's live setup, using it to create the iconic "chi-chi" noise on **"She's Lost Control"**.
+    
+    As Joy Division transitioned into New Order, Morris moved from triggering drum pads to programming drum machines like the **Roland TR-808**, 
+    which provided the pulse for dance-rock classics like **"Blue Monday"**.

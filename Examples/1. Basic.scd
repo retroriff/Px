@@ -17,7 +17,7 @@ Px.stop([1, 2]);
 // And create some random beats or Euclidian rhythms:
 3 i: \hh dur: 0.25 beat: 0.7;
 4 i: \ma dur: 0.25 euclid: [3, 5];
-5 i: \hh dur: 0.25 swing: 0.25;
+5 i: \hh dur: 0.25 swing: 0.125;
 
 // Or mute the rest while the soloists play:
 (

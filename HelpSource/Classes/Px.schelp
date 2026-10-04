@@ -522,11 +522,12 @@ code::
 ::
 
 ## swing
-|| Delays the event that ends each period boundary without changing code::dur::. A number is shorthand for code::[offset, 1]::. A Pattern supplies offsets at each affected boundary and uses a one-beat period; code::0:: leaves that boundary unshifted. Both values are in beats.
+|| Delays the event that ends each period boundary without changing code::dur::. A number is shorthand for code::[offset, 1]::. A Pattern supplies offsets at each affected boundary and uses a one-beat period; code::0:: leaves that boundary unshifted. Both values are in beats. If the delayed event lands exactly on another audible event in the same pattern, only the later event sounds. A delayed event landing on a silent step still sounds.
 code::
-1 i: \hh dur: 0.25 swing: 0.25;
-2 i: \cp dur: 0.25 swing: [0.25, 1];
+1 i: \hh dur: 0.25 swing: 0.125;
+2 i: \cp dur: 0.25 swing: [0.125, 1];
 909 i: \sd dur: 2 swing: [0.25, 0].pseq off: 1;
+909 i: \hh dur: 0.5 swing: 0.5;
 ::
 ::
 

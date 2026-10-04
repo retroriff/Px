@@ -425,6 +425,57 @@ Px {
     ^Pfindur(cycleBeats * repeats, pbindef);
   }
 
+  *prCreateSwing { |pattern, pbindef|
+    var elapsed = 0, offset, period, swing = pattern[\swing], swingStream;
+
+    if (swing.isNumber) {
+      offset = swing;
+      period = 1;
+    };
+
+    if (swing.isArray) {
+      offset = swing[0];
+      period = swing[1] ?? 1;
+    };
+
+    if (swing.isKindOf(Pattern)) {
+      period = 1;
+      swingStream = swing.asStream;
+    };
+
+    if (period.isNumber.not or: { period <= 0 })
+    { ^pbindef };
+
+    if (swingStream.isNil and: { offset.isNumber.not or: { offset <= 0 } })
+    { ^pbindef };
+
+    ^pbindef.collect { |event|
+      var currentOffset, dur = event[\dur], nextElapsed, nextPeriods, periods;
+
+      if (dur.isKindOf(Rest))
+      { dur = dur.value };
+
+      if (dur.isNumber) {
+        nextElapsed = elapsed + dur;
+        periods = ((elapsed / period) + 0.000001).floor;
+        nextPeriods = ((nextElapsed / period) + 0.000001).floor;
+
+        if (periods < nextPeriods) {
+          if (swingStream.notNil)
+          { currentOffset = swingStream.next(event) }
+          { currentOffset = offset };
+
+          if (currentOffset.isNumber and: { currentOffset > 0 })
+          { event[\timingOffset] = (event[\timingOffset] ?? 0) + (currentOffset * TempoClock.default.beatDur) };
+        };
+
+        elapsed = nextElapsed;
+      };
+
+      event;
+    };
+  }
+
   *prPatternQuant { |pattern|
     var id = pattern[\id];
     var previous = lastFormatted[id];
@@ -460,6 +511,7 @@ Px {
     bindPattern.removeAt(\rest);
     bindPattern.removeAt(\rhythmBeats);
     bindPattern.removeAt(\stop);
+    bindPattern.removeAt(\swing);
     bindPattern.removeAt(\totalBeats);
 
     pbindef = Pbind(*bindPattern.asPairs);
@@ -470,6 +522,7 @@ Px {
     { pbindef = this.prCreateFade(pbindef, pattern[\fade]) };
 
     pbindef = this.prCreateRepeat(pattern, pbindef);
+    pbindef = this.prCreateSwing(pattern, pbindef);
 
     if (stopBeats.notNil)
     { pbindef = Pfindur(stopBeats, pbindef) };

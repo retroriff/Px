@@ -146,6 +146,10 @@
     this.prDebouncer.enqueue([\stop, value]);
   }
 
+  swing { |value|
+    this.prDebouncer.enqueue([\swing, value]);
+  }
+
   solo { |value|
     var isSolo = value != 0;
     this.prDebouncer.enqueue([\solo, isSolo]);

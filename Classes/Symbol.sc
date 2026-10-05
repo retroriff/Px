@@ -96,9 +96,9 @@
     Ndef(this).rebuild;
   }
 
-  set { |key, value|
+  set { |... args|
     if (this.prNdefExists)
-    { Ndef(this).set(key, value) }
+    { Ndef(this).set(*args) }
     { ^this.prNdefNotFound };
   }
 

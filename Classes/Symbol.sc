@@ -83,12 +83,12 @@
     FadeOut(this, fadeTime);
   }
 
-  qset { |key, value|
+  qset { |... args|
     var clock = TempoClock.default;
     var nextBeat = clock.nextTimeOnGrid(4);
 
     clock.schedAbs(nextBeat, {
-      Ndef(this).set(key, value);
+      Ndef(this).set(*args);
     });
   }
 
@@ -122,9 +122,9 @@
     Crossfader(this, b);
   }
 
-  xset { |key, value|
+  xset { |... args|
     if (this.prNdefExists)
-    { Ndef(this).xset(key, value) }
+    { Ndef(this).xset(*args) }
     { ^this.prNdefNotFound };
   }
  

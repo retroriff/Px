@@ -103,7 +103,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | Name    | Arguments                                                  | Description                            |
 | ------- | ---------------------------------------------------------- | -------------------------------------- |
 | `grain` | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a granular texture from a buffer |
-| `i`     | name: string                                               | Plays a Synthdef. Same as `instrument` |
+| `i`     | name: string                                               | Plays a SynthDef or drum sample; drum suffixes `:index`, `:seq`, and `:rand` select samples |
 | `loop`  | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a loop from a buffer             |
 | `play`  | [folder: string, file: number \| array \| \rand \| \seq]\* | Plays a buffer                         |
 
@@ -220,6 +220,8 @@ We can simplify the usage of drum machine using shortcodes. Short aliases (505, 
 ```js
 707 i: \bd dur: 1;
 707 i: "sd:4" dur: 2 off: 1;
+909 i: "ht:seq" dur: 1;
+909 i: "ht:rand" dur: 1;
 
 // Stop all
 \707 i: \all

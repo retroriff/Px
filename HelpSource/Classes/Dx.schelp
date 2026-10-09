@@ -57,6 +57,8 @@ code::
 // Play a 909
 909 i: \bd dur: 1;
 909 i: \sd dur: 2 off: 1;
+909 i: "ht:seq" dur: 1;
+909 i: "ht:rand" dur: 1;
 
 // Stop all 808 patterns
 \808 i: \all;
@@ -64,6 +66,8 @@ code::
 // Stop all 909 patterns
 \909 i: \all;
 ::
+
+The code::"ht:seq":: form plays every sample of that drum instrument in index order, repeating. The code::"ht:rand":: form uses the same random sequence behavior as code::play: "folder:rand"::. A numeric suffix selects one sample by index. The drum pattern keeps the same ID when its selector changes.
 
 subsection:: Using Presets
 

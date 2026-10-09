@@ -128,7 +128,7 @@ Px.chorus;
 
 // Slide series to create dynamic transitions or fills
 2 i: \sd dur: 0.25 amp: [0, 1].pseg(\exp, 8, 1)
-3 i: \303 dur: 0.25 octave: 5 ctf: [0, 1].pseg(\lin, 8)
+3 i: \bass dur: 0.25 octave: 3 cutoff: [180, 1200].pseg(\lin, 8)
 
 // Update an existing pattern when we omit i, play and loop
 3 dur: 1

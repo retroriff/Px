@@ -84,10 +84,7 @@
   }
 
   qset { |... args|
-    var clock = TempoClock.default;
-    var nextBeat = clock.nextTimeOnGrid(4);
-
-    clock.schedAbs(nextBeat, {
+    this.prScheduleQuantized({
       Ndef(this).set(*args);
     });
   }
@@ -106,11 +103,17 @@
     var isNdef = this.prNdefExists;
     var isTdef = Tdef.all.at(this).notNil;
 
+    if (isNdef) {
+      ^this.prScheduleQuantized({
+        if (~isAnimatronEnabled == true)
+        { ~animatronNetAddr.sendMsg("/sc/stop", this, fadeTime ?? 0) };
+
+        Ndef(this).stop(fadeTime ?? 0);
+      });
+    };
+
     if (~isAnimatronEnabled == true)
     { ~animatronNetAddr.sendMsg("/sc/stop", this, fadeTime ?? 0) };
-
-    if (isNdef)
-    { ^Ndef(this).stop(fadeTime ?? 0) };
 
     if (isTdef)
     { ^Tdef(this).stop };
@@ -126,6 +129,16 @@
     if (this.prNdefExists)
     { Ndef(this).xset(*args) }
     { ^this.prNdefNotFound };
+  }
+
+  prScheduleQuantized { |func|
+    var clock = TempoClock.default;
+    var nextBeat = clock.nextTimeOnGrid(4);
+
+    clock.schedAbs(nextBeat, {
+      func.value;
+      nil;
+    });
   }
  
   prNdefExists {

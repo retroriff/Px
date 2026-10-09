@@ -54,6 +54,25 @@ Fx(\px).reverb(Nil)
 Fx(\sd).reverb(0.5)
 ::
 
+A Symbol forwards any number of control and value pairs to its Ndef with code::set::,
+code::qset::, or code::xset::. The latter two schedule a change on the next four-beat grid
+boundary or crossfade the controls, respectively.
+
+code::
+\sd.set(\cutoff, 1329, \decay, 0.2, \res, 0.38);
+\sd.qset(\cutoff, 1329, \decay, 0.2, \res, 0.38);
+\sd.xset(\cutoff, 1329, \decay, 0.2, \res, 0.38);
+::
+
+A Symbol's code::stop:: schedules its Ndef to stop on the next four-beat grid boundary.
+An optional fade time starts at that boundary and is measured in seconds.
+Symbols naming Tdefs still stop them immediately.
+
+code::
+\sd.stop;
+\sd.stop(4);
+::
+
 subsection:: Quantization
 
 Re-evaluating a pattern replaces its Pdef source, and the swap waits for the next quantization
@@ -521,6 +540,13 @@ code::
 2 i: \sd dur: 2 off: 1;  // Plays on beat 2
 ::
 
+## clone
+|| Adds a copy of each audible event at the given number of beats after its original onset. The copy keeps the original event's sound and parameters; code::dur:: and the pattern cycle stay the same. A code::0:: value adds no copy. A Pattern chooses the offset for each audible event. If the copy lands on another audible hit in the same pattern, it is silenced.
+code::
+909 i: \sd dur: 2 off: 1 clone: 0.25;
+909 i: \sd dur: 2 off: 1 clone: [0, 0.25].pwrand(0.2);
+::
+
 ## swing
 || Delays the event that ends each period boundary without changing code::dur::. A number is shorthand for code::[offset, 1]::. A Pattern supplies offsets at each affected boundary and uses a one-beat period; code::0:: leaves that boundary unshifted. Both values are in beats. If the delayed event lands exactly on another audible event in the same pattern, only the later event sounds. A delayed event landing on a silent step still sounds.
 code::
@@ -640,20 +666,20 @@ definitionlist::
 ## degree
 || Sets pitch degrees in the current scale.
 code::
-1 i: \303 dur: 0.25 degree: [0, 2, 4, 5].pseq;
-1 i: \303 dur: 0.25 degree: \rand;  // Random degrees
+1 i: \sine dur: 0.25 degree: [0, 2, 4, 5].pseq;
+1 i: \sine dur: 0.25 degree: \rand;  // Random degrees
 ::
 
 ## scale
 || Sets the scale for the pattern.
 code::
-1 i: \303 dur: 0.25 degree: [0, 2, 4].pseq scale: \minor;
+1 i: \sine dur: 0.25 degree: [0, 2, 4].pseq scale: \minor;
 ::
 
 ## octave
 || Sets the octave.
 code::
-1 i: \303 dur: 0.25 degree: [0, 2, 4].pseq octave: 5;
+1 i: \sine dur: 0.25 degree: [0, 2, 4].pseq octave: 5;
 ::
 
 ## arp
@@ -921,25 +947,25 @@ Available qualities are the keys of code::Nx.chords::. Unknown symbols post code
 || Sends all notes off for this pattern's channel.
 ::
 
-subsection:: Synth Parameters (303)
+subsection:: Synth Parameters (bass)
 
 definitionlist::
-## ctf
-|| Cutoff frequency for filter.
+## cutoff
+|| Low-pass filter cutoff frequency in hertz.
 code::
-1 i: \303 dur: 0.25 ctf: 0.5;
+1 i: \bass dur: 0.25 octave: 3 cutoff: 400;
 ::
 
-## env
-|| Envelope amount.
+## envAmount
+|| Amount added to the filter cutoff by the envelope.
 code::
-1 i: \303 dur: 0.25 env: 0.8;
+1 i: \bass dur: 0.25 octave: 3 envAmount: 600;
 ::
 
-## res
-|| Resonance amount.
+## drive
+|| Saturation drive.
 code::
-1 i: \303 dur: 0.25 res: 0.6;
+1 i: \bass dur: 0.25 octave: 3 drive: 3;
 ::
 ::
 
@@ -957,8 +983,8 @@ code::
 // Sequencing - converted to a Pseq
 // Format: [values].pseq(repeats)
 // - repeats: (optional) number of times to loop. Omit to loop indefinitely
-1 i: \303 dur: 0.25 degree: [0, 2, 4, 5].pseq; // Pseq([0, 2, 4, 5], inf)
-1 i: \303 dur: 0.25 degree: [0, 2, 4, 5].pseq(2); // Pseq([0, 2, 4, 5], 2)
+1 i: \sine dur: 0.25 degree: [0, 2, 4, 5].pseq; // Pseq([0, 2, 4, 5], inf)
+1 i: \sine dur: 0.25 degree: [0, 2, 4, 5].pseq(2); // Pseq([0, 2, 4, 5], 2)
 
 // Curves (linear or exponential) - converted to a Pseg
 // Format: [levels].pseg(curve, beats, repeats)
@@ -1003,9 +1029,8 @@ code::
 // Using loops
 1 loop: "breaks" dur: 8;
 
-// TB-303 style
 (
-1 i: \303 dur: 0.25 degree: [0, 2, 4, 5].pseq octave: 5 ctf: 0.3 env: 0.8 res: 0.5;
+1 i: \bass dur: 0.25 degree: [0, 2, 4, 5].pseq octave: 3 cutoff: 400 envAmount: 600;
 Fx(\px).reverb(0.2).delay(0.1);
 )
 

@@ -169,8 +169,8 @@ Dx : Px {
 
   *shuffle { |update101 = false|
     var folders = this.prGetDrumMachinesFolders;
-    var randomIndex = folders.size.rand;
     var instruments;
+    var randomIndex = Date.seed.abs % folders.size;
 
     Dx.use(folders[randomIndex], update101);
     instruments = this.instruments;

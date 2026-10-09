@@ -336,7 +336,7 @@ Dx.gui; // toggle open/close
 ::
 
 method:: shuffle
-Switches to a randomly chosen drum machine and returns its available instruments.
+Switches to a randomly chosen drum machine and returns its available instruments. The choice uses a fresh time-based seed, so seeded pattern generation cannot lock the selection into a repeating sequence.
 
 argument:: update101
 When true, playing patterns declared with the dynamic code::101:: alias also migrate to the chosen machine. Default: false.

@@ -244,7 +244,7 @@ Dx.preset(\electro, 1);
 | `loadPresets` | None                                              | Reloads presets from YAML files         |
 | `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Data/dx/presets/)     |
 | `release`     | None                                              | Releases with fadeTime                  |
-| `shuffle`     | update101?: boolean                               | Shuffles the drum machines bank         |
+| `shuffle`     | update101?: boolean                               | Chooses a drum machine independently of pattern seeds |
 | `solo`        | instrument: symbol \| false                       | Solos one or more drum instruments      |
 | `stop`        | None                                              | Same as `\808 i: \all`                  |
 | `unsolo`      | None                                              | Restores drum patterns muted by solo    |

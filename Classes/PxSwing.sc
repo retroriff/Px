@@ -1,8 +1,19 @@
 + Px {
   *prCreateSwing { |pattern, pbindef|
-    var clone = pattern[\clone], cloneEnabled, offset, period, swing = pattern[\swing], swingEnabled = false;
+    var clone = pattern[\clone], cloneBeatOffset = clone, cloneEnabled, cloneRepeats = 1, offset, period, swing = pattern[\swing], swingEnabled = false;
 
-    cloneEnabled = clone.isKindOf(Pattern) or: { clone.isNumber and: { clone > 0 } };
+    if (clone.isArray) {
+      cloneBeatOffset = clone[0];
+      cloneRepeats = clone[1] ?? 1;
+    };
+
+    if (cloneRepeats.isNumber)
+    { cloneRepeats = cloneRepeats.asInteger.max(0) }
+    { cloneRepeats = 0 };
+
+    cloneEnabled = cloneRepeats > 0 and: {
+      cloneBeatOffset.isKindOf(Pattern) or: { cloneBeatOffset.isNumber and: { cloneBeatOffset > 0 } }
+    };
 
     if (swing.isNumber) {
       offset = swing;
@@ -30,8 +41,8 @@
       var appendEvent, elapsed = 0, queue = List.new, scheduledElapsed = 0, source = pbindef.asStream;
       var cloneStream, sourceEnded = false, swingStream;
 
-      if (clone.isKindOf(Pattern))
-      { cloneStream = clone.asStream };
+      if (cloneBeatOffset.isKindOf(Pattern))
+      { cloneStream = cloneBeatOffset.asStream };
 
       if (swingEnabled and: { swing.isKindOf(Pattern) })
       { swingStream = swing.asStream };
@@ -86,7 +97,7 @@
           if (cloneEnabled and: { this.prSwingEventAudible(event) }) {
             if (cloneStream.notNil)
             { cloneOffset = cloneStream.next(event) }
-            { cloneOffset = clone };
+            { cloneOffset = cloneBeatOffset };
 
             if (cloneOffset.isNumber and: { cloneOffset > 0 }) {
               cloneStart = channelCount;
@@ -98,9 +109,11 @@
 
                 value;
               });
-              timingOffset = offsets ++ offsets.collect { |value| value + cloneOffset };
+              timingOffset = Array.fill(cloneRepeats + 1, { |repeatIndex|
+                offsets.collect { |value| value + (cloneOffset * repeatIndex) };
+              }).flatten;
               event[\timingOffset] = timingOffset;
-              channelCount = channelCount * 2;
+              channelCount = channelCount * (cloneRepeats + 1);
             };
           };
 

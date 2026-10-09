@@ -541,9 +541,10 @@ code::
 ::
 
 ## clone
-|| Adds a copy of each audible event at the given number of beats after its original onset. The copy keeps the original event's sound and parameters; code::dur:: and the pattern cycle stay the same. A code::0:: value adds no copy. A Pattern chooses the offset for each audible event. If the copy lands on another audible hit in the same pattern, it is silenced.
+|| Adds copies of each audible event at successive beat offsets after its original onset. A number adds one copy; code::[offset, repeats]:: adds code::repeats:: copies at code::offset::, code::2 * offset::, and so on. The offset may be a Pattern chosen for each audible event. The copies keep the original event's sound and parameters; code::dur:: and the pattern cycle stay the same. An offset of code::0:: or a repeat count of code::0:: adds no copies. Copies that land on another audible hit in the same pattern are silenced, so overlapping hits play once.
 code::
 909 i: \sd dur: 2 off: 1 clone: 0.25;
+909 i: \sd dur: 2 off: 1 clone: [0.5, 2];
 909 i: \sd dur: 2 off: 1 clone: [0, 0.25].pwrand(0.2);
 ::
 

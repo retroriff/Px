@@ -272,15 +272,25 @@
 
   *prStopTailWait { |pattern, tailWait|
     var clone = pattern !? { |value| value[\clone] };
+    var cloneOffset = clone, cloneRepeats = 1;
     var offset = pattern !? { |value| value[\timingOffset] };
+
+    if (clone.isArray) {
+      cloneOffset = clone[0];
+      cloneRepeats = clone[1] ?? 1;
+    };
 
     if (offset.isNumber.not)
     { offset = 0 };
 
-    if (clone.isNumber.not)
-    { clone = 0 };
+    if (cloneOffset.isNumber.not)
+    { cloneOffset = 0 };
 
-    ^tailWait + ((clone.max(0) + offset.max(0)) * TempoClock.default.beatDur);
+    if (cloneRepeats.isNumber)
+    { cloneRepeats = cloneRepeats.asInteger.max(0) }
+    { cloneRepeats = 0 };
+
+    ^tailWait + (((cloneOffset.max(0) * cloneRepeats) + offset.max(0)) * TempoClock.default.beatDur);
   }
 
   *synthDef { |synthDef|

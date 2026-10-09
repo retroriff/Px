@@ -4,7 +4,7 @@ SynthDef(\bass, {
 	level = 0.65, rel = 0.1, filterDecay = 0.31, drive = 3,
 	amp = 0.3, pan = 0, cutoff = 180, envAmount = 600|
 
-	var env, filterEnv, sub, body, sig;
+	var ampComp, body, env, filterEnv, fundamental, sig, subMix, subOctave;
 
 	env = EnvGen.kr(
 		Env.adsr(atk, decay, level, rel, curve: [-4, -2, -5]),
@@ -20,7 +20,22 @@ SynthDef(\bass, {
 		)
 	);
 
-	sub = SinOsc.ar(freq);
+	fundamental = SinOsc.ar(freq);
+
+	subOctave = SinOsc.ar(freq / 2);
+
+	subMix = freq.explin(
+		32.7,
+		261.6,
+		0,
+		0.35
+	).clip(0, 0.35);
+
+	fundamental = (
+		(fundamental * (1 - subMix))
+		+
+		(subOctave * subMix)
+	);
 
 	body = Saw.ar(freq * 2) * 0.12;
 
@@ -29,8 +44,13 @@ SynthDef(\bass, {
 		cutoff + (filterEnv * envAmount)
 	);
 
-	sig = (sub + body) * env;
-	sig = (sig * drive).tanh * amp;
+	sig = (fundamental + body) * env;
+
+	sig = (sig * drive).tanh;
+
+	ampComp = (32.7 / freq).pow(1).clip(0.4, 1);
+
+	sig = sig * amp * ampComp * 2;
 
 	Out.ar(out, Pan2.ar(sig, pan));
 }).add;

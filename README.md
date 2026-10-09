@@ -47,6 +47,7 @@ The superclass that generates the patterns from an array of events with a simpli
 | `amp`     | number \| number[] \| Pattern                     | Amplification. An array generates a Pseq. With `beat` or `fill`, a Pattern supplies the value of each hit — advancing only on hits, and a `0` silences that hit                              |
 | `beat`    | weight: range 0..1                                | Generates a random rhythm, or own rhythym defined by set                                                                                                                                     |
 | `chop`    | dur \| [dur, drop] \| Pattern \| \seq             | Slices and repeats part of this pattern. On `loop:` it keeps the tempo, and the second value, or a lone Pattern/`\seq`, is the start position                                                |
+| `clone`   | beats: number \| Pattern                           | Adds a copy of each audible event after the given beat offset; `0` adds no copy, and colliding hits play once                                                                                  |
 | `dur`     | number \| number[] \| Pattern                     | Duration. An array generates a Pseq                                                                                                                                                          |
 | `euclid`  | [hits: number, total: number]                     | Generates an Euclidian rhythm. `dur` is the length of one step, so the figure lasts `total * dur` beats                                                                                      |
 | `fill`    | weight: range 0..1                                | Fills the rests gap of its previous sequential pattern. Re-fills automatically when that pattern's `beat` changes (not with `seed: \rand`)                                                   |
@@ -411,7 +412,10 @@ They can be used directly with symbols methods and binary operator syntax:
 \a to: \b
 \a.play
 \a.stop
+\a.stop(4);
 ```
+
+For an Ndef, `\a.stop` starts on the next four-beat boundary. Its optional fade time is in seconds. A Symbol that names a Tdef still stops it immediately.
 
 And we can get and set synth controls:
 
@@ -422,6 +426,9 @@ And we can get and set synth controls:
 \a.get(\amp); // get a specific control value
 \a.set(\amp, 1); // non-quantified set
 \a.qset(\amp, 1); // quantified set
+\a.set(\cutoff, 1329, \decay, 0.2, \res, 0.38);
+\a.qset(\cutoff, 1329, \decay, 0.2, \res, 0.38);
+\a.xset(\cutoff, 1329, \decay, 0.2, \res, 0.38);
 ```
 
 And apply effects, same as calling the `Fx` method on the Ndef:

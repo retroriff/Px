@@ -33,6 +33,10 @@
     this.prDebouncer.enqueue([\chop, [dur, position]]);
   }
 
+  clone { |value|
+    this.prDebouncer.enqueue([\clone, value]);
+  }
+
   doesNotUnderstand { |selector, args|
     var allKeys = this.prCollectEventKeys ++ this.prCollectSynthDefKeys ++ [\callback, \finish, \length, \name];
 

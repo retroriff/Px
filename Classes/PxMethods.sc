@@ -271,12 +271,16 @@
   }
 
   *prStopTailWait { |pattern, tailWait|
+    var clone = pattern !? { |value| value[\clone] };
     var offset = pattern !? { |value| value[\timingOffset] };
 
     if (offset.isNumber.not)
-    { ^tailWait };
+    { offset = 0 };
 
-    ^tailWait + (offset.max(0) * TempoClock.default.beatDur);
+    if (clone.isNumber.not)
+    { clone = 0 };
+
+    ^tailWait + ((clone.max(0) + offset.max(0)) * TempoClock.default.beatDur);
   }
 
   *synthDef { |synthDef|

@@ -455,6 +455,7 @@ Px {
     bindPattern[\amp] = bindPattern[\ampBeat] ?? bindPattern[\amp];
 
     bindPattern.removeAt(\ampBeat);
+    bindPattern.removeAt(\clone);
     bindPattern.removeAt(\durStep);
     bindPattern.removeAt(\repeat);
     bindPattern.removeAt(\rest);

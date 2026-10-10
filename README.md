@@ -102,10 +102,10 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 
 | Name    | Arguments                                                  | Description                            |
 | ------- | ---------------------------------------------------------- | -------------------------------------- |
-| `grain` | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a granular texture from a buffer |
-| `i`     | name: string                                               | Plays a SynthDef or drum sample; drum suffixes `:index`, `:seq`, and `:rand` select samples |
-| `loop`  | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a loop from a buffer             |
-| `play`  | [folder: string, file: number \| array \| \rand \| \seq]\* | Plays a buffer                         |
+| `grain` | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a granular texture; skips missing samples |
+| `i`     | name: string                                               | Plays a SynthDef or drum sample; drum suffixes `:index`, `:seq`, and `:rand` select samples; skips missing samples |
+| `loop`  | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a loop from a buffer; skips missing samples |
+| `play`  | [folder: string, file: number \| array \| \rand \| \seq]\* | Plays a buffer; skips missing samples  |
 
 `*` The array can be replaced by a string shortcut: `"folder:index"`.
 `**` It also accepts a Buffer object: `Buffer.read(s, "chord.aiff".resolveRelative)`.

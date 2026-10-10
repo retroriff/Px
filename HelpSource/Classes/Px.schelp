@@ -498,13 +498,13 @@ subsection:: Core Methods
 
 definitionlist::
 ## i
-|| Sets the instrument (SynthDef name).
+|| Sets the instrument (SynthDef name). Drum sample references with a missing or empty folder are reported and skipped without starting playback.
 code::
 707 i: \bd dur: 1;
 ::
 
 ## play
-|| Plays a sample from a folder. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different sample on every event. The code::folder:seq:: shortcut plays every sample in folder index order and repeats continuously.
+|| Plays a sample from a folder. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different sample on every event. The code::folder:seq:: shortcut plays every sample in folder index order and repeats continuously. A missing sample or empty folder is reported and the pattern is skipped without starting playback.
 code::
 1 play: "fm:0";
 1 play: "fm:rand";  // Random sample
@@ -514,7 +514,7 @@ code::
 ::
 
 ## loop
-|| Plays a looping sample. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different loop on every cycle. The code::folder:seq:: shortcut plays every loop in folder index order and repeats continuously. The default duration comes from the beat count in the first folder name.
+|| Plays a looping sample. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different loop on every cycle. The code::folder:seq:: shortcut plays every loop in folder index order and repeats continuously. The default duration comes from the beat count in the first folder name. A missing sample or empty folder is reported and the pattern is skipped without starting playback.
 code::
 707 loop: "breaks" dur: 8;
 10 loop: "pop-2:seq" dur: 2;                     // Every loop in index order, repeating

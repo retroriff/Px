@@ -91,6 +91,11 @@ Px {
 
     pattern = this.prCreateBufInstruments(newPattern);
 
+    if (pattern[\bufMissing] != true) {
+      pattern = this.prCreateInstrument(pattern);
+      pattern = this.prCreateLoops(pattern);
+    };
+
     if (pattern[\bufMissing] == true) {
       if (previousPattern.notNil)
       { last[pattern[\id]] = previousPattern }
@@ -99,8 +104,6 @@ Px {
       ^this;
     };
 
-    pattern = this.prCreateInstrument(pattern);
-    pattern = this.prCreateLoops(pattern);
     pattern = this.prCreateAmp(pattern);
     pattern = this.prCreateDur(pattern);
     pattern = this.prCreatePan(pattern);

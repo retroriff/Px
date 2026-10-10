@@ -83,6 +83,8 @@
   }
 
   *prCreateBufInstruments { |pattern|
+    pattern.removeAt(\bufMissing);
+
     if (pattern[\play].notNil) {
       var folder, file;
 
@@ -203,7 +205,7 @@
     resolved = this.prResolveBufList(pattern[\buf]);
 
     if (resolved.isNil) {
-      pattern[\amp] = 0;
+      pattern[\bufMissing] = true;
       ^pattern;
     };
 
@@ -298,9 +300,9 @@
 
         if ([Buffer, Pseq, Pxrand].includes(buf.class))
         { pattern[\buf] = buf }
-        { pattern[\amp] = 0 };
+        { pattern[\bufMissing] = true };
       }
-      { pattern[\amp] = 0 };
+      { pattern[\bufMissing] = true };
     };
 
     ^pattern;

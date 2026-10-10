@@ -293,10 +293,41 @@
     ^tailWait + (((cloneOffset.max(0) * cloneRepeats) + offset.max(0)) * TempoClock.default.beatDur);
   }
 
+  *prSynthDefControlValue { |value|
+    if (value.isSequenceableCollection and: { value.isString.not }) {
+      ^"[" ++ Array.fill(value.size, { |i|
+        this.prSynthDefControlValue(value[i])
+      }).join(", ") ++ "]";
+    };
+
+    if (value.isFloat)
+    { ^value.asStringPrec(6) };
+
+    ^value.asString;
+  }
+
   *synthDef { |synthDef|
-    if (synthDef.isNil)
-    { SynthDescLib.global.browse }
-    { ^SynthDescLib.global[synthDef] };
+    var desc;
+
+    if (synthDef.isNil) {
+      SynthDescLib.global.browse;
+      ^nil;
+    };
+
+    desc = SynthDescLib.global[synthDef];
+
+    if (desc.isNil) {
+      "SynthDef not found: %".format(synthDef).warn;
+      ^nil;
+    };
+
+    desc.controls.reject { |control|
+      control.name.isNil or: { control.name == '?' }
+    }.collect { |control|
+      "% (%)".format(control.name, this.prSynthDefControlValue(control.defaultValue))
+    }.join(", ").postln;
+
+    ^nil;
   }
 
   *tempo { |tempo, withNdef, add|

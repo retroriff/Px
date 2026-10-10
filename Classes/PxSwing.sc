@@ -1,17 +1,17 @@
 + Px {
   *prCreateSwing { |pattern, pbindef|
-    var clone = pattern[\clone], cloneBeatOffset = clone, cloneEnabled, cloneRepeats = 1, offset, period, swing = pattern[\swing], swingEnabled = false;
+    var clone = pattern[\clone], cloneBeatOffset = clone, cloneCount = 2, cloneEnabled, offset, period, swing = pattern[\swing], swingEnabled = false;
 
     if (clone.isArray) {
       cloneBeatOffset = clone[0];
-      cloneRepeats = clone[1] ?? 1;
+      cloneCount = clone[1] ?? 2;
     };
 
-    if (cloneRepeats.isNumber)
-    { cloneRepeats = cloneRepeats.asInteger.max(0) }
-    { cloneRepeats = 0 };
+    if (cloneCount.isNumber)
+    { cloneCount = cloneCount.asInteger.max(0) }
+    { cloneCount = 0 };
 
-    cloneEnabled = cloneRepeats > 0 and: {
+    cloneEnabled = cloneCount > 1 and: {
       cloneBeatOffset.isKindOf(Pattern) or: { cloneBeatOffset.isNumber and: { cloneBeatOffset > 0 } }
     };
 
@@ -109,11 +109,11 @@
 
                 value;
               });
-              timingOffset = Array.fill(cloneRepeats + 1, { |repeatIndex|
+              timingOffset = Array.fill(cloneCount, { |repeatIndex|
                 offsets.collect { |value| value + (cloneOffset * repeatIndex) };
               }).flatten;
               event[\timingOffset] = timingOffset;
-              channelCount = channelCount * (cloneRepeats + 1);
+              channelCount = channelCount * cloneCount;
             };
           };
 

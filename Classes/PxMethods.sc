@@ -272,12 +272,12 @@
 
   *prStopTailWait { |pattern, tailWait|
     var clone = pattern !? { |value| value[\clone] };
-    var cloneOffset = clone, cloneRepeats = 1;
+    var cloneCount = 2, cloneOffset = clone;
     var offset = pattern !? { |value| value[\timingOffset] };
 
     if (clone.isArray) {
       cloneOffset = clone[0];
-      cloneRepeats = clone[1] ?? 1;
+      cloneCount = clone[1] ?? 2;
     };
 
     if (offset.isNumber.not)
@@ -286,11 +286,11 @@
     if (cloneOffset.isNumber.not)
     { cloneOffset = 0 };
 
-    if (cloneRepeats.isNumber)
-    { cloneRepeats = cloneRepeats.asInteger.max(0) }
-    { cloneRepeats = 0 };
+    if (cloneCount.isNumber)
+    { cloneCount = cloneCount.asInteger.max(0) }
+    { cloneCount = 0 };
 
-    ^tailWait + (((cloneOffset.max(0) * cloneRepeats) + offset.max(0)) * TempoClock.default.beatDur);
+    ^tailWait + (((cloneOffset.max(0) * (cloneCount - 1).max(0)) + offset.max(0)) * TempoClock.default.beatDur);
   }
 
   *prSynthDefControlValue { |value|

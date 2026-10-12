@@ -48,6 +48,17 @@ KorgMinipops:
 
     Métal Urbain used a Korg Minipops 120P, which Eric Débris modified with custom soldered switches and wiring.
 
+LinnDrum:
+  name: LinnDrum
+  manufacturer: Linn Electronics
+  year: 1982
+  type: Digital sample playback drum machine
+  notes: >-
+    Released in late 1982 as the more affordable ($2,995) successor to the 
+    LM-1, featuring real cymbals and trigger inputs.
+
+    The Psychedelic Furs: Keith Forsey brought Idol's LinnDrum-driven sound to their album "Mirror Moves".
+
 LinnLM1:
   name: Linn LM-1 Drum Computer
   manufacturer: Linn Electronics
@@ -57,14 +68,21 @@ LinnLM1:
     Designed by Roger Linn, the LM-1 was the first programmable drum machine to use digital samples of acoustic
     drums. Its 8-bit samples gave it a markedly more realistic sound than the analog rhythm machines available at
     the time.
-    
+
     The acoustic drum samples in the Linn LM-1 were provided by session drummer Art Wood.
-    
+
     The Linn LM-1 revolutionized music production by pairing real 8-bit sampled acoustic drum sounds with real-time tap programming, quantized auto-
     correction, swing feel, individual pitch tuning, and separate audio outputs.
-    
+
     When Roger Linn demonstrated his initial cardboard-box prototype, several high-profile musicians immediately put down $2,500 deposits to secure
     early production models, including **Stevie Wonder**, **Herbie Hancock**, **Giorgio Moroder**, and **Frank Zappa**.
+
+    Prince was the LM-1's most dedicated user, who relied on it across his classic 1980s catalog. He debuted it on "Private Joy" ("Controversy"), 
+    built *1999* and *Purple Rain* around it, and famously detuned the sidestick to create the knocking beat for "When Doves Cry".
+
+    **Herbie Hancock**: Received the second production unit manufactured, debuting it on the track "Textures" from *Mr. Hands*.
+
+    **John Carpenter**: Used the LM-1 to compose the futuristic score for the 1981 film *Escape From New York*.
 
 Rhythm10:
   name: Farfisa Rhythm 10
@@ -211,11 +229,11 @@ SimmonsSDS5:
     The **Simmons SDS 5** was a fully modular electronic drum kit featuring iconic hexagonal hard-plastic pads that 
     triggered layered, customizable drum sounds across independent channels for the kick, snare, and toms, 
     with memory to store preset rhythm sounds.
-    
+
     **Stephen Morris**—the drummer for **Joy Division** and **New Order**—was an early adopter of electronic drum pads and gear, driven by both 
     sound and visual aesthetic.
-    
+
     Morris integrated the Synare 3 into Joy Division's live setup, using it to create the iconic "chi-chi" noise on **"She's Lost Control"**.
-    
+
     As Joy Division transitioned into New Order, Morris moved from triggering drum pads to programming drum machines like the **Roland TR-808**, 
     which provided the pulse for dance-rock classics like **"Blue Monday"**.

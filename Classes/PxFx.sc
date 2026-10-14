@@ -116,6 +116,14 @@
     this.prFx(\reverse, [mix]);
   }
 
+  rhpf { |mix, freq, rq|
+    this.prFx(\rhpf, [mix, freq, rq]);
+  }
+
+  rlpf { |mix, freq, rq|
+    this.prFx(\rlpf, [mix, freq, rq]);
+  }
+
   space { |mix, fb|
     this.prFx(\space, [mix, fb]);
   }

@@ -217,7 +217,7 @@ Fx(\px).gverb(0.4, 100, 3);
 ::
 
 method:: hpf
-Resonant high-pass filter.
+High-pass filter.
 
 argument:: mix
 Wet/dry mix (0-1). Default: 1.
@@ -235,7 +235,7 @@ Fx(\px).hpf(1, { SinOsc.kr(0.5).range(200, 4000) });
 ::
 
 method:: lpf
-Resonant low-pass filter.
+Low-pass filter.
 
 argument:: mix
 Wet/dry mix (0-1). Default: 0.4.
@@ -250,6 +250,40 @@ code::
 Fx(\px).lpf(0.5, 400);
 Fx(\px).lpf(1, 200, 1.5);  // With makeup gain
 Fx(\px).lpf(1, { SinOsc.kr(0.5).range(200, 4000) });
+::
+
+method:: rhpf
+Resonant high-pass filter using code::RHPF::. Unlike code::hpf::, it exposes the reciprocal Q value for resonance control.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 1.
+
+argument:: freq
+Cutoff frequency in Hz, or a Function for continuous modulation. Limited to 20 Hz through 45% of the sample rate. Default: 1200.
+
+argument:: rq
+Reciprocal Q. Smaller values make the resonance narrower and stronger. Values below 0.1 are limited to 0.1. Default: 0.2.
+
+code::
+Fx(\1).rhpf(1, 1200, 0.2);
+Fx(\1).rhpf(1, { MouseX.kr(100, 6000, 1) }, 0.2);
+::
+
+method:: rlpf
+Resonant low-pass filter using code::RLPF::. Unlike code::lpf::, it exposes the reciprocal Q value for resonance control.
+
+argument:: mix
+Wet/dry mix (0-1). Default: 1.
+
+argument:: freq
+Cutoff frequency in Hz, or a Function for continuous modulation. Limited to 20 Hz through 45% of the sample rate. Default: 1200.
+
+argument:: rq
+Reciprocal Q. Smaller values make the resonance narrower and stronger. Values below 0.1 are limited to 0.1. Default: 0.2.
+
+code::
+Fx(\1).rlpf(1, 1200, 0.2);
+Fx(\1).rlpf(1, { MouseX.kr(200, 8000, 1) }, 0.2);
 ::
 
 method:: pan
@@ -381,6 +415,8 @@ Effect parameters can be modulated using Functions that return UGens. Pass a Fun
 code::
 // Modulate filter frequency with a sine wave
 Fx(\px).lpf(1, { SinOsc.kr(0.5).range(200, 4000) });
+
+Fx(\1).rlpf(1, { MouseX.kr(200, 8000, 1) }, 0.2);
 
 // Auto-pan with LFO
 Fx(\px).pan({ SinOsc.kr(0.25).range(-1, 1) });
@@ -549,6 +585,7 @@ code::
 
 // Method chain syntax with extra arguments
 1.i(\piano).dur(2).reverb(0.5, 0.8, 0.5);
+1.i(\piano).dur(1).rlpf(1, { MouseX.kr(200, 8000, 1) }, 0.2);
 
 // Multiple effects
 1 i: \piano dur: 2 reverb: 0.3 delay: 0.5;

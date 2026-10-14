@@ -209,6 +209,16 @@ Fx {
     this.prAddEffect(\reverse, mix);
   }
 
+  *rhpf { |mix = 1, freq = 1200, rq = 0.2|
+    var postArgs = "freq:" + freq + "rq:" + rq;
+    this.prAddEffect(\rhpf, mix, [freq, rq], postArgs);
+  }
+
+  *rlpf { |mix = 1, freq = 1200, rq = 0.2|
+    var postArgs = "freq:" + freq + "rq:" + rq;
+    this.prAddEffect(\rlpf, mix, [freq, rq], postArgs);
+  }
+
   *setVstPresetsPath { |path|
     presetsPath = path;
   }

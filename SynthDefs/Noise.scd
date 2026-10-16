@@ -9,7 +9,7 @@ SynthDef(\white, {
     gate: gate,
     doneAction: 2
   );
-  var sig = WhiteNoise.ar(mul: 0.5);
+  var sig = WhiteNoise.ar(mul: 0.2);
   Out.ar(out, (sig * env * amp) ! 2);
 }).add;
 
@@ -23,7 +23,7 @@ SynthDef(\pink, {
     gate: gate,
     doneAction: 2
   );
-  var sig = PinkNoise.ar(mul: 0.5);
+  var sig = PinkNoise.ar(mul: 0.833333);
   Out.ar(out, (sig * env * amp) ! 2);
 }).add;
 
@@ -37,7 +37,7 @@ SynthDef(\brown, {
     gate: gate,
     doneAction: 2
   );
-  var sig = BrownNoise.ar(mul: 0.5);
+  var sig = BrownNoise.ar(mul: 0.316667);
   Out.ar(out, (sig * env * amp) ! 2);
 }).add;
 )

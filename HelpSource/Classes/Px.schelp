@@ -265,6 +265,24 @@ Opens the NdefMixer window for audio mixing.
 method:: loadSynthDefs
 Loads all SynthDef files from the SynthDefs directory.
 
+The bundled code::\sine::, code::\square::, code::\tri::, and code::\saw:: instruments accept amplitude envelope controls code::atk::, code::dec::, code::sus::, and code::rel::. Attack, decay, and release are in seconds; code::sus:: sets a level from 0 to 1. Px uses code::sustain:: for note length in beats.
+
+The bundled code::\square:: instrument accepts code::width:: from 0 to 1. Its default code::0.5:: produces a square wave; other values change the pulse width.
+
+code::
+1 i: \square note: \c2 dur: 1 width: 0.2 atk: 0.003 dec: 0.12 sus: 0.3 rel: 0.05;
+::
+
+The bundled code::\white::, code::\brown::, and code::\pink:: noise instruments have source gains calibrated for Px's default code::amp: 0.3::. The calibration matches the former output levels at code::amp: 0.12::, code::amp: 0.19::, and code::amp: 0.5:: respectively. Their code::amp:: control still scales each sound normally.
+
+The bundled code::\saw:: instrument uses a band-limited saw, a resonant low-pass filter, and separate amplitude and filter envelopes. The bundled code::\supersaw:: adds five detuned saws with fixed phase offsets, alternating stereo positions, and level compensation. Its code::detune:: sets the total pitch spread in semitones, matching Strudel: the default is 0.18, code::0.3:: gives a 30-cent spread, and code::1:: gives a one-semitone spread. Values above 1 are accepted and can make the voices sound like separate notes. code::spread:: controls stereo width from 0 to 1. The supersaw starts unfiltered (code::cutoff: 0::); set a positive code::cutoff:: to enable its resonant low-pass filter and filter envelope. Both instruments respond to code::atk::, code::dec::, code::sus::, code::rel::, code::cutoff::, code::filterDecay::, code::filterOctaves::, code::rq::, and code::pan::. Their code::gate:: controls release through the event's code::sustain:: or code::legato::. A directly created Synth must receive code::gate:: value code::0:: to release. Both default to a 0.01-second release so repeated short notes have minimal overlap; increase code::rel:: when a longer tail is wanted. Px supplies its own default code::amp::, so set code::amp:: explicitly when comparing the instruments.
+
+code::
+Px.loadSynthDefs;
+1 i: \saw dur: 0.25 amp: 0.2 cutoff: 1800 filterOctaves: 2;
+2 i: \supersaw dur: 1 amp: 0.2 detune: 0.3 spread: 0.8;
+::
+
 method:: loadSamples
 Loads audio samples from a directory structure into the sample dictionary.
 
@@ -293,10 +311,16 @@ Px.buf("kicks", 0);    // Get first sample from "kicks"
 ::
 
 method:: synthDef
-Browses or retrieves a SynthDef by name.
+Browses SynthDefs when called without a name. With a name, prints every named control in its original order as code::name (default)::, separated by commas. Float defaults use six significant digits, and array defaults appear in brackets. If the SynthDef does not exist, warns and returns code::nil::. The named call prints the controls and returns code::nil::.
 
 argument:: synthDef
 SynthDef name as Symbol.
+
+code::
+Px.synthDef(\saw);
+::
+
+Example output: code::amp (0.2), freq (440), out (0), gate (1), pan (0), atk (0.005), dec (0.1), sus (0.7), rel (0.01), cutoff (4500), filterDecay (0.15), filterOctaves (1.5), rq (0.8)::
 
 method:: trace
 Enables trace output for a pattern. Optionally filter to a specific key. Call with no arguments to stop all tracing.
@@ -541,10 +565,11 @@ code::
 ::
 
 ## clone
-|| Adds copies of each audible event at successive beat offsets after its original onset. A number adds one copy; code::[offset, repeats]:: adds code::repeats:: copies at code::offset::, code::2 * offset::, and so on. The offset may be a Pattern chosen for each audible event. The copies keep the original event's sound and parameters; code::dur:: and the pattern cycle stay the same. An offset of code::0:: or a repeat count of code::0:: adds no copies. Copies that land on another audible hit in the same pattern are silenced, so overlapping hits play once.
+|| Plays each audible event code::count:: times in total, including the original, at successive beat offsets. A number adds one copy, for two hits total; code::[offset, count]:: places the remaining hits at code::offset::, code::2 * offset::, and so on through code::(count - 1) * offset::. The offset may be a Pattern chosen for each audible event. The copies keep the original event's sound and parameters; code::dur:: and the pattern cycle stay the same. An offset of code::0:: or a count of code::0:: or code::1:: adds no copies. When a copy lands on another audible hit in the same pattern, only one hit plays at that onset.
 code::
 909 i: \sd dur: 2 off: 1 clone: 0.25;
-909 i: \sd dur: 2 off: 1 clone: [0.5, 2];
+1 i: \saw dur: 8 clone: [0.25, 8];
+1 i: \saw dur: 8 clone: [0.25, 1];
 909 i: \sd dur: 2 off: 1 clone: [0, 0.25].pwrand(0.2);
 ::
 

@@ -6,7 +6,7 @@ Dictionary[
     // \filter, not \filterIn: filterIn applies the mix to the effect input,
     // which for a clipper changes the tone instead of the wet/dry balance.
     \filter -> { |in|
-      var amount = \dist1.kr(drive, 0.5).clip(0, 1);
+      var amount = \dist1.kr(drive, lag: 0.5).clip(0, 1);
       var gain = amount.linexp(0, 1, 1, 120);
       var bias = 0.15;
       var dryAmp, wetAmp, sig;

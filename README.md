@@ -92,6 +92,8 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | `phaser`     | mix?: range 0..1, rate?, depth?                 | Phaser effect                |
 | `reverse`    | mix?: range 0..1                                | Beat-synced reverse reverb   |
 | `reverb`     | mix?: range 0..1, room?, size?                  | Reverb effect                |
+| `rhpf`       | mix?: range 0..1, freq?: Hz, rq?: number (min 0.1) | Resonant high-pass filter  |
+| `rlpf`       | mix?: range 0..1, freq?: Hz, rq?: number (min 0.1) | Resonant low-pass filter   |
 | `space`      | mix?: range 0..1, fb?: number                   | Spatial reverb               |
 | `tremolo`    | mix?: range 0..1, rate?: number                 | Tremolo effect               |
 | `vibrato`    | mix?: range 0..1, rate?, depth?                 | Pitch modulation vibrato     |
@@ -103,7 +105,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | Name    | Arguments                                                  | Description                            |
 | ------- | ---------------------------------------------------------- | -------------------------------------- |
 | `grain` | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a granular texture; skips missing samples |
-| `i`     | name: string                                               | Plays a SynthDef or drum sample; drum suffixes `:index`, `:seq`, and `:rand` select samples; skips missing samples |
+| `i`     | name: string                                               | Plays a SynthDef, including `\square` (`width` 0–1), `\saw`, `\supersaw` (`detune` in semitones), and level-calibrated `\white`, `\brown`, `\pink` noise, or a drum sample; drum suffixes `:index`, `:seq`, and `:rand` select samples; skips missing samples |
 | `loop`  | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a loop from a buffer; skips missing samples |
 | `play`  | [folder: string, file: number \| array \| \rand \| \seq]\* | Plays a buffer; skips missing samples  |
 

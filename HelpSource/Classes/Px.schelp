@@ -565,12 +565,13 @@ code::
 ::
 
 ## clone
-|| Plays each audible event code::count:: times in total, including the original, at successive beat offsets. A number adds one copy, for two hits total; code::[offset, count]:: places the remaining hits at code::offset::, code::2 * offset::, and so on through code::(count - 1) * offset::. The offset may be a Pattern chosen for each audible event. The copies keep the original event's sound and parameters; code::dur:: and the pattern cycle stay the same. An offset of code::0:: or a count of code::0:: or code::1:: adds no copies. When a copy lands on another audible hit in the same pattern, only one hit plays at that onset.
+|| Plays each audible event code::count:: times in total, including the original, at successive beat offsets. A number adds one copy, for two hits total; code::[offset, count]:: places the remaining hits at code::offset::, code::2 * offset::, and so on through code::(count - 1) * offset::. A Pattern may choose either an offset or a code::[offset, count]:: pair for each audible event. The copies keep the original event's sound and parameters; code::dur:: and the pattern cycle stay the same. An offset of code::0:: or a count of code::0:: or code::1:: adds no copies. When a copy lands on another audible hit in the same pattern, only one hit plays at that onset.
 code::
 909 i: \sd dur: 2 off: 1 clone: 0.25;
 1 i: \saw dur: 8 clone: [0.25, 8];
 1 i: \saw dur: 8 clone: [0.25, 1];
 909 i: \sd dur: 2 off: 1 clone: [0, 0.25].pwrand(0.2);
+101 i: "hh" dur: 1 clone: [0, [0.25, 2]].pwrand(1);
 ::
 
 ## swing

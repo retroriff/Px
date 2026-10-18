@@ -48,7 +48,10 @@
       { swingStream = swing.asStream };
 
       appendEvent = { |input|
-        var amp, channelCount = 1, cloneOffset = 0, cloneStart, currentOffset = 0, delayedFrom, delta, dur, event = source.next(input), lag, nextElapsed, nextPeriods, offsets, onsets, periods, start = scheduledElapsed, timingOffset;
+        var amp, channelCount = 1, cloneOffset = 0, cloneStart, currentOffset = 0,
+        delayedFrom, delta, dur, event = source.next(input), lag, nextElapsed, 
+        nextPeriods, offsets, onsets, periods, selectedCloneCount = cloneCount, 
+        start = scheduledElapsed, timingOffset;
 
         if (event.notNil) {
           dur = event[\dur];
@@ -99,7 +102,16 @@
             { cloneOffset = cloneStream.next(event) }
             { cloneOffset = cloneBeatOffset };
 
-            if (cloneOffset.isNumber and: { cloneOffset > 0 }) {
+            if (cloneOffset.isArray) {
+              selectedCloneCount = cloneOffset[1] ?? 2;
+              cloneOffset = cloneOffset[0];
+            };
+
+            if (selectedCloneCount.isNumber)
+            { selectedCloneCount = selectedCloneCount.asInteger.max(0) }
+            { selectedCloneCount = 0 };
+
+            if (cloneOffset.isNumber and: { cloneOffset > 0 } and: { selectedCloneCount > 1 }) {
               cloneStart = channelCount;
               offsets = Array.fill(channelCount, { |index|
                 var value = timingOffset;
@@ -109,11 +121,11 @@
 
                 value;
               });
-              timingOffset = Array.fill(cloneCount, { |repeatIndex|
+              timingOffset = Array.fill(selectedCloneCount, { |repeatIndex|
                 offsets.collect { |value| value + (cloneOffset * repeatIndex) };
               }).flatten;
               event[\timingOffset] = timingOffset;
-              channelCount = channelCount * cloneCount;
+              channelCount = channelCount * selectedCloneCount;
             };
           };
 

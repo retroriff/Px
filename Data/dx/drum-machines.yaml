@@ -1,5 +1,5 @@
 BossDR55:
-  name: BOSS DR-55 Dr. Rhythm
+  name: Boss DR-55 Dr. Rhythm
   manufacturer: BOSS
   year: 1980
   type: Analog programmable drum machine
@@ -11,12 +11,12 @@ BossDR55:
     Robin Guthrie from Cocteau Twins used the Dr. Rhythm and the Sound Master before using the TR-808 in "Garlands".
 
 DRM16:
-  name: Electro-Harmonix DRM-16 Digital Rhythm Matrix
+  name: Electro-Harmonix DRM-16
   manufacturer: Electro-Harmonix
   year: 1978
   type: Analog preset rhythm machine
   notes: >-
-    The DRM-16 generates analog percussion and offers 16 preset rhythms selected through a four-by-four
+    The DRM-16 Digital Rhythm Matrix generates analog percussion and offers 16 preset rhythms selected through a four-by-four
     matrix of styles and variations. Its sounds include bass drum, snare, hi-hats, cymbal, handclap,
     woodblock and a switchable Space Drum. A dedicated bass drum output allows separate processing.
 

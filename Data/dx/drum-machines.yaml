@@ -103,6 +103,26 @@ LinnLM1:
 
     **John Carpenter**: Used the LM-1 to compose the futuristic score for the 1981 film *Escape From New York*.
 
+OberheimDMX:
+  name: Oberheim DMX
+  manufacturer: Oberheim Electronics
+  year: 1981
+  type: Digital sample playback drum machine
+  notes: >-
+    Introduced in late 1981, the DMX has eight independent drum voices with up to three sounds each,
+    for 24 sounds in total. Each voice has its own tunable, replaceable sound card, level control,
+    and direct audio output.
+
+    Producers Michael Beinhorn and Bill Laswell used the DMX as their primary drum machine to 
+    program Herbie Hancock's groundbreaking 1983 crossover hit "Rockit" and the album  "Future Shock".
+
+    Reggie Griffin programmed "Willie" to build the foundation for Grandmaster Flash and the 
+    Furious Five's "The Message" and "Scorpio".
+
+    Linden Hudson programmed the DMX alongside a LinnDrum to establish a driving 124 BPM pulse for 
+    ZZ Top's 1983 multi-platinum album "Eliminator", shaping hits like "Gimme All Your Lovin'", 
+    "Legs", and "Thug".
+
 Rhythm10:
   name: Farfisa Rhythm 10
   manufacturer: Farfisa
@@ -204,6 +224,30 @@ RolandSystem100:
 
     Rather than being a standalone drum machine, the Roland System 100 was a semi-modular synthesizer costing nearly $2,000, 
     purchased by Martyn Ware and Ian Craig Marsh for their work in The Future and The Human League
+
+RolandTR505:
+  name: Roland TR-505
+  manufacturer: Roland
+  year: 1986
+  type: Digital sample playback drum machine
+  notes: >-
+    The TR-505 Rhythm Composer plays 16 PCM drum and percussion sounds, including toms, congas, cowbells,
+    timbale, and cymbals. Its 16-step sequencer offers 48 preset patterns and 48 user-programmable
+    patterns, which can be arranged across six tracks.
+
+    MIDI input and output connect it to other instruments, and it can run on six AA batteries.
+
+RolandTR606:
+  name: Roland TR-606
+  manufacturer: Roland
+  year: 1981
+  type: Analog programmable drum machine
+  notes: >-
+    Released as a companion to the TB-303 Bass Line, the compact TR-606 Drumatix generates seven analog
+    drum sounds: bass drum, snare, low and high toms, cymbal, and open and closed hi-hats.
+
+    Its 16-step sequencer stores patterns in battery-backed memory and provides an accent control.
+    The machine can run on batteries and synchronize with other equipment.
 
 RolandTR707:
   name: Roland TR-707

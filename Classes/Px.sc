@@ -82,9 +82,15 @@ Px {
   }
 
   *new { |newPattern|
-    var pattern, pdef, playList, isNewNdef;
+    var isNewNdef, pattern, pdef, playList;
+    var missingSynthDef = this.prMissingSynthDef(newPattern);
     var previousPattern = last[newPattern[\id]];
     var previousRhythm = previousPattern !? { previousPattern[\rhythmBeats] ?? previousPattern[\totalBeats] };
+
+    if (missingSynthDef.notNil) {
+      this.prPrint("🔴 SynthDef not found:" + missingSynthDef);
+      ^this;
+    };
 
     this.prInitializeDictionaries(newPattern);
     this.prHandleSoloPattern(newPattern);
@@ -524,6 +530,30 @@ Px {
     };
 
     last[pattern[\id]] = pattern;
+  }
+
+  *prMissingSynthDef { |pattern|
+    var instrument = pattern[\instrument];
+
+    if (pattern[\chan].notNil
+      or: { pattern[\play].notNil }
+      or: { pattern[\loop].notNil }
+      or: { pattern[\grain].notNil })
+    { ^nil };
+
+    if (instrument.isArray or: { instrument.isKindOf(ListPattern) }) {
+      var names = if (instrument.isArray) { instrument } { instrument.list };
+
+      ^names.detect { |name|
+        name.isKindOf(Symbol) and: { SynthDescLib.global[name].isNil }
+      };
+    };
+
+    if (instrument.isKindOf(Symbol)
+      and: { SynthDescLib.global[instrument].isNil })
+    { ^instrument };
+
+    ^nil;
   }
 
   *prIsSilenced { |id|

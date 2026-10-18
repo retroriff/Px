@@ -522,7 +522,7 @@ subsection:: Core Methods
 
 definitionlist::
 ## i
-|| Sets the instrument (SynthDef name). Drum sample references with a missing or empty folder are reported and skipped without starting playback.
+|| Sets the instrument (SynthDef name). An unknown SynthDef is reported once and the declaration is skipped before playback starts; an existing pattern with the same ID keeps playing. Drum sample references with a missing or empty folder are also reported and skipped.
 code::
 707 i: \bd dur: 1;
 ::

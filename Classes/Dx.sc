@@ -178,7 +178,7 @@ Dx : Px {
   }
 
 
-  *solo { |instruments, ins2, ins3, ins4, ins5|
+  *solo { |instruments ... otherInstruments|
     var soloIds;
 
     if (instruments == false)
@@ -187,10 +187,11 @@ Dx : Px {
     if (instruments.isNil)
     { ^("🟡 Provide at least one instrument to solo") };
 
-    if (instruments.isArray == false) {
-      instruments = [instruments, ins2, ins3, ins4, ins5];
-      instruments = instruments.reject(_.isNil).collect(_.asSymbol);
-    };
+    if (instruments.isArray)
+    { instruments = instruments ++ otherInstruments }
+    { instruments = [instruments] ++ otherInstruments };
+
+    instruments = instruments.reject(_.isNil).collect(_.asSymbol);
 
     soloIds = last.asArray
     .select { |pattern|

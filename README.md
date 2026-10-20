@@ -131,12 +131,12 @@ Use the `:seq` selector to play every sample in a folder in index order, repeati
 - `set`: Sets a parameter for all active patterns.
 - `shuffle` (id: symbol, history: symbol): Generates a new random seed for a pattern, or all patterns when id is not provided. Use `history:` to restore a previous shuffle state.
 - `shuffleHistory`: Returns a Dictionary containing all stored shuffle snapshots.
-- `solo` (id, id2, id3, id4, id5): Solos one or more patterns, muting all others. Accepts pattern ids, or group targets (`\dx`, `\lx`, a drum machine number/alias). Pass `false` to unsolo.
-- `stop`: Stops all patterns. It can stop specific patterns if a single id or an array of ids is provided.
+- `solo` (id, ...otherIds): Solos any number of patterns, muting all others. Accepts pattern IDs, arrays, or group targets (`\dx`, `\lx`, a drum machine number/alias). Pass `false` to unsolo.
+- `stop`: Stops all patterns with no arguments, or specific patterns by a single ID, an array of IDs, or separate IDs (for example, `Px.stop(2, 3, 4, 5)`).
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
 - `tempo` (bpm: nil | number, withNdef: bool, add: number): Sets the tempo if bpm is given; returns current tempo if nil. Use `add:` for relative changes (e.g. `Px.tempo(add: 1)`).
 - `trace` (name, key: nil): Enables trace output for a pattern. Optionally filter to a specific key. Call with no arguments to stop all tracing.
-- `unsolo` (id, id2, id3, id4, id5): Restores patterns muted by `solo`. Restores all when called with no arguments.
+- `unsolo` (id, ...otherIds): Restores any number of patterns muted by `solo`. Restores all when called with no arguments.
 - `vol`: Controls the volume of the nodeproxy.
 
 ### Pattern shortcuts
@@ -247,7 +247,7 @@ Dx.preset(\electro, 1);
 | `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Data/dx/presets/)     |
 | `release`     | None                                              | Releases with fadeTime                  |
 | `shuffle`     | update101?: boolean                               | Chooses a drum machine independently of pattern seeds |
-| `solo`        | instrument: symbol \| false                       | Solos one or more drum instruments      |
+| `solo`        | instrument: symbol \| array \| false, ...others    | Solos any number of drum instruments    |
 | `stop`        | None                                              | Same as `\808 i: \all`                  |
 | `unsolo`      | None                                              | Restores drum patterns muted by solo    |
 | `use`         | machine?: symbol \| number, update101?: boolean   | Switches the active drum machine        |

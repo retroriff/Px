@@ -300,19 +300,10 @@ method:: solo
 Mutes all drum patterns except the specified instruments.
 
 argument:: instruments
-Instrument symbol or symbols to solo. Pass false to unsolo.
+Instrument symbol or array of symbols to solo. Pass false to unsolo.
 
-argument:: ins2
-Optional additional instrument.
-
-argument:: ins3
-Optional additional instrument.
-
-argument:: ins4
-Optional additional instrument.
-
-argument:: ins5
-Optional additional instrument.
+argument:: otherInstruments
+Any number of additional instrument symbols to solo.
 
 code::
 Dx.solo(\bd);              // Solo bass drum only

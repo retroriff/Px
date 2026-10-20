@@ -160,11 +160,15 @@ Stops patterns by ID. Pass nil to stop all patterns without removing them (state
 argument:: idArray
 Pattern ID or array of IDs to stop.
 
+argument:: otherIds
+Additional pattern IDs to stop when passed as separate arguments.
+
 note:: While all patterns are stopped, parameter updates — including the GUI amp slider — only store the new value instead of restarting playback. Use code::Px.play::, link::#*resume:: or a full declaration to start them again.::
 
 code::
 Px.stop(1);        // Stop pattern 1 (removes it)
 Px.stop([1, 2]);   // Stop patterns 1 and 2 (removes them)
+Px.stop(2, 3, 4, 5);
 Px.stop;           // Stop all patterns (restartable via Px.play)
 ::
 
@@ -345,22 +349,14 @@ Solos one or more patterns, muting all others. Also accepts group targets — co
 argument:: soloIds
 Pattern ID, group target, or array of IDs/group targets to solo. Pass false to unsolo.
 
-argument:: id2
-Optional additional pattern ID or group target to solo.
-
-argument:: id3
-Optional additional pattern ID or group target to solo.
-
-argument:: id4
-Optional additional pattern ID or group target to solo.
-
-argument:: id5
-Optional additional pattern ID or group target to solo.
+argument:: otherIds
+Any number of additional pattern IDs or group targets to solo.
 
 code::
 Px.solo(1);          // Solo pattern 1
 Px.solo(1, 2);       // Solo patterns 1 and 2
 Px.solo([1, 2]);     // Solo patterns 1 and 2
+Px.solo(1, 2, 3, 4, 5, 6);
 Px.solo(\dx);        // Solo every Dx preset pattern
 Px.solo(\909, 1);    // Solo every 909 pattern plus pattern 1
 Px.solo(false);      // Unsolo all
@@ -372,21 +368,13 @@ Restores patterns muted by link::#solo::. Called with no arguments, restores all
 argument:: ids
 Optional pattern ID, group target, or array of IDs/group targets to restore. Omit to restore all muted patterns.
 
-argument:: id2
-Optional additional pattern ID or group target to restore.
-
-argument:: id3
-Optional additional pattern ID or group target to restore.
-
-argument:: id4
-Optional additional pattern ID or group target to restore.
-
-argument:: id5
-Optional additional pattern ID or group target to restore.
+argument:: otherIds
+Any number of additional pattern IDs or group targets to restore.
 
 code::
 Px.solo(1, 2);       // Solo patterns 1 and 2, muting the rest
 Px.unsolo(1);        // Restore pattern 1, everything else stays muted
+Px.unsolo(1, 2, 3, 4, 5, 6);
 Px.unsolo;           // Restore everything
 ::
 

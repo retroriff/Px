@@ -174,7 +174,7 @@
     this.prReevaluate;
   }
 
-  *solo { |soloIds, id2, id3, id4, id5|
+  *solo { |soloIds ... otherIds|
     var hasCommon;
 
     if (soloIds == false)
@@ -183,12 +183,11 @@
     if (soloIds.isNil)
     { ^("🟡 Provide at least one instrument to solo") };
 
-    if (soloIds.isArray == false) {
-      soloIds = [soloIds, id2, id3, id4, id5];
-      soloIds = soloIds.reject(_.isNil).collect(_.asSymbol);
-    };
+    if (soloIds.isArray)
+    { soloIds = soloIds ++ otherIds }
+    { soloIds = [soloIds] ++ otherIds };
 
-    soloIds = soloIds.collect { |id| id.asSymbol };
+    soloIds = soloIds.reject(_.isNil).collect(_.asSymbol);
     soloIds = soloIds.collect { |id| this.prGroupIds(id) ?? { [id] } }.flatten;
     hasCommon = soloIds.any { |id| last.keys.includes(id) };
 
@@ -203,7 +202,7 @@
     this.prAutoRefreshGui;
   }
 
-  *stop { |idArray|
+  *stop { |idArray ... otherIds|
     var tailWait = 2;
     var fadeTime = 2;
     var stopAll = idArray.isNil;
@@ -212,8 +211,9 @@
     if (stopAll)
     { ^this.prStopAll };
 
-    if (idArray.isArray.not)
-    { idArray = [idArray] };
+    if (idArray.isArray)
+    { idArray = idArray ++ otherIds }
+    { idArray = [idArray] ++ otherIds };
 
     idArray = idArray.collect(_.asSymbol);
 
@@ -375,8 +375,8 @@
     };
   }
 
-  *unsolo { |ids, id2, id3, id4, id5|
-    var toRestore, hasCommon;
+  *unsolo { |ids ... otherIds|
+    var hasCommon, toRestore;
 
     if (mutedPatterns.isNil || mutedPatterns.isEmpty)
     { ^("🟡 No muted patterns to restore") };
@@ -385,12 +385,11 @@
       toRestore = mutedPatterns.copy;
       mutedPatterns = Dictionary.new;
     } {
-      if (ids.isArray == false) {
-        ids = [ids, id2, id3, id4, id5];
-        ids = ids.reject(_.isNil).collect(_.asSymbol);
-      };
+      if (ids.isArray)
+      { ids = ids ++ otherIds }
+      { ids = [ids] ++ otherIds };
 
-      ids = ids.collect { |id| id.asSymbol };
+      ids = ids.reject(_.isNil).collect(_.asSymbol);
       ids = ids.collect { |id| this.prGroupIds(id, mutedPatterns) ?? { [id] } }.flatten;
       hasCommon = ids.any { |id| mutedPatterns.keys.includes(id) };
 

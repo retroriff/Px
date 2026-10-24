@@ -105,17 +105,30 @@
     if (id.notNil) {
       id = id.asSymbol;
       colors.removeAt(id);
+      cycleOrigins.removeAt(id);
       last.removeAt(id);
       lastFormatted.removeAt(id);
       mutedPatterns.removeAt(id);
+      ndefList.removeAt(id);
       pausedPatterns.remove(id);
       stoppedPatterns.remove(id);
 
       meterIdMap = meterIdMap.select { |v| v != id };
       meterLevels.removeAt(id);
-      Fx.clear(id);
+      Pdef(id).source = nil;
+      Ndef(id).free(fadeTime);
       this.prAutoRefreshGui;
-      ^Ndef(id).free(fadeTime)
+
+      fork({
+        fadeTime.wait;
+
+        if (ndefList[id].isNil) {
+          Ndef(id).clear;
+          Fx.remove(id);
+        };
+      }, SystemClock);
+
+      ^Ndef(id);
     };
 
     Ndef(\px).free(fadeTime);

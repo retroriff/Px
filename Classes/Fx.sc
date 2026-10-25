@@ -205,8 +205,13 @@ Fx {
     this.prAddEffect(\reverb, mix, [room, size], postArgs);
   }
 
-  *reverse { |mix = 0.4|
-    this.prAddEffect(\reverse, mix);
+  *reverse { |mix = 0.4, beats = 2|
+    var postArgs = "beats:" + beats;
+
+    if (beats.isNumber.not or: { beats <= 0 })
+    { ^this.prPrint("🔴 Reverse beats must be a positive number") };
+
+    this.prAddEffect(\reverse, mix, [beats], postArgs);
   }
 
   *rhpf { |mix = 1, freq = 1200, rq = 0.2|
@@ -695,6 +700,12 @@ Fx {
 
   *prUpdateEffect { |args, fx|
     var chain = chains[proxyName];
+
+    if (fx == \reverse) {
+      Ndef(proxyName)[chain.effects[fx]] = effects.at(fx).(*args);
+      chain.args[fx] = args;
+      ^this;
+    };
 
     args do: { |value, i|
       if (value.isFunction.not) {

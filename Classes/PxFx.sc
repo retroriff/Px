@@ -112,8 +112,13 @@
     this.prFx(\reverb, [mix, room, size]);
   }
 
-  reverse { |mix|
-    this.prFx(\reverse, [mix]);
+  reverse { |mix, beats|
+    if (mix.isArray) {
+      beats = mix[1];
+      mix = mix[0];
+    };
+
+    this.prFx(\reverse, [mix, beats]);
   }
 
   rhpf { |mix, freq, rq|

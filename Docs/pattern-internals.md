@@ -277,6 +277,10 @@ themselves, so re-sourcing would reset the stream on every parameter tweak.
 
 Stop methods remove patterns from all four storage locations. Integer IDs **do not get reused** - sequence continues with gaps (this is intentional).
 
+Stopping a specific ID also removes it from `mutedPatterns` if solo had muted it. This keeps it out of the GUI and prevents `unsolo` from restoring a stopped pattern.
+
+`Px.keep(ids)` validates every selected active ID or group before changing state, then stops all other IDs from `last`, `mutedPatterns`, and `lastFormatted` through the same cleanup as `Px.stop(id)`. This includes finite patterns still tracked for playback. The selected patterns keep their current play or pause state.
+
 Example: Create 80801, 80802, delete 80801, next is 80803 (not 80801).
 
 ## Pattern Relationships

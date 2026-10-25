@@ -155,7 +155,7 @@ Px.play(4);
 ::
 
 method:: stop
-Stops patterns by ID. Pass nil to stop all patterns without removing them (state preserved so code::Px.play:: can restart them). Finite patterns — those declared with code::repeat:: or code::stop:: — can also be stopped this way while they are still playing, even though they are no longer part of the active set.
+Stops patterns by ID, including patterns muted by link::#solo::. Stopped patterns are removed and code::Px.unsolo:: does not restore them. Pass nil to stop all patterns without removing them (state preserved so code::Px.play:: can restart them). Finite patterns — those declared with code::repeat:: or code::stop:: — can also be stopped this way while they are still playing, even though they are no longer part of the active set.
 
 argument:: idArray
 Pattern ID or array of IDs to stop.
@@ -342,6 +342,23 @@ Px.trace; // stop all tracing
 ::
 
 subsection:: Performance
+
+method:: keep
+Keeps the selected active patterns in their current playback state and stops every other managed pattern, including patterns muted by code::solo:: and finite patterns still tracked for playback. Unlike code::solo::, this is permanent: code::Px.unsolo:: cannot restore the removed patterns. Every requested ID or group must match an active pattern before anything is stopped.
+
+argument:: ids
+Pattern ID, group target, or array of IDs and group targets to keep. At least one matching target is required.
+
+argument:: otherIds
+Additional pattern IDs or group targets to keep.
+
+code::
+Px.keep(1, 2);
+Px.keep([1, 2]);
+Px.keep(\909, 1);
+Px.solo(1, 2);
+Px.keep(1, 2);
+::
 
 method:: solo
 Solos one or more patterns, muting all others. Also accepts group targets — code::\dx:: (every link::Classes/Dx:: preset pattern), code::\lx:: (every link::Classes/Lx:: looper channel), or a drum machine number/alias (code::\808::, code::909::, code::\101::, ...) — which expand to every matching pattern.

@@ -43,6 +43,38 @@
     Ndef(\px).clear;
   }
 
+  *keep { |ids ... otherIds|
+    var groups, keepIds, requested, stopIds;
+
+    if (ids.isNil)
+    { ^("🟡 Provide at least one instrument to keep") };
+
+    if (ids.isArray)
+    { requested = ids ++ otherIds }
+    { requested = [ids] ++ otherIds };
+
+    if (requested.isEmpty or: { requested.any(_.isNil) })
+    { ^("🟡 Provide at least one instrument to keep") };
+
+    requested = requested.collect(_.asSymbol);
+    groups = requested.collect { |id| this.prGroupIds(id) ?? { [id] } };
+
+    if (groups.any { |group|
+      group.isEmpty or: { group.any { |id| last[id].isNil } }
+    })
+    { ^("🔴 Every keep target must match an active pattern") };
+
+    keepIds = groups.flatten.asSet;
+    stopIds = (last.keys.asArray ++ mutedPatterns.keys.asArray ++ lastFormatted.keys.asArray)
+      .asSet.asArray.reject { |id| keepIds.includes(id) };
+
+    keepIds.do { |id| mutedPatterns.removeAt(id) };
+
+    if (stopIds.notEmpty)
+    { Px.stop(stopIds) }
+    { this.prAutoRefreshGui };
+  }
+
   *loadSynthDefs { |only|
     PathName(("../SynthDefs/").resolveRelative).filesDo{ |file|
       if (only.isNil or: { only.includes(file.fileNameWithoutExtension.asSymbol) })
@@ -231,7 +263,7 @@
     idArray = idArray.collect(_.asSymbol);
 
     idArray do: { |id|
-      var pattern = last[id] ?? lastFormatted[id];
+      var pattern = last[id] ?? mutedPatterns[id] ?? lastFormatted[id];
       var pdef = Pdef.at(id);
 
       if (pattern.isNil and: { pdef.isNil or: { pdef.source.isNil } })
@@ -245,6 +277,7 @@
       cycleOrigins.removeAt(id);
       last.removeAt(id);
       lastFormatted.removeAt(id);
+      mutedPatterns.removeAt(id);
       ndefList.removeAt(id);
       pausedPatterns.remove(id);
       stoppedPatterns.remove(id);

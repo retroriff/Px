@@ -29,6 +29,28 @@ DRM16:
     for their distinctive "disco swing" and calling them the first things he would grab 
     if his apartment caught fire.
 
+EmuDrumulator:
+  name: E-mu Drumulator
+  manufacturer: E-mu Systems
+  year: 1983
+  type: Digital sample playback drum machine
+  notes: >-
+    Designed by Dave Rossum and Scott Wedge at E-MU Systems and released in early 1983, 
+    the Drumulator was a major breakthrough because it offered real digitally sampled 
+    drum sounds for under $1,000.
+
+    Depeche Mode used it extensively on their 1983 album "Construction Time Again" 
+    (enjoying its separate outputs to process individual drum hits), as well as Howard Jones 
+    and Tears for Fears.
+
+    Digidrums Sound Chips (for the Drumulator): Created by Evan Brooks and Peter Gotcher 
+    (who later founded Digidesign and developed Pro Tools). They designed custom replacement 
+    EPROM chip sets that allowed users to swap out the stock Drumulator sounds.
+
+    Their most iconic release was the **"Rock Drums 1"** chip set, was used to create the 
+    massive driving beats on Tears for Fears' "Shout", Cocteau Twins' album "Treasure", 
+    and early Beastie Boys tracks like "Beastie Groove".
+
 KorgKR55:
   name: Korg KR-55
   manufacturer: Korg

@@ -1,7 +1,7 @@
 +Px {
   *listen {
     if (OSCdef.all[\px].isNil) {
-      var printExcludedReceivers = ["animatron"];
+      var silentReceivers = ["animatron"];
 
       NetAddr("127.0.0.1", 57120);
 
@@ -30,8 +30,10 @@
             };
         }.defer;
 
-        if (printExcludedReceivers.includesEqual(receiver) == false)
-        { this.prPrint(("🤖 " ++ code)) };
+        if (silentReceivers.includesEqual(receiver) == false) {
+          this.prPrint(("🤖 " ++ code));
+          this.prLogToHistory(code, msg[2]);
+        };
       }, '/px').permanent_(true);
 
        ^("📡 Listening OSC");
@@ -56,5 +58,10 @@
     }
 
     ^("🙉 Listener is disabled");
+  }
+
+  *prLogToHistory { |code, receiver|
+    if (History.started)
+    { History.enter(code, receiver !? { receiver.asSymbol } ?? \osc) };
   }
 }

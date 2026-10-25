@@ -90,7 +90,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | `lpf`        | mix?: range 0..1, freq?: number, gain?: number  | Low pass filter              |
 | `pan`        | pos?: range -1..1 \| \rand                      | Stereo panning               |
 | `phaser`     | mix?: range 0..1, rate?, depth?                 | Phaser effect                |
-| `reverse`    | mix?: range 0..1                                | Beat-synced reverse reverb   |
+| `reverse`    | mix?: range 0..1 \| [mix, beats]              | Reverses audio over a beat-synced cycle (default 2 beats) |
 | `reverb`     | mix?: range 0..1, room?, size?                  | Reverb effect                |
 | `rhpf`       | mix?: range 0..1, freq?: Hz, rq?: number (min 0.1) | Resonant high-pass filter  |
 | `rlpf`       | mix?: range 0..1, freq?: Hz, rq?: number (min 0.1) | Resonant low-pass filter   |
@@ -122,6 +122,7 @@ Use the `:seq` selector to play every sample in a folder in index order, repeati
 - `chorus`: Plays a saved chorus.
 - `chop`: (dur: Integer | Nil, drop: Integer)Slices and repeats part of the beat in short bursts. Called with no arguments, it toggles: applies the default chop if none is active, disables it otherwise. Pass `0` to always disable.
 - `gui`: Opens a gui window with pattern sliders at the mouse position. Once open, it updates automatically.
+- `keep` (id, ...otherIds): Keeps the selected active patterns and removes every other managed pattern; accepts IDs, arrays, and the same group targets as `solo`. All targets must match before anything stops.
 - `meter`: Toggles a server output level window at the top right corner of the screen, with one `LevelIndicator` per active output channel, the channel number underneath, and a master volume knob (-6 dB to +6 dB, double-click to reset) below them.
 - `mixer`: Opens an `NdefMixer` instance, always on top, and assigns it to the `~mixer` variable.
 - `pause` (id: symbol): Pauses a specific pattern.
@@ -132,7 +133,7 @@ Use the `:seq` selector to play every sample in a folder in index order, repeati
 - `shuffle` (id: symbol, history: symbol): Generates a new random seed for a pattern, or all patterns when id is not provided. Use `history:` to restore a previous shuffle state.
 - `shuffleHistory`: Returns a Dictionary containing all stored shuffle snapshots.
 - `solo` (id, ...otherIds): Solos any number of patterns, muting all others. Accepts pattern IDs, arrays, or group targets (`\dx`, `\lx`, a drum machine number/alias). Pass `false` to unsolo.
-- `stop`: Stops all patterns with no arguments, or specific patterns by a single ID, an array of IDs, or separate IDs (for example, `Px.stop(2, 3, 4, 5)`).
+- `stop`: Stops all patterns with no arguments, or removes specific patterns (including solo-muted ones) by ID, array, or separate IDs (for example, `Px.stop(2, 3, 4, 5)`).
 - `synthDef`: Browses global synthDefs. If a synthDef name is provided, returns its arguments.
 - `tempo` (bpm: nil | number, withNdef: bool, add: number): Sets the tempo if bpm is given; returns current tempo if nil. Use `add:` for relative changes (e.g. `Px.tempo(add: 1)`).
 - `trace` (name, key: nil): Enables trace output for a pattern. Optionally filter to a specific key. Call with no arguments to stop all tracing.
@@ -389,7 +390,7 @@ Maps external MIDI controllers to Px pattern parameters via YAML configs. Rotary
 
 Px also has methods to handle a OSC listener, useful for applications where remote control or interaction is needed, allowing real-time data to be sent and received via the network.
 
-- `listen`: Creates a new OSC receiver to listen for OSC messages sent to a specific address and port (127.0.0.1 on port 57120). Once an OSC message is received at the specified address on the /px endpoint, the method extracts the message and evaluates it as code.
+- `listen`: Creates a new OSC receiver to listen for OSC messages sent to a specific address and port (127.0.0.1 on port 57120). Once an OSC message is received at the specified address on the /px endpoint, the method extracts the message and evaluates it as code. When History is running, each received line is also logged to the History file under the sender's name (e.g. `pxAgent`), except for `animatron`.
 
 - `listenOff`: It frees the OSCdef instance and disconnects all network addresses, ensuring that no further messages are received or processed.
 

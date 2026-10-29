@@ -59,6 +59,7 @@ code::
 909 i: \sd dur: 2 off: 1;
 909 i: "ht:seq" dur: 1;
 909 i: "ht:rand" dur: 1;
+909 i: [\lt, "cr:1"].pwrand(0.2) dur: 0.5;
 
 // Stop all 808 patterns
 \808 i: \all;
@@ -67,7 +68,7 @@ code::
 \909 i: \all;
 ::
 
-The code::"ht:seq":: form plays every sample of that drum instrument in index order, repeating. The code::"ht:rand":: form uses the same random sequence behavior as code::play: "folder:rand"::. A numeric suffix selects one sample by index. The drum pattern keeps the same ID when its selector changes.
+The code::"ht:seq":: form plays every sample of that drum instrument in index order, repeating. The code::"ht:rand":: form uses the same random sequence behavior as code::play: "folder:rand"::. A numeric suffix selects one sample by index. The drum pattern keeps the same ID when its selector changes. A list pattern of instruments (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different drum instrument on every event; each item accepts a numeric suffix.
 
 subsection:: Using Presets
 

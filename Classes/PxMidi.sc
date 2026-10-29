@@ -10,6 +10,11 @@ TODO: MIDIOut instances
 
     MIDIClient.init(verbose: false);
 
+    if (MIDIClient.destinations.isEmpty) {
+      this.prPrint("🔴 No MIDI destinations available");
+      ^("✅ Playing SynthDefs");
+    };
+
     if (deviceName.notNil and: (this.prDetectDevice(deviceName) == false)) {
       this.prPrint("🔴 Device not detected");
       ^("✅ Playing SynthDefs");
@@ -140,6 +145,9 @@ TODO: MIDIOut instances
     addMidiTypes = {
       if (midiClient.isNil)
       { this.initMidi };
+
+      if (midiClient.isNil or: { midiClient[midiout].isNil })
+      { ^pattern };
 
       pattern.putAll([
         \type: \midi,

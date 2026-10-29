@@ -294,25 +294,29 @@ Dx : Px {
   }
 
   *prAddDrumMachinePlayBuf { |pattern|
-    var folder, sample, subfolder;
-    var patternDrumMachine = pattern[\drumMachine].asString;
-    var ins = pattern[\instrument].asString;
-    var parts = ins.split($:);
-    var file = pattern[\file] ?? 0;
+    var instrument = pattern[\instrument];
+    var machine = pattern[\drumMachine];
+    var play;
 
-    if (parts.size > 1) {
-      ins = parts[0];
-
-      if (file == 0) {
-        file = parts[1].asInteger;
-      };
+    if (instrument.isKindOf(ListPattern)) {
+      play = instrument.copy;
+      play.list = instrument.list.collect { |ins| this.prDrumMachineSample(machine, ins, 0) };
+    } {
+      play = this.prDrumMachineSample(machine, instrument, pattern[\file] ?? 0);
     };
 
-    subfolder = patternDrumMachine.toLower ++ "-" ++ ins;
-    folder = (patternDrumMachine ++ "/" ++ subfolder);
-
-    pattern.putAll([\play, [folder, file]]);
+    pattern.putAll([\play, play]);
     ^pattern;
+  }
+
+  *prDrumMachineSample { |machine, instrument, file|
+    var machineName = machine.asString;
+    var parts = instrument.asString.split($:);
+
+    if (parts.size > 1 and: { file == 0 })
+    { file = parts[1].asInteger };
+
+    ^[machineName ++ "/" ++ machineName.toLower ++ "-" ++ parts[0], file];
   }
 
   *prApplyActiveFx {

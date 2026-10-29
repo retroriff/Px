@@ -105,7 +105,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | Name    | Arguments                                                  | Description                            |
 | ------- | ---------------------------------------------------------- | -------------------------------------- |
 | `grain` | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a granular texture; skips missing samples |
-| `i`     | name: string                                               | Plays a SynthDef, including `\square` (`width` 0–1), `\saw`, `\supersaw` (`detune` in semitones), and level-calibrated `\white`, `\brown`, `\pink` noise, or a drum sample; drum suffixes `:index`, `:seq`, and `:rand` select samples; skips unknown SynthDefs and missing samples |
+| `i`     | name: string                                               | Plays a SynthDef, including `\square` (`width` 0–1), `\saw`, `\supersaw` (`detune` in semitones), and level-calibrated `\white`, `\brown`, `\pink` noise, or a drum sample; drum suffixes `:index`, `:seq`, and `:rand` select samples; accepts a list pattern of SynthDefs or drum instruments; skips unknown SynthDefs and missing samples |
 | `loop`  | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a loop from a buffer; skips missing samples |
 | `play`  | [folder: string, file: number \| array \| \rand \| \seq]\* | Plays a buffer; skips missing samples  |
 

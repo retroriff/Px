@@ -19,7 +19,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 
 **Identity:**
 - `pattern[\id]` - Primary identifier (symbol)
-- `pattern[\drumMachine]` - Drum machine number (505, 606, 808, 909)
+- `pattern[\drumMachine]` - Resolved drum machine name (e.g. `\RolandTR727` for the reserved number `727`)
 - `pattern[\drumMachineIntegerId]` - Sequential numeric ID for fills (manual drum patterns only)
 - `pattern[\instrument]` - Instrument name
 - `pattern[\dx]` - Boolean flag for preset patterns

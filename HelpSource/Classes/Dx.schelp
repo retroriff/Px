@@ -23,6 +23,9 @@ definitionlist::
 ## RolandTR707 (707)
 || Roland TR-707 emulation
 
+## RolandTR727 (727)
+|| Roland TR-727 emulation
+
 ## RolandTR808 (808)
 || Roland TR-808 emulation (default)
 
@@ -53,6 +56,7 @@ code::
 808 i: \bd dur: 1;
 808 i: \sd dur: 2 off: 1;
 808 i: \hh dur: 0.25 beat: 0.7;
+727 i: \hc dur: 0.5;
 
 // Play a 909
 909 i: \bd dur: 1;

@@ -1,5 +1,10 @@
 (
 Dictionary[
+  "5" -> Dictionary[
+    \degree -> [0, 4],
+    \intervals -> [0, 7],
+    \scale -> \major
+  ],
   "6" -> Dictionary[
     \degree -> [0, 2, 4, 5],
     \intervals -> [0, 4, 7, 9],
@@ -10,10 +15,20 @@ Dictionary[
     \intervals -> [0, 4, 7, 9, 14],
     \scale -> \major
   ],
+  "7sus4" -> Dictionary[
+    \degree -> [0, 3, 4, 6],
+    \intervals -> [0, 5, 7, 10],
+    \scale -> \mixolydian
+  ],
   "9" -> Dictionary[
     \degree -> [0, 2, 4, 6, 8],
     \intervals -> [0, 4, 7, 10, 14],
     \scale -> \mixolydian
+  ],
+  "add4" -> Dictionary[
+    \degree -> [0, 2, 3, 4],
+    \intervals -> [0, 4, 5, 7],
+    \scale -> \major
   ],
   "add4Add9" -> Dictionary[
     \degree -> [0, 2, 3, 4, 8],

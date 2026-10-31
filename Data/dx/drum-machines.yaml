@@ -278,6 +278,13 @@ RolandTR707:
   type: Digital sample playback
   notes: Crisp 12-bit kit, a house and Chicago acid regular
 
+RolandTR727:
+  manufacturer: Roland
+  name: Roland TR-727
+  notes: 15 PCM percussion sounds focused on Latin instruments such as congas, bongos, agogos, and maracas.
+  type: Digital sample playback
+  year: 1985
+
 RolandTR808:
   name: Roland TR-808
   manufacturer: Roland

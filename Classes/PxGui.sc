@@ -95,6 +95,10 @@
     ^Color.new255(37, 190, 106);
   }
 
+  *prControlBgColor {
+    ^Color.new255(26, 29, 34);
+  }
+
   *prMeterBgColor {
     ^Color.new255(31, 41, 55);
   }
@@ -275,6 +279,12 @@
       { patternColor }
     );
 
+    views[\slider].backColor_(
+      if (muted)
+      { Color.new255(37, 40, 45) }
+      { this.prControlBgColor }
+    );
+
     views[\pauseButton].enabled_(muted.not);
     views[\slider].enabled_(muted.not);
     views[\numberBox].enabled_(muted.not);
@@ -284,8 +294,8 @@
     var pattern = this.prPatternAt(key);
     var formatted = lastFormatted[key] ?? Dictionary.new;
     var amp = this.prGetAmp(formatted[\amp]);
-    var backgroundColor = Color.new255(26, 29, 34);
-    var mutedColor = Color.new255(239, 68, 68);
+    var backgroundColor = this.prControlBgColor;
+    var mutedColor = Color.white;
     var meterView, numberBox, pauseButton, slider, soloButton, staticText, views;
 
     var slideAction = { |value|
@@ -351,8 +361,8 @@
     .maxWidth_(windowWidth / 2)
     .states_([
       ["S", Color.white, Color.new255(32, 42, 55)],
-      ["S", primaryColor, Color.new255(32, 42, 55)],
-      ["S", mutedColor, Color.new255(32, 42, 55)]
+      ["S", Color.new255(32, 42, 55), primaryColor],
+      ["S", Color.new255(32, 42, 55), mutedColor]
     ])
     .action_({ Px.prToggleSolo(key) });
 

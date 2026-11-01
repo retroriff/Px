@@ -10,23 +10,23 @@ The user has a standalone Looper project (`.scd` scripts) that loads audio sampl
 
 ## Files to Create
 
-| File | Purpose |
-|------|---------|
-| `Classes/Lx.sc` | Main class (`Lx : Px`) |
-| `Classes/LxGui.sc` | GUI extension (`+ Lx { *gui ... }`) |
-| `HelpSource/Classes/Lx.schelp` | Help documentation |
+| File                           | Purpose                             |
+| ------------------------------ | ----------------------------------- |
+| `Classes/Lx.sc`                | Main class (`Lx : Px`)              |
+| `Classes/LxGui.sc`             | GUI extension (`+ Lx { *gui ... }`) |
+| `HelpSource/Classes/Lx.schelp` | Help documentation                  |
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `README.md` | Add Lx section to class methods table |
-| `AGENTS.md` | Add Lx to class extensions reference |
-| `Docs/init-context.md` | Add Lx to class hierarchy |
+| File                   | Change                                |
+| ---------------------- | ------------------------------------- |
+| `README.md`            | Add Lx section to class methods table |
+| `AGENTS.md`            | Add Lx to class extensions reference  |
+| `Docs/init-context.md` | Add Lx to class hierarchy             |
 
 ## Existing Code to Reuse
 
-- **`\loop` SynthDef** (`SynthDefs/loop.scd`) — tempo-synced PlayBuf with rate/start/beats/dur. No changes needed.
+- **`\loop` SynthDef** (`SynthDefs/Loop.scd`) — tempo-synced PlayBuf with rate/start/beats/dur. No changes needed.
 - **`Px.new(pattern)`** — pattern creation pipeline (inherited via `super.new()`)
 - **`Px.stop(id)`** — stop individual patterns
 - **`Px.loadSynthDefs`** — already loads `\loop` SynthDef automatically
@@ -60,33 +60,34 @@ classvar <window;         // GUI window reference
 
 ### Public Methods
 
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `*initClass` | | Initialize classvars, CmdPeriod cleanup |
-| `*loadSamples` | `\|path\|` | Scan subfolders, load buffers, set channelCount |
-| `*play` | `\|channel, fadeTime\|` | Play one channel or all. Creates Px loop patterns. |
-| `*stop` | `\|channel\|` | Stop one channel or all Lx patterns |
-| `*amp` | `\|channel, value\|` | Set amplitude for a channel |
-| `*buf` | `\|channel, index\|` | Switch sample for a channel |
-| `*dur` | `\|channel, value\|` | Set duration (beats) for a channel |
-| `*next` | `\|channel\|` | Next sample in channel |
-| `*prev` | `\|channel\|` | Previous sample in channel |
-| `*rate` | `\|channel, value\|` | Set playback rate |
-| `*start` | `\|channel, value\|` | Set start position (0-1) |
-| `*vol` | `\|value\|` | Set global Lx volume |
-| `*gui` | | Open the Lx GUI |
+| Method         | Signature               | Description                                        |
+| -------------- | ----------------------- | -------------------------------------------------- |
+| `*initClass`   |                         | Initialize classvars, CmdPeriod cleanup            |
+| `*loadSamples` | `\|path\|`              | Scan subfolders, load buffers, set channelCount    |
+| `*play`        | `\|channel, fadeTime\|` | Play one channel or all. Creates Px loop patterns. |
+| `*stop`        | `\|channel\|`           | Stop one channel or all Lx patterns                |
+| `*amp`         | `\|channel, value\|`    | Set amplitude for a channel                        |
+| `*buf`         | `\|channel, index\|`    | Switch sample for a channel                        |
+| `*dur`         | `\|channel, value\|`    | Set duration (beats) for a channel                 |
+| `*next`        | `\|channel\|`           | Next sample in channel                             |
+| `*prev`        | `\|channel\|`           | Previous sample in channel                         |
+| `*rate`        | `\|channel, value\|`    | Set playback rate                                  |
+| `*start`       | `\|channel, value\|`    | Set start position (0-1)                           |
+| `*vol`         | `\|value\|`             | Set global Lx volume                               |
+| `*gui`         |                         | Open the Lx GUI                                    |
 
 ### Private Methods
 
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `*prCreateId` | `\|channel\|` | Returns `("lx" ++ channel).asSymbol` |
+| Method             | Signature     | Description                                               |
+| ------------------ | ------------- | --------------------------------------------------------- |
+| `*prCreateId`      | `\|channel\|` | Returns `("lx" ++ channel).asSymbol`                      |
 | `*prCreatePattern` | `\|channel\|` | Builds pattern dict for a channel and calls `super.new()` |
-| `*prStopAll` | | Stop all Lx patterns |
+| `*prStopAll`       |               | Stop all Lx patterns                                      |
 
 ### How `*play` Works
 
 For each channel, creates a pattern like:
+
 ```supercollider
 super.new((
   id: \lx0,
@@ -102,6 +103,7 @@ This goes through the Px pipeline: `prCreateBufInstruments` converts `loop:` to 
 ### How Parameter Changes Work
 
 When `Lx.rate(0, 0.5)` is called:
+
 1. Update the stored pattern in `Px.last[\lx0]`
 2. Call `super.new(updatedPattern)` to recreate the pattern with new values
 3. Pbindef updates seamlessly on next quantized beat
@@ -113,12 +115,14 @@ This is the same approach Dx uses — modify the pattern dict and call `super.ne
 Follows DxGui.sc patterns: dark background (`Color.new255(26, 29, 34)`), cyan accent knobs, FlowLayout.
 
 Layout: one column per channel, each containing:
+
 - **Label**: subfolder name (StaticText)
 - **Sample**: prev/next buttons + current index display
 - **Knobs**: Amp, Rate, Start, Dur (using `prCreateKnob` pattern from DxGui)
 - **Mute button** per channel
 
 Bottom row:
+
 - **Play All** / **Stop All** buttons
 
 Window width scales with channel count. Each column ~100px wide.

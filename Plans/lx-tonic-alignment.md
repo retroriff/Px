@@ -16,7 +16,7 @@ Switching samples (`next`, `prev`, `buf`) auto re-detects when alignment is enab
 
 ## Files to Modify
 
-### 1. `SynthDefs/grainLoop.scd` — add `pitchRatio` arg
+### 1. `SynthDefs/GrainLoop.scd` — add `pitchRatio` arg
 
 Add `pitchRatio = 1` to args. Multiply into `grainRate`:
 
@@ -26,7 +26,7 @@ grainRate = rate * BufRateScale.kr(buf) * pitchRatio * (1 + (spread * TRand.ar(-
 
 This works because grain position scanning is independent of grain playback rate — pitch shifts without affecting timing.
 
-### 2. `SynthDefs/loop.scd` — add `pitchRatio` arg + PitchShift
+### 2. `SynthDefs/Loop.scd` — add `pitchRatio` arg + PitchShift
 
 Add `pitchRatio = 1` to args. Insert `PitchShift.ar` after PlayBuf, before envelope:
 
@@ -41,21 +41,25 @@ Can't use `rate` here because it controls tempo-synced playback speed. `PitchShi
 ### 3. `Classes/Lx.sc` — main implementation
 
 **New classvars:**
+
 - `detectedTonics` — Dictionary mapping `bufnum` to detected tonic Symbol
 - `tonicTargets` — Dictionary mapping channel index to target (Symbol, `true` for Nx.tonic, or nil)
 
 Initialize both as `Dictionary.new` in `*initClass` and reset in `*loadSamples`.
 
 **New public method: `*tonic`**
+
 - Validates channel, stores target in `tonicTargets[channel]`
 - If `nil`, removes alignment and rebuilds pattern
 - Otherwise calls `prDetectAndAlign`
 
 **New private method: `*prDetectAndAlign`**
+
 - Checks cache (`detectedTonics[bufnum]`) — if hit, rebuilds pattern immediately
 - If miss, calls `prDetectPitch` with async callback that caches result + rebuilds
 
 **New private method: `*prDetectPitch`**
+
 - Creates a temporary analysis synth: `PlayBuf → Pitch.kr → SendReply`
 - Uses mono buffer, caps analysis at 3 seconds
 - `Pitch.kr` params: `ampThreshold: 0.02, median: 7`
@@ -65,20 +69,24 @@ Initialize both as `Dictionary.new` in `*initClass` and reset in `*loadSamples`.
 - Falls back to `\C` with warning if detection fails (percussive/noisy sample)
 
 **New private method: `*prCalcPitchRatio`**
+
 - Returns `1` if alignment disabled, no cached detection, or Nx unavailable
 - Resolves target: `Nx.tonic` if target is `true`, otherwise the stored Symbol
 - Calculates: `semitones = targetRoot - sampleRoot` (shortest path, wraps at ±6)
 - Returns `semitones.midiratio`
 
 **Modify `*prCreatePattern`:**
+
 - Add `pattern[\pitchRatio] = this.prCalcPitchRatio(channel)` before `super.new(pattern)`
 
 **Modify `*next`, `*prev`, `*buf`:**
+
 - When `tonicTargets[channel].notNil`, call `prDetectAndAlign` instead of `prCreatePattern` (avoids double rebuild; `prDetectAndAlign` calls `prCreatePattern` after detection)
 
 ### 4. `Classes/LxGui.sc` — tonic toggle button
 
 Add a "T" toggle button per channel (after the mode buttons row):
+
 - Off state: grey, tonic alignment disabled
 - On state: yellow, shows detected tonic symbol
 - Click toggles `Lx.tonic(channel)` / `Lx.tonic(channel, nil)`

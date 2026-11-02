@@ -9,13 +9,7 @@
       this.prWindowBounds
     )
     .alwaysOnTop_(true)
-    .background_(
-      Color.new255(
-        red: 24,
-        green: 24,
-        blue: 24
-      )
-    )
+    .background_(this.prWindowBgColor)
     .front
     .onClose_({
       if (Px.meterRoutine.notNil)
@@ -61,13 +55,7 @@
 
     meterWindow = Window("", Rect(0, 0, windowWidth, windowHeight))
     .alwaysOnTop_(true)
-    .background_(
-      Color.new255(
-        red: 24,
-        green: 24,
-        blue: 24
-      )
-    )
+    .background_(this.prWindowBgColor)
     .onClose_({
       Px.prStopMasterMeterRoutine;
       Px.prStopMasterMeter;
@@ -101,6 +89,26 @@
 
   *prMeterBgColor {
     ^Color.new255(31, 41, 55);
+  }
+
+  *prBorderColor {
+    ^Color.grey(0.6);
+  }
+
+  *prButtonBgColor {
+    ^Color.new255(32, 42, 55);
+  }
+
+  *prMutedColor {
+    ^this.prControlBgColor.blend(this.prWindowBgColor, 0.5);
+  }
+
+  *prWindowBgColor {
+    ^Color.new255(24, 24, 24);
+  }
+
+  *prDrumMachineColor {
+    ^Color.new255(255, 255, 122);
   }
 
   *prWarningColor {
@@ -237,15 +245,13 @@
 
   *prGenerateSliders {
     var patterns = this.prVisiblePatterns;
-    var primaryColor = this.prPrimaryColor;
-    var meterBgColor = this.prMeterBgColor;
     var sortedKeys = Px.prSortedPatternIds(patterns);
 
     meterViews = Array.new;
     patternViews.clear;
 
     ^sortedKeys collect: { |key|
-      var views = this.prBuildPatternView(key, primaryColor, meterBgColor);
+      var views = this.prBuildPatternView(key);
       patternViews[key] = views;
       views[\layout];
     };
@@ -281,7 +287,7 @@
 
     views[\slider].backColor_(
       if (muted)
-      { Color.new255(37, 40, 45) }
+      { this.prMutedColor }
       { this.prControlBgColor }
     );
 
@@ -290,12 +296,17 @@
     views[\numberBox].enabled_(muted.not);
   }
 
-  *prBuildPatternView { |key, primaryColor, meterBgColor|
+  *prBuildPatternView { |key|
     var pattern = this.prPatternAt(key);
     var formatted = lastFormatted[key] ?? Dictionary.new;
     var amp = this.prGetAmp(formatted[\amp]);
     var backgroundColor = this.prControlBgColor;
-    var mutedColor = Color.white;
+    var borderColor = this.prBorderColor;
+    var buttonBgColor = this.prButtonBgColor;
+    var meterBgColor = this.prMeterBgColor;
+    var mutedColor = this.prMutedColor;
+    var primaryColor = this.prPrimaryColor;
+    var midiFont = Font.sansSerif(10);
     var meterView, numberBox, pauseButton, slider, soloButton, staticText, views;
 
     var slideAction = { |value|
@@ -348,8 +359,8 @@
     pauseButton = Button()
     .maxWidth_(windowWidth / 2)
     .states_([
-      ["🟢", Color.white, Color.new255(32, 42, 55)],
-      ["⬜️", Color.grey, Color.new255(32, 42, 55)]
+      ["🟢", Color.white, buttonBgColor],
+      ["⬜️", Color.grey, buttonBgColor]
     ])
     .action_({ |btn|
       if (btn.value == 0)
@@ -360,9 +371,9 @@
     soloButton = Button()
     .maxWidth_(windowWidth / 2)
     .states_([
-      ["S", Color.white, Color.new255(32, 42, 55)],
-      ["S", Color.new255(32, 42, 55), primaryColor],
-      ["S", Color.new255(32, 42, 55), mutedColor]
+      ["S", Color.white, buttonBgColor],
+      ["S", buttonBgColor, primaryColor],
+      ["S", Color.white, buttonBgColor]
     ])
     .action_({ Px.prToggleSolo(key) });
 
@@ -376,12 +387,29 @@
       var level = meterLevels[key] ?? 0;
       var normalized = level.ampdb.linlin(-40, 0, 0, 1).clip(0, 1);
       var fillWidth = normalized * bounds.width;
+      var midiChan = this.prPatternAt(key) !? { |pattern| pattern[\chan] };
+      var isMuted = mutedPatterns[key].notNil;
+      var isPaused = pausedPatterns.includes(key.asSymbol);
+      var textColor = if (isPaused) { Color.white } { primaryColor.copy };
 
-      Pen.fillColor = meterBgColor;
+      if (isMuted)
+      { textColor.alpha_(0.4) };
+
+      Pen.fillColor = if (isMuted) { mutedColor } { meterBgColor };
       Pen.addRoundedRect(bounds, 3, 3);
       Pen.fill;
 
-      if (fillWidth > 0) {
+      case
+      { midiChan.notNil } {
+        Pen.stringCenteredIn(
+          "CHAN" + midiChan,
+          bounds.moveBy(0, midiFont.size * 0.15),
+          midiFont,
+          textColor
+        );
+      }
+
+      { fillWidth > 0 } {
         Pen.push;
         Pen.addRoundedRect(bounds, 3, 3);
         Pen.clip;
@@ -390,8 +418,8 @@
         Pen.pop;
       };
 
-      Pen.strokeColor = Color.grey(0.3);
-      Pen.addRoundedRect(bounds, 3, 3);
+      Pen.strokeColor = borderColor;
+      Pen.addRoundedRect(bounds.insetBy(0.5, 0.5), 3, 3);
       Pen.stroke;
     });
 
@@ -449,7 +477,7 @@
     var pattern = this.prPatternAt(key);
 
     if (pattern[\drumMachine].notNil)
-    { ^Color.new255(255, 255, 122) };
+    { ^this.prDrumMachineColor };
 
     ^colors[pattern[\id]];
   }

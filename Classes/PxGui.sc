@@ -269,9 +269,80 @@
     ^this.solo(id);
   }
 
-  *prApplyMutedState { |views, key|
+  *prTogglePause { |key|
+    var id = key.asSymbol;
+
+    if (mutedPatterns[key].notNil)
+    { ^nil };
+
+    if (pausedPatterns.includes(id))
+    { this.resume(id) }
+    { this.pause(id) };
+
+    patternViews[key] !? { |views| this.prApplyPatternState(views, key) };
+  }
+
+  *prMutedAlpha {
+    ^0.3;
+  }
+
+  *prMutedTone { |color, muted|
+    if (muted)
+    { ^color.copy.alpha_(this.prMutedAlpha) };
+
+    ^color;
+  }
+
+  *prPauseIconSize {
+    ^16;
+  }
+
+  *prLabelFont {
+    ^Font.default;
+  }
+
+  *prLabelTextColor {
+    ^Color.black;
+  }
+
+  *prLabelVerticalPadding {
+    ^2;
+  }
+
+  *prLabelHorizontalPadding {
+    ^4;
+  }
+
+  *prDrawnViewInset {
+    ^1;
+  }
+
+  *prPauseIcon { |paused, muted|
+    var resolution = 2;
+    var size = this.prPauseIconSize * resolution;
+    var bounds = Rect(0, 0, size, size).insetBy(resolution);
+    var color = if (paused) { Color.white } { this.prPrimaryColor };
+    var image = Image(size);
+
+    image.fill(Color.clear);
+    image.draw {
+      Pen.fillColor = this.prMutedTone(color, muted);
+
+      if (paused)
+      { Pen.addRoundedRect(bounds.insetBy(resolution), 2 * resolution, 2 * resolution) }
+      { Pen.addOval(bounds) };
+
+      Pen.fill;
+    };
+
+    ^image;
+  }
+
+  *prApplyPatternState { |views, key|
     var muted = mutedPatterns[key].notNil;
-    var patternColor = this.prPatternColor(key);
+    var paused = pausedPatterns.includes(key.asSymbol);
+    var controlBgColor = this.prMutedTone(this.prControlBgColor, muted);
+    var label = this.prPatternLabel(key);
 
     views[\soloButton].value_(
       if (muted)
@@ -279,19 +350,20 @@
       { if (mutedPatterns.notEmpty) { 1 } { 0 } }
     );
 
-    views[\staticText].background_(
-      if (muted)
-      { Color.new(patternColor.red, patternColor.green, patternColor.blue, 0.35) }
-      { patternColor }
-    );
+    views[\label] = label;
+    views[\labelBgColor] = this.prMutedTone(this.prPatternColor(key), muted);
+    views[\labelTextColor] = this.prMutedTone(this.prLabelTextColor, muted);
 
-    views[\slider].backColor_(
-      if (muted)
-      { this.prMutedColor }
-      { this.prControlBgColor }
-    );
+    views[\labelView]
+    .minWidth_(label.bounds(this.prLabelFont).width + this.prLabelHorizontalPadding)
+    .refresh;
 
-    views[\pauseButton].enabled_(muted.not);
+    views[\slider].backColor_(controlBgColor);
+    views[\numberBox].normalColor_(this.prMutedTone(Color.white, muted));
+    views[\numberBoxFrame].refresh;
+
+    views[\pauseButton].icon_(this.prPauseIcon(paused, muted));
+
     views[\slider].enabled_(muted.not);
     views[\numberBox].enabled_(muted.not);
   }
@@ -306,8 +378,11 @@
     var meterBgColor = this.prMeterBgColor;
     var mutedColor = this.prMutedColor;
     var primaryColor = this.prPrimaryColor;
+    var labelFont = this.prLabelFont;
     var midiFont = Font.sansSerif(10);
-    var meterView, numberBox, pauseButton, slider, soloButton, staticText, views;
+    var buttonWidth = windowWidth / 2;
+    var inset = this.prDrawnViewInset;
+    var labelView, meterView, numberBox, numberBoxFrame, pauseButton, slider, soloButton, views;
 
     var slideAction = { |value|
       var currentPattern = last[key];
@@ -325,26 +400,44 @@
     if (colors[pattern[\id]].isNil)
     { colors[pattern[\id]] = Color.rand };
 
-    staticText = StaticText()
-    .align_(\center)
-    .background_(this.prPatternColor(key))
+    labelView = UserView()
+    .fixedHeight_("Ag".bounds(labelFont).height + (this.prLabelVerticalPadding * 2))
     .mouseDownAction_({
       (key.asString + this.prPatternAt(key).asString).postln
     })
-    .string_(this.prPatternLabel(key))
-    .setProperty(\wordWrap, false);
+    .drawFunc_({ |view|
+      var bounds = view.bounds.moveTo(0, 0).insetBy(inset, 0);
+
+      Pen.fillColor = views[\labelBgColor];
+      Pen.addRoundedRect(bounds, 3, 3);
+      Pen.fill;
+
+      Pen.stringCenteredIn(views[\label], bounds, labelFont, views[\labelTextColor]);
+    });
 
     numberBox = NumberBox()
     .action_({
       slideAction.(numberBox.value);
       slider.value_(numberBox.value);
     })
-    .backColor_(backgroundColor)
+    .backColor_(Color.clear)
     .clipHi_(1)
     .clipLo_(0)
     .scroll_step_(0.01)
-    .normalColor_(Color.white)
+    .setProperty(\frame, false)
     .value_(amp);
+
+    numberBoxFrame = UserView()
+    .layout_(HLayout(numberBox).margins_([inset + 1, 1, inset + 1, 1]))
+    .drawFunc_({ |view|
+      var muted = mutedPatterns[key].notNil;
+      var bounds = view.bounds.moveTo(0, 0).insetBy(inset + 0.5, 0.5);
+
+      Pen.fillColor = this.prMutedTone(backgroundColor, muted);
+      Pen.strokeColor = this.prMutedTone(borderColor, muted);
+      Pen.addRoundedRect(bounds, 3, 3);
+      Pen.fillStroke;
+    });
 
     slider = Slider()
     .action_({
@@ -356,20 +449,8 @@
     })
     .value_(amp);
 
-    pauseButton = Button()
-    .maxWidth_(windowWidth / 2)
-    .states_([
-      ["🟢", Color.white, buttonBgColor],
-      ["⬜️", Color.grey, buttonBgColor]
-    ])
-    .action_({ |btn|
-      if (btn.value == 0)
-      { Px.resume(key) }
-      { Px.pause(key) };
-    });
-
     soloButton = Button()
-    .maxWidth_(windowWidth / 2)
+    .fixedWidth_(buttonWidth)
     .states_([
       ["S", Color.white, buttonBgColor],
       ["S", buttonBgColor, primaryColor],
@@ -377,8 +458,11 @@
     ])
     .action_({ Px.prToggleSolo(key) });
 
-    if (pausedPatterns.includes(key.asSymbol))
-    { pauseButton.value_(1) };
+    pauseButton = Button()
+    .fixedSize_(buttonWidth @ soloButton.sizeHint.height)
+    .iconSize_(this.prPauseIconSize)
+    .states_([["", Color.white, buttonBgColor]])
+    .action_({ Px.prTogglePause(key) });
 
     meterView = UserView()
     .minHeight_(20)
@@ -390,10 +474,9 @@
       var midiChan = this.prPatternAt(key) !? { |pattern| pattern[\chan] };
       var isMuted = mutedPatterns[key].notNil;
       var isPaused = pausedPatterns.includes(key.asSymbol);
-      var textColor = if (isPaused) { Color.white } { primaryColor.copy };
-
-      if (isMuted)
-      { textColor.alpha_(0.4) };
+      var textColor = this.prMutedTone(if (isPaused) { Color.white } { primaryColor }, isMuted);
+      var levelColor = this.prMutedTone(primaryColor, isMuted);
+      var strokeColor = this.prMutedTone(borderColor, isMuted);
 
       Pen.fillColor = if (isMuted) { mutedColor } { meterBgColor };
       Pen.addRoundedRect(bounds, 3, 3);
@@ -413,12 +496,12 @@
         Pen.push;
         Pen.addRoundedRect(bounds, 3, 3);
         Pen.clip;
-        Pen.fillColor = primaryColor;
+        Pen.fillColor = levelColor;
         Pen.fillRect(Rect(0, 0, fillWidth, bounds.height));
         Pen.pop;
       };
 
-      Pen.strokeColor = borderColor;
+      Pen.strokeColor = strokeColor;
       Pen.addRoundedRect(bounds.insetBy(0.5, 0.5), 3, 3);
       Pen.stroke;
     });
@@ -426,22 +509,23 @@
     meterViews = meterViews.add(meterView);
 
     views = (
-      staticText: staticText,
+      labelView: labelView,
       slider: slider,
       numberBox: numberBox,
+      numberBoxFrame: numberBoxFrame,
       pauseButton: pauseButton,
       soloButton: soloButton,
       meterView: meterView,
       layout: VLayout(
-        staticText,
+        labelView,
         slider,
-        numberBox,
+        numberBoxFrame,
         meterView,
         HLayout(pauseButton, soloButton).margins_(0).spacing_(2)
       )
     );
 
-    this.prApplyMutedState(views, key);
+    this.prApplyPatternState(views, key);
 
     ^views;
   }
@@ -634,14 +718,11 @@
     patternViews keysValuesDo: { |key, views|
       var formatted = lastFormatted[key] ?? Dictionary.new;
       var amp = this.prGetAmp(formatted[\amp]);
-      var paused = pausedPatterns.includes(key.asSymbol);
 
-      views[\staticText].string_(this.prPatternLabel(key));
       views[\slider].value_(amp);
       views[\numberBox].value_(amp);
-      views[\pauseButton].value_(if (paused) { 1 } { 0 });
 
-      this.prApplyMutedState(views, key);
+      this.prApplyPatternState(views, key);
     };
   }
 

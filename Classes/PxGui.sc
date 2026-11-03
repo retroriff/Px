@@ -297,6 +297,14 @@
     ^16;
   }
 
+  *prControlHeight {
+    ^24;
+  }
+
+  *prButtonSpacing {
+    ^2;
+  }
+
   *prLabelFont {
     ^Font.default;
   }
@@ -380,9 +388,10 @@
     var primaryColor = this.prPrimaryColor;
     var labelFont = this.prLabelFont;
     var midiFont = Font.sansSerif(10);
-    var buttonWidth = windowWidth / 2;
+    var buttonSpacing = this.prButtonSpacing;
+    var controlHeight = this.prControlHeight;
     var inset = this.prDrawnViewInset;
-    var labelView, meterView, numberBox, numberBoxFrame, pauseButton, slider, soloButton, views;
+    var buttonRow, labelView, meterView, numberBox, numberBoxFrame, pauseButton, slider, soloButton, views;
 
     var slideAction = { |value|
       var currentPattern = last[key];
@@ -428,6 +437,7 @@
     .value_(amp);
 
     numberBoxFrame = UserView()
+    .minHeight_(controlHeight)
     .layout_(HLayout(numberBox).margins_([inset + 1, 1, inset + 1, 1]))
     .drawFunc_({ |view|
       var muted = mutedPatterns[key].notNil;
@@ -450,7 +460,7 @@
     .value_(amp);
 
     soloButton = Button()
-    .fixedWidth_(buttonWidth)
+    .minSize_(1 @ controlHeight)
     .states_([
       ["S", Color.white, buttonBgColor],
       ["S", buttonBgColor, primaryColor],
@@ -459,13 +469,27 @@
     .action_({ Px.prToggleSolo(key) });
 
     pauseButton = Button()
-    .fixedSize_(buttonWidth @ soloButton.sizeHint.height)
+    .minSize_(1 @ controlHeight)
     .iconSize_(this.prPauseIconSize)
     .states_([["", Color.white, buttonBgColor]])
     .action_({ Px.prTogglePause(key) });
 
+    buttonRow = View()
+    .minWidth_(windowWidth + buttonSpacing)
+    .layout_(
+      HLayout([pauseButton, stretch: 1], [soloButton, stretch: 1])
+      .margins_(0)
+      .spacing_(buttonSpacing)
+    )
+    .onResize_({ |view|
+      var buttonWidth = ((view.bounds.width - buttonSpacing) / 2).floor;
+
+      pauseButton.maxWidth_(buttonWidth);
+      soloButton.maxWidth_(buttonWidth);
+    });
+
     meterView = UserView()
-    .minHeight_(20)
+    .minHeight_(controlHeight)
     .drawFunc_({ |v|
       var bounds = v.bounds.moveTo(0, 0);
       var level = meterLevels[key] ?? 0;
@@ -521,7 +545,7 @@
         slider,
         numberBoxFrame,
         meterView,
-        HLayout(pauseButton, soloButton).margins_(0).spacing_(2)
+        buttonRow
       )
     );
 

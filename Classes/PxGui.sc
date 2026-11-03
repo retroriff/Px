@@ -293,6 +293,13 @@
     ^color;
   }
 
+  *prMutedBlend { |color, muted|
+    if (muted)
+    { ^color.blend(this.prControlBgColor, 1 - this.prMutedAlpha) };
+
+    ^color;
+  }
+
   *prPauseIconSize {
     ^16;
   }
@@ -367,13 +374,21 @@
     .refresh;
 
     views[\slider].backColor_(controlBgColor);
+    views[\slider].palette_(
+      views[\slider].palette
+      .button_(this.prMutedBlend(views[\knobColor], muted))
+      .buttonText_(this.prMutedBlend(views[\knobLineColor], muted))
+    );
+
     views[\numberBox].normalColor_(this.prMutedTone(Color.white, muted));
     views[\numberBoxFrame].refresh;
 
     views[\pauseButton].icon_(this.prPauseIcon(paused, muted));
+  }
 
-    views[\slider].enabled_(muted.not);
-    views[\numberBox].enabled_(muted.not);
+  *prSetMutedAmp { |key, amp|
+    mutedPatterns[key][\amp] = amp;
+    lastFormatted[key] !? { |formatted| formatted[\amp] = amp };
   }
 
   *prBuildPatternView { |key|
@@ -397,10 +412,15 @@
       var currentPattern = last[key];
       var newAmp = this.prSetAmp((lastFormatted[key] ?? Dictionary.new)[\amp], value);
 
-      if (currentPattern.notNil) {
+      case
+      { currentPattern.notNil } {
         var number = key.asInteger;
         PxDebouncer.current = PxDebouncer(number, currentPattern);
         number.amp(newAmp);
+      }
+
+      { mutedPatterns[key].notNil } {
+        this.prSetMutedAmp(key, newAmp);
       };
 
       numberBox.value_(value);
@@ -535,6 +555,8 @@
     views = (
       labelView: labelView,
       slider: slider,
+      knobColor: slider.palette.button,
+      knobLineColor: slider.palette.buttonText,
       numberBox: numberBox,
       numberBoxFrame: numberBoxFrame,
       pauseButton: pauseButton,

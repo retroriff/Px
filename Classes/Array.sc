@@ -36,6 +36,14 @@
     ^Prand(this, repeats ?? inf);
   }
 
+  pshuf { |repeats|
+    ^Pshuf(this, repeats ?? inf);
+  }
+
+  pshufn { |repeats = inf|
+    ^Pn(Pshuf(this, 1), repeats);
+  }
+
   pxrand { |repeats|
     ^Pxrand(this, repeats ?? inf);
   }

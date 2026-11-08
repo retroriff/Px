@@ -1,3 +1,40 @@
+AkaiMPC60:
+  name: Akai MPC60
+  manufacturer: Akai Professional
+  year: 1988
+  type: Digital sampling drum machine and MIDI sequencer
+  notes: >-
+    Designed by Roger Linn in partnership with Akai, combining a 12-bit sampler
+    with 13 seconds of memory, velocity pads, and an intuitive sequencer. The MPC series
+    perfected what the Linn 9000 started and became the dominant production center
+    for 1990s hip-hop and R&B.
+
+    DJ Shadow: Created Endtroducing..... (the first album built entirely from sampled records)
+    using only an Akai MPC60.
+
+    Dr. Dre, J. Dilla, and Kanye West: Built their signature production setups around
+    subsequent MPC models.
+
+AlesisHR16:
+  name: Alesis HR-16
+  manufacturer: Alesis
+  year: 1987
+  type: Digital sample playback drum machine
+  notes: >-
+    The HR-16 provides 49 16-bit sampled drum and percussion sounds, played from 16
+    velocity-sensitive pads. Each sound can be tuned, panned and assigned to audio outputs,
+    while its sequencer supports programmable patterns and MIDI synchronization.
+
+AlesisSR16:
+  name: Alesis SR-16
+  manufacturer: Alesis
+  year: 1990
+  type: Digital sample playback drum machine
+  notes: >-
+    The SR-16 offers over 230 sampled drum and percussion sounds, 12 velocity-sensitive pads
+    and editable drum sets. It pairs preset and user patterns with dedicated fills, and lets
+    each pad's sound, tuning, level, pan and output assignment be configured.
+
 BossDR55:
   name: Boss DR-55 Dr. Rhythm
   manufacturer: BOSS
@@ -54,6 +91,25 @@ EmuDrumulator:
     Steve Albini replaced the TR-606 with a Drumulator on "Racer-X" and "Songs About Fucking",
     while humorously retaining the moniker "Roland" for the new machine.
 
+EmuSP12:
+  name: E-mu SP-12
+  manufacturer: E-mu Systems
+  year: 1985
+  type: Digital sampling drum machine
+  notes: >-
+    E-MU's 12-bit sampling percussion units featured "drop sampling" to conserve memory.
+    Hip-hop producers discovered they could sample entire vinyl loops and drum breaks
+    (often by speeding up 33⅓ RPM records to 45 RPM and pitching them back down inside
+
+    Public Enemy & The Bomb Squad (Hank Shocklee, Chuck D, &amp; Eric "Vietnam" Sadler):
+    Pushed the SP-12 and SP-1200 to their limits on "It Takes a Nation of Millions to Hold Us Back"
+    ("Bring the Noise", "Rebel Without a Pause").
+
+    Beastie Boys & Rick Rubin: Used the SP-12 on *Licensed to Ill* ("Rhymin and Stealin").
+
+    Matt Dike (Delicious Vinyl) & The Dust Brothers: Used the SP-12 on Tone-Loc's "Wild Thing"
+    and the Beastie Boys' Paul's Boutique.
+
 KorgKR55:
   name: Korg KR-55
   manufacturer: Korg
@@ -91,6 +147,23 @@ KorgMinipops:
     foundation for "Love to Love You Baby".
 
     Métal Urbain used a Korg Minipops 120P, which Eric Débris modified with custom soldered switches and wiring.
+
+Linn9000:
+  name: Linn 9000
+  manufacturer: Linn Electronics
+  year: 1984
+  type: Digital sampling drum machine and MIDI sequencer
+  notes: >-
+    Designed by Roger Linn as an all-in-one workstation combining 12-bit drum sampling 
+    with a 32-track MIDI keyboard/bass sequencer and 18 velocity-sensitive pads.
+    Although plagued by early software bugs and crashes, it established the blueprint
+    for future sampling workstations.
+
+    Used a bank of Linn 9000s as the core sequencing workhorse for global pop hits,
+    including Rick Astley ("Never Gonna Give You Up"), Bananarama, Kylie Minogue...
+
+    Glen Ballard programmed the Linn 9000 to compose Michael Jackson's hit single 
+    "Man in the Mirror".
 
 LinnDrum:
   name: LinnDrum
@@ -278,6 +351,16 @@ RolandTR606:
 
     Sisters of Mercy used the 606 as one of the early iterations of their automated drum machine persona, Doktor Avalanche.
 
+RolandTR626:
+  name: Roland TR-626 Rhythm Composer
+  manufacturer: Roland
+  year: 1987
+  type: Digital sample playback drum machine
+  notes: >-
+    The TR-626 uses 12-bit sampled sounds, combining conventional drum kit voices with
+    Latin percussion. Its 16-pad interface supports pattern and song programming, and
+    the machine provides MIDI, tape synchronization and separate instrument outputs.
+
 RolandTR707:
   name: Roland TR-707
   manufacturer: Roland
@@ -345,17 +428,15 @@ RolandTR909:
 
     Madonna brought the 909's house beat to global 1 on "Vogue" (1990).
 
-SoundmastersR88:
-  name: Sound Master Memory Rhythm SR-88
-  manufacturer: Sound Master
-  year: 1981
-  type: Analog programmable drum machine
+SequentialCircuitsDrumtracks:
+  name: Sequential Circuits Drumtraks
+  manufacturer: Sequential Circuits
+  year: 1983
+  type: Digital sample playback drum machine
   notes: >-
-    The Memory Rhythm SR-88 is a compact four-voice analog machine with bass drum, snare drum, closed
-    hi-hat and cymbal sounds. Patterns are written one step at a time by selecting a voice and using
-    start and stop buttons to place hits and rests.
-
-    When the DR-55's eight-pattern memory limit proved too small for full live sets, Robin Guthrie from Cocteau Twins bought two Sound Master SR-88 units
+    The Drumtraks uses 13 sampled percussion sounds with programmable tuning and volume
+    for each voice. Its pattern and song sequencer supports MIDI synchronization, and
+    separate audio outputs allow individual sounds to be processed externally.
 
 SimmonsSDS5:
   name: Simmons SDS5 Drum Synthesizer
@@ -375,3 +456,16 @@ SimmonsSDS5:
 
     As Joy Division transitioned into New Order, Morris moved from triggering drum pads to programming drum machines like the **Roland TR-808**, 
     which provided the pulse for dance-rock classics like **"Blue Monday"**.
+
+SoundmastersR88:
+  name: Sound Master Memory Rhythm SR-88
+  manufacturer: Sound Master
+  year: 1981
+  type: Analog programmable drum machine
+  notes: >-
+    The Memory Rhythm SR-88 is a compact four-voice analog machine with bass drum, snare drum, closed
+    hi-hat and cymbal sounds. Patterns are written one step at a time by selecting a voice and using
+    start and stop buttons to place hits and rests.
+
+    When the DR-55's eight-pattern memory limit proved too small for full live sets, Robin Guthrie 
+    from Cocteau Twins bought two Sound Master SR-88 units.

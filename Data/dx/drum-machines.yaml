@@ -21,9 +21,15 @@ AlesisHR16:
   year: 1987
   type: Digital sample playback drum machine
   notes: >-
-    The HR-16 provides 49 16-bit sampled drum and percussion sounds, played from 16
-    velocity-sensitive pads. Each sound can be tuned, panned and assigned to audio outputs,
-    while its sequencer supports programmable patterns and MIDI synchronization.
+    Designed by Marcus Ryle and Keith Barr, the HR-16 debuted in late 1987 as a breakthrough
+    16-bit digital drum machine offering 49 sampled drum sounds for under $500.
+    It used clever memory allocation and piezo micro-sensors to achieve velocity sensitivity
+    inside a distinct flip-top gray plastic casing.
+
+    Bruce Springsteen: Used the HR-16 to construct the rhythm track for his Oscar-winning 
+    1993 single "Streets of Philadelphia".
+
+    Godflesh (Justin Broadrick): Made the HR-16 a core, virtual band member that defined their industrial metal sound.
 
 AlesisSR16:
   name: Alesis SR-16
@@ -31,9 +37,11 @@ AlesisSR16:
   year: 1990
   type: Digital sample playback drum machine
   notes: >-
-    The SR-16 offers over 230 sampled drum and percussion sounds, 12 velocity-sensitive pads
-    and editable drum sets. It pairs preset and user patterns with dedicated fills, and lets
-    each pad's sound, tuning, level, pan and output assignment be configured.
+    Introduced in 1990 as a follow-up to the HR-16, Marcus Ryle designed it with dynamic voice allocation
+    to layer samples. It went on to become the longest-selling drum machine in history,
+    remaining in production for over 30 years.
+
+    Ultravox: Named the SR-16 as his favorite drum machine, calling it "cheap, cheerful, and it works".
 
 BossDR55:
   name: Boss DR-55 Dr. Rhythm
@@ -357,16 +365,25 @@ RolandTR626:
   year: 1987
   type: Digital sample playback drum machine
   notes: >-
-    The TR-626 uses 12-bit sampled sounds, combining conventional drum kit voices with
-    Latin percussion. Its 16-pad interface supports pattern and song programming, and
-    the machine provides MIDI, tape synchronization and separate instrument outputs.
+    A late-1980s digital PCM sampling drum machine from Roland's Mid-O expansion series.
+
+    Derrick May (Rhythim is Rhythim): Included the TR-626 as part of his extensive collection
+    of Roland drum machines in his Motor City warehouse studio setup.
 
 RolandTR707:
   name: Roland TR-707
   manufacturer: Roland
   year: 1985
   type: Digital sample playback
-  notes: Crisp 12-bit kit, a house and Chicago acid regular
+  notes: >-
+    Released by Roland in 1984 as part of the Mid-O expansion series, the TR-707 was a digital drum machine
+    that used low-cost 6-bit PCM memory chips for its sampled drum sounds (a cost-saving technique developed
+    by Roland engineer Atsushi Hoshiai). Unlike earlier analog Roland boxes like the TR-808,
+    the TR-707 came equipped with full MIDI implementation, making it straightforward to sync with
+    external digital sequencers and synthesizers.
+
+    Derrick May: The Detroit techno pioneer included the TR-707 in his collection of Roland drum machines
+    in his Motor City warehouse studio, operating it alongside the TR-808, TR-909, TR-626, and TR-505.
 
 RolandTR727:
   manufacturer: Roland
@@ -434,9 +451,11 @@ SequentialCircuitsDrumtracks:
   year: 1983
   type: Digital sample playback drum machine
   notes: >-
-    The Drumtraks uses 13 sampled percussion sounds with programmable tuning and volume
-    for each voice. Its pattern and song sequencer supports MIDI synchronization, and
-    separate audio outputs allow individual sounds to be processed externally.
+    Released in 1984 for $1,295 by Dave Smith, it was one of the very first programmable drum machines equipped with MIDI.
+
+    Juan Atkins (Model 500): After initially disliking the Roland TR-909's kick drum, Atkins bought a
+    Sequential Circuits Drumtraks. He linked the two machines via MIDI—using the Drumtraks for kick 
+    and snare alongside the TR-909's percussion—to record the foundational Detroit techno single "No UFOs" (1985).
 
 SimmonsSDS5:
   name: Simmons SDS5 Drum Synthesizer

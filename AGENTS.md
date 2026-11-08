@@ -1,6 +1,5 @@
 # LLM Agent Task Routing
 
-- Write clean, solid, and maintainable code.
 - **Do not add comments.** The code must be self-explanatory through clear naming and structure. Never narrate what a line does, restate a method or variable name, or justify a layout, size or parameter choice. The only acceptable comments are the section markers already used in a file (e.g. the emoji labels in the GUI classes) and a rare note about an external constraint that cannot be expressed in code. When in doubt, write no comment.
 - Shared project plans and deferred proposals live in `Plans/`. Read the relevant plan when working on its topic; keep architecture and workflow references in `Docs/`.
 
@@ -24,14 +23,6 @@
    - Blank lines around conditionals
 
 4. **`Classes/*.sc`** - Source code to modify
-   - `Classes/Number.sc` - Integer method extensions (DSL entry point)
-   - `Classes/Px.sc` - Base pattern generator
-   - `Classes/PxDebouncer.sc` - Internal class that batches method chain calls into a single pattern update
-   - `Classes/Fx.sc` - Effects handler
-   - `Classes/Dx.sc` - Drum machines
-   - `Classes/Lx.sc` - Multi-track granular looper
-   - `Classes/LxGui.sc` - Lx GUI extension
-   - `Classes/Nx.sc` - Musical chord data manager
    - See `Docs/init-context.md` for full file organization
 
 ### Development Quick Reference
@@ -70,38 +61,9 @@
 - **Bjorklund** — Euclidean rhythm generation
 - **VSTPlugin** — VST plugin integration
 
-## File Type Reference
-
-- `.sc` - SuperCollider class definitions (source code)
-- `.scd` - SuperCollider data/scripts (executable code, effect definitions)
-- `.schelp` - SuperCollider help files (SCDoc format documentation)
-- `.yaml` - Drum machine preset data
-
 ## Class Extensions Across Files
 
-SuperCollider's `+ ClassName { }` syntax allows extending classes across multiple files. When investigating a class, search ALL files for extensions:
-
-**Number** (DSL entry point methods):
-
-- `Number.sc` - Core methods (play, loop, amp, dur, beat, etc.)
-- `PxNotes.sc` - Note methods (degree, arp, scale, sus)
-- `PxFx.sc` - Effect methods
-- `PxBuf.sc` - Buffer/sample methods
-- `PxMidi.sc` - MIDI methods
-
-**Px** (pattern generator):
-
-- `Px.sc` - Core pattern creation
-- `PxBeats.sc` - Beat generation
-- `PxNotes.sc` - Degree/scale processing
-- `PxFx.sc` - Effect processing
-- `PxBuf.sc` - Buffer/loop handling
-- `PxMidi.sc` - MIDI integration
-- `PxGui.sc` - GUI methods
-- `PxRand.sc` - Randomization
-- `PxMethods.sc` - Utility methods
-
-**Symbol**: `Symbol.sc`, `PxNotes.sc`, `PxBuf.sc`, `PxMidi.sc`
+SuperCollider's `+ ClassName { }` syntax allows extending classes across multiple files. When investigating a class, search ALL files for extensions.
 
 When debugging or modifying behavior, always grep for `^\+ ClassName` to find all extensions.
 

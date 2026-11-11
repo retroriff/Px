@@ -27,9 +27,42 @@ Nx.shuffle;                  // any chord
 Nx.shuffle(\E);              // any E chord
 Nx.shuffle(\E, \minor);      // E minor chords
 Nx.shuffle(\E, \major);      // E major chords
+
+// Look up a chord without changing the current one
+Nx(\Am7).midinotes;          // -> [57, 60, 64, 67]
+Nx.chord;                    // -> \Em7 (unchanged)
 ::
 
 ClassMethods::
+
+method:: new
+Returns an Nx instance for the given chord without changing the current chord or the class octave. The instance answers the same getters as the class (code::chord::, code::midinotes::, code::degrees::, ...). Use link::#*set:: to change the current chord.
+
+argument:: chordName
+The full chord name as a Symbol (e.g., \Em, \Am7, \Cmaj9).
+
+argument:: octaveArg
+Optional octave for this instance (Integer from -1 to 9). If nil, the instance follows the class link::#*octave::.
+
+code::
+Nx.set(\Em);
+Nx(\Am7);                // -> Nx(\Am7)
+Nx(\Am7).midinotes;      // -> [57, 60, 64, 67]
+Nx(\Am7, 4).midinotes;   // -> [81, 84, 88, 91]
+Nx(\Am7).scale;          // -> \minor
+Nx.chord;                // -> \Em (unchanged)
+Nx.octave;               // -> 2 (unchanged)
+::
+
+Returns:: An Nx instance, or an error String if the chord name is invalid.
+
+method:: current
+Returns the current chord as an Nx instance, as set by link::#*set::, link::#*shuffle:: or link::#*fifth::.
+
+code::
+Nx.set(\Em7);
+Nx.current;              // -> Nx(\Em7)
+::
 
 method:: set
 Sets the current chord. Supports three calling forms:
@@ -266,7 +299,7 @@ Nx.chords.keys;  // list all available chord qualities
 ::
 
 method:: currentChord
-Class variable containing the current chord data Dictionary.
+Returns the current chord data Dictionary.
 
 method:: circleOfFifths
 Class variable containing the circle of fifths as an Array of Symbols. Used by the link::#*fifth:: method.
@@ -376,9 +409,8 @@ Nx.midinotes;       // [57, 60, 64, 67] (still octave 2)
 Nx.octave = 5;
 Nx.midinotes;       // [93, 96, 100, 103]
 
-// Set chord with specific octave via Nx()
-Nx(\Am7, 4);
-Nx.midinotes;       // [81, 84, 88, 91] (Am7 in octave 4)
+// Look up a chord in octave 4 without changing the current chord
+Nx(\Am7, 4).midinotes;  // [81, 84, 88, 91]
 
 // Set chord with octave via set
 Nx.set(\E, \minor, 2);

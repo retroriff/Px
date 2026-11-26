@@ -240,10 +240,11 @@ Dx.preset(\electro, 1);
 
 | Name          | Arguments                                         | Description                             |
 | ------------- | ------------------------------------------------- | --------------------------------------- |
+| `current`     | machine?: symbol \| number                        | Machine name and instrument sample counts |
 | `fill`        | instrument?: symbol, repeat?: integer             | One-shot random fill with crash accent  |
 | `fx`          | name: symbol, value: number \| nil                | Applies an Fx effect to preset patterns |
 | `gui`         | None                                              | Toggles a drum machine bank GUI         |
-| `instruments` | machine?: symbol                                  | Available instruments + sample counts   |
+| `instruments` | machine?: symbol \| number                        | Array of available instrument symbols   |
 | `loadPresets` | None                                              | Reloads presets from YAML files         |
 | `preset`      | name?: string \| index: number \| amp: range 0..1 | Plays a [preset](/Data/dx/presets/)     |
 | `release`     | None                                              | Releases with fadeTime                  |

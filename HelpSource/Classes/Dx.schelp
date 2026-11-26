@@ -166,15 +166,27 @@ Dx.preset(\electro, 1);
 Dx.preset(\electro, 2, 0.5);  // Half volume
 ::
 
-method:: instruments
-Returns the available instruments for a drum machine, each followed by its number of samples, e.g. code::\bd (5), \hh (5), \ht (4)::. The count is the highest usable sample index plus one (e.g. code::\bd (5):: allows code::\bd:0:: to code::\bd:4::).
+method:: current
+Returns a String with a drum machine name and its instruments' sample counts, e.g. code::\RolandTR909: \bd (5), \hh (5), \ht (4)::. The count is the highest usable sample index plus one (e.g. code::\bd (5):: allows code::\bd:0:: to code::\bd:4::).
 
 argument:: machine
-Optional drum machine identifier (e.g., \909). If omitted, returns instruments for the current drum machine.
+Optional drum machine identifier or short alias (e.g., \909 or 909). If omitted, uses the current drum machine.
 
 code::
-Dx.instruments;        // Instruments for the current drum machine
-Dx.instruments(\909);  // Instruments for 909
+Dx.current;
+Dx.current(\909);
+::
+
+method:: instruments
+Returns a sorted Array of instrument Symbols for a drum machine. This can be used directly as an instrument list pattern. The list is captured when the pattern is declared; declare it again after switching machines to use the new machine's instruments.
+
+argument:: machine
+Optional drum machine identifier or short alias (e.g., \909 or 909). If omitted, uses the current drum machine. An unknown machine returns an empty Array.
+
+code::
+Dx.instruments;
+Dx.instruments(\909);
+101 i: Dx.instruments.pxrand dur: 1;
 ::
 
 method:: loadPresets

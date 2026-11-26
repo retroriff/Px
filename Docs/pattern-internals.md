@@ -175,7 +175,7 @@ complementary.
 
 Drum samples organized hierarchically:
 - Folder structure: `drumMachine/drumMachine-instrument/` (e.g., `808/808-bd/`)
-- `instrumentFolders` dictionary maps drum machines to available instruments
+- `instrumentFolders` dictionary maps drum machines to sample folders; `Dx.instruments` derives instrument Symbols from those folders, while `Dx.current` reads sample counts from the loaded sample dictionary
 - `prHasInstrument()` validates instrument exists before creating pattern
 
 **Implementation:** See `Dx` class in `Classes/Dx.sc`

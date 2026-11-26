@@ -6,7 +6,6 @@ Dx : Px {
   classvar <>dxWindow;
   classvar hasLoadedPresets;
   classvar <instrumentFolders;
-  classvar instrumentNames;
   classvar <>lastPreset;
   classvar <machinesDict;
   classvar <presetsDict;
@@ -29,7 +28,6 @@ Dx : Px {
 
     activeFx = Dictionary.new;
     instrumentFolders = Dictionary.new;
-    instrumentNames = Dictionary.new;
     lastPreset = Array.new;
     presetPatterns = Array.new;
     this.prCreateMachinesDict;
@@ -100,18 +98,36 @@ Dx : Px {
     this.prFadeDrums(\in, fadeTime);
   }
 
-  *instruments { |machine|
+  *current { |machine|
+    var folders, summary;
+
     machine = this.prResolveAlias(machine ? drumMachine);
 
     if (instrumentFolders.isEmpty)
     { this.prGetInstrumentFolders };
 
-    ^instrumentFolders[machine.asSymbol]
-    .reject(_.isNil)
-    .collect { |folder|
+    folders = instrumentFolders[machine.asSymbol] ? [];
+
+    summary = folders.reject(_.isNil).collect { |folder|
       "\\" ++ this.prStripPrefix(folder) ++ " (" ++ this.prSampleCount(machine, folder) ++ ")";
-    }
-    .join(", ");
+    }.sort.join(", ");
+
+    ^("\\" ++ machine.asString ++ ": " ++ summary);
+  }
+
+  *instruments { |machine|
+    var names = Set.new;
+
+    machine = this.prResolveAlias(machine ? drumMachine);
+
+    if (instrumentFolders.isEmpty)
+    { this.prGetInstrumentFolders };
+
+    (instrumentFolders[machine.asSymbol] ? []).reject(_.isNil).do { |folder|
+      names.add(this.prStripPrefix(folder).asString);
+    };
+
+    ^names.asArray.sort.collect(_.asSymbol);
   }
 
   *loadPresets {
@@ -169,12 +185,10 @@ Dx : Px {
 
   *shuffle { |update101 = false|
     var folders = this.prGetDrumMachinesFolders;
-    var instruments;
     var randomIndex = Date.seed.abs % folders.size;
 
     Dx.use(folders[randomIndex], update101);
-    instruments = this.instruments;
-    ^("🎲" ++ folders[randomIndex] + ":" ++ instruments);
+    ^("🎲" ++ this.current);
   }
 
 
@@ -280,7 +294,7 @@ Dx : Px {
     this.prRestorePresetInstruments;
     this.prApplyActiveFx;
 
-    ^("🛢️" + drumMachine ++ ":" + this.instruments);
+    ^("🛢️" ++ this.current);
   }
 
   *vol { |amp|
@@ -356,7 +370,6 @@ Dx : Px {
 
   *prClearInstrumentFolders {
     instrumentFolders = Dictionary.new;
-    instrumentNames = Dictionary.new;
   }
 
   *prCreateId { |instrument|
@@ -447,7 +460,7 @@ Dx : Px {
       .collect { |entry| entry.folderName };
 
       drumMachinesFolders do: { |folder|
-        var folderPath, names, subFolders;
+        var folderPath, subFolders;
 
         folderPath = PathName(drumMachinesPath ++ folder);
 
@@ -457,12 +470,6 @@ Dx : Px {
         };
 
         instrumentFolders[folder.asSymbol] = subFolders;
-
-        names = Set.new;
-
-        subFolders.do { |sf| names.add(this.prStripPrefix(sf).asString) };
-
-        instrumentNames[folder.asSymbol] = names;
       };
     };
   }
@@ -502,11 +509,11 @@ Dx : Px {
   }
 
   *prHasInstrument { |instrument|
-    var names = instrumentNames[drumMachine.asSymbol];
+    var names = this.instruments;
 
-    if (names.isNil) { ^false };
+    if (names.isEmpty) { ^false };
 
-    ^names.includes(instrument.asString);
+    ^names.includes(instrument.asString.asSymbol);
   }
 
   *prIsPlaying {

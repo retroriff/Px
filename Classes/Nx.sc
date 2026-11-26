@@ -1,14 +1,13 @@
 Nx {
   classvar <chords;
   classvar <circleOfFifths;
-  classvar <currentChord;
-  classvar <currentChordName;
+  classvar <current;
   classvar <defaultOctave;
   classvar <qualityAliases;
   classvar <>octave;
-  classvar <quality;
-  classvar <tonic;
   classvar <tonics;
+
+  var <chord, <chordOctave, <data, <quality, <tonic;
 
   *initClass {
     chords = Dictionary.new;
@@ -27,36 +26,39 @@ Nx {
   }
 
   *new { |chordName, octaveArg|
-    ^this.set(chordName, nil, octaveArg);
+    var resolved = this.prResolve(chordName);
+
+    if (resolved.isString) { ^resolved };
+
+    ^this.prInstance(resolved, octaveArg !? { octaveArg.clip(-1, 9) });
   }
 
   *all {
-    ^Dictionary[
-      \chord -> currentChordName,
-      \degrees -> currentChord[\degree],
-      \guitarDegrees -> currentChord[\guitarDegree],
-      \intervals -> currentChord[\intervals],
-      \midiRoot -> currentChord[\midiRoot],
-      \midinotes -> this.midinotes,
-      \root -> currentChord[\root],
-      \scale -> currentChord[\scale]
-    ];
+    ^current.all;
   }
 
   *chord {
-    ^currentChordName;
+    ^current.chord;
+  }
+
+  *currentChord {
+    ^current.data;
+  }
+
+  *currentChordName {
+    ^current.chord;
   }
 
   *degrees {
-    ^currentChord[\degree];
+    ^current.degrees;
   }
 
   *guitarDegrees {
-    ^currentChord[\guitarDegree];
+    ^current.guitarDegrees;
   }
 
   *intervals {
-	  ^currentChord[\intervals];
+    ^current.intervals;
   }
 
   *loadChords {
@@ -80,25 +82,11 @@ Nx {
   }
 
   *midinotes { |octaveArg|
-    var rootNote = currentChord[\midiRoot];
-    var intervals = currentChord[\intervals];
-    var octaveOffset, targetOctave;
-
-    // Validate octave range if provided
-    if (octaveArg.notNil) {
-      if ((octaveArg < -1) or: { octaveArg > 9 }) {
-        ^("Octave must be between -1 and 9");
-      };
-    };
-
-    targetOctave = octaveArg ?? octave;
-    octaveOffset = (targetOctave - defaultOctave) * 12;
-
-    ^intervals.collect { |interval| rootNote + interval + octaveOffset };
+    ^current.midinotes(octaveArg);
   }
 
   *midiRoot {
-    ^currentChord[\midiRoot];
+    ^current.midiRoot;
   }
 
   *parse { |chordName|
@@ -110,74 +98,30 @@ Nx {
     ^parsed;
   }
 
+  *quality {
+    ^current.quality;
+  }
+
   *root {
-    ^currentChord[\root];
+    ^current.root;
   }
 
   *scale {
-    ^currentChord[\scale];
+    ^current.scale;
   }
 
   *set { |chordNameOrTonic, qualityArg, octaveArg|
-    var chordName, combinedChord, parsed, qualityData, qualityStr, tonicData;
+    var resolved;
 
     if (octaveArg.notNil) {
-      octaveArg = octaveArg.clip(-1, 9);
-      octave = octaveArg;
+      octave = octaveArg.clip(-1, 9);
     };
 
-    if (qualityArg.notNil) {
-      qualityStr = qualityAliases[qualityArg.asSymbol] ?? { qualityArg.asString };
+    resolved = this.prResolve(chordNameOrTonic, qualityArg);
 
-      tonicData = tonics[chordNameOrTonic.asSymbol];
+    if (resolved.isString) { ^resolved };
 
-      if (tonicData.isNil) {
-        ^("Tonic not found:" + chordNameOrTonic);
-      };
-
-      qualityData = chords[qualityStr];
-
-      if (qualityData.isNil) {
-        ^("Chord quality not found:" + qualityStr);
-      };
-
-      tonic = chordNameOrTonic.asSymbol;
-      quality = qualityStr;
-      chordName = this.prBuildChordName(tonic, quality);
-    } {
-      // 1-arg form: chord name
-      parsed = this.prParseChordName(chordNameOrTonic.asSymbol);
-
-      if (parsed.isNil) {
-        ^("Invalid chord name:" + chordNameOrTonic);
-      };
-
-      tonicData = tonics[parsed[\tonic]];
-
-      if (tonicData.isNil) {
-        ^("Tonic not found:" + parsed[\tonic]);
-      };
-
-      qualityData = chords[parsed[\quality]];
-
-      if (qualityData.isNil) {
-        ^("Chord quality not found:" + parsed[\quality]);
-      };
-
-      tonic = parsed[\tonic];
-      quality = parsed[\quality];
-      chordName = chordNameOrTonic.asSymbol;
-    };
-
-    combinedChord = Dictionary.new;
-    combinedChord[\root] = tonicData[\root];
-    combinedChord[\midiRoot] = tonicData[\midiRoot];
-    combinedChord[\degree] = qualityData[\degree];
-    combinedChord[\intervals] = qualityData[\intervals];
-    combinedChord[\scale] = qualityData[\scale];
-
-    currentChord = combinedChord;
-    currentChordName = chordName;
+    current = this.prInstance(resolved);
 
     ^this;
   }
@@ -218,6 +162,10 @@ Nx {
 
     this.set(chordName);
     ^("Chord is" + chordName);
+  }
+
+  *tonic {
+    ^current.tonic;
   }
 
   *fifth { |tonicArg = \C, position = 0, quality = \major|
@@ -315,7 +263,124 @@ Nx {
     ^(tonicSym.asString ++ suffix).asSymbol;
   }
 
+  *prInstance { |resolved, octaveArg|
+    ^super.new.prInit(resolved, octaveArg);
+  }
+
   *prPrint { |value|
     value.postln;
+  }
+
+  *prResolve { |chordNameOrTonic, qualityArg|
+    var chordName, parsed, qualityData, qualityStr, tonicData, tonicSym;
+
+    if (qualityArg.notNil) {
+      tonicSym = chordNameOrTonic.asSymbol;
+      qualityStr = qualityAliases[qualityArg.asSymbol] ?? { qualityArg.asString };
+      chordName = this.prBuildChordName(tonicSym, qualityStr);
+    } {
+      parsed = this.prParseChordName(chordNameOrTonic.asSymbol);
+
+      if (parsed.isNil) {
+        ^("Invalid chord name:" + chordNameOrTonic);
+      };
+
+      tonicSym = parsed[\tonic];
+      qualityStr = parsed[\quality];
+      chordName = chordNameOrTonic.asSymbol;
+    };
+
+    tonicData = tonics[tonicSym];
+
+    if (tonicData.isNil) {
+      ^("Tonic not found:" + tonicSym);
+    };
+
+    qualityData = chords[qualityStr];
+
+    if (qualityData.isNil) {
+      ^("Chord quality not found:" + qualityStr);
+    };
+
+    ^Dictionary[
+      \chord -> chordName,
+      \data -> Dictionary[
+        \degree -> qualityData[\degree],
+        \intervals -> qualityData[\intervals],
+        \midiRoot -> tonicData[\midiRoot],
+        \root -> tonicData[\root],
+        \scale -> qualityData[\scale]
+      ],
+      \quality -> qualityStr,
+      \tonic -> tonicSym
+    ];
+  }
+
+  all {
+    ^Dictionary[
+      \chord -> chord,
+      \degrees -> this.degrees,
+      \guitarDegrees -> this.guitarDegrees,
+      \intervals -> this.intervals,
+      \midiRoot -> this.midiRoot,
+      \midinotes -> this.midinotes,
+      \root -> this.root,
+      \scale -> this.scale
+    ];
+  }
+
+  degrees {
+    ^data[\degree];
+  }
+
+  guitarDegrees {
+    ^data[\guitarDegree];
+  }
+
+  intervals {
+    ^data[\intervals];
+  }
+
+  midinotes { |octaveArg|
+    var octaveOffset, targetOctave;
+
+    if (octaveArg.notNil and: { (octaveArg < -1) or: { octaveArg > 9 } }) {
+      ^("Octave must be between -1 and 9");
+    };
+
+    targetOctave = octaveArg ?? { chordOctave ?? octave };
+    octaveOffset = (targetOctave - defaultOctave) * 12;
+
+    ^data[\intervals].collect { |interval| data[\midiRoot] + interval + octaveOffset };
+  }
+
+  midiRoot {
+    ^data[\midiRoot];
+  }
+
+  printOn { |stream|
+    stream << "Nx(\\" << chord;
+
+    if (chordOctave.notNil) {
+      stream << ", " << chordOctave;
+    };
+
+    stream << ")";
+  }
+
+  prInit { |resolved, octaveArg|
+    chord = resolved[\chord];
+    chordOctave = octaveArg;
+    data = resolved[\data];
+    quality = resolved[\quality];
+    tonic = resolved[\tonic];
+  }
+
+  root {
+    ^data[\root];
+  }
+
+  scale {
+    ^data[\scale];
   }
 }

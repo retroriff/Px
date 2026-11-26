@@ -346,6 +346,11 @@ Nx.scale;        // -> \minor
 Nx.midinotes(4); // -> [76, 79, 83, 90] (octave 4, temporary)
 Nx.octave = 5;
 Nx.midinotes;    // -> [88, 91, 95, 102] (octave 5, permanent)
+
+// Look up a chord without changing the current one
+Nx(\Am7).midinotes;    // -> [57, 60, 64, 67]
+Nx(\Am7, 4).midinotes; // -> [81, 84, 88, 91]
+Nx.chord;              // -> \EmAdd9 (unchanged)
 ```
 
 Octave numbering follows the same C3 = 60 standard as `note:` symbol notation, so `Nx.midinotes(3)` is rooted on middle C. Chords default to octave 2.
@@ -357,9 +362,11 @@ Available qualities include major, minor, suspended, diminished, sixth, seventh,
 
 | Name         | Arguments                   | Returns    | Description                                              |
 | ------------ | --------------------------- | ---------- | -------------------------------------------------------- |
+| `Nx()`       | chord: Symbol, octave?: Int | Nx         | Returns a chord lookup without changing the current one  |
 | `all`        | None                        | Dictionary | Returns all chord data in a single Dictionary            |
 | `chord`      | None                        | Symbol     | Returns current chord name                               |
 | `chords`     | None                        | Dictionary | Returns all loaded chord qualities                       |
+| `current`    | None                        | Nx         | Returns the current chord as an Nx instance              |
 | `degrees`    | None                        | Array      | Returns scale degrees array                              |
 | `loadChords` | None                        | None       | Reloads chord data from `Score/`                         |
 | `midinotes`  | octave?: Integer (-1 to 9)  | Array      | Returns MIDI notes, optionally transposed                |

@@ -1,73 +1,35 @@
-# SoundFont Instruments for Px
+# Native SoundFont instruments for Px
 
-## Status
+## Scope
 
-Proposal for discussion. No playback or conversion code has been implemented.
+Proposed feature. Px supplies an SF2 reader, a preset catalog and a sample-voice SynthDef. Each user obtains their own banks, keeps their license notices and points Px at a local folder. The reader uses the PCM audio inside each SF2. The earlier WebAudioFont conversion is optional reference material. The shipping feature has no dependency on those scripts, extracted WAVs, a VST or an external player.
 
-## Goal
-
-Make selected Strudel `gm_*` instruments usable through Px's existing `i:` syntax, with the same zero-based variant numbers and normal Px note, duration, sustain, amplitude, pan, pattern, and effects behavior.
+## Loading and playing
 
 ```supercollider
-Px.loadSoundfonts("/path/to/converted-soundfonts");
+Px.loadSoundfonts("~/icloud/Music/Samples/Soundfont/Banks", ["gm_synth_bass_1:3"]);
 1 i: "gm_synth_bass_1:3" note: \c2 dur: 1;
-2 i: "gm_epiano1:0" note: [\c3, \eb3, \g3].pseq dur: 0.5 sustain: 0.4;
 ```
 
-The public name is a soundfont instrument. Internally, Px resolves each note to a sample zone and uses a shared sample-voice SynthDef. Loading and selecting the instrument must happen before the hit; a hit must never fetch or decode audio.
+The proposed one-argument loader indexes bank headers and lists the available selectors. The optional second argument prepares the named presets and reports when their buffers are ready. With catalog-only loading, a first scalar `i:` declaration may prepare its preset asynchronously and start at the next eligible Px quantization boundary once ready. Preloading lets a performer choose exactly when that work happens. Both forms share the same cache.
 
-## Why Convert Presets
+Every SF2 preset has an address within a file. Expose it as `sf/<bank-file-stem>/<bank-number>/<program-number>`, for example `sf/FluidR3_GM/0/38`. This also works for non-GM banks, percussion and presets with duplicate display names. List the address alongside the SF2 preset name. Report ambiguous file stems if two indexed banks would produce the same address.
 
-SuperCollider buffers can play decoded audio but a normal SynthDef does not parse `.sf2` or WebAudioFont `.js` presets. For the first implementation, convert only chosen WebAudioFont presets to audio files plus a manifest. This keeps playback inside scsynth and the existing Px audio and effects routing. A native SF2 parser or server plugin is a later option if direct use of arbitrary SF2 files becomes necessary.
+Keep the familiar `gm_*` aliases as a small, versioned mapping. A zero-based variant is a fixed slot in that mapping. The examples use the order from `@strudel/soundfonts@1.3.0`. Installing another file must never renumber slots. Omitted suffix means slot zero. Each supported slot names a known bank and native preset address. Verify the mapping against the bank's internal identity and preset tables. List the expected bank for unavailable slots. Users can always select other banks by their native address.
 
-The WebAudioFont preset is the reference for matching Strudel. Loading the original SF2 through a different player could produce a different result because zone selection, loops, envelopes, and gain are rendered by a different engine.
+For the worked example, Strudel slot 3 is `0381_FluidR3_GM_sf2_file`. The proposed native alias targets `FluidR3_GM.sf2`, bank 0, program 38, whose SF2 header names it **Synth Bass 1**. The exported variant's zone loop points match the left saw samples in the native instrument. Px should play the native preset, including its own layering and stereo image. This is a documented musical mapping, not a promise of identical WebAudioFont rendering. Map other aliases individually rather than inferring bank numbers from export filenames.
 
-## Source and Conversion
+## How an event reaches the voice
 
-1. Pin the Strudel `gm_*` registry version used for conversion. Its array order defines `:0`, `:1`, and so on; commented-out source presets are not variants. Store the original WebAudioFont preset identifier for each variant.
-2. Convert selected preset files from the WebAudioFont sound collection offline. Decode each playable zone into a WAV file and write an alphabetized-key YAML manifest.
-3. Preserve the source identifier and URL, sample rate, key range, original pitch, coarse and fine tuning, loop start and end, and available envelope data for each zone. Preserve source provenance and license information with the converted instrument.
-4. Validate that every manifest entry references a readable sample and that ranges, loop points, and variant indexes are valid. Reject incomplete presets with a useful error.
-5. Keep third-party audio out of the repository by default. The user chooses and stores converted presets in a local library path.
+1. **Parse the declaration.** Existing `Number.i` calls `Number.prPlay`. For the scalar example it separates the base name and puts the suffix value 3 in the pattern's `\file` field. `Number.note` uses `Px.prResolveNotes` to enqueue `\midinote`. In Px's octave convention, `\c2` is MIDI 48. The debouncer commits the chain and `Number.prPlayClass` keeps its existing Dx dispatch before calling `Px.new` for a regular track.
+2. **Detect the SoundFont.** Add `Px.prResolveSoundfont(instrument, variant)` in a Px class extension. Normalize String and Symbol names and look up an exact alias or qualified address in the SF2 catalog. `Px.new` needs this lookup at its existing `prMissingSynthDef` validation point, before it rejects an instrument absent from `SynthDescLib`. A known alias with a missing bank or invalid variant gets a specific diagnostic. Preserve normal SynthDef precedence for unqualified name collisions, normal Dx routing, and the separate `play:`, `loop:`, `grain:` and MIDI paths. Store the resolved preset on the formatted pattern while keeping the original selector for re-evaluation, display and stopping.
+3. **Resolve the note when it plays.** In `Px.prCreatePdef`, attach SoundFont event handling to the evaluated Pbind. Use the event's final pitch, including transposition, and each chord member independently. For this example the reader selects every preset/instrument zone covering key 48 and the note's velocity. Proposed default velocity is 100 for an audio event without a velocity value. Px amplitude and beat accents still control output gain. Preserve rests, strums, timing offsets and note-offs. For per-event instrument selectors, reuse the catalog resolver after the selector stream yields a value. Prepare finite candidate sets ahead of playback. For an open-ended stream, require its SoundFont choices to be preloaded and report an unready selection without blocking the clock.
+4. **Play one voice per matching layer.** Add the shared internal SynthDef `\playSoundfont` in `SynthDefs/PlaySoundfont.scd`. Pass buffer references, sample bounds, tuning, loop mode and bounds, volume envelope, attenuation, pan, gate, amp and the event's output bus. Use a phase-driven `BufRd` for attack, looping and release reading. Honor the SF2 modes for one-shot, continuous loop and loop-until-release playback. Use fixed mono readers for the left and right buffers, pair linked samples once, and position mono zones according to their pan. Account for the source and server sample rates exactly once. Each voice releases and frees itself. `dur: 1` spaces hits one beat apart. Existing Px sustain and legato determine gate length. Route through the track Ndef, its effects and the master mixer.
 
-The converter should work from explicitly selected preset IDs so the first version does not download or load an entire General MIDI library. If a source uses a compressed sample encoding, decoding is an offline converter concern, not a runtime dependency of Px.
+## Implementation order
 
-## Px Runtime Design
-
-- Add a dedicated `Px.loadSoundfonts(path)` catalog and buffer cache. Keep it separate from `Px.loadSamples`, whose current folder scanner loads ordinary WAV/AIFF files without instrument metadata.
-- Recognize soundfont names only when they exist in that catalog. Keep the current interpretation of `i:` and `:number` for SynthDefs and drum samples. `Number.prPlay` already puts the suffix in `\file`; the soundfont resolver can treat that value as the variant index only for catalog entries.
-- Resolve the final MIDI pitch and variant for every event, after `note:` and other pitch patterns have produced their values. Select the matching sample zone and playback rate using the preset's original pitch and tuning. Support repeated notes, note sequences, chords, and per-event instrument patterns.
-- Feed `\buf`, playback rate, envelope, loop, amp, pan, gate, and output controls to one internal sample-voice SynthDef. Create one synth node per note so overlapping notes remain polyphonic. Respect Px `sustain:` in beats, including release after note-off.
-- Handle one-shot zones and sustain loops correctly. Loop only the declared region while the note is held; let the release finish cleanly when the gate closes. Preserve mono and stereo source channels.
-- Use the existing Ndef/Px mixer and effect path. Loading, stopping, reloading, and CmdPeriod must release buffers and voices cleanly. Report missing instruments, variants, and pitch zones without substituting an unrelated sound.
-- Preload selected instruments before patterns start. Permit unloading unused presets and reloading a converted library without restarting the server.
-
-## Integration Order
-
-1. Build the offline converter and manifest validator for one representative bass preset. Confirm zone and variant metadata against Strudel's registry and WebAudioFont source.
-2. Implement catalog loading and the generic voice SynthDef. Exercise basic notes, sustain, release, loops, and overlapping voices with a fixed preset.
-3. Add the Px `i:` resolver, preserving existing SynthDef, drum, and sample behavior. Cover `\note` sequences, chords, `:variant`, and normal Px effects.
-4. Add selective preload/reload and clear missing-asset diagnostics.
-5. Document `Px.loadSoundfonts`, the `i: "name:variant"` form, source conversion, and limitations in `HelpSource/Classes/Px.schelp`, `README.md`, and the px-agent reference docs.
-
-## Verification
-
-- Compare the same notes, timing, sustain, and variant in Strudel and Px, starting with `gm_synth_bass_1` and `gm_epiano1`. Compare attacks, sustained portions, release, pitch, and loop boundaries by ear and recording.
-- Check all key-range boundaries and at least one pitch between original sample pitches. Check short and long notes, overlapping notes, chords, repeated hits, and stopping a pattern during sustain.
-- Check variant indexes against the pinned Strudel array, including a preset omitted from Strudel's mapping. Verify missing assets produce clear errors.
-- Check that existing `i: \saw`, drum `:index`, and `play:` patterns still resolve as before, and that Fx routing and master metering work.
-- Perform code and manifest validation without launching `sclang`. The user runs live SuperCollider listening checks when ready, because automated server boot or library recompilation would interrupt the performance session.
-
-## Decisions to Set Before Implementation
-
-- Choose the first one or two Strudel variants to convert and compare.
-- Decide whether to use Strudel's current registry or a pinned historical version for stable variant numbers.
-- Decide whether the local converted library should live under the existing samples path or a separate user-selected path.
-- Define the acceptable similarity target: identical selected sample data and note mapping, or also a close match for Strudel's envelopes and output level.
-
-## References
-
-- Strudel SoundFont registry: https://codeberg.org/uzu/strudel/src/branch/main/packages/soundfonts/gm.mjs
-- Strudel SoundFont loader: https://codeberg.org/uzu/strudel/src/branch/main/packages/soundfonts/fontloader.mjs
-- WebAudioFont source collection: https://github.com/felixroos/webaudiofontdata
-- SuperCollider buffer playback: https://doc.sccode.org/Classes/Buffer.html and https://doc.sccode.org/Classes/BufRd.html
+1. Add the catalog and SF2 reader. Validate RIFF chunk boundaries and terminal records, traverse preset and instrument global/local zones and apply SF2 inheritance and generator rules. Read key/velocity ranges, sample offsets, root key and pitch correction, coarse/fine tuning, scale tuning, channel links, loops, gain, pan and volume envelopes. Start with uncompressed SF2 PCM and explicitly report unsupported formats or synthesis features. Document the supported subset before release.
+2. Prepare only sample regions used by selected presets. Decode to SC buffer values in bounded batches; retain sample rate and frame units. Share buffers across zones and tracks. Wait for the server's completion before publishing a ready preset. A failed or superseded load must leave the previous playing pattern intact. Refresh the catalog atomically, defer freeing buffers until active releases finish, and invalidate stale buffer numbers after server restart.
+3. Implement the voice and event resolver, using the existing event scheduling and output routing. Cover both normal SynthDef loading and the selective reload path in `Classes/PxMethods.sc`. Keep SoundFont-specific fields out of unrelated synth events.
+4. Verify the native address and alias with FluidR3 GM, then use an unrelated user-supplied SF2 by address alone. Check key and velocity boundaries, linked stereo, layering, chords, transposition, all loop modes, sustain, tempo, pattern updates, stop/release, effects, missing banks and reload during playback. Regression-check ordinary SynthDefs, drum suffixes and `play:`. Use static inspection and offline bank checks during development. Live listening and `sclang` verification are user-initiated.
+5. When implemented, document the loader, selector listing, readiness and playback examples in `HelpSource/Classes/Px.schelp`, the README methods table and the px-agent reference docs.

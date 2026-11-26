@@ -174,7 +174,7 @@ Linn9000:
     "Man in the Mirror".
 
 LinnDrum:
-  name: LinnDrum
+  name: Linn LinnDrum
   manufacturer: Linn Electronics
   year: 1982
   type: Digital sample playback drum machine
@@ -185,12 +185,12 @@ LinnDrum:
     The Psychedelic Furs: Keith Forsey brought Idol's LinnDrum-driven sound to their album "Mirror Moves".
 
 LinnLM1:
-  name: Linn LM-1 Drum Computer
+  name: Linn LM-1
   manufacturer: Linn Electronics
   year: 1980
   type: Digital sample playback drum machine
   notes: >-
-    Designed by Roger Linn, the LM-1 was the first programmable drum machine to use digital samples of acoustic
+    Designed by Roger Linn, the LM-1 Drum Computer was the first programmable drum machine to use digital samples of acoustic
     drums. Its 8-bit samples gave it a markedly more realistic sound than the analog rhythm machines available at
     the time.
 
@@ -360,7 +360,7 @@ RolandTR606:
     Sisters of Mercy used the 606 as one of the early iterations of their automated drum machine persona, Doktor Avalanche.
 
 RolandTR626:
-  name: Roland TR-626 Rhythm Composer
+  name: Roland TR-626
   manufacturer: Roland
   year: 1987
   type: Digital sample playback drum machine

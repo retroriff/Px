@@ -1,19 +1,34 @@
 + Px {
   *prApplyFx { |id, fxList, isFullDeclaration, previousFxNames|
-    var currentFxNames;
+    var currentFxNames, previousSelectorNames, selector, selectorNames;
 
     if (id.isNil) { ^this };
 
     Fx.skipFlush = true;
     previousFxNames = previousFxNames ?? { Fx.prFxNames(id) };
+    previousSelectorNames = Fx.prSelectorNames(id);
+    selector = lastFormatted[id] !? { |pattern| pattern[\fxSelect] };
+    selectorNames = (Fx.prSelectorOptions(selector) ?? []).reject { |name| name == Nil }.asSet;
 
-    if (isFullDeclaration)
-    { Fx.prClearMixStreams(id) };
+    if (isFullDeclaration) {
+      Fx.prClearMixStreams(id);
+      Fx.prClearSelector(id);
+    };
+
+    if (selectorNames.isEmpty)
+    { Fx.prClearSelector(id) };
+
+    if (isFullDeclaration.not and: { previousSelectorNames.notEmpty }) {
+      Fx.prTargetPattern(id);
+      previousSelectorNames.difference(selectorNames).difference(fxList.collect { |entry| entry[0] }.asSet).do { |fxName|
+        Fx.prDisableFx(fxName, immediate: true);
+      };
+    };
 
     if (fxList.isNil or: { fxList.size == 0 }) {
 
       if (isFullDeclaration and: { previousFxNames.notEmpty }) {
-        Fx(id);
+        Fx.prTargetPattern(id);
         Fx.prSuppressPrint = true;
         previousFxNames.do { |fxName| Fx.perform(fxName, nil) };
         Fx.prSuppressPrint = false;
@@ -23,8 +38,8 @@
       ^this;
     };
 
-    Fx(id);
-    currentFxNames = fxList.collect { |entry| entry[0] }.asSet;
+    Fx.prTargetPattern(id);
+    currentFxNames = fxList.collect { |entry| entry[0] }.asSet.union(selectorNames);
 
     if (isFullDeclaration and: { previousFxNames.notEmpty }) {
       previousFxNames.difference(currentFxNames).do { |fxName|
@@ -33,8 +48,16 @@
     };
 
     Fx.prSuppressPrint = true;
+
+    if (selectorNames.notEmpty)
+    { Fx.prRegisterSelector(id, selector, selectorNames) };
+
     fxList.do { |entry|
-      Fx.perform(entry[0], *this.prResolveFxMix(id, entry));
+      if (entry[2] == \selector) {
+        Fx.prPrepareSelector(id, entry[0]);
+      } {
+        Fx.perform(entry[0], *this.prResolveFxMix(id, entry));
+      };
     };
     Fx.prSuppressPrint = false;
 

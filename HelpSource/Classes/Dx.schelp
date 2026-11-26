@@ -64,6 +64,8 @@ code::
 909 i: "ht:seq" dur: 1;
 909 i: "ht:rand" dur: 1;
 909 i: [\lt, "cr:1"].pwrand(0.2) dur: 0.5;
+101 i: [\bd, \sd, \oh, \hh].pshufn dur: 0.25;
+\101 i: [\bd, \sd, \oh, \hh].pshufn;
 
 // Stop all 808 patterns
 \808 i: \all;
@@ -72,7 +74,10 @@ code::
 \909 i: \all;
 ::
 
-The code::"ht:seq":: form plays every sample of that drum instrument in index order, repeating. The code::"ht:rand":: form uses the same random sequence behavior as code::play: "folder:rand"::. A numeric suffix selects one sample by index. The drum pattern keeps the same ID when its selector changes. A list pattern of instruments (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different drum instrument on every event; each item accepts a numeric suffix.
+The code::"ht:seq":: form plays every sample of that drum instrument in index order, repeating. The code::"ht:rand":: form uses the same random sequence behavior as code::play: "folder:rand"::. A numeric suffix selects one sample by index. The drum pattern keeps the same ID when its selector changes. A list pattern of instruments (code::pseq::, code::prand::, code::pxrand::, code::pwrand::, code::pshuf::, code::pshufn::) picks a different drum instrument on every event; each item accepts a numeric suffix. code::pshufn:: reshuffles after each pass through the list, and code::pshufn.trace:: displays the selection.
+
+A list pattern of instruments uses the drum machine number as its pattern ID. Prefix the same list declaration with its Symbol form to stop only that pattern, for example code::\101 i: [\bd, \sd].pxrand::. Use code::\101 i: \all:: to stop all patterns on the active drum machine.
+Group commands such as code::Px.solo(\101):: and code::Px.keep(\101):: still select every pattern on the active drum machine.
 
 subsection:: Using Presets
 
@@ -203,7 +208,7 @@ argument:: newDrumMachine
 Drum machine folder name or short alias (e.g., 909 or \RolandTR909).
 
 argument:: update101
-When true, playing patterns declared with the dynamic code::101:: alias also migrate to the new machine. Patterns whose instrument is missing in the new machine keep their previous machine. Default: false.
+When true, playing patterns declared with the dynamic code::101:: alias also migrate to the new machine. An instrument list migrates only when every instrument exists in the new machine; otherwise it keeps its previous machine. A new code::101 i::: declaration always uses the currently active machine. Default: false.
 
 note:: Switching machines never starts playback: while the drums are stopped, preset instruments that only exist in the new machine are not restored.::
 

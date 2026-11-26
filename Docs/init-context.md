@@ -133,6 +133,7 @@ Classes/           - Core class definitions (.sc files)
   LxGui.sc        - Lx GUI extension
   Number.sc       - Integer method extensions
   Symbol.sc       - Symbol method extensions
+  PxStopDeclaration.sc - Inert receiver for parameters chained after a Symbol `i:` stop
 
 Effects/          - Effect definitions (.scd files)
 SynthDefs/        - Synth definitions (.scd files)
@@ -149,8 +150,9 @@ Examples/         - Usage examples (.scd files)
 
 1. Create `Effects/NewEffect.scd` with Dictionary entry
 2. Add method to `Fx` class in `Classes/Fx.sc`
-3. Optionally add shorthand to `PxFx.sc` for pattern-level effects
-4. Run `Fx.loadEffects` to reload
+3. Ensure the effect has a numeric default mix and supports `fx:` selection if appropriate
+4. Optionally add shorthand to `PxFx.sc` for pattern-level effects
+5. Run `Fx.loadEffects` to reload
 
 **Adding a new pattern method:**
 

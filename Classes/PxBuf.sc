@@ -93,7 +93,9 @@
         file = pattern[\play][1];
       };
 
-      if (pattern[\play].isKindOf(ListPattern)) {
+      if (pattern[\play].isKindOf(ListPattern)
+        or: { pattern[\play].isKindOf(Pn) }
+        or: { pattern[\play].isKindOf(Ptrace) }) {
         var resolvedList = this.prResolveBufList(pattern[\play]);
 
         if (resolvedList.isNil)
@@ -151,6 +153,9 @@
   *prFirstBuf { |value|
     if (value.class == Buffer) { ^value };
 
+    if (value.isKindOf(Pn) or: { value.isKindOf(Ptrace) })
+    { ^this.prFirstBuf(value.pattern) };
+
     if (value.isKindOf(ListPattern))
     { ^value.list.detect { |item| item.class == Buffer } };
 
@@ -161,6 +166,15 @@
   // Returns nil when any of them cannot be resolved.
   *prResolveBufList { |listPattern|
     var resolved = listPattern.copy;
+
+    if (listPattern.isKindOf(Pn) or: { listPattern.isKindOf(Ptrace) }) {
+      resolved.pattern = this.prResolveBufList(listPattern.pattern);
+
+      if (resolved.pattern.isNil)
+      { ^nil };
+
+      ^resolved;
+    };
 
     resolved.list = listPattern.list.collect { |item|
       case
@@ -196,11 +210,11 @@
   }
 
   *prCreateLoopsFromList { |pattern|
-    var samples = pattern[\buf].list;
+    var firstSample = this.prFirstListItem(pattern[\buf]);
     var resolved;
 
     // Already resolved by prCreateBufInstruments (play:)
-    if (samples[0].isArray.not) { ^pattern };
+    if (firstSample.isArray.not) { ^pattern };
 
     resolved = this.prResolveBufList(pattern[\buf]);
 
@@ -209,7 +223,7 @@
       ^pattern;
     };
 
-    this.prSetLoopDur(pattern, samples[0][0]);
+    this.prSetLoopDur(pattern, firstSample[0]);
 
     if (pattern[\degree].notNil) {
       var patternWithdegrees = this.prCreateDegrees(pattern, midiratio: true);
@@ -221,8 +235,20 @@
     ^pattern;
   }
 
+  *prFirstListItem { |value|
+    if (value.isKindOf(Pn) or: { value.isKindOf(Ptrace) })
+    { ^this.prFirstListItem(value.pattern) };
+
+    if (value.isKindOf(ListPattern))
+    { ^value.list.first };
+
+    ^nil;
+  }
+
   *prCreateLoops { |pattern|
-    if (pattern[\buf].isKindOf(ListPattern))
+    if (pattern[\buf].isKindOf(ListPattern)
+      or: { pattern[\buf].isKindOf(Pn) }
+      or: { pattern[\buf].isKindOf(Ptrace) })
     { ^this.prCreateLoopsFromList(pattern) };
 
     if (pattern[\buf].notNil and: { pattern[\buf].class != Buffer }) {

@@ -75,6 +75,8 @@ The superclass that generates the patterns from an array of events with a simpli
 
 These methods add effects directly to a pattern's proxy via the Fx class. They accept the same arguments as the corresponding `Fx` methods. Effects are automatically disabled when removed from a full pattern declaration. The mix also accepts a Pattern, advancing one step per event (`delay: Pseq([1, 0], inf)`).
 
+`fx:` selects one existing mix effect on each event: `7 i: \rim dur: 0.5 fx: [\gverb, \delay, \lpf, \hpf, Nil].prand;`. `Nil` selects the dry signal. A symbol holds one effect; a plain array chooses randomly; list patterns such as `Pseq`, `Prand`, `Pwrand`, `Pshuf`, and `pshufn` control the sequence. `pshufn.trace` also works. The selected effect uses its Fx method's default mix, and the other effects in the selector run at mix 0. This changes the pattern proxy's effect mix, so effect tails from earlier events can be affected. Numeric `fx:` values pass to SynthDefs that define an `fx` control. Updating an existing pattern between these two forms clears the previous form. A symbol-prefixed `i:` stop declaration ignores subsequent pattern parameters, including symbolic `fx:`; a separate `\name.fx(\effect)` call still applies an effect.
+
 | Name         | Arguments                                       | Description                  |
 | ------------ | ----------------------------------------------- | ---------------------------- |
 | `blp`        | mix?: range 0..1                                | Band-limited low-pass filter |
@@ -85,6 +87,7 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | `duck`       | mix?: range 0..1, thresh?: number, src?: Symbol | Sidechain compression        |
 | `flanger`    | mix?: range 0..1                                | Flanger effect               |
 | `freqShift`  | mix?: range 0..1, freq?, phase?                 | Frequency shifter            |
+| `fx`         | Symbol \| Array \| list Pattern \| Nil \| number | Selects one available effect per event; numeric values reach the SynthDef |
 | `gverb`      | mix?: range 0..1, roomsize?, revtime?           | Granular reverb              |
 | `hpf`        | mix?: range 0..1, freq?: number, gain?: number  | High pass filter             |
 | `lpf`        | mix?: range 0..1, freq?: number, gain?: number  | Low pass filter              |
@@ -105,9 +108,9 @@ These methods add effects directly to a pattern's proxy via the Fx class. They a
 | Name    | Arguments                                                  | Description                            |
 | ------- | ---------------------------------------------------------- | -------------------------------------- |
 | `grain` | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a granular texture; skips missing samples |
-| `i`     | name: string                                               | Plays a SynthDef, including `\square` (`width` 0–1), `\saw`, `\supersaw` (`detune` in semitones), and level-calibrated `\white`, `\brown`, `\pink` noise, or a drum sample; drum suffixes `:index`, `:seq`, and `:rand` select samples; accepts a list pattern of SynthDefs or drum instruments; skips unknown SynthDefs and missing samples |
-| `loop`  | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a loop from a buffer; skips missing samples |
-| `play`  | [folder: string, file: number \| array \| \rand \| \seq]\* | Plays a buffer; skips missing samples  |
+| `i`     | name: string                                               | Plays a SynthDef, including `\square` (`width` 0–1), `\saw`, `\supersaw` (`detune` in semitones), and level-calibrated `\white`, `\brown`, `\pink` noise, or a drum sample; drum suffixes `:index`, `:seq`, and `:rand` select samples; accepts list patterns such as `pshufn` for drum instruments; skips unknown SynthDefs and missing samples |
+| `loop`  | [folder: string, file: number \| \jump \| \rand \| \seq]\* | Plays a loop from a buffer; sample lists support `pshufn`; skips missing samples |
+| `play`  | [folder: string, file: number \| array \| \rand \| \seq]\* | Plays a buffer; sample lists support `pshufn`; skips missing samples  |
 
 `*` The array can be replaced by a string shortcut: `"folder:index"`.
 `**` It also accepts a Buffer object: `Buffer.read(s, "chord.aiff".resolveRelative)`.
@@ -168,6 +171,8 @@ Fx.setVstPresetsPath(<path>);
 
 `Fx(name)` accepts a single proxy name, or a group target that fans the effect out to every matching pattern individually: `\dx` (every Dx preset pattern), `\lx` (every Lx looper channel), or a drum machine number/alias (`\808`, `909`, `\101`, ...). `\101` always tracks whichever machine is currently active via `Dx.use`.
 
+For an instrument list declared with `101 i: [...].pxrand`, pattern-level `fx:` applies only to that list pattern. An explicit `Fx(\101)` applies to the entire active drum machine, including the list pattern.
+
 It offers the same [class methods as Px](#px-class-methods), with the following additions:
 
 - `activeArgs`: Returns active effects and their argument arrays per proxy
@@ -225,10 +230,16 @@ We can simplify the usage of drum machine using shortcodes. Short aliases (505, 
 707 i: "sd:4" dur: 2 off: 1;
 909 i: "ht:seq" dur: 1;
 909 i: "ht:rand" dur: 1;
+101 i: [\bd, \sd, \oh, \hh].pxrand dur: 0.25;
+\101 i: [\bd, \sd, \oh, \hh].pxrand;
 
 // Stop all
 \707 i: \all
 ```
+
+An instrument list pattern uses the drum machine number as its ID. The Symbol form above stops that list pattern; `\101 i: \all` stops every pattern on the active drum machine.
+Group commands such as `Px.solo(\101)` and `Px.keep(\101)` select every pattern on the active machine.
+When switching machines with `Dx.use(..., true)`, the list migrates only if every instrument exists in the new machine. Repeating a `101 i:` declaration uses the active machine.
 
 With `Dx` class we can use presets:
 

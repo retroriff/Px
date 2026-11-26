@@ -8,9 +8,12 @@ Fx {
   classvar <>presetsPath;
   classvar <proxyName;
   classvar <>prSuppressPrint;
+  classvar <selectorStreams;
+  classvar <singleProxyTarget;
   classvar <>skipFlush;
   classvar <vstController;
   classvar <vstPresets;
+  classvar <wetRamps;
 
   *initClass {
     chains = Dictionary.new;
@@ -20,8 +23,11 @@ Fx {
     mixStreams = Dictionary.new;
     pendingFx = Dictionary.new;
     prSuppressPrint = false;
+    selectorStreams = Dictionary.new;
+    singleProxyTarget = false;
     skipFlush = false;
     vstPresets = Dictionary.new;
+    wetRamps = Dictionary.new;
 
     this.loadEffects;
 
@@ -41,6 +47,13 @@ Fx {
     { name = \px };
 
     proxyName = name.asSymbol;
+    singleProxyTarget = false;
+  }
+
+  *prTargetPattern { |id|
+    proxyName = id.asSymbol;
+    singleProxyTarget = true;
+    ^this;
   }
 
   *blp { |mix = 0.4|
@@ -77,6 +90,7 @@ Fx {
     if (singleProxy.notNil) {
       proxyName = singleProxy.asSymbol;
       chain = chains[proxyName];
+      selectorStreams.removeAt(proxyName);
 
       if (chain.isNil) { ^this };
 
@@ -99,6 +113,8 @@ Fx {
     chains.clear;
     groupFx.clear;
     mixStreams.clear;
+    selectorStreams.clear;
+    wetRamps.keys.asArray.do { |id| this.prCancelWetRamps(id) };
   }
 
   *delay { |mix = 0.2, delaytime = 0.25, delayfeedback = 0.4|
@@ -243,6 +259,8 @@ Fx {
 
     id = id.asSymbol;
     chain = chains[id];
+    selectorStreams.removeAt(id);
+    this.prCancelWetRamps(id);
 
     if (chain.isNil) { ^this };
 
@@ -342,13 +360,14 @@ Fx {
     };
   }
 
-  *prAddEffect { |fx, mix, args, postArgs, isSynced = false|
-    var chain, hasFx = false;
-    var groupIds;
+  *prAddEffect { |fx, mix, args, postArgs, isSynced = false, forceSingle|
+    var chain, groupIds, hasFx = false, selector, single = forceSingle ?? { singleProxyTarget };
 
     if (skipFlush.not and: { isSynced.not }) {
       var pendingProxy = proxyName;
-      var pendingIds = Px.prGroupIds(pendingProxy) ?? { [pendingProxy] };
+      var pendingSingle = single;
+      var pendingIds = if (pendingSingle)
+        { [pendingProxy] } { Px.prGroupIds(pendingProxy) ?? { [pendingProxy] } };
 
       this.prMarkPending(pendingIds, fx);
 
@@ -360,7 +379,7 @@ Fx {
 
           if (capturedGeneration == generation) {
             proxyName = pendingProxy;
-            this.prAddEffect(fx, mix, args, postArgs, true);
+            this.prAddEffect(fx, mix, args, postArgs, true, pendingSingle);
           };
 
           this.prUnmarkPending(pendingIds, fx);
@@ -372,7 +391,8 @@ Fx {
       this.prUnmarkPending(pendingIds, fx);
     };
 
-    groupIds = Px.prGroupIds(proxyName);
+    if (single.not)
+    { groupIds = Px.prGroupIds(proxyName) };
 
     if (groupIds.notNil) {
       var groupName = proxyName;
@@ -385,7 +405,7 @@ Fx {
       prSuppressPrint = true;
       groupIds.do { |id|
         proxyName = id;
-        this.prAddEffect(fx, mix, args, postArgs, true);
+        this.prAddEffect(fx, mix, args, postArgs, true, true);
       };
       prSuppressPrint = false;
       proxyName = groupName;
@@ -418,6 +438,13 @@ Fx {
 
     if (mix.notNil and: { mix != Nil } and: { mix.isNumber.not }) {
       ^this.prPrint("🔴 Invalid mix value. Must be a number (0-1) or Nil.");
+    };
+
+    selector = selectorStreams[proxyName];
+
+    if (selector.notNil and: { selector[\capturing] == fx }) {
+      selector[\mixes][fx] = mix;
+      mix = 0;
     };
 
     chain = this.prEnsureChain;
@@ -530,8 +557,10 @@ Fx {
     chain.mixer.removeAt(fx);
     chain.effects.removeAt(fx);
 
-    if (immediate)
-    { Ndef(proxyName)[index] = nil }
+    if (immediate) {
+      this.prCancelWetRamp(proxyName, wetIndex);
+      Ndef(proxyName)[index] = nil;
+    }
     { this.prFadeOutFx(index, fx, wetIndex, noPostln) };
   }
 
@@ -540,6 +569,8 @@ Fx {
 
     id = id.asSymbol;
     chain = chains[id];
+    selectorStreams.removeAt(id);
+    this.prCancelWetRamps(id);
 
     if (chain.isNil) { ^this };
 
@@ -580,17 +611,54 @@ Fx {
   }
 
   *prRampWet { |wetIndex, from, to, onComplete|
-    var targetProxy = Ndef(proxyName);
-    var steps = 30;
+    var id = proxyName;
+    var ramps, steps = 30, targetProxy;
 
-    fork {
+    targetProxy = Ndef(id);
+    this.prCancelWetRamp(id, wetIndex);
+    ramps = wetRamps[id];
+
+    if (ramps.isNil) {
+      ramps = Dictionary.new;
+      wetRamps[id] = ramps;
+    };
+
+    ramps[wetIndex] = fork {
       steps.do { |i|
         targetProxy.set(wetIndex, from.blend(to, (i + 1) / steps));
         (1/steps).wait;
       };
 
+      ramps.removeAt(wetIndex);
+
+      if (ramps.isEmpty)
+      { wetRamps.removeAt(id) };
+
       if (onComplete.notNil) { onComplete.value(targetProxy) };
     };
+  }
+
+  *prCancelWetRamp { |id, wetIndex|
+    var ramp, ramps = wetRamps[id];
+
+    if (ramps.isNil) { ^false };
+
+    ramp = ramps.removeAt(wetIndex);
+
+    if (ramps.isEmpty)
+    { wetRamps.removeAt(id) };
+
+    if (ramp.isNil) { ^false };
+
+    ramp.stop;
+    ^true;
+  }
+
+  *prCancelWetRamps { |id|
+    var ramps = wetRamps[id];
+
+    if (ramps.notNil)
+    { ramps.keys.asArray.do { |wetIndex| this.prCancelWetRamp(id, wetIndex) } };
   }
 
   *prNeedsSync {
@@ -652,7 +720,7 @@ Fx {
         proxyName = id;
 
         stored.copy.keysValuesDo { |fx, call|
-          this.prAddEffect(fx, call[0], call[1], call[2], true);
+          this.prAddEffect(fx, call[0], call[1], call[2], true, true);
         };
       };
     };
@@ -746,15 +814,74 @@ Fx {
 
   *prAdvanceMixStreams { |id|
     var streams = mixStreams[id];
+    var selector = selectorStreams[id];
 
-    if (streams.isNil) { ^this };
+    if (streams.notNil) {
+      streams.keysValuesDo { |fx, stream|
+        var mix = stream.next;
 
-    streams.keysValuesDo { |fx, stream|
-      var mix = stream.next;
-
-      if (mix.isNumber)
-      { this.prSetMix(id, fx, mix) };
+        if (mix.isNumber)
+        { this.prSetMix(id, fx, mix) };
+      };
     };
+
+    if (selector.notNil) {
+      var choice = selector[\stream].next;
+
+      selector[\names].do { |name|
+        this.prSetMix(id, name, if (choice == name) { selector[\mixes][name] } { 0 });
+      };
+    };
+  }
+
+  *prClearSelector { |id|
+    selectorStreams.removeAt(id);
+  }
+
+  *prSelectorOptions { |value|
+    var source = value;
+
+    while { source.isKindOf(Pn) or: { source.isKindOf(Ptrace) } }
+    { source = source.pattern };
+
+    if (source.isKindOf(ListPattern))
+    { ^source.list };
+
+    ^nil;
+  }
+
+  *prRegisterSelector { |id, pattern, names|
+    var current = selectorStreams[id];
+    var mixes = Dictionary.new;
+
+    if (current.notNil
+      and: { current[\pattern] === pattern }
+      and: { current[\names] == names.asSet })
+    { ^this };
+
+    selectorStreams[id] = (
+      mixes: mixes,
+      names: names.asSet,
+      pattern: pattern,
+      stream: pattern.asStream
+    );
+  }
+
+  *prPrepareSelector { |id, fx|
+    var selector = selectorStreams[id];
+
+    if (selector.isNil) { ^this };
+
+    selector[\capturing] = fx;
+    { this.perform(fx) }.protect { selector.removeAt(\capturing) };
+  }
+
+  *prSelectorNames { |id|
+    var selector = selectorStreams[id];
+
+    if (selector.isNil) { ^Set.new };
+
+    ^selector[\names];
   }
 
   *prClearMixStreams { |id, fxNames|
@@ -790,12 +917,18 @@ Fx {
   *prSetMix { |id, fx, mix|
     var chain = chains[id];
     var index = chain !? { chain.effects[fx] };
+    var wasRamping, wetIndex;
 
     if (index.isNil) { ^this };
 
     mix = mix.clip(0, 1);
+    wetIndex = (\wet ++ index).asSymbol;
+    wasRamping = this.prCancelWetRamp(id, wetIndex);
+
+    if (wasRamping.not and: { chain.mixer[fx] == mix }) { ^this };
+
     chain.mixer[fx] = mix;
-    Ndef(id).set((\wet ++ index).asSymbol, mix);
+    Ndef(id).set(wetIndex, mix);
   }
 
   *prSetMixerValue { |fx, mix|
@@ -806,7 +939,9 @@ Fx {
     if (index.isNil)
     { ^("🔴".scatArgs(("\\" ++ fx), "FX to mix not found")) };
 
-    if (this.prHasMixStream(proxyName, fx)) {
+    if (this.prHasMixStream(proxyName, fx)
+      or: { selectorStreams[proxyName].notNil and: { selectorStreams[proxyName][\names].includes(fx) } }) {
+      this.prCancelWetRamp(proxyName, wetIndex);
       chain.mixer[fx] = mix;
       ^Ndef(proxyName).set(wetIndex, mix);
     };

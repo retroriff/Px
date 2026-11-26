@@ -38,6 +38,8 @@ subsection:: Group Targets
 
 Instead of a single proxy name, code::Fx:: accepts a group token that fans the effect out to every matching pattern individually, rather than applying a single shared effect to a group bus. Each pattern keeps its own independent effect chain.
 
+A drum instrument list created with code::101 i: [\bd, \sd].pxrand:: has the ID code::\101::, which is also a group token. Effects declared with code::fx::: on that pattern apply to its own proxy. An explicit code::Fx(\101):: call applies to every pattern on the active drum machine, including the list pattern.
+
 list::
 ## code::\dx:: — every link::Classes/Dx:: preset pattern (code::Dx.preset::, code::Dx.fill::).
 ## code::\lx:: — every link::Classes/Lx:: looper channel.
@@ -428,6 +430,8 @@ Always wrap UGens in code::{ }:: (a Function). Passing a bare UGen like code::Si
 ::
 
 subsection:: Pattern-driven mix
+
+The pattern DSL also accepts code::fx: [\gverb, \delay, Nil].prand:: to choose one effect at a time on a pattern proxy. code::pshufn:: and code::pshufn.trace:: can reshuffle and display the selected effects. The chosen effect uses its default Fx mix; code::Nil:: is dry. The selection advances for every event, including rests; switching the proxy's mix can affect effect tails from previous events. Numeric code::fx:: values continue to address a SynthDef's own control.
 
 The mix of an effect can be driven by a Pattern when the effect is declared from a pattern, so the wet amount advances one step per event.
 

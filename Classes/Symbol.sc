@@ -32,6 +32,8 @@
   }
 
   fx { |name ... args|
+    if (name.isKindOf(Symbol).not) { ^this };
+
     ^Fx(this).performList(name, args);
   }
 
@@ -46,11 +48,17 @@
 
   i { |value|
     var number = this.asInteger;
-    var id = number.createId(value);
+    var id;
+
+    if (value.isString.not and: { value.isKindOf(Pattern) || value.isArray })
+    { id = this }
+    { id = number.createId(value) };
 
     if (this.prHasDrumMachine and: (value == \all))
     { this.prStopDrumMachineInstruments }
     { Px.stop(id) };
+
+    ^PxStopDeclaration.new;
   }
 
   in { |fadeTime|

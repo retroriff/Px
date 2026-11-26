@@ -310,17 +310,28 @@ Dx : Px {
   *prAddDrumMachinePlayBuf { |pattern|
     var instrument = pattern[\instrument];
     var machine = pattern[\drumMachine];
+    var play = this.prDrumMachinePatternSample(machine, instrument, pattern[\file] ?? 0);
+
+    pattern.putAll([\play, play]);
+    ^pattern;
+  }
+
+  *prDrumMachinePatternSample { |machine, instrument, file|
     var play;
+
+    if (instrument.isKindOf(Pn) or: { instrument.isKindOf(Ptrace) }) {
+      play = instrument.copy;
+      play.pattern = this.prDrumMachinePatternSample(machine, instrument.pattern, file);
+      ^play;
+    };
 
     if (instrument.isKindOf(ListPattern)) {
       play = instrument.copy;
       play.list = instrument.list.collect { |ins| this.prDrumMachineSample(machine, ins, 0) };
-    } {
-      play = this.prDrumMachineSample(machine, instrument, pattern[\file] ?? 0);
+      ^play;
     };
 
-    pattern.putAll([\play, play]);
-    ^pattern;
+    ^this.prDrumMachineSample(machine, instrument, file);
   }
 
   *prDrumMachineSample { |machine, instrument, file|
@@ -360,7 +371,7 @@ Dx : Px {
         if (isFirst.not)
         { Fx.prSuppressPrint = true };
 
-        Fx(id).perform(fxName, fxValue);
+        Fx.prTargetPattern(id).perform(fxName, fxValue);
         isFirst = false;
       };
     };
@@ -510,10 +521,20 @@ Dx : Px {
 
   *prHasInstrument { |instrument|
     var names = this.instruments;
+    var source = instrument;
 
     if (names.isEmpty) { ^false };
 
-    ^names.includes(instrument.asString.asSymbol);
+    while { source.isKindOf(Pn) or: { source.isKindOf(Ptrace) } }
+    { source = source.pattern };
+
+    if (source.isKindOf(ListPattern) or: { source.isString.not and: { source.isArray } }) {
+      var items = if (source.isKindOf(ListPattern)) { source.list } { source };
+
+      ^items.notEmpty and: { items.every { |item| this.prHasInstrument(item) } };
+    };
+
+    ^names.includes(source.asString.split($:).first.asSymbol);
   }
 
   *prIsPlaying {

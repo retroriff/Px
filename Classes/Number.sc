@@ -65,6 +65,49 @@
     this.prDebouncer.enqueue(pairs);
   }
 
+  fx { |value|
+    var id, names, selector;
+
+    id = this.prDebouncer.pattern !? { |pattern| pattern[\id] };
+    names = Fx.prSelectorOptions(value);
+
+    if (value.isArray)
+    { names = value };
+
+    if (value.isKindOf(Symbol) or: { value == Nil })
+    { names = [value] };
+
+    if (names.isNil or: { names.any { |name| name.isKindOf(Symbol) or: { name == Nil } }.not }) {
+      this.prDebouncer.enqueue([\fxSelect, Nil, \fx, value]);
+      ^this;
+    };
+
+    if (names.any { |name| name != Nil and: { name.isKindOf(Symbol).not } }) {
+      "🔴 fx requires effect names or Nil".postln;
+      ^this;
+    };
+
+    if (names.any { |name| name != Nil and: { Fx.effectNames.includes(name).not or: { [\pan, \vst].includes(name) } } }) {
+      "🔴 fx requires available mix effects or Nil".postln;
+      ^this;
+    };
+
+    selector = value;
+
+    if (value.isKindOf(Symbol) or: { value == Nil })
+    { selector = Pseq([value], inf) };
+
+    if (value.isArray)
+    { selector = Prand(value, inf) };
+
+    this.prDebouncer.enqueue([\fx, Nil, \fxSelect, selector, \fxMix, Pfunc({ Fx.prAdvanceMixStreams(id); 0 })]);
+
+    names.asSet.do { |name|
+      if (name != Nil)
+      { this.prDebouncer.fxList.add([name, [], \selector]) };
+    };
+  }
+
   gui {
     AppClock.sched(0, { Px.gui; nil })
   }
@@ -175,6 +218,14 @@
   }
 
   prCreateArrayFromSample { |sample|
+    if (sample.isKindOf(Pn) or: { sample.isKindOf(Ptrace) }) {
+      var resolved = sample.copy;
+
+      resolved.pattern = this.prCreateArrayFromSample(sample.pattern);
+
+      ^resolved;
+    };
+
     if (sample.isKindOf(ListPattern)) {
       var resolved = sample.copy;
 
@@ -370,7 +421,7 @@
       pattern[\id] == this.asSymbol and: (pattern[\drumMachine].notNil)
     };
 
-    if (drumMachinePattern.notNil) {
+    if (drumMachinePattern.notNil and: { this.asSymbol != \101 }) {
       drumMachineIntegerId = this.prGenerateDrumMachineIntegerId(this, newPattern[\id]);
 
       newPattern.putAll([
@@ -420,8 +471,14 @@
   prUpdatePattern { |pairs, pattern|
     pattern = pattern ?? Px.patternState;
 
-    if (pattern.notNil)
-    { ^this.prPlayClass(pattern.putAll(pairs)) };
+    if (pattern.notNil) {
+      pattern.putAll(pairs);
+
+      if (pattern[\fx] === Nil)
+      { pattern.removeAt(\fx) };
+
+      ^this.prPlayClass(pattern);
+    };
   }
 
   prDebouncer {

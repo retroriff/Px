@@ -527,23 +527,24 @@ subsection:: Core Methods
 
 definitionlist::
 ## i
-|| Sets the instrument (SynthDef name). An unknown SynthDef is reported once and the declaration is skipped before playback starts; an existing pattern with the same ID keeps playing. Drum sample references with a missing or empty folder are also reported and skipped.
+|| Sets the instrument (SynthDef name). An unknown SynthDef is reported once and the declaration is skipped before playback starts; an existing pattern with the same ID keeps playing. Drum instrument lists support code::pshufn:: and code::pshufn.trace::; drum sample references with a missing or empty folder are reported and skipped.
 code::
 707 i: \bd dur: 1;
 ::
 
 ## play
-|| Plays a sample from a folder. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different sample on every event. The code::folder:seq:: shortcut plays every sample in folder index order and repeats continuously. A missing sample or empty folder is reported and the pattern is skipped without starting playback.
+|| Plays a sample from a folder. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::, code::pshuf::, code::pshufn::) picks a different sample on every event. The code::folder:seq:: shortcut plays every sample in folder index order and repeats continuously. A missing sample or empty folder is reported and the pattern is skipped without starting playback.
 code::
 1 play: "fm:0";
 1 play: "fm:rand";  // Random sample
 1 play: "fm:seq";   // Every sample in index order, repeating
 1 play: ["fm:0", "fm:1"].prand;                 // Random sample on each event
 1 play: ["fm:0", "fm:1"].pwrand([0.8, 0.2]);    // Weighted random sample
+1 play: ["fm:0", "fm:1"].pshufn;
 ::
 
 ## loop
-|| Plays a looping sample. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::) picks a different loop on every cycle. The code::folder:seq:: shortcut plays every loop in folder index order and repeats continuously. The default duration comes from the beat count in the first folder name. A missing sample or empty folder is reported and the pattern is skipped without starting playback.
+|| Plays a looping sample. An array of samples turned into a list pattern (code::pseq::, code::prand::, code::pxrand::, code::pwrand::, code::pshuf::, code::pshufn::) picks a different loop on every cycle. The code::folder:seq:: shortcut plays every loop in folder index order and repeats continuously. The default duration comes from the beat count in the first folder name. A missing sample or empty folder is reported and the pattern is skipped without starting playback.
 code::
 707 loop: "breaks" dur: 8;
 10 loop: "pop-2:seq" dur: 2;                     // Every loop in index order, repeating
@@ -660,6 +661,14 @@ code::
 subsection:: Pattern Effects
 
 definitionlist::
+## fx
+|| Selects one of the existing Fx effects on each pattern event. code::Nil:: selects the dry signal. A Symbol holds one effect; an Array chooses randomly; a list Pattern such as code::Prand::, code::Pseq::, code::Pwrand::, or code::Pshuf:: controls the selection. Repeated reshuffling with code::pshufn:: and optional code::trace:: are supported. The chosen effect uses the default mix of its Fx method, while the other effects named in the selector use mix 0. Selection advances on rests as well. It changes the mix on the pattern's shared proxy, so effect tails from earlier events can change when the selection changes. code::\pan:: and code::\vst:: are not supported by this selector. Numeric values retain their meaning as SynthDef code::fx:: controls. Updating an existing pattern between numeric and effect-selector forms clears the previous form. A symbol-prefixed code::i::: stop declaration ignores subsequent pattern parameters, including symbolic code::fx:::; a separate code::\name.fx(\effect):: call still applies an effect.
+code::
+7 i: \rim dur: 0.5 fx: [\gverb, \delay, \lpf, \hpf, Nil].prand;
+7 i: \rim dur: 0.5 fx: [\gverb, Nil, \delay].pseq;
+101 i: \bd dur: 1 fx: [\blp, \delay, \rlpf, Nil, Nil].pshufn.trace;
+::
+
 ## reverb
 || Applies reverb to the pattern.
 code::

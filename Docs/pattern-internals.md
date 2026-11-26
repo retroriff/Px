@@ -11,6 +11,7 @@ Patterns are SuperCollider Event dictionaries stored in `Px.last[id]`. Each patt
 - **Audio parameters** - amp, dur, pan, octave, degree, scale
 - **Rhythm** - beat, beatSet, fill, weight, euclid, rest, repeat, human
 - **Effects** - fx, fade, chop, reverb
+- **Effect selection** - `fxSelect` stores the pattern of Fx effect names and is removed before Pbind creation. `fxMix` remains a callback that advances the selector and any pattern-driven effect mix streams once per event. The selector's candidate names are read through `Pn` and `Ptrace` wrappers, so `pshufn.trace` retains the Fx selector behavior. The chosen effect uses its Fx method's default mix. Numeric `fx` remains a SynthDef control; switching to a selector removes the previous numeric control, and switching to a number clears the selector. The shared `fxMix` callback remains available to pattern-driven effect mixes.
 - **MIDI** - chan, midiout, midicmd, midinote
 - **Samples** - loop, play, file
 - **Internal state** - ampBeat, rhythmBeats, totalBeats, solo
@@ -57,6 +58,10 @@ to the `loop`/`grainLoop` SynthDefs for `chop` patterns (`Classes/PxBuf.sc`, `Cl
 - **Secondary ID:** Sequential integer `80801`, `80802` (for fill logic)
 - **Why dual IDs?** String ID is semantic, integer ID enables arithmetic for finding previous patterns
 - Format: `drumMachine * 100 + sequentialNumber`
+- A Pattern or Array instrument selector uses the drum machine number as its primary ID, such as `\101` for `101 i: [\bd, \sd].pxrand`. The matching Symbol declaration targets that one pattern.
+- That ID can also be a drum machine group token. Internal pattern-level effect calls target the exact ID; explicit `Fx(\101)` calls expand to the active machine group.
+- `Px.solo(\101)` and `Px.keep(\101)` also expand the group, while `Px.stop(\101)` targets the exact list-pattern ID.
+- A full `101 i:` redeclaration resolves the active drum machine again. `Dx.use(machine, true)` migrates a list selector only when every instrument in it exists on the target machine.
 
 **3. Preset Drum Patterns** - `Dx.preset(\electro, 1)`
 - ID: Numeric only (`80000`, `80001`, `80002`)

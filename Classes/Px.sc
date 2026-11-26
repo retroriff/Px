@@ -466,6 +466,7 @@ Px {
     bindPattern.removeAt(\ampBeat);
     bindPattern.removeAt(\clone);
     bindPattern.removeAt(\durStep);
+    bindPattern.removeAt(\fxSelect);
     bindPattern.removeAt(\repeat);
     bindPattern.removeAt(\rest);
     bindPattern.removeAt(\rhythmBeats);

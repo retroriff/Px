@@ -396,18 +396,23 @@ Px.unsolo;           // Restore everything
 ::
 
 method:: chop
-Slices and repeats part of the beat pattern. Called with no arguments, it toggles: applies the default chop if none is active, disables it otherwise.
+Slices and repeats part of the beat pattern. Called with no arguments, it toggles: applies the default chop if none is active, disables it otherwise. Each pattern's code::Pbind:: is wrapped inside its code::Pdef::; see the code::chop:: pattern parameter for the equivalent SuperCollider patterns.
 
 argument:: dur
 Duration of the chop. Use 0 to disable.
 
 argument:: drop
-Number of events to skip before the chopped slice. On code::loop:: patterns it is the start position in the sample instead (see the code::chop:: pattern parameter).
+Number of events to skip before the chopped slice. On code::loop:: patterns it is the start position in the sample instead (see the code::chop:: pattern parameter). Use code::\jump:: to make the whole mix jump to random positions of a 4-bar grid. All patterns jump to the same position at the same time.
+
+argument:: seed
+Jump seed, used only with code::\jump::. When omitted, the current seed is kept. If there is none, one is generated and printed. Like the pattern seeds, it is cleared on code::CmdPeriod::. It is separate from the pattern seeds, which are never changed. The current value is in code::Px.jumpSeed::. The jump order repeats every 4 bars (code::maxQuant:: beats).
 
 code::
-Px.chop(1, 2);   // Chop with duration 1, drop at position 2
-Px.chop(0);      // Disable chop
-Px.chop;         // Toggle open/close
+Px.chop(1, 2);            // Chop with duration 1, drop at position 2
+Px.chop(2, \jump);        // 2-beat slices in the current jump seed's order
+Px.chop(2, \jump, 417);   // Switches to the order of seed 417
+Px.chop(0);               // Disable chop
+Px.chop;                  // Toggle open/close
 ::
 
 method:: tempo
@@ -601,17 +606,62 @@ code::
 ::
 
 ## chop
-|| Slices and repeats part of a single pattern. Takes a duration, or code::[dur, drop]:: to start from a later event. Use link::#*chop:: to chop all patterns at once.
+|| Slices and repeats part of a single pattern. Takes a duration, or code::[dur, drop]:: to start from a later event. Use code::\jump:: as the drop to jump to random positions of the 4-bar grid, following the jump seed set by link::#*chop::; code::\jump:: on its own uses 1-beat slices. code::dur:: can be a number or a sequence of numbers. Notes that started before the jump position are not played. With code::euclid:: the pattern is chopped without jumping. Use link::#*chop:: to chop all patterns at once.
 
 On code::loop::, the loop keeps its tempo and restarts every code::dur:: beats, and the second value is the start position in the sample (0–1) instead of a drop. It can be a number, an array, a Pattern, or code::\seq:: to shuffle the loop's slices. A Pattern keeps advancing from slice to slice. A Pattern or code::\seq:: on its own is taken as the start position, with slices a quarter of the loop long.
 code::
 707 i: \hh dur: 0.25 beat: 0.7 chop: [1, 2];                          // Repeats 1 beat starting from the third event
+707 i: \hh dur: 0.25 beat: 0.7 chop: [1, \jump];                      // Jumps to random beats of the 4-bar grid
+2 loop: "sp-8:1" dur: 8 chop: [1, \jump];                             // Jumps through the loop in step with the other patterns
 2 loop: "sp-8:1" dur: 8 chop: 1;                                      // Repeats the first beat
 2 loop: "sp-8:1" dur: 8 chop: [1, 0.5];                               // Repeats the fifth beat
 2 loop: "sp-8:1" dur: 8 chop: [1, Pdup(8, Pseq([0.25, 0.5], inf))];   // Jumps between two start positions
 2 loop: "sp-8:1" dur: 8 chop: [1, \seq];                              // Shuffles the 8 one-beat slices
 2 loop: "sp-8:1" dur: 8 chop: \seq;                                   // Shuffles the 4 two-beat quarters
 2 loop: "sp-8:1" dur: 8 chop: Pwhite(0.0, 0.75);                      // Random start for each quarter
+::
+
+Chop wraps the pattern's code::Pbind::, not the code::Pdef::: the wrapped pattern becomes the code::Pdef:: source. On a regular pattern, code::Pdrop:: skips code::drop:: events, code::Pfindur:: cuts the result after code::dur:: beats, and code::Pseq:: restarts it from the first event. Value streams such as code::degree:: therefore restart on every slice:
+code::
+1 i: \sine dur: 0.25 degree: [0, 2, 4, 5, 7, 9].pseq chop: [1, 2];
+
+Pdef(\1, Pseq([
+  Pfindur(1, Pdrop(2, Pbind(\instrument, \sine, \dur, 0.25, \degree, Pseq([0, 2, 4, 5, 7, 9], inf))))
+], inf));
+::
+
+The first line plays degrees 4, 5, 7, 9 and then starts again from 4.
+
+With code::\jump::, the whole mix jumps together. The clock is split into 4-bar windows (code::maxQuant:: beats) of code::dur::-beat slots, and the jump seed maps each slot to a target slot. The map is the same for every pattern. In each slot, every pattern plays what it would play at the target slot: code::Pdrop:: skips the events before it, and a rest fills the time until its next event. Events delayed with code::off:: are placed by when they sound:
+code::
+1 i: \bd dur: 1;
+2 i: \sd dur: 2 off: 1;
+Px.chop(1, \jump);
+::
+
+When a slot jumps to an odd beat, the kick and the snare both play. When it jumps to an even beat, only the kick plays. Each slot of a pattern becomes roughly:
+code::
+Pn(Plazy {
+  var target = slots.wrapAt(thisThread.beats.round) * dur;
+
+  Pfindur(dur, Pseq([
+    Pbind(\dur, Pseq([Rest(gapBeforeNextEvent)])),
+    Pdrop(eventsBefore(target), pbind),
+    Pbind(\dur, Rest(dur))
+  ]))
+}, inf);
+::
+
+On code::loop::, nothing is dropped. code::Pbindf:: sets code::\dur:: to the chop length and code::\beats:: to the loop length, so the playback rate stays the same, and the second value becomes code::\start:::
+code::
+2 loop: "sp-8:1" dur: 8 chop: [1, 0.5];
+
+Pdef(\2, Pbindf(
+  Pseq([
+    Pfindur(1, Pbindf(Pbind(\instrument, \loop, ...), \beats, 8, \dur, 1))
+  ], inf),
+  \start, 0.5
+));
 ::
 
 ## fill

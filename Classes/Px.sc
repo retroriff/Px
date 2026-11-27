@@ -8,6 +8,7 @@ Px {
   classvar <>cycleOrigins;
   classvar <defaultAmp;
   classvar <drumMachinesPath;
+  classvar <jumpSeed;
   classvar <>last;
   classvar <>lastFormatted;
   classvar <masterLevels;
@@ -300,6 +301,9 @@ Px {
     if (pattern[\instrument] == \loop or: { pattern[\instrument] == \grainLoop })
     { ^this.prCreateLoopChop(pattern, pbindef, dur ?? { this.prLoopBeats(pattern) / 4 }, position) };
 
+    if (position == \jump)
+    { ^this.prCreateJumpChop(pattern, pbindef, (dur ?? 1).max(0.25)) };
+
     if (dur.isNil)
     { ^pbindef };
 
@@ -311,11 +315,92 @@ Px {
     ], inf);
   }
 
+  *prCreateJumpChop { |pattern, pbindef, dur|
+    var stepDurs = this.prJumpStepDurs(pattern);
+    var lag = pattern[\timingOffset];
+    var tolerance = 0.001;
+    var onsets, slots;
+
+    if (stepDurs.isNil)
+    { ^Pseq([Pfindur(dur, pbindef)], inf) };
+
+    if (lag.isNumber)
+    { pbindef = Pbindf(pbindef, \timingOffset, 0) }
+    { lag = 0 };
+
+    onsets = this.prEventOnsets(stepDurs, maxQuant);
+    slots = this.prJumpSlots(dur);
+
+    ^Plazy {
+      var origin = thisThread.beats;
+
+      Pn(Plazy {
+        var start = (this.prJumpTarget(slots, dur) - origin - lag).mod(maxQuant);
+        var event = onsets.indexOfGreaterThan(start - tolerance);
+        var gap = (onsets[event] - start).max(0);
+        var lead = if (gap > tolerance) { [Pbind(\dur, Pseq([Rest(gap)]))] } { [] };
+
+        Pfindur(dur, Pseq(lead ++ [Pdrop(event, pbindef), Pbind(\dur, Rest(dur))]))
+      }, inf)
+    };
+  }
+
+  *prJumpStepDurs { |pattern|
+    var durStep = pattern[\durStep];
+    var stepDurs;
+
+    if (pattern[\euclid].notNil)
+    { ^nil };
+
+    case
+    { durStep.isNumber }
+    { stepDurs = [durStep] }
+
+    { durStep.isKindOf(Pseq) and: { durStep.list.every(_.isNumber) } }
+    { stepDurs = durStep.list }
+
+    { ^nil };
+
+    if (stepDurs.any { |step| step <= 0 })
+    { ^nil };
+
+    ^stepDurs;
+  }
+
+  *prEventOnsets { |stepDurs, window|
+    var onsets = List[0];
+    var beats = 0;
+
+    while { beats < window } {
+      beats = beats + stepDurs.wrapAt(onsets.size - 1);
+      onsets.add(beats);
+    };
+
+    ^onsets.asArray;
+  }
+
+  *prJumpSlots { |dur|
+    var slots = (maxQuant / dur).round.max(1).asInteger;
+
+    jumpSeed = jumpSeed ?? { this.prGenerateRandNumber(\jump) };
+
+    ^Pseed(jumpSeed, Pwhite(0, slots - 1)).asStream.nextN(slots);
+  }
+
+  *prJumpTarget { |slots, dur|
+    var slot = (thisThread.beats / dur).round.asInteger;
+
+    ^slots.wrapAt(slot) * dur;
+  }
+
   *prCreateLoopChop { |pattern, pbindef, dur, position|
     pbindef = Pbindf(pbindef,
       \beats, pattern[\beats] ?? pattern[\dur],
       \dur, dur
     );
+
+    if (position == \jump)
+    { ^this.prCreateLoopJump(pattern, pbindef, dur.max(0.25)) };
 
     pbindef = Pseq([Pfindur(dur.max(0.25), pbindef)], inf);
 
@@ -333,6 +418,21 @@ Px {
     { ^pbindef };
 
     ^Pbindf(pbindef, \start, position.asStream);
+  }
+
+  *prCreateLoopJump { |pattern, pbindef, dur|
+    var loopBeats = this.prLoopBeats(pattern);
+    var slots = this.prJumpSlots(dur);
+
+    ^Plazy {
+      var origin = thisThread.beats;
+
+      Pn(Plazy {
+        var position = (this.prJumpTarget(slots, dur) - origin).mod(loopBeats);
+
+        Pfindur(dur, Pbindf(pbindef, \start, position / loopBeats))
+      }, inf)
+    };
   }
 
   *prCreateShuffledSlices { |pattern, dur|

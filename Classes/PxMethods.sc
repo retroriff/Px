@@ -1,11 +1,15 @@
 + Px {
-  *chop { |dur, drop|
+  *chop { |dur, drop, seed|
     var hasActiveChop = last.any { |pattern|
       pattern[\chop].isArray and: { pattern[\chop][0] != 0 }
     };
 
     if (dur.isNil and: { hasActiveChop }) {
       dur = 0;
+    };
+
+    if (drop == \jump and: { seed.notNil }) {
+      jumpSeed = seed;
     };
 
     last do: { |pattern|
@@ -28,6 +32,7 @@
     chorusPatterns.clear;
     colors.clear;
     cycleOrigins.clear;
+    jumpSeed = nil;
     last.clear;
     lastFormatted.clear;
     meterIdMap.clear;

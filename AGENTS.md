@@ -19,8 +19,7 @@
    - Drum machine architecture internals
    - Pattern lifecycle and relationships
 
-3. **`Docs/code-conventions.md`** - Code formatting rules
-   - Blank lines around conditionals
+3. **`Docs/code-conventions.md`** - Code formatting rules (read all of it)
 
 4. **`Classes/*.sc`** - Source code to modify
    - See `Docs/init-context.md` for full file organization
@@ -43,7 +42,7 @@
   1. **Help files** (`HelpSource/Classes/<ClassName>.schelp`) - Detailed SCDoc format documentation
   2. **README.md** - Brief feature listing in the class methods tables
   3. **px-agent docs** (`~/icloud/Music/SuperCollider/px-agent/Docs/`) - Agent reference documentation
-- Help files are only maintained for **project-defined classes** (Px, Fx, Sx, Dx, Nx). Do NOT create or update help files for SC built-in classes extended by this project (Array, Symbol, Number, etc.)
+- Help files are only maintained for **project-defined classes** (Px, Fx, Sx, Dx, Nx, Cx). Do NOT create or update help files for SC built-in classes extended by this project (Array, Symbol, Number, etc.)
 - Private methods (starting with `pr`) are not documented
 - When adding new public methods to project-defined classes, update the corresponding help file and add the method to the README table
 - Reference existing help files (Px.schelp, Fx.schelp, Sx.schelp) for format examples
